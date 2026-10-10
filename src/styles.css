@@ -1757,6 +1757,37 @@ a.group:not(.atlas-own):has(.paper-title) > div.flex.flex-col > p.tabular-nums {
   }
   .atlas-top.records:not([data-depth="1"]) .atlas-card > .atlas-pic-slot + div > .record-layer[data-layer="3"] {
     order: 2;
+    /* When a reading's whole text is shorter than the box (the tall middle card at
+       "Summary" and "Deep"), the date and "Read more" still sit at the foot of the box,
+       level with the columns beside it. With text to spare this adds nothing. */
+    margin-top: auto;
+  }
+  /* The large middle card runs the full height of the two side columns. At "Summary"
+     and "Deep" its type is set larger than the side cards, so its picture, title,
+     summary and opening lines fill that height as one large piece. Headlines stay as
+     they are. */
+  .atlas-top.records:not([data-depth="1"]) > .atlas-card:nth-child(2) h3 {
+    font-size: clamp(1.6rem, 2.6vw, 2.4rem);
+    line-height: 1.06;
+  }
+  .atlas-top.records:not([data-depth="1"]) > .atlas-card:nth-child(2) .atlas-dek {
+    font-size: clamp(1.05rem, 1.5vw, 1.3rem);
+    line-height: 1.32;
+    margin-top: 0.6rem;
+  }
+  .atlas-top.records:not([data-depth="1"]) > .atlas-card:nth-child(2) .atlas-top-fill > p {
+    padding-top: 0.6rem;
+    font-size: clamp(0.95rem, 1.3vw, 1.12rem);
+    line-height: 1.5;
+  }
+  .atlas-top.records:not([data-depth="1"]) > .atlas-card:nth-child(2) .card-kicker {
+    font-size: 0.8rem;
+  }
+  /* At "Deep" the side columns grow; the middle card's picture grows with them, from a
+     wide frame to a fuller one, instead of a blank under its text. */
+  .atlas-top.records[data-depth="3"] > .atlas-card:nth-child(2) > .atlas-pic-slot,
+  .atlas-top.records[data-depth="3"] > .atlas-card:nth-child(2) .atlas-card-pic {
+    aspect-ratio: 4 / 3;
   }
   .atlas-top.records:not([data-depth="1"]) .atlas-card > .atlas-pic-slot + div > .atlas-more {
     order: 3;
