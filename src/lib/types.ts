@@ -141,7 +141,7 @@ export type LocaleCard = {
   region: string;
   /** First paragraph as plain text, for a card without a summary. */
   lead: string;
-  /** The opening paragraphs, about 1,200 characters, to fill a desktop column. */
+  /** The opening paragraphs, about 3,000 characters, to fill a desktop column. */
   opening?: string;
   minutes: number;
   /** Whether the reading has a text in this language. */

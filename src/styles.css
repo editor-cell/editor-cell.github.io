@@ -1757,6 +1757,10 @@ a.group:not(.atlas-own):has(.paper-title) > div.flex.flex-col > p.tabular-nums {
   }
   .atlas-top.records:not([data-depth="1"]) .atlas-card > .atlas-pic-slot + div > .record-layer[data-layer="3"] {
     order: 2;
+    /* When a reading's whole text is shorter than the box (the tall middle card at
+       "Summary" and "Deep"), the date and "Read more" still sit at the foot of the box,
+       level with the columns beside it. With text to spare this adds nothing. */
+    margin-top: auto;
   }
   .atlas-top.records:not([data-depth="1"]) .atlas-card > .atlas-pic-slot + div > .atlas-more {
     order: 3;

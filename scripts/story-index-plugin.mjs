@@ -34,18 +34,21 @@ function lead(body) {
 }
 
 /**
- * The opening paragraphs run together, up to about 1,200 characters, for the desktop front
+ * The opening paragraphs run together, up to about 3,000 characters, for the desktop front
  * page: where a column ends short of its neighbours, the text goes on instead of the
- * picture growing. Members-only readings keep only the first paragraph.
+ * picture growing. The large middle card is the tallest box at "Summary" and "Deep"; at
+ * 1,200 characters its text ran out and left a blank under it, so the limit is wider than
+ * any column needs (each box shows only the whole lines that fit). Members-only readings
+ * keep only the first paragraph.
  */
 function opening(body) {
   const text = paragraphs(body)
     .map((part) => part.replace(/\s*\[\d+\]/g, "").trim())
     .filter((part) => part && !part.startsWith("#"))
     .join(" ");
-  if (text.length <= 1200) return text;
-  const cut = text.slice(0, 1200);
-  return `${cut.slice(0, cut.lastIndexOf(" ") > 900 ? cut.lastIndexOf(" ") : 1200)}…`;
+  if (text.length <= 3000) return text;
+  const cut = text.slice(0, 3000);
+  return `${cut.slice(0, cut.lastIndexOf(" ") > 2700 ? cut.lastIndexOf(" ") : 3000)}…`;
 }
 
 export function readStoryIndex(dir) {
