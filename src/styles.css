@@ -1380,6 +1380,57 @@ a.group:not(.atlas-own):has(.paper-title) > div.flex.flex-col > p.tabular-nums {
     grid-column: 3;
     grid-row: 2;
   }
+
+  /* One more box under the large middle card (the next reading after the eight). The
+     middle card then runs through the first two rows and the box takes the third, so
+     each column ends with a short reading, level with the other two. Headlines only:
+     the box is the eighth headline and the second row reads four across, like the first. */
+  .atlas-top:has(.atlas-brief-under) > .atlas-card:nth-child(2) {
+    grid-row: 1 / 3;
+  }
+  .atlas-top.records:not([data-depth="1"]):has(.atlas-brief-under) > .atlas-card:nth-child(2) {
+    padding-bottom: 0.95rem;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .atlas-briefs > .atlas-brief-under {
+    grid-column: 2;
+    grid-row: 3;
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+  /* The rules on both sides of the middle column carry on past the card, through the gap
+     above the box and down its sides. */
+  .atlas-top.records:not([data-depth="1"]) .atlas-brief-under {
+    position: relative;
+  }
+  .atlas-top.records:not([data-depth="1"]) .atlas-brief-under::before,
+  .atlas-top.records:not([data-depth="1"]) .atlas-brief-under::after {
+    content: "";
+    position: absolute;
+    inset-block: -1.25rem 0;
+    border-inline-start: 1px solid var(--color-line);
+  }
+  .atlas-top.records:not([data-depth="1"]) .atlas-brief-under::before {
+    inset-inline-start: -0.75rem;
+  }
+  .atlas-top.records:not([data-depth="1"]) .atlas-brief-under::after {
+    inset-inline-end: -0.75rem;
+  }
+  /* The middle column is wider than the side ones: a narrower picture column, held to the
+     side boxes' 4:3 frame, keeps this picture from turning into a thin strip. */
+  .atlas-top.records:not([data-depth="1"]) .atlas-brief-under {
+    grid-template-columns: 34% minmax(0, 1fr);
+  }
+  .atlas-top.records[data-depth="1"] .atlas-briefs > .atlas-brief-under {
+    grid-column: 4;
+    grid-row: 2;
+  }
+}
+/* On a phone that reading stays in the list below, as before. */
+@media (max-width: 767.98px) {
+  .atlas-brief-under {
+    display: none;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .atlas-top.records .atlas-card,
@@ -1923,5 +1974,20 @@ a.group:not(.atlas-own):has(.paper-title) > div.flex.flex-col > p.tabular-nums {
   }
   .twin-side:empty {
     display: block;
+  }
+}
+
+/* The box under the middle card (desktop): its picture keeps a 4:3 frame of its own. The
+   middle column is wider and its words take fewer lines, so a picture sized only to the
+   words beside it would be a thin strip. Placed last so it follows the top-row rules. */
+@media (min-width: 768px) {
+  .atlas-top.records:not([data-depth="1"]) .atlas-brief-under > .atlas-pic-slot {
+    align-self: start;
+    aspect-ratio: 4 / 3;
+  }
+  /* The words stay together at the top beside the picture; the room the picture adds
+     opens under them. */
+  .atlas-top.records:not([data-depth="1"]) .atlas-brief-under {
+    grid-template-rows: min-content min-content min-content 1fr auto auto auto;
   }
 }

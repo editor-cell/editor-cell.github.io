@@ -262,6 +262,9 @@ function HomeGrid({ stories, lang }: { stories: Story[]; lang: Lang }) {
   if (!lead) return null;
   const cards = rest.length > 1 ? [rest[1], rest[0]] : rest.slice(0, 1);
   const briefs = rest.slice(2, 7);
+  // Desktop only: the next reading stands in a box under the large middle card, so the
+  // middle column ends with the two beside it. On a phone it stays in the list below.
+  const under = briefs.length === 5 ? rest[7] : undefined;
   const records = rest.slice(7);
   const words = HOME_WORDS[lang];
   const leadSummary = cellSummary(lead, lang);
@@ -339,41 +342,9 @@ function HomeGrid({ stories, lang }: { stories: Story[]; lang: Lang }) {
           {briefs.length ? (
             <div className="atlas-briefs">
               {briefs.map((story) => (
-                <Link
-                  key={story.id}
-                  {...readLink(lang, story.id)}
-                  className="atlas-own atlas-brief group"
-                >
-                  <FoldPicture story={story} lang={lang} />
-                  <div className="flex min-w-0 flex-col">
-                    <Kicker story={story} lang={lang} />
-                    <h3 className="paper-title font-bold mt-1.5 text-[1.2rem] leading-[1.12] text-ink decoration-1 underline-offset-[0.14em] group-hover:underline md:text-[1.1rem] md:leading-[1.15]">
-                      {storyTitle(story, lang)}
-                    </h3>
-                    {/* These follow the depth control like every other reading. On a wide screen
-                        the summary shows only where the column is wide enough (see .atlas-brief-dek
-                        in styles.css), held to three lines, and the opening lines stay out, so the
-                        column does not outgrow the two cards beside it and leave a gap under them. */}
-                    <Fold layer={2} className="atlas-brief-dek">
-                      <p className="atlas-dek font-body mt-2 text-pretty text-base leading-[1.32] text-ink md:line-clamp-3 md:text-[0.92rem]">
-                        {cellSummary(story, lang)}
-                      </p>
-                    </Fold>
-                    <Fold layer={3}>
-                      {openingLines(story, lang, cellSummary(story, lang)) ? (
-                        <p className="font-body line-clamp-5 pt-1.5 text-pretty text-[0.92rem] leading-[1.4] text-muted md:hidden">
-                          {openingLines(story, lang, cellSummary(story, lang))}
-                        </p>
-                      ) : null}
-                      <p className="pt-1 text-xs text-muted">{formatDate(story.date, lang)}</p>
-                    </Fold>
-                    <span className="atlas-more mt-2 text-[0.75rem]">
-                      {words.readMore} <span aria-hidden="true">{arrow}</span>
-                    </span>
-                  </div>
-                  <TopFill story={story} lang={lang} />
-                </Link>
+                <Brief key={story.id} story={story} lang={lang} />
               ))}
+              {under ? <Brief story={under} lang={lang} className="atlas-brief-under" /> : null}
             </div>
           ) : null}
         </div>
@@ -383,8 +354,46 @@ function HomeGrid({ stories, lang }: { stories: Story[]; lang: Lang }) {
           readings, so the depth buttons above leave it as it is. */}
       <MediaStrip lang={lang} />
 
-      <Records stories={records} lang={lang} depth={depth} />
+      <Records stories={records} lang={lang} depth={depth} deskSkip={under?.id} />
     </div>
+  );
+}
+
+/** A short reading in the top boxes: picture, section, title, summary at depth 2, date at 3. */
+function Brief({ story, lang, className = "" }: { story: Story; lang: Lang; className?: string }) {
+  const words = HOME_WORDS[lang];
+  const arrow = langMeta[lang].dir === "rtl" ? "←" : "→";
+  return (
+    <Link {...readLink(lang, story.id)} className={`atlas-own atlas-brief group ${className}`.trim()}>
+      <FoldPicture story={story} lang={lang} />
+      <div className="flex min-w-0 flex-col">
+        <Kicker story={story} lang={lang} />
+        <h3 className="paper-title font-bold mt-1.5 text-[1.2rem] leading-[1.12] text-ink decoration-1 underline-offset-[0.14em] group-hover:underline md:text-[1.1rem] md:leading-[1.15]">
+          {storyTitle(story, lang)}
+        </h3>
+        {/* These follow the depth control like every other reading. On a wide screen
+            the summary shows only where the column is wide enough (see .atlas-brief-dek
+            in styles.css), held to three lines, and the opening lines stay out, so the
+            column does not outgrow the two cards beside it and leave a gap under them. */}
+        <Fold layer={2} className="atlas-brief-dek">
+          <p className="atlas-dek font-body mt-2 text-pretty text-base leading-[1.32] text-ink md:line-clamp-3 md:text-[0.92rem]">
+            {cellSummary(story, lang)}
+          </p>
+        </Fold>
+        <Fold layer={3}>
+          {openingLines(story, lang, cellSummary(story, lang)) ? (
+            <p className="font-body line-clamp-5 pt-1.5 text-pretty text-[0.92rem] leading-[1.4] text-muted md:hidden">
+              {openingLines(story, lang, cellSummary(story, lang))}
+            </p>
+          ) : null}
+          <p className="pt-1 text-xs text-muted">{formatDate(story.date, lang)}</p>
+        </Fold>
+        <span className="atlas-more mt-2 text-[0.75rem]">
+          {words.readMore} <span aria-hidden="true">{arrow}</span>
+        </span>
+      </div>
+      <TopFill story={story} lang={lang} />
+    </Link>
   );
 }
 
@@ -1035,7 +1044,18 @@ function planRecords(stories: Story[], mostRead: Story[], desk: boolean): Record
   return { strip, latest, deep, numbered, counted, more };
 }
 
-function Records({ stories, lang, depth }: { stories: Story[]; lang: Lang; depth: Depth }) {
+function Records({
+  stories,
+  lang,
+  depth,
+  deskSkip,
+}: {
+  stories: Story[];
+  lang: Lang;
+  depth: Depth;
+  /** A reading the desktop already shows in the top boxes; the phone still lists it here. */
+  deskSkip?: string;
+}) {
   const ranked = useMostRead(5);
   useColumnFill(depth);
   if (stories.length === 0) return null;
@@ -1057,7 +1077,15 @@ function Records({ stories, lang, depth }: { stories: Story[]; lang: Lang; depth
         <RecordColumns plan={planRecords(stories, mostRead, false)} lang={lang} depth={depth} />
       </div>
       <div className="hidden md:block">
-        <RecordColumns plan={planRecords(stories, mostRead, true)} lang={lang} depth={depth} />
+        <RecordColumns
+          plan={planRecords(
+            stories.filter((story) => story.id !== deskSkip),
+            mostRead.filter((story) => story.id !== deskSkip),
+            true,
+          )}
+          lang={lang}
+          depth={depth}
+        />
       </div>
     </section>
   );
