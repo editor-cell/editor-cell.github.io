@@ -35,3 +35,7 @@ plugin emits them at the same `/images/`, `/audio/`, `/videos/` URLs. `public/` 
 other static assets, never duplicate media. Image sizing reads `images/` and writes
 WebP variants to `/assets/img/`. Publishing copies the generated media without changing
 its bytes; `.assetsignore` excludes `public/`, never these media directories.
+
+The publishing step copies every build output except `_shell.html`, using
+`.site-output.json` to remove obsolete outputs. It then compares the file list and every
+file's bytes with `dist/client`; a forgotten folder prevents the publish commit.

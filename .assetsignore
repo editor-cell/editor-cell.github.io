@@ -30,3 +30,5 @@ wrangler.jsonc
 tests
 artifacts
 playwright.config.mjs
+
+.site-output.json

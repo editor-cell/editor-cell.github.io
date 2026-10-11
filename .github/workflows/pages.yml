@@ -9,6 +9,8 @@ on:
       - sitemap.xml
       - feed.xml
       - read/**
+      - media/**
+      - .site-output.json
       - tr/**
       - ar/**
       - fr/**
@@ -53,35 +55,9 @@ jobs:
             artifacts/browser-report
       - name: Place the site at the repository root
         run: |
-          cp dist/client/.nojekyll dist/client/favicon.svg dist/client/og.jpg dist/client/robots.txt dist/client/sitemap.xml dist/client/feed.xml .
-          # index.html, 404.html and one page per English section (climate.html, …); _shell.html stays out.
-          for f in dist/client/*.html; do
-            case "$(basename "$f")" in _shell.html) ;; *) cp "$f" . ;; esac
-          done
-          # Folders written fresh on every publish: pages of readings removed since are gone.
-          rm -rf assets __grok audio read tr ar fr es
-          cp -a dist/client/assets assets
-          cp -a dist/client/read read
-          # One folder per language besides English: tr/index.html, tr/climate.html, tr/read/…
-          # Languages no longer on the site have no folder in the build; their old pages go.
-          for lang in tr ar fr es; do
-            if [ -d "dist/client/$lang" ]; then cp -a "dist/client/$lang" "$lang"; fi
-          done
-          if [ -d dist/client/__grok ]; then cp -a dist/client/__grok __grok; fi
-          if [ -d dist/client/audio ]; then cp -a dist/client/audio audio; fi
-          # Source media remains at these same root paths.
-          cp -a dist/client/images/. images/
-          if [ -d dist/client/videos ]; then rm -rf videos; cp -a dist/client/videos videos; fi
+          node scripts/publish-output.mjs --stage
           git config user.name "editor-cell"
           git config user.email "editor@orbisreadingatlas.com"
-          git add -A .nojekyll favicon.svg og.jpg robots.txt sitemap.xml feed.xml assets read
-          for d in tr ar fr es; do
-            if [ -e "$d" ] || git ls-files --error-unmatch "$d" >/dev/null 2>&1; then git add -A "$d"; fi
-          done
-          git add -A -- $(cd dist/client && ls *.html | grep -v '^_shell.html$')
-          if [ -d __grok ]; then git add -A __grok; fi
-          if [ -d audio ]; then git add -A audio; fi
-          if [ -d videos ]; then git add -A videos; fi
           if git diff --staged --quiet; then
             echo "Site already current"
             exit 0
