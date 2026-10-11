@@ -2028,7 +2028,9 @@ a.group:not(.atlas-own):has(.paper-title) > div.flex.flex-col > p.tabular-nums {
   }
   /* Three lines at least, so "Deep" shows a change at every width; the side boxes of the
      same row take the added height with their own opening lines. */
-  .atlas-top.records[data-depth="3"] .atlas-brief-under > .atlas-top-fill {
+  /* Every short box of the top rows (left, right and under the middle card) shows at
+     least three opening lines at "Deep", so the change is visible at every width. */
+  .atlas-top.records[data-depth="3"] .atlas-brief > .atlas-top-fill {
     min-height: calc(3 * 1.4 * 0.92rem + 0.375rem);
   }
 }
