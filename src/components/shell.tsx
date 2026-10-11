@@ -126,8 +126,8 @@ function PersonMark() {
 
 /**
  * The tools at the end of the header row: search, language, colour scheme, account and
- * the menu, divided by hairlines as a printed masthead's index. On a phone only search
- * and the menu stay; language and scheme are chosen inside the menu.
+ * the menu, divided by hairlines as a printed masthead's index. On a phone search, the
+ * colour scheme and the menu stay; the language is chosen inside the menu.
  */
 export function FrameTools() {
   const tools = useContext(ToolsContext);
@@ -170,7 +170,8 @@ export function FrameTools() {
         </Pick>
       </div>
       {divider}
-      <div className="hidden md:block">
+      {/* The colour scheme stays on the band at every width, a phone included. */}
+      <div>
         <Pick
           tone="panel"
           align="end"
