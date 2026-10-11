@@ -10,7 +10,7 @@ export const LOOK_KEY = "orbis-look";
 /** Browser bar colour for each scheme (matches the header). */
 const BAR: Record<Look, string> = {
   classic: "#0c0c0c",
-  bordo: "#5a1523",
+  bordo: "#3c0911",
   kahve: "#2a1c14",
   night: "#050505",
 };
@@ -18,7 +18,7 @@ const BAR: Record<Look, string> = {
 /** Swatches shown next to each scheme's name in the menus: panel, paper. */
 export const LOOK_SWATCH: Record<Look, [string, string]> = {
   classic: ["#0c0c0c", "#f4f4f5"],
-  bordo: ["#5a1523", "#fbf7ef"],
+  bordo: ["#3c0911", "#fbf7ef"],
   kahve: ["#2a1c14", "#ffffff"],
   // The dark scheme is the classic disc turned over: light where classic is dark.
   night: ["#e7e4dd", "#161616"],
