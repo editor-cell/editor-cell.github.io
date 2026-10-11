@@ -1,0 +1,1 @@
+import{t as e}from"./search-BcgXo-nd.js";var t=e;export{t as component};
