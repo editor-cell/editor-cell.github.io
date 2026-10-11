@@ -6,7 +6,7 @@
  */
 export type Ordered = { date: string; issue?: number; rank?: number };
 
-export const ISSUE_SIZE = 8;
+export const ISSUE_SIZE = 9;
 
 export function frontOrder<T extends Ordered>(stories: readonly T[]): T[] {
   const byDate = (a: T, b: T) => b.date.localeCompare(a.date);

@@ -26,11 +26,13 @@ the pages; Cloudflare (Workers Builds) then serves them at https://orbisreadinga
    and the figure cited are really there. The gates prove a DOI exists, not that it is
    the right paper or that it says what the text says.
 4. Weekly issues: a reading of an issue carries `"issue": N` (1, 2, 3, …) and
-   `"rank": 1–8`, the place the owner gives it (1 = most important). The newest issue
-   fills the eight boxes at the top of the front page by rank (1 lead, 2 large middle
-   card, 3 left card, 4 and 7 under it, 5, 6 and 8 at the right); older issues move down
-   to the lists below. Never guess a rank; ask the owner. Readings without an issue
-   follow by date.
+   `"rank": 1–9`, the place the owner gives it (1 = most important). The newest issue
+   fills the nine boxes at the top of the front page by rank (1 lead, 2 large middle
+   card, 3 left card, 4 and 7 under it, 5, 6 and 8 at the right, 9 under the middle card
+   on a desktop; on a phone rank 9 heads the list below); older issues move down to the
+   lists below. An issue of eight leaves box 9 to the next reading. Never guess a rank;
+   ask the owner. Readings without an issue follow by date. The membership terms still
+   sell "eight articles a week": a ninth is extra, not part of what is sold.
 5. Run `npm run test:site && npm run build:pages` locally; both must pass.
 6. Push, watch the "Publish site" run, then the Cloudflare status on the `[site] publish`
    commit (`gh api repos/editor-cell/editor-cell.github.io/commits/<sha>/check-runs`),
