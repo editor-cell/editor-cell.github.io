@@ -43,7 +43,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm install
+      - run: npm ci
       # A type error stops the publish here, before anything reaches the live site.
       - name: Check the code
         run: npm run typecheck
