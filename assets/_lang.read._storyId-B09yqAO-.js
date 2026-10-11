@@ -1,1 +1,0 @@
-import{Mt as e}from"./shell-DWCFlo0m.js";import{t}from"./index-3SzP0k04.js";import{t as n}from"./reading-ebnWAZTP.js";var r=e();function i(){return(0,r.jsx)(n,{story:t.useLoaderData()})}export{i as component};
