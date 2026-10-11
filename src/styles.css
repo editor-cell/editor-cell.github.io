@@ -48,28 +48,28 @@ html[data-look="bordo"] .section-link[data-on="true"] {
   color: var(--color-panel);
   border-color: var(--color-panel);
 }
-/* Brown scheme: the black or burgundy bands (header, footer, menus) are a deep brown,
+/* Brown scheme: the black or burgundy bands (header, footer, menus) are a dark brown,
    the burgundy and red accents of the other schemes (section names on the cards, the red
-   line of the document chain, buttons) a clear orange, on a light warm paper with black
-   text. The brown is the one in the Orbis "The Reading Atlas" card. */
+   line of the document chain, buttons) a clear orange, on white paper with black text,
+   as in the classic scheme. */
 html[data-look="kahve"] {
-  --color-paper: #fbf7f1;
-  --color-sheet: #fffdf9;
+  --color-paper: #ffffff;
+  --color-sheet: #ffffff;
   --color-ink: #0c0c0c;
   --color-muted: #5c5247;
-  --color-mist: #e9d9c8;
-  --color-line: #ece4d8;
+  --color-mist: #e6d9ca;
+  --color-line: #ece6dd;
   --color-rule: #a89c8c;
   --color-pine: #c94a0a;
-  --color-highlight: #f2e9dc;
-  --color-panel: #47311c;
-  --color-shade: #f3ece1;
+  --color-highlight: #f3eee7;
+  --color-panel: #2f2013;
+  --color-shade: #f4efe8;
 }
-/* The section bar and the small labels are brown mixed with white in the classic
-   proportion (68% colour, 32% white): #827365. The open section is full brown. */
+/* The section bar and the small labels are the brown mixed with white in the classic
+   proportion (68% colour, 32% white): #72675f. The open section is full brown. */
 html[data-look="kahve"] .section-link,
 html[data-look="kahve"] .kicker {
-  color: #827365;
+  color: #72675f;
 }
 html[data-look="kahve"] .section-link[data-on="true"] {
   color: var(--color-panel);
