@@ -268,10 +268,11 @@ function HomeGrid({ stories, lang }: { stories: Story[]; lang: Lang }) {
   // first in the page so the grid keeps its columns; on a phone rank 2 is moved up again.
   const [lead, ...rest] = stories;
   if (!lead) return null;
-  const cards = rest.length > 1 ? [rest[1], rest[0]] : rest.slice(0, 1);
+  const main = rest[0];
+  const side = rest[1];
   const briefs = rest.slice(2, 7);
-  // Desktop only: the next reading stands in a box under the large middle card, so the
-  // middle column ends with the two beside it. On a phone it stays in the list below.
+  // Desktop only: the middle column holds two boxes of equal height, rank 2 above and the
+  // next reading (rank 9) under it. On a phone that reading stays in the list below.
   const under = briefs.length === 5 ? rest[7] : undefined;
   const records = rest.slice(7);
   const words = HOME_WORDS[lang];
@@ -321,39 +322,18 @@ function HomeGrid({ stories, lang }: { stories: Story[]; lang: Lang }) {
       {/* From here down every reading follows the depth control, the top cards included. */}
       {rest.length ? <DepthBar lang={lang} depth={depth} choose={choose} /> : null}
 
-      {cards.length ? (
+      {main ? (
         <div ref={topRef} className="records atlas-top px-5 md:px-8" data-depth={depth} suppressHydrationWarning>
-          {cards.map((story) => (
-            <Link
-              key={story.id}
-              {...readLink(lang, story.id)}
-              className="atlas-own atlas-card group"
-            >
-              <FoldPicture story={story} lang={lang} />
-              <div className="flex min-w-0 flex-col">
-                <Kicker story={story} lang={lang} />
-                <h3 className="paper-title font-bold mt-1.5 text-[1.2rem] leading-[1.12] text-ink decoration-1 underline-offset-[0.14em] group-hover:underline md:mt-2 md:text-[1.6rem] md:leading-[1.08] lg:text-[1.75rem]">
-                  {storyTitle(story, lang)}
-                </h3>
-                <Fold layer={2}>
-                  <p className="atlas-dek font-body mt-2 text-pretty text-base leading-[1.32] text-ink">
-                    {cellSummary(story, lang)}
-                  </p>
-                </Fold>
-                <DeepLines story={story} lang={lang} clamp="line-clamp-5" />
-                <span className="atlas-more mt-2 text-[0.8rem] md:mt-3">
-                  {words.readMore} <span aria-hidden="true">{arrow}</span>
-                </span>
-                <TopFill story={story} lang={lang} />
-              </div>
-            </Link>
-          ))}
+          {side ? <TopCard story={side} lang={lang} className="atlas-card-side" /> : null}
+          <div className="atlas-mid">
+            <TopCard story={main} lang={lang} className="atlas-card-main" />
+            {under ? <TopCard story={under} lang={lang} className="atlas-card-under" /> : null}
+          </div>
           {briefs.length ? (
             <div className="atlas-briefs">
               {briefs.map((story) => (
                 <Brief key={story.id} story={story} lang={lang} />
               ))}
-              {under ? <Brief story={under} lang={lang} className="atlas-brief-under" /> : null}
             </div>
           ) : null}
         </div>
@@ -365,6 +345,33 @@ function HomeGrid({ stories, lang }: { stories: Story[]; lang: Lang }) {
 
       <Records stories={records} lang={lang} depth={depth} deskSkip={under?.id} />
     </div>
+  );
+}
+
+/** A large box of the top rows: picture on top, then section, title and summary. */
+function TopCard({ story, lang, className }: { story: Story; lang: Lang; className: string }) {
+  const words = HOME_WORDS[lang];
+  const arrow = langMeta[lang].dir === "rtl" ? "←" : "→";
+  return (
+    <Link {...readLink(lang, story.id)} className={`atlas-own atlas-card group ${className}`}>
+      <FoldPicture story={story} lang={lang} />
+      <div className="flex min-w-0 flex-col">
+        <Kicker story={story} lang={lang} />
+        <h3 className="paper-title font-bold mt-1.5 text-[1.2rem] leading-[1.12] text-ink decoration-1 underline-offset-[0.14em] group-hover:underline md:mt-2 md:text-[1.6rem] md:leading-[1.08] lg:text-[1.75rem]">
+          {storyTitle(story, lang)}
+        </h3>
+        <Fold layer={2}>
+          <p className="atlas-dek font-body mt-2 text-pretty text-base leading-[1.32] text-ink">
+            {cellSummary(story, lang)}
+          </p>
+        </Fold>
+        <DeepLines story={story} lang={lang} clamp="line-clamp-5" />
+        <span className="atlas-more mt-2 text-[0.8rem] md:mt-3">
+          {words.readMore} <span aria-hidden="true">{arrow}</span>
+        </span>
+        <TopFill story={story} lang={lang} />
+      </div>
+    </Link>
   );
 }
 
