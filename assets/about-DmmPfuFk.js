@@ -1,0 +1,1 @@
+import{t as e}from"./about-DULf6N17.js";var t=e;export{t as component};
