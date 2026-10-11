@@ -331,8 +331,8 @@ function HomeGrid({ stories, lang }: { stories: Story[]; lang: Lang }) {
           </div>
           {briefs.length ? (
             <div className="atlas-briefs">
-              {briefs.map((story) => (
-                <Brief key={story.id} story={story} lang={lang} />
+              {briefs.map((story, index) => (
+                <Brief key={story.id} story={story} lang={lang} className={`atlas-brief-slot-${index + 1}`} />
               ))}
             </div>
           ) : null}
@@ -355,12 +355,12 @@ function TopCard({ story, lang, className }: { story: Story; lang: Lang; classNa
   return (
     <Link {...readLink(lang, story.id)} className={`atlas-own atlas-card group ${className}`}>
       <FoldPicture story={story} lang={lang} />
-      <div className="flex min-w-0 flex-col">
+      <div className="atlas-text flex min-w-0 flex-col">
         <Kicker story={story} lang={lang} />
-        <h3 className="paper-title font-bold mt-1.5 text-[1.2rem] leading-[1.12] text-ink decoration-1 underline-offset-[0.14em] group-hover:underline md:mt-2 md:text-[1.6rem] md:leading-[1.08] lg:text-[1.75rem]">
+        <h3 className="atlas-card-title paper-title font-bold mt-1.5 text-[1.2rem] leading-[1.12] text-ink decoration-1 underline-offset-[0.14em] group-hover:underline md:mt-2 md:text-[1.6rem] md:leading-[1.08] lg:text-[1.75rem]">
           {storyTitle(story, lang)}
         </h3>
-        <Fold layer={2}>
+        <Fold layer={2} className="atlas-card-summary">
           <p className="atlas-dek font-body mt-2 text-pretty text-base leading-[1.32] text-ink">
             {cellSummary(story, lang)}
           </p>
@@ -382,21 +382,21 @@ function Brief({ story, lang, className = "" }: { story: Story; lang: Lang; clas
   return (
     <Link {...readLink(lang, story.id)} className={`atlas-own atlas-brief group ${className}`.trim()}>
       <FoldPicture story={story} lang={lang} />
-      <div className="flex min-w-0 flex-col">
+      <div className="atlas-text flex min-w-0 flex-col">
         <Kicker story={story} lang={lang} />
-        <h3 className="paper-title font-bold mt-1.5 text-[1.2rem] leading-[1.12] text-ink decoration-1 underline-offset-[0.14em] group-hover:underline md:text-[1.1rem] md:leading-[1.15]">
+        <h3 className="atlas-card-title paper-title font-bold mt-1.5 text-[1.2rem] leading-[1.12] text-ink decoration-1 underline-offset-[0.14em] group-hover:underline md:text-[1.1rem] md:leading-[1.15]">
           {storyTitle(story, lang)}
         </h3>
         {/* These follow the depth control like every other reading. On a wide screen
             the summary shows only where the column is wide enough (see .atlas-brief-dek
             in styles.css), held to three lines, and the opening lines stay out, so the
             column does not outgrow the two cards beside it and leave a gap under them. */}
-        <Fold layer={2} className="atlas-brief-dek">
+        <Fold layer={2} className="atlas-card-summary atlas-brief-dek">
           <p className="atlas-dek font-body mt-2 text-pretty text-base leading-[1.32] text-ink md:line-clamp-3 md:text-[0.92rem]">
             {cellSummary(story, lang)}
           </p>
         </Fold>
-        <Fold layer={3}>
+        <Fold layer={3} className="atlas-card-detail">
           {openingLines(story, lang, cellSummary(story, lang)) ? (
             <p className="font-body line-clamp-5 pt-1.5 text-pretty text-[0.92rem] leading-[1.4] text-muted md:hidden">
               {openingLines(story, lang, cellSummary(story, lang))}
@@ -446,7 +446,7 @@ function FoldPicture({ story, lang }: { story: Story; lang: Lang }) {
 function DeepLines({ story, lang, clamp }: { story: Story; lang: Lang; clamp: string }) {
   const opening = openingLines(story, lang, cellSummary(story, lang));
   return (
-    <Fold layer={3}>
+    <Fold layer={3} className="atlas-card-detail">
       {opening ? (
         <p
           className={`deep-lines font-body ${clamp} pt-1.5 text-pretty text-[0.92rem] leading-[1.4] text-muted`}
@@ -1255,11 +1255,11 @@ function RecordRow({ story, lang }: { story: Story; lang: Lang }) {
       ) : null}
       <div className="record-text min-w-0 flex-1">
         <Kicker story={story} lang={lang} />
-        <h4 className="paper-title font-bold mt-1 text-[1.08rem] leading-[1.18] text-ink decoration-1 underline-offset-[0.14em] group-hover:underline">
+        <h4 className="record-title paper-title font-bold mt-1 text-[1.08rem] leading-[1.18] text-ink decoration-1 underline-offset-[0.14em] group-hover:underline">
           {storyTitle(story, lang)}
         </h4>
         {summary ? (
-          <div className="record-layer" data-layer="2">
+          <div className="record-layer record-summary" data-layer="2">
             <div>
               <p className="font-body pt-1 text-pretty text-[0.92rem] leading-[1.32] text-ink">
                 {summary}
@@ -1268,7 +1268,7 @@ function RecordRow({ story, lang }: { story: Story; lang: Lang }) {
           </div>
         ) : null}
         {opening ? (
-          <div className="record-layer" data-layer="3">
+          <div className="record-layer record-opening" data-layer="3">
             <div>
               <p className="font-body line-clamp-3 pt-1.5 text-pretty text-[0.88rem] leading-[1.4] text-muted">
                 {opening}
@@ -1276,7 +1276,7 @@ function RecordRow({ story, lang }: { story: Story; lang: Lang }) {
             </div>
           </div>
         ) : null}
-        <div className="record-layer" data-layer="3">
+        <div className="record-layer record-date" data-layer="3">
           <div>
             <p className="pt-1 text-xs text-muted">{story.issue !== undefined ? `${issueName(story.issue, lang)} · ` : ""}
               {formatDate(story.date, lang)}</p>

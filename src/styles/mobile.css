@@ -1,0 +1,346 @@
+/* Mobile rules stay inside their own width queries. */
+
+@media (max-width: 520px) {
+  .doc-chain-note,
+  .doc-chain-count {
+    display: none;
+  }
+}
+@layer base {
+  /* On a phone the number is a small target: an invisible area around it takes the tap,
+     and a source row lit by a tap fades back after a moment. */
+  @media (max-width: 767px) {
+    a.cite {
+      position: relative;
+    }
+    a.cite::before {
+      content: "";
+      position: absolute;
+      inset: -10px -8px;
+    }
+    .source-row.is-lit {
+      animation: source-lit 1.6s ease-out forwards;
+    }
+  }
+}
+
+/* On a phone the picture sits beside the section, the title and the summary only; the
+   opening lines, the date and "Read more" run under it across the whole card, so a long
+   card at full depth leaves no empty strip below the picture. */
+@media (max-width: 767.98px) {
+  /* The column of three short readings (.atlas-brief) is laid out the same way, so its
+     opening lines and date at full depth do not leave a strip under its picture either.
+     Named text slots: section, title, summary, opening lines and date, then "Read more". Below full depth "Read more" stays beside
+     the picture; at full depth it follows the opening lines under it. */
+  .atlas-card,
+  .atlas-brief {
+    grid-template-rows: auto auto auto 1fr auto auto;
+    row-gap: 0;
+  }
+  .atlas-card > .atlas-pic-slot,
+  .atlas-brief > .atlas-pic-slot {
+    grid-column: 1;
+    grid-row: 1 / 5;
+  }
+  .atlas-card > div.atlas-text,
+  .atlas-brief > div.atlas-text {
+    display: contents;
+  }
+  .atlas-card > div.atlas-text > .card-kicker,
+  .atlas-brief > div.atlas-text > .card-kicker {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .atlas-card > div.atlas-text > .atlas-card-title,
+  .atlas-brief > div.atlas-text > .atlas-card-title {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .atlas-card > div.atlas-text > .atlas-card-summary,
+  .atlas-brief > div.atlas-text > .atlas-card-summary {
+    grid-column: 2;
+    grid-row: 3;
+  }
+  .atlas-card > div.atlas-text > .atlas-card-detail,
+  .atlas-brief > div.atlas-text > .atlas-card-detail {
+    grid-column: 1 / -1;
+    grid-row: 5;
+  }
+  .atlas-card > div.atlas-text > .atlas-more,
+  .atlas-brief > div.atlas-text > .atlas-more {
+    grid-column: 2;
+    grid-row: 4;
+    align-self: start;
+    justify-self: start;
+  }
+  /* Unassigned new text follows the named slots rather than filling their spare row. */
+  .atlas-card
+    > div.atlas-text
+    > :where(
+      :not(
+        .card-kicker,
+        .atlas-card-title,
+        .atlas-card-summary,
+        .atlas-card-detail,
+        .atlas-more,
+        .atlas-fill
+      )
+    ),
+  .atlas-brief
+    > div.atlas-text
+    > :where(
+      :not(
+        .card-kicker,
+        .atlas-card-title,
+        .atlas-card-summary,
+        .atlas-card-detail,
+        .atlas-more,
+        .atlas-fill
+      )
+    ) {
+    grid-column: 1 / -1;
+    grid-row: 7;
+  }
+  .atlas-card > div.atlas-text > .atlas-card-detail p:first-child,
+  .atlas-brief > div.atlas-text > .atlas-card-detail p:first-child {
+    padding-top: 0.75rem;
+  }
+  .atlas-top.records[data-depth="3"] .atlas-card,
+  .atlas-top.records[data-depth="3"] .atlas-brief {
+    grid-template-rows: auto auto 1fr auto auto auto;
+  }
+  .atlas-top.records[data-depth="3"] .atlas-card > .atlas-pic-slot,
+  .atlas-top.records[data-depth="3"] .atlas-brief > .atlas-pic-slot {
+    grid-row: 1 / 4;
+  }
+  .atlas-top.records[data-depth="3"] .atlas-card > div.atlas-text > .atlas-more,
+  .atlas-top.records[data-depth="3"] .atlas-brief > div.atlas-text > .atlas-more {
+    grid-column: 1 / -1;
+    grid-row: 6;
+  }
+
+  /* The record rows under them (Latest, More readings) work the same way: the small
+     picture beside the section, title and summary; the opening lines and the date under
+     it across the row. */
+  .records:not(.atlas-strip) .record-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr auto auto;
+  }
+  .records:not(.atlas-strip) .record-row > .record-thumb {
+    grid-column: 1;
+    grid-row: 1 / 4;
+  }
+  .records:not(.atlas-strip) .record-row > div.record-text {
+    display: contents;
+  }
+  .records:not(.atlas-strip)
+    .record-row
+    > div.record-text
+    > :is(.card-kicker, .record-title, .record-summary) {
+    grid-column: 2;
+  }
+  .records:not(.atlas-strip) .record-row > div.record-text > .card-kicker {
+    grid-row: 1;
+  }
+  .records:not(.atlas-strip) .record-row > div.record-text > .record-title {
+    grid-row: 2;
+  }
+  .records:not(.atlas-strip) .record-row > div.record-text > .record-summary {
+    grid-row: 3;
+  }
+  .records:not(.atlas-strip) .record-row > div.record-text > .record-opening {
+    grid-column: 1 / -1;
+    grid-row: 4;
+  }
+  .records:not(.atlas-strip) .record-row > div.record-text > .record-date {
+    grid-column: 1 / -1;
+    grid-row: 5;
+  }
+  .records[data-depth="3"]:not(.atlas-strip)
+    .record-row
+    > div.record-text
+    > .record-opening
+    p:first-child {
+    padding-top: 0.6rem;
+  }
+
+  /* Phone form of the paired-media rule. These rules stop before tablet width. */
+  .atlas-card > .atlas-pic-slot,
+  .atlas-brief > .atlas-pic-slot,
+  .section-list-pic,
+  .ranked-body > .ranked-pic {
+    align-self: stretch;
+  }
+  .atlas-card > .atlas-pic-slot > div,
+  .atlas-brief > .atlas-pic-slot > div {
+    height: 100%;
+  }
+  .atlas-card > .atlas-pic-slot img,
+  .atlas-brief > .atlas-pic-slot img,
+  .section-list-pic > img,
+  .ranked-body > .ranked-pic > img {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+  .section-list-row,
+  .ranked-body {
+    align-items: stretch;
+  }
+  .section-list-text,
+  .ranked-text {
+    align-self: center;
+  }
+}
+
+/* An issue of eight: one box per rank. Rank 3 is the first card in the page (the left
+   column on a wide screen), rank 2 the second (the large middle card). On a phone the
+   boxes simply follow the ranks, so rank 2 moves up above rank 3. */
+@media (max-width: 767px) {
+  .atlas-top .atlas-card-main {
+    order: -1;
+  }
+}
+
+/* On a phone rank 9 stays in the list below, as before. */
+@media (max-width: 767.98px) {
+  .atlas-card-under {
+    display: none;
+  }
+}
+
+/* Phone only (9 Oct 2026). Nothing here reaches the desktop layout. */
+@media (max-width: 767.98px) {
+  /* A card without a picture does not keep an empty square: its words take the whole row. */
+  .atlas-card > .atlas-pic-slot:empty,
+  .atlas-brief > .atlas-pic-slot:empty {
+    display: none;
+  }
+  .atlas-card:has(> .atlas-pic-slot:empty),
+  .atlas-brief:has(> .atlas-pic-slot:empty) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .atlas-card:has(> .atlas-pic-slot:empty) > div.atlas-text > *,
+  .atlas-brief:has(> .atlas-pic-slot:empty) > div.atlas-text > * {
+    grid-column: 1 / -1;
+  }
+
+  /* The document chain: the sources sit in two straight columns, without the joining
+     hairlines that wrapped to the start of a line, and without the "+N" (all are shown). */
+  .doc-chain-preview {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem 0.5rem;
+  }
+  .doc-chain-preview > .doc-chain-node {
+    display: flex;
+    min-width: 0;
+  }
+  .doc-chain-preview > .doc-chain-node:has(> .doc-chain-more),
+  .doc-chain-preview .doc-chain-rule {
+    display: none;
+  }
+  .doc-chain-preview .doc-chain-chip {
+    width: 100%;
+  }
+  .doc-chain-preview .doc-chain-name {
+    min-width: 0;
+    max-width: none;
+  }
+
+  /* The section name and reading time close every card: they sit at its very foot, under
+     the summary, the opening lines, the date and "Read more", never between them. The title comes first and starts level with the top of the
+     picture (the empty space above its capitals is trimmed). */
+  .atlas-card > div.atlas-text > .atlas-card-title,
+  .atlas-brief > div.atlas-text > .atlas-card-title {
+    grid-row: 1;
+    margin-top: 0;
+    text-box: trim-start cap alphabetic;
+  }
+  .atlas-card > div.atlas-text > .atlas-card-summary,
+  .atlas-brief > div.atlas-text > .atlas-card-summary {
+    grid-row: 2;
+  }
+  .atlas-card > div.atlas-text > .card-kicker,
+  .atlas-brief > div.atlas-text > .card-kicker,
+  .atlas-top.records[data-depth="3"] .atlas-card > div.atlas-text > .card-kicker,
+  .atlas-top.records[data-depth="3"] .atlas-brief > div.atlas-text > .card-kicker {
+    grid-column: 1 / -1;
+    grid-row: 7;
+    align-self: start;
+    margin-top: 0.85rem;
+  }
+  .records:not(.atlas-strip) .record-row > div.record-text > .record-title {
+    grid-row: 1;
+    margin-top: 0;
+    text-box: trim-start cap alphabetic;
+  }
+  .records:not(.atlas-strip) .record-row > div.record-text > .record-summary {
+    grid-row: 2;
+  }
+  .records:not(.atlas-strip) .record-row > div.record-text > .card-kicker {
+    grid-column: 1 / -1;
+    grid-row: 6;
+    align-self: start;
+    margin-top: 0.7rem;
+  }
+  /* Rows laid out as a plain column (the picture strip, rows without a picture). */
+  .record-text {
+    display: flex;
+    flex-direction: column;
+  }
+  .record-text > * {
+    order: 1;
+  }
+  .record-text > h4 {
+    order: -2;
+    margin-top: 0;
+  }
+  .record-text > h4 + .record-layer {
+    order: -1;
+  }
+  .record-text > .card-kicker {
+    order: 2;
+    margin-top: 0.6rem;
+  }
+  /* The reading in depth: picture, title, summary, then the section name. */
+  .deep-card > * {
+    order: 1;
+  }
+  .deep-card > .deep-pic {
+    order: -3;
+  }
+  .deep-card > h4 {
+    order: -2;
+    margin-top: 0;
+  }
+  .deep-card > h4 + .record-layer {
+    order: -1;
+  }
+  .deep-card > .card-kicker {
+    order: 2;
+    margin-top: 0.85rem;
+  }
+  /* The lead: title, summary, section name, then "Read the full story". */
+  .lead-text > .atlas-lead-title {
+    margin-top: 0;
+  }
+  .lead-text > .atlas-more {
+    order: 1;
+  }
+  .lead-text > .card-kicker {
+    order: 2;
+    margin-top: 0.85rem;
+  }
+  /* "Listen" sits on the same line as the section and the reading time, at the same height. */
+  .listen-mark {
+    display: inline;
+    padding-block: 0;
+    margin-block: 0;
+  }
+  .listen-mark > svg {
+    display: inline-block;
+    margin-inline-end: 0.375rem;
+    vertical-align: -0.1em;
+  }
+}

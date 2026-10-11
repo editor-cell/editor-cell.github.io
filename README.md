@@ -64,3 +64,8 @@ dependency because the protected Supabase SQL tests actually use it. The static 
 manifest and icons still come from `public/__grok` at their original addresses.
 Browser font checks fail if the real masthead font does not load. `ORBIS_BROWSER_PROXY`
 is an optional local HTTPS-proxy setting for restricted environments; CI does not set it.
+
+Reader styles are split into shared, phone-only and desktop-only sheets under
+`src/styles/`. Card text uses named slots rather than child positions. An unassigned
+new phone-card text element follows the existing slots; the top-three ranked list
+keeps position selectors because its order represents rank.

@@ -1,0 +1,1195 @@
+/* Rules intentionally shared by both viewports. */
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Bodoni Moda", "Noto Naskh Arabic", "Times New Roman", serif;
+  --font-body: "Tinos", "Times New Roman", Times, "Noto Naskh Arabic", serif;
+  --color-paper: #ffffff;
+  --color-sheet: #ffffff;
+  --color-ink: #0c0c0c;
+  --color-muted: #5a5a5a;
+  --color-mist: #d4d4d4;
+  --color-line: #e6e6e6;
+  --color-rule: #9a9a9a;
+  --color-pine: #6e2432;
+  --color-highlight: #ececee;
+  --color-panel: #0c0c0c;
+  /* The test-period line under the band: one tone darker than the paper. */
+  --color-shade: #e9e9eb;
+  --radius-sm: 2px;
+  --radius-md: 2px;
+  --radius-lg: 2px;
+}
+
+/* Second scheme: burgundy header and footer, lightest beige paper, black text, dark green accents.
+   The classic scheme above stays as it is; this only applies when chosen. */
+html[data-look="bordo"] {
+  --color-paper: #fbf7ef;
+  --color-sheet: #fffdf8;
+  --color-ink: #0c0c0c;
+  --color-muted: #5b5348;
+  --color-mist: #e8d3d6;
+  --color-line: #ebe3d4;
+  --color-rule: #a99f8d;
+  --color-pine: #1d5b3f;
+  --color-highlight: #f1e8d8;
+  --color-panel: #3c0911;
+  --color-shade: #f3eee2;
+}
+
+/* In the burgundy scheme the section bar and the small labels (Readings, Index)
+   are burgundy mixed with white, in the same proportion as the classic grey:
+   #5a5a5a is 68% of the classic black #0c0c0c and 32% white; #7a585d is 68%
+   of the burgundy #3c0911 and 32% white. */
+html[data-look="bordo"] .section-link,
+html[data-look="bordo"] .kicker {
+  color: #7a585d;
+}
+
+/* The open section is full black in the classic scheme, so here it is full burgundy. */
+html[data-look="bordo"] .section-link[data-on="true"] {
+  color: var(--color-panel);
+  border-color: var(--color-panel);
+}
+
+/* Brown scheme (Grok's palette): dark brown bands (header, footer, menus), very dark brown
+   text, warm brown lines and labels, on white paper as in the classic scheme. The accent
+   (section names on the cards, the line of the document chain, buttons, the line under
+   the open section) is our clear orange. */
+html[data-look="kahve"] {
+  --color-paper: #ffffff;
+  --color-sheet: #ffffff;
+  --color-ink: #1c130e;
+  --color-muted: #5c4634;
+  --color-mist: #e6d5c2;
+  --color-line: #e3d4c0;
+  --color-rule: #a18468;
+  --color-pine: #c94a0a;
+  --color-highlight: #efe2cf;
+  --color-panel: #2a1c14;
+  --color-shade: #efe4d4;
+}
+
+html[data-look="kahve"] .section-link,
+html[data-look="kahve"] .kicker {
+  color: #6b4532;
+}
+
+/* The open section: dark text, underlined in orange. */
+html[data-look="kahve"] .section-link[data-on="true"] {
+  color: var(--color-ink);
+  border-color: var(--color-pine);
+}
+
+/* Third scheme: dark, for reading in a dim room. It mirrors the classic one: the band
+   stays the darkest thing on the page, the paper is a soft charcoal rather than pure black,
+   the text an off-white rather than pure white (less glare on long readings), and the
+   classic burgundy accents are lifted to a light rose so they still read on dark paper. */
+html[data-look="night"] {
+  color-scheme: dark;
+  --color-paper: #141414;
+  --color-sheet: #1b1b1b;
+  --color-ink: #e7e4dd;
+  --color-muted: #a19e97;
+  --color-mist: #3a3a3a;
+  --color-line: #262626;
+  --color-rule: #4a4a4a;
+  --color-pine: #d3949f;
+  --color-highlight: #2b2b2b;
+  --color-panel: #050505;
+  --color-shade: #0d0d0d;
+}
+
+/* Inside the band (masthead, footer, dropdowns opened from the band) the light and grey
+   tones keep the roles they have in the classic scheme: the name and links light, the
+   small labels grey. */
+html[data-look="night"] .bg-panel {
+  --color-paper: #ece9e2;
+  --color-mist: #a8a6a0;
+  --color-muted: #3a3a3a;
+}
+
+/* The band is near black on charcoal paper; a hairline keeps its lower edge crisp. */
+html[data-look="night"] header.bg-panel {
+  border-bottom: 1px solid #262626;
+}
+
+/* Pictures are dimmed a touch so a bright photograph does not glare out of a dark page. */
+html[data-look="night"] main img {
+  filter: brightness(0.88);
+}
+
+html[data-look="night"] .reading-dek {
+  color: #cfccc5;
+}
+
+/* The shade behind the open menu darkens the page instead of washing it out. */
+html[data-look="night"] .menu-scrim {
+  background: rgb(0 0 0 / 0.6);
+}
+
+/* Switching schemes eases the paper and text over instead of snapping. */
+body {
+  transition:
+    background-color 300ms ease,
+    color 300ms ease;
+}
+
+/* The home sentence is one size and one face. Source Serif 4 at a text
+   optical size keeps its strokes visible on white; Bodoni's hairlines do not. */
+.home-sentence {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-weight: 600;
+  font-optical-sizing: none;
+  font-variation-settings:
+    "opsz" 16,
+    "wght" 600;
+  color: var(--color-ink);
+}
+
+:lang(ar) .home-sentence {
+  font-family: "Noto Naskh Arabic", Georgia, serif;
+  font-variation-settings: normal;
+}
+
+/* The name in the masthead, the footer and the menu: Playfair Display, bold, slightly
+   spaced. It is Latin in every language, so Arabic pages keep the same face for it. */
+.masthead-name {
+  font-family: "Playfair Display", "Times New Roman", serif;
+  font-weight: 700;
+  font-optical-sizing: auto;
+  font-variation-settings: normal;
+  letter-spacing: 0.06em;
+}
+
+/* Front page card titles. Weight and size are set in the markup per card. */
+.paper-title {
+  font-family: "Playfair Display", "Times New Roman", serif;
+  font-optical-sizing: auto;
+  font-variation-settings: normal;
+  letter-spacing: 0;
+}
+
+/* Arabic letters join, so spaced-out labels would break the words apart. */
+:lang(ar) :is(.tracking-wide, .tracking-wider, .tracking-widest) {
+  letter-spacing: 0;
+}
+
+:lang(ar) .paper-title {
+  font-family: "Noto Naskh Arabic", Georgia, serif;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* Standfirst under a reading title: roman, in a softer ink, straight under the headline. */
+.reading-dek {
+  position: relative;
+  max-width: 38rem;
+  margin-top: 0.15rem;
+  font-family: "Source Serif 4", Georgia, serif;
+  font-style: normal;
+  font-weight: 400;
+  font-optical-sizing: none;
+  font-variation-settings:
+    "opsz" 18,
+    "wght" 400;
+  font-size: 1.2rem;
+  line-height: 1.45;
+  letter-spacing: -0.011em;
+  color: #2c2c2c;
+}
+
+/* The first letter of a reading drops three lines, in the headline face. Arabic letters
+   join, so Arabic keeps its first word whole. */
+.reading-first:not(:lang(ar))::first-letter {
+  float: left;
+  margin: 0.08em 0.1em 0 0;
+  font-family: "Playfair Display", "Times New Roman", serif;
+  font-size: 3.55em;
+  font-weight: 700;
+  line-height: 0.82;
+  color: var(--color-ink);
+}
+
+:lang(ar) .reading-dek {
+  font-family: "Noto Naskh Arabic", Georgia, serif;
+  font-style: normal;
+  font-weight: 500;
+  font-variation-settings: normal;
+  letter-spacing: 0;
+  line-height: 1.75;
+}
+
+/* Front page records: each layer opens and closes in height and opacity together.
+   Depth 1 shows titles, 2 adds the summary, 3 adds the reading time and a small picture. */
+.records .record-layer {
+  display: grid;
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transition:
+    grid-template-rows 200ms ease,
+    opacity 200ms ease;
+}
+
+.records .record-layer > div {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.records[data-depth="1"] .record-layer[data-layer="2"],
+.records:not([data-depth="3"]) .record-layer[data-layer="3"] {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+
+.records .record-picture {
+  transition:
+    grid-template-rows 200ms ease,
+    opacity 200ms ease,
+    width 200ms ease,
+    margin 200ms ease;
+}
+
+.records:not([data-depth="3"]) .record-picture {
+  width: 0;
+  margin-inline-start: 0;
+}
+
+/* The small picture on a record row folds sideways at depth 1. */
+.records .record-thumb {
+  transition:
+    grid-template-rows 200ms ease,
+    opacity 200ms ease,
+    width 200ms ease,
+    margin 200ms ease;
+}
+
+.records[data-depth="1"] .record-thumb {
+  width: 0;
+  margin-inline-end: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .records .record-layer {
+    transition: none;
+  }
+}
+
+/* The chain of documents under the lead: a ruled strip, not a separate panel.
+   It opens and closes in height and opacity. */
+.doc-chain {
+  border-top: 1px solid var(--color-pine);
+  border-bottom: 1px solid var(--color-line);
+  background: var(--chain-band, var(--color-highlight));
+}
+
+/* The band is each scheme's band colour washed with white in the classic proportion:
+   the classic light grey #ececee is 7.8% of the black #0c0c0c and the rest white;
+   burgundy #3c0911 and brown #2a1c14 mixed the same way give #f0ecec and #eeeded. Dark keeps
+   its grey. */
+html[data-look="bordo"] {
+  --chain-band: #f0ecec;
+}
+
+html[data-look="kahve"] {
+  --chain-band: #eeeded;
+}
+
+.doc-chain-toggle {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 0.8rem;
+  padding-block: 0.95rem 1rem;
+  text-align: start;
+}
+
+.doc-chain-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.doc-chain-title-row {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+/* The round marks of the chain are black; only the rule above it keeps the red. */
+.doc-chain-icon {
+  display: inline-flex;
+  width: 1.9rem;
+  height: 1.9rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-ink);
+  border-radius: 999px;
+  color: var(--color-ink);
+  background: var(--color-sheet);
+}
+
+.doc-chain-note {
+  display: block;
+  margin-top: 0.15rem;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  line-height: 1.3;
+  color: var(--color-muted);
+}
+
+.doc-chain-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.doc-chain-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.28rem 0.7rem;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: var(--color-sheet);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.doc-chain-open {
+  border-color: var(--color-ink);
+  color: var(--color-ink);
+}
+
+.doc-chain-preview {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  row-gap: 0.4rem;
+}
+
+.doc-chain-node {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+}
+
+.doc-chain-rule {
+  width: 1rem;
+  height: 1px;
+  margin-inline: 0.4rem;
+  flex-shrink: 0;
+  background: var(--color-rule);
+}
+
+.doc-chain-chip {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  padding: 0.2rem 0.6rem 0.2rem 0.2rem;
+  border-radius: 999px;
+  background: var(--color-sheet);
+}
+
+[dir="rtl"] .doc-chain-chip {
+  padding: 0.2rem 0.2rem 0.2rem 0.6rem;
+}
+
+.doc-chain-dot {
+  display: inline-flex;
+  width: 1.15rem;
+  height: 1.15rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-size: 0.62rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.doc-chain-name,
+.doc-chain-more {
+  margin-inline-start: 0.4rem;
+  overflow: hidden;
+  font-size: 11px;
+  line-height: 1;
+  color: var(--color-ink);
+  white-space: nowrap;
+}
+
+.doc-chain-name {
+  max-width: 6.5rem;
+  text-overflow: ellipsis;
+}
+
+.doc-chain-list {
+  margin: 0;
+  padding: 0 0 0.35rem;
+  list-style: none;
+  border-top: 1px solid var(--color-line);
+}
+
+.doc-chain-item a,
+.doc-chain-item > div {
+  display: grid;
+  grid-template-columns: 1.8rem minmax(0, 1fr) auto;
+  align-items: baseline;
+  column-gap: 0.85rem;
+  padding-block: 0.72rem;
+  border-bottom: 1px solid var(--color-line);
+  text-decoration: none;
+}
+
+.doc-chain-item:last-child a,
+.doc-chain-item:last-child > div {
+  border-bottom: 0;
+}
+
+.doc-chain-n {
+  display: inline-flex;
+  width: 1.3rem;
+  height: 1.3rem;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  border-radius: 999px;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.doc-chain-issuer {
+  display: block;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.doc-chain[data-lang="ar"] .doc-chain-issuer {
+  font-size: 0.84rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.doc-chain-title {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 1.02rem;
+  line-height: 1.35;
+  color: var(--color-ink);
+}
+
+.doc-chain-item a:hover .doc-chain-title {
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+}
+
+.doc-chain-go {
+  color: var(--color-rule);
+  font-size: 0.9rem;
+}
+
+.doc-chain-item a:hover .doc-chain-go {
+  color: var(--color-ink);
+}
+
+.doc-chain-host {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.78rem;
+  color: var(--color-muted);
+  word-break: break-all;
+}
+
+.doc-chain-url {
+  display: none;
+}
+
+/* At the foot of a reading the chain is the bibliography. Like the one on the front page it
+   is closed at first and opens on a tap; opened, the list runs on white to the box's edges,
+   under the grey head. The rule below the reading closes the box, so it has none of its own. */
+.doc-chain[data-page] {
+  border-bottom: 0;
+}
+
+.doc-chain[data-page] .chain-panel {
+  margin-inline: -1rem;
+}
+
+.doc-chain[data-page] .doc-chain-list {
+  padding-inline: 1rem;
+  background: var(--color-paper);
+}
+
+.chain-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    grid-template-rows 200ms ease,
+    opacity 200ms ease,
+    visibility 200ms;
+}
+
+.chain-panel[data-open="true"] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: visible;
+}
+
+.chain-panel > div {
+  overflow: hidden;
+  min-height: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chain-panel {
+    transition: none;
+  }
+}
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    line-height: 1.15;
+    text-wrap: balance;
+    /* Low optical size keeps Bodoni's hairlines (the bar of "A") visible on phones. */
+    font-optical-sizing: none;
+    font-variation-settings: "opsz" 14;
+  }
+
+  :lang(ar) {
+    font-family: "Noto Naskh Arabic", Georgia, serif;
+    line-height: 1.85;
+  }
+
+  :lang(ar) :is(h1, h2, h3) {
+    font-family: "Noto Naskh Arabic", Georgia, serif;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+
+  ::selection {
+    background: var(--color-highlight);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-pine);
+    outline-offset: 3px;
+  }
+
+  a.cite {
+    color: var(--color-pine);
+    font-size: 0.72em;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    vertical-align: super;
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-pine);
+    padding-inline: 0.15em;
+  }
+
+  @keyframes source-lit {
+    0%,
+    40% {
+      background: var(--color-highlight);
+    }
+    100% {
+      background: transparent;
+    }
+  }
+
+  /* Reading progress on a phone: a hairline across the top of the screen that fills
+     from the start of the text to the end of its sources, right to left in Arabic. */
+  .reading-progress {
+    position: fixed;
+    inset-block-start: 0;
+    inset-inline: 0;
+    z-index: 40;
+    height: 3px;
+    background: var(--color-ink);
+    transform: scaleX(0);
+    transform-origin: left center;
+    pointer-events: none;
+  }
+
+  [dir="rtl"] .reading-progress {
+    transform-origin: right center;
+  }
+
+  .source-row.is-lit,
+  .source-row:target {
+    background: var(--color-highlight);
+  }
+
+  /* Fade at the end of the section bar: tells a phone reader the row scrolls. */
+  .section-bar::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+    width: 2.5rem;
+    pointer-events: none;
+    background: linear-gradient(to right, transparent, var(--color-paper));
+    transition: opacity 150ms ease;
+  }
+
+  .section-bar[data-end="true"]::after {
+    opacity: 0;
+  }
+
+  [dir="rtl"] .section-bar::after {
+    background: linear-gradient(to left, transparent, var(--color-paper));
+  }
+
+  /* The same fade at the start once the row has been scrolled, so a section name cut by
+     the edge ("…onomy") fades out instead of being sliced. */
+  .section-bar::before {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: 2.5rem;
+    pointer-events: none;
+    background: linear-gradient(to left, transparent, var(--color-paper));
+    opacity: 0;
+    transition: opacity 150ms ease;
+  }
+
+  .section-bar[data-start="false"]::before {
+    opacity: 1;
+  }
+
+  [dir="rtl"] .section-bar::before {
+    background: linear-gradient(to right, transparent, var(--color-paper));
+  }
+
+  /* Section bar scrolls sideways without showing a scrollbar. */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* The listen control is a hairline, like a bow tie: the bar is one pixel,
+     the knob a small knot. The invisible range sits over it so it can still be dragged. */
+  .reading-player .seek-line {
+    position: relative;
+    display: flex;
+    flex: 1 1 0;
+    align-items: center;
+    min-width: 2.5rem;
+    height: 1.75rem;
+  }
+
+  /* Reading text set flush to the start edge (left, or right in Arabic) with a
+     natural ragged end, so word spacing stays even and no words are split. */
+  .reading-para {
+    text-align: start;
+    hyphens: manual;
+    -webkit-hyphens: manual;
+    text-wrap: pretty;
+  }
+
+  .reading-player .play-icon {
+    flex-shrink: 0;
+    margin-inline-start: -3px;
+  }
+
+  [dir="rtl"] .reading-player .play-icon {
+    margin-inline-start: -2px;
+  }
+
+  .reading-player .seek-rule {
+    position: relative;
+    width: 100%;
+    height: 1px;
+    background: var(--color-rule);
+  }
+
+  .reading-player .seek-fill {
+    position: absolute;
+    inset-inline-start: 0;
+    top: 0;
+    height: 1px;
+    background: var(--color-ink);
+  }
+
+  .reading-player .seek-knob {
+    position: absolute;
+    top: 50%;
+    width: 5px;
+    height: 5px;
+    border-radius: 999px;
+    background: var(--color-ink);
+    transform: translate(-50%, -50%);
+  }
+
+  [dir="rtl"] .reading-player .seek-knob {
+    transform: translate(50%, -50%);
+  }
+
+  .reading-player input[type="range"].seek {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      transition: none !important;
+    }
+  }
+}
+
+/* The search field draws no browser clear button: the field stays a plain line of text. */
+.search-field::-webkit-search-cancel-button,
+.search-field::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.reading-entry-byline {
+}
+
+.reading-entry-kicker {
+  order: 3;
+}
+
+.reading-entry-byline {
+  order: 4;
+  margin-top: -0.25rem;
+}
+
+/* Homepage cards do not carry those class names. Same order only: title, summary, section and reading time. */
+a.group:not(.atlas-own):has(.paper-title) > .paper-title,
+a.group:not(.atlas-own):has(.paper-title) > div.flex.flex-col > .paper-title {
+  order: 1;
+}
+
+a.group:not(.atlas-own):has(.paper-title) > p.font-body,
+a.group:not(.atlas-own):has(.paper-title) > div.flex.flex-col > p.font-body {
+  order: 2;
+}
+
+a.group:not(.atlas-own):has(.paper-title) > p.text-pine,
+a.group:not(.atlas-own):has(.paper-title) > div.flex.flex-col > p.text-pine,
+a.group:not(.atlas-own):has(.paper-title) > p.tabular-nums,
+a.group:not(.atlas-own):has(.paper-title) > div.flex.flex-col > p.tabular-nums {
+  order: 3;
+}
+
+/* ---------- Paper: print and "Save as PDF" ----------
+   Every reader can print a reading or keep it as a PDF. On paper the page is always the
+   classic black on white, whatever scheme is on screen; the band, section bar, tools,
+   player, related readings and footer are left out; the name and the reading's address
+   head the first page, and the text, its sources and the citation follow. */
+.print-only {
+  display: none;
+}
+
+@media print {
+  @page {
+    margin: 18mm 16mm;
+  }
+  html,
+  html[data-look] {
+    --color-paper: #ffffff;
+    --color-sheet: #ffffff;
+    --color-ink: #000000;
+    --color-muted: #555555;
+    --color-mist: #cccccc;
+    --color-line: #d9d9d9;
+    --color-rule: #999999;
+    --color-pine: #6e2432;
+    --color-highlight: #ffffff;
+    --color-panel: #ffffff;
+    --color-shade: #ffffff;
+    color-scheme: light;
+  }
+  body {
+    background: #fff !important;
+    color: #000;
+    font-size: 11.5pt;
+    transition: none;
+  }
+  .no-print,
+  .reading-progress,
+  .reading-player,
+  .menu-scrim,
+  #site-menu,
+  video {
+    display: none !important;
+  }
+  .print-only {
+    display: block;
+    border-bottom: 1px solid #000;
+    padding-bottom: 0.6rem;
+  }
+  main {
+    padding: 0 !important;
+  }
+  main img {
+    filter: none !important;
+    max-height: 9cm;
+    width: auto !important;
+    max-width: 100% !important;
+    margin-inline: 0 !important;
+  }
+  .reading-dek {
+    color: #222 !important;
+  }
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  .doc-chain-url {
+    display: block;
+    font-size: 0.75rem;
+    word-break: break-all;
+  }
+  .doc-chain-host,
+  .doc-chain-preview,
+  .doc-chain-go,
+  .doc-chain-open {
+    display: none;
+  }
+  /* On paper the sources are always printed in full, open or closed on screen. */
+  .chain-panel {
+    grid-template-rows: 1fr !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transition: none !important;
+  }
+  .source-row,
+  .reading-cite,
+  figure {
+    break-inside: avoid;
+  }
+  /* The source numbers stay as small marks; the addresses are printed in the source list. */
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+/* ---------- Front page and reading page arrangement (October 2026) ----------
+   Only where things sit changes; faces, colours, the band and the footer stay as they were. */
+.atlas-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.atlas-lead-title {
+  font-size: clamp(2rem, 8.4vw, 2.9rem);
+  line-height: 1.04;
+}
+
+/* The top row: two cards and a column of three short items; on a phone every one of them
+   is a row with its picture on the start side. */
+.atlas-top {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+/* The middle column's two boxes. On a phone the wrapper does not exist for the layout:
+   its cards stand in the list like the others. */
+.atlas-mid {
+  display: contents;
+}
+
+.atlas-card,
+.atlas-brief {
+  display: grid;
+  grid-template-columns: 38% minmax(0, 1fr);
+  gap: 1rem;
+  padding-block: 1.25rem;
+  border-bottom: 1px solid var(--color-line);
+  align-items: start;
+}
+
+.atlas-card .atlas-card-pic,
+.atlas-brief .atlas-card-pic {
+  aspect-ratio: 1 / 1;
+}
+
+.atlas-card .atlas-dek {
+  display: block;
+}
+
+/* Paired media rule: when a picture and words share a row, both boxes stretch to
+   the row. The picture cover-crops instead of leaving a strip when the words are
+   longer; the words stay centred if the picture is taller. Phone grids still move
+   the deeper text below the picture, so this never alters the reading order. */
+.records:not(.atlas-strip) .record-row {
+  align-items: stretch;
+}
+
+.atlas-card > .atlas-pic-slot,
+.atlas-brief > .atlas-pic-slot,
+.records:not(.atlas-strip) .record-row > .record-thumb,
+.section-list-pic,
+.ranked-pic {
+  position: relative;
+  align-self: stretch;
+}
+
+.atlas-card > .atlas-pic-slot,
+.atlas-brief > .atlas-pic-slot {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+}
+
+.records:not(.atlas-strip) .record-row > .record-thumb,
+.section-list-pic,
+.ranked-pic {
+  aspect-ratio: 4 / 3;
+}
+
+.records:not(.atlas-strip) .record-row > .record-thumb {
+  width: 6.5rem;
+}
+
+.atlas-card > .atlas-pic-slot > div,
+.atlas-brief > .atlas-pic-slot > div,
+.records:not(.atlas-strip) .record-row > .record-thumb > div {
+  position: absolute;
+  inset: 0;
+}
+
+.atlas-card > .atlas-pic-slot img,
+.atlas-brief > .atlas-pic-slot img,
+.records:not(.atlas-strip) .record-row > .record-thumb img,
+.section-list-pic > img,
+.ranked-pic > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.records[data-depth="1"] .record-row > .record-thumb {
+  width: 0;
+  aspect-ratio: auto;
+  align-self: start;
+  margin-inline-end: 0;
+}
+
+.records[data-depth="1"] .ranked-pic {
+  display: none;
+}
+
+/* The top cards follow the depth control too: at depth 1 their picture column closes
+   and the title takes the whole width. */
+.atlas-top.records .atlas-card,
+.atlas-top.records .atlas-brief {
+  transition:
+    grid-template-columns 200ms ease,
+    gap 200ms ease;
+}
+
+.atlas-top.records[data-depth="1"] .atlas-card,
+.atlas-top.records[data-depth="1"] .atlas-brief {
+  grid-template-columns: 0 minmax(0, 1fr);
+  gap: 0;
+}
+
+.atlas-pic-slot {
+  min-width: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atlas-top.records .atlas-card,
+  .atlas-top.records .atlas-brief {
+    transition: none;
+  }
+}
+
+/* Column fill text exists for the desktop front page only. */
+.atlas-fill {
+  display: none;
+}
+
+/* Under the chain: three columns as on a printed page, as in the GPT page: the latest,
+   one reading in depth, and the numbered list running down the right. On a phone they
+   follow each other. */
+.atlas-col + .atlas-col {
+  margin-top: 1.75rem;
+}
+
+.atlas-col li:last-child > a {
+  border-bottom: 0;
+}
+
+/* Homepage picture strip: four cards on desktop, two on a phone. Reuse the
+   existing record content and depth layers; only their placement changes. */
+.atlas-strip {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.atlas-strip > li {
+  min-width: 0;
+}
+
+.atlas-strip > li > a {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 0;
+  padding-block: 0;
+}
+
+.atlas-strip .record-thumb {
+  width: 100%;
+  margin-inline-end: 0;
+}
+
+.atlas-strip .record-thumb img {
+  width: 100%;
+  aspect-ratio: 1.85;
+  margin-bottom: 0.75rem;
+}
+
+/* Reading page: the text in a narrow column, the picture wider than it. */
+.reading-column {
+  max-width: 42rem;
+  margin-inline: auto;
+}
+
+.reading-tools {
+  border-block: 1px solid var(--color-line);
+}
+
+/* ---------- Media strip (October 2026) ----------
+   One row of videos between the newest issue and the archive. It is not part of the
+   depth-controlled records above or below it. On a phone it runs to the screen's edges and
+   is swiped sideways, the next video showing at the edge; on a wide screen four show. */
+.media-strip {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 78%;
+  gap: 1rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 1.25rem;
+  margin-inline: -1.25rem;
+  padding-inline: 1.25rem;
+  padding-bottom: 0.75rem;
+  scrollbar-width: none;
+}
+
+.media-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.media-strip > li {
+  scroll-snap-align: start;
+  min-width: 0;
+}
+
+/* A still is dark in every theme; the play mark is a quiet white ring. */
+.media-still {
+  background: #0c0c0c;
+}
+
+.media-play {
+  position: absolute;
+  inset-inline-start: 0.75rem;
+  bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1.5px solid rgb(255 255 255 / 0.9);
+  border-radius: 9999px;
+  color: #fff;
+  background: rgb(0 0 0 / 0.35);
+  padding-inline-start: 2px;
+}
+
+/* ---------- Twin reading (October 2026) ----------
+   The reading in two languages at once. On a phone the twin paragraph follows its main
+   paragraph, set off by a rule at its start edge; on a wide screen the pair sits side by
+   side, the text block widening past the single column so each half keeps a fair measure.
+   The main text keeps its ink and its dropped first letter; the twin is a shade quieter. */
+.twin-heads {
+  display: none;
+}
+
+.twin-row + .twin-row {
+  margin-top: 1.5rem;
+}
+
+.twin-side {
+  margin-top: 0.85rem;
+  padding-inline-start: 0.85rem;
+  border-inline-start: 2px solid var(--color-line);
+  font-size: 0.92em;
+  color: var(--color-muted);
+}
+
+.twin-side:empty {
+  display: none;
+}
