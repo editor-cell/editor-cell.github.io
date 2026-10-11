@@ -1,3 +1,4 @@
+import { imageSizes } from "@/lib/breakpoints";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { ReadingPlayer } from "@/components/player";
@@ -310,7 +311,7 @@ function Reading({ story }: { story: Story | null }) {
           <figure className="flex max-w-full flex-col gap-2">
             <img
               src={story.image.src}
-              {...imageSet(story.image.src, "(min-width: 768px) 48rem, 100vw")}
+              {...imageSet(story.image.src, imageSizes("48rem", "100vw"))}
               alt={caption}
               width={1500}
               height={1000}

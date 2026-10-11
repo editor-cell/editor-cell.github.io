@@ -1,3 +1,4 @@
+import { imageSizes } from "@/lib/breakpoints";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { CardListen, ReadTime } from "@/components/read-time";
@@ -294,7 +295,7 @@ function HomeGrid({ stories, lang }: { stories: Story[]; lang: Lang }) {
                 story={lead}
                 lang={lang}
                 ratio="aspect-[4/3] md:aspect-[3/2] md:h-full md:min-h-[22rem]"
-                sizes="(min-width: 768px) 64vw, 100vw"
+                sizes={imageSizes("64vw", "100vw")}
                 eager
               />
             </div>
@@ -1300,7 +1301,7 @@ function DeepCard({ story, lang }: { story: Story; lang: Lang }) {
           <div>
             <img
               src={story.image.src}
-              {...imageSet(story.image.src, "(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw")}
+              {...imageSet(story.image.src, imageSizes("50vw", "100vw", "33vw"))}
               alt={imageCaption(story.image, lang)}
               width={1500}
               height={1000}
@@ -1417,7 +1418,7 @@ function CardPicture({
   lang,
   ratio,
   eager = false,
-  sizes = "(min-width: 768px) 25vw, 33vw",
+  sizes = imageSizes("25vw", "33vw"),
 }: {
   story: Story;
   lang: Lang;
@@ -1493,7 +1494,7 @@ function Picture({
   const img = (
     <img
       src={story.image.src}
-      {...imageSet(story.image.src, "(min-width: 768px) 60vw, 100vw")}
+      {...imageSet(story.image.src, imageSizes("60vw", "100vw"))}
       alt={imageCaption(story.image, lang)}
       width={1500}
       height={1000}

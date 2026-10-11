@@ -10,6 +10,9 @@ import { readStoryIndex, storyIndexPlugin } from "./scripts/story-index-plugin.m
 // @ts-expect-error JS plugin alongside the TS vite config
 import { readVideoIndex, videoIndexPlugin } from "./scripts/video-index.mjs";
 
+// @ts-expect-error JS build plugins alongside the TS vite config
+import { breakpointsPlugin } from "./scripts/breakpoints-plugin.mjs";
+
 const pages = process.env.ORBIS_PAGES === "1";
 
 function staticPages() {
@@ -51,6 +54,7 @@ export default defineConfig({
   resolve: { tsconfigPaths: true },
   build: { emptyOutDir: true },
   plugins: [
+    breakpointsPlugin(),
     mediaPlugin(),
     storyIndexPlugin(),
     videoIndexPlugin(),

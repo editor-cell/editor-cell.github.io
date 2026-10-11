@@ -1,3 +1,4 @@
+import { MEDIA } from "@/lib/breakpoints";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { SiteMenu } from "@/components/menu";
@@ -248,7 +249,7 @@ function useFitToText(lang: string) {
   useEffect(() => {
     const el = column.current;
     if (!el) return;
-    const wide = window.matchMedia("(min-width: 768px)");
+    const wide = window.matchMedia(MEDIA.desktop);
     const fit = () => {
       el.style.width = "";
       if (!wide.matches) return;

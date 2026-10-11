@@ -69,3 +69,10 @@ Reader styles are split into shared, phone-only and desktop-only sheets under
 `src/styles/`. Card text uses named slots rather than child positions. An unassigned
 new phone-card text element follows the existing slots; the top-three ranked list
 keeps position selectors because its order represents rank.
+
+`src/lib/breakpoints.ts` is the single width list. Vite generates matching Tailwind
+thresholds and custom media in the ignored `breakpoints.generated.css`. Tailwind’s
+Lightning CSS compiler expands these queries before publication. The phone query is
+strictly below 768 px and desktop is at least 768 px, so fractional widths have no
+gap. Image sizes and both JS media listeners use the same definitions. The 801 px
+four-column strip step remains unchanged: 768–800 px still has two columns.

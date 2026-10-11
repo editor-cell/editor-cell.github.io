@@ -1,7 +1,7 @@
 /* Desktop rules stay inside their own width queries. */
 
 /* On a wide screen the sentence runs on one line and is set a little lighter. */
-@media (min-width: 768px) {
+@media (--orbis-desktop) {
   .home-sentence {
     font-weight: 500;
     font-variation-settings:
@@ -13,7 +13,7 @@
   }
 }
 
-@media (min-width: 768px) {
+@media (--orbis-desktop) {
   .doc-chain[data-page] .chain-panel {
     margin-inline: -1.5rem;
   }
@@ -44,19 +44,19 @@
   }
 }
 
-@media (min-width: 768px) {
+@media (--orbis-desktop) {
   .doc-chain-name {
     max-width: 9rem;
   }
 }
 @layer base {
-  @media (min-width: 768px) {
+  @media (--orbis-desktop) {
     .reading-progress {
       display: none;
     }
   }
 
-  @media (min-width: 1024px) {
+  @media (--orbis-large) {
     .section-bar::after,
     .section-bar::before {
       display: none;
@@ -64,7 +64,7 @@
   }
 }
 
-@media (min-width: 768px) {
+@media (--orbis-desktop) {
   .atlas-more-rule {
     position: relative;
     padding-top: 1rem;
@@ -80,14 +80,14 @@
   }
 }
 
-@media (min-width: 768px) {
+@media (--orbis-desktop) {
   .atlas-lead-title {
     font-size: clamp(2.3rem, 3.7vw, 4rem);
     line-height: 1.02;
   }
 }
 
-@media (min-width: 768px) {
+@media (--orbis-desktop) {
   /* Desktop: two readings at the left, the pictured reading large in the middle and two
      more at the right. The DOM order stays newest-first; only the grid places them. */
   .atlas-top {
@@ -232,7 +232,7 @@
 /* Headlines only, on a wide screen: the column of three short readings opens into three
    columns beside the two cards, so the five headlines stand in one ruled row and nothing
    leaves an empty space under the two cards. */
-@media (min-width: 768px) {
+@media (--orbis-desktop) {
   .atlas-top.records[data-depth="1"] {
     grid-template-columns: repeat(5, minmax(0, 1fr));
     grid-template-rows: none;
@@ -295,7 +295,7 @@
   }
 }
 
-@media (min-width: 768px) {
+@media (--orbis-desktop) {
   /* Three rows: the middle card runs through all of them; ranks 4 and 7 stand under
      rank 3 at the left, ranks 5, 6 and 8 at the right. */
   .atlas-top {
@@ -402,7 +402,7 @@
   }
 }
 
-@media (min-width: 768px) {
+@media (--orbis-desktop) {
   .atlas-bottom {
     display: grid;
     grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 0.7fr);
@@ -541,20 +541,20 @@
   }
 }
 
-@media (min-width: 1150px) {
+@media (--orbis-more) {
   .atlas-more-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
-@media (min-width: 801px) {
+@media (--orbis-strip) {
   .atlas-strip {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
 /* Section-page lead: the same paired-media rule at tablet and desktop widths. */
-@media (min-width: 768px) {
+@media (--orbis-desktop) {
   .section-lead {
     align-items: stretch;
   }
@@ -571,7 +571,7 @@
 /* Top row fill (desktop, depth 2 and 3): the room left in a box under its words takes the
    story's opening lines (an .atlas-fill, fitted as the columns lower down), and "Read more"
    sits at the foot of the box. Type sizes and box sizes stay as they were. */
-@media (min-width: 768px) {
+@media (--orbis-desktop) {
   .atlas-top .deep-lines {
     display: none;
   }
@@ -643,7 +643,7 @@
   }
 }
 
-@media (min-width: 768px) {
+@media (--orbis-desktop) {
   .media-strip {
     grid-auto-columns: calc((100% - 3 * 1.5rem) / 4);
     gap: 1.5rem;
@@ -662,7 +662,7 @@
   }
 }
 
-@media (min-width: 768px) {
+@media (--orbis-desktop) {
   .twin-prose {
     --twin-width: min(61rem, calc(100vw - 6rem));
     width: var(--twin-width);
@@ -698,7 +698,7 @@
   }
 }
 
-@media (min-width: 768px) {
+@media (--orbis-desktop) {
   /* Every short box of the top rows (left and right) shows at least three opening lines
      at "Deep", so the change is visible at every width. */
   .atlas-top.records[data-depth="3"] .atlas-brief > .atlas-top-fill {

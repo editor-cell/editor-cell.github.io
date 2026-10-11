@@ -1,3 +1,4 @@
+import { MEDIA } from "@/lib/breakpoints";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Pause, Play, X } from "lucide-react";
@@ -194,7 +195,7 @@ function useLeadPictureColumn(active: boolean) {
       setColumn(null);
       return;
     }
-    const wide = window.matchMedia("(min-width: 768px)");
+    const wide = window.matchMedia(MEDIA.desktop);
     let frame = 0;
     const measure = () => {
       const picture = document.querySelector<HTMLElement>("[data-lead-picture]");

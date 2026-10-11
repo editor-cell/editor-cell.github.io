@@ -1,6 +1,6 @@
 /* Mobile rules stay inside their own width queries. */
 
-@media (max-width: 520px) {
+@media (--orbis-compact) {
   .doc-chain-note,
   .doc-chain-count {
     display: none;
@@ -9,7 +9,7 @@
 @layer base {
   /* On a phone the number is a small target: an invisible area around it takes the tap,
      and a source row lit by a tap fades back after a moment. */
-  @media (max-width: 767px) {
+  @media (--orbis-phone) {
     a.cite {
       position: relative;
     }
@@ -27,7 +27,7 @@
 /* On a phone the picture sits beside the section, the title and the summary only; the
    opening lines, the date and "Read more" run under it across the whole card, so a long
    card at full depth leaves no empty strip below the picture. */
-@media (max-width: 767.98px) {
+@media (--orbis-phone) {
   /* The column of three short readings (.atlas-brief) is laid out the same way, so its
      opening lines and date at full depth do not leave a strip under its picture either.
      Named text slots: section, title, summary, opening lines and date, then "Read more". Below full depth "Read more" stays beside
@@ -196,21 +196,21 @@
 /* An issue of eight: one box per rank. Rank 3 is the first card in the page (the left
    column on a wide screen), rank 2 the second (the large middle card). On a phone the
    boxes simply follow the ranks, so rank 2 moves up above rank 3. */
-@media (max-width: 767px) {
+@media (--orbis-phone) {
   .atlas-top .atlas-card-main {
     order: -1;
   }
 }
 
 /* On a phone rank 9 stays in the list below, as before. */
-@media (max-width: 767.98px) {
+@media (--orbis-phone) {
   .atlas-card-under {
     display: none;
   }
 }
 
 /* Phone only (9 Oct 2026). Nothing here reaches the desktop layout. */
-@media (max-width: 767.98px) {
+@media (--orbis-phone) {
   /* A card without a picture does not keep an empty square: its words take the whole row. */
   .atlas-card > .atlas-pic-slot:empty,
   .atlas-brief > .atlas-pic-slot:empty {
