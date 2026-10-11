@@ -32,3 +32,6 @@ artifacts
 playwright.config.mjs
 
 .site-output.json
+
+# Source content is embedded in generated pages/chunks.
+content

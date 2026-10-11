@@ -33,3 +33,33 @@ test("publishes every output folder, deletes old pages, and detects an omitted f
     rmSync(dir, { recursive: true });
   }
 });
+
+test("retains only two older asset generations and expires them after seven days", () => {
+  const dir = mkdtempSync(join(tmpdir(), "orbis-retention-"));
+  const out = join(dir, "out"),
+    root = join(dir, "site");
+  mkdirSync(root);
+  mkdirSync(join(out, "assets"), { recursive: true });
+  try {
+    for (const generation of [1, 2, 3, 4]) {
+      for (const path of [
+        "assets/code-1.js",
+        "assets/code-2.js",
+        "assets/code-3.js",
+        "assets/code-4.js",
+      ])
+        rmSync(join(out, path), { force: true });
+      writeFileSync(join(out, `assets/code-${generation}.js`), String(generation));
+      placeSite(out, root, generation * 1000);
+    }
+    assert.equal(existsSync(join(root, "assets/code-1.js")), false);
+    for (const generation of [2, 3, 4])
+      assert.ok(existsSync(join(root, `assets/code-${generation}.js`)));
+    placeSite(out, root, 8 * 24 * 60 * 60 * 1000);
+    assert.equal(existsSync(join(root, "assets/code-2.js")), false);
+    assert.equal(existsSync(join(root, "assets/code-3.js")), false);
+    assert.ok(existsSync(join(root, "assets/code-4.js")));
+  } finally {
+    rmSync(dir, { recursive: true });
+  }
+});

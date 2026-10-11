@@ -45,3 +45,13 @@ current `main` when each run starts. If `main` moves during the build or final p
 that run succeeds without publishing stale pages; the next queued run builds the newest
 content. No rebase of old generated pages is attempted. Source-only media edits also
 trigger a build; generated page, asset and manifest commits remain ignored.
+
+Old tabs keep the two previous code-asset generations, for up to seven days (expired
+files are removed on the next publish). Retained files are capped at 64 MiB; total
+outputs are capped at the Workers Free limit of 20,000 files and 25 MiB per file.
+The output verifier still compares every current file exactly; only explicitly listed
+old hashed code assets are additional. Reader pages install an early error handler:
+a failed chunk or entry script reloads the clicked destination at most once per tab
+and destination. If session storage is blocked, automatic reload is disabled to avoid
+loops. `test:browser` builds A and B from a one-title change and tests old-tab navigation
+with retention, with old assets deliberately removed, and with permanently missing JS.

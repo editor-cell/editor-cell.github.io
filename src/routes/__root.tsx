@@ -12,6 +12,7 @@ import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { langMeta } from "@/lib/i18n";
 import { LANG_BOOT, langFromPath } from "@/lib/lang-path";
 import { LOOK_BOOT } from "@/lib/look";
+import { CHUNK_RECOVERY_BOOT } from "@/lib/chunk-recovery";
 import { DEPTH_BOOT } from "@/lib/depth-boot";
 import { feedLink, pageMeta, SITE_DESCRIPTION, SITE_NAME, TRIAL } from "@/lib/site";
 import appCss from "../styles.css?url";
@@ -36,7 +37,12 @@ export const Route = createRootRoute({
       ...(TRIAL ? [{ name: "robots", content: "noindex, nofollow" }] : []),
     ],
     links: [
-      { rel: "icon", type: "image/png", sizes: "192x192", href: "/__grok/icon-192.png?v=20261007-7" },
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "192x192",
+        href: "/__grok/icon-192.png?v=20261007-7",
+      },
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg?v=20261007-7" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
@@ -66,7 +72,11 @@ function RootDocument() {
         {/* Before the first paint: the reader's language (plain addresses only), the saved
             colour scheme, the saved front-page depth, then the web fonts (without blocking
             the paint). */}
-        <script dangerouslySetInnerHTML={{ __html: LANG_BOOT + LOOK_BOOT + DEPTH_BOOT + FONT_BOOT }} />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: CHUNK_RECOVERY_BOOT + LANG_BOOT + LOOK_BOOT + DEPTH_BOOT + FONT_BOOT,
+          }}
+        />
         <noscript>
           <link rel="stylesheet" href={FONTS} />
         </noscript>

@@ -1,4 +1,12 @@
-import { cpSync, existsSync, mkdirSync, rmSync, symlinkSync } from "node:fs";
+import {
+  cpSync,
+  existsSync,
+  mkdirSync,
+  rmSync,
+  symlinkSync,
+  readFileSync,
+  writeFileSync,
+} from "node:fs";
 import { resolve } from "node:path";
 import { execFileSync, spawnSync } from "node:child_process";
 
@@ -50,6 +58,21 @@ if (spawnSync("tar", ["-x", "-C", dir], { input: media }).status !== 0)
 if (update) execFileSync("npm", ["ci", "--no-audit", "--no-fund"], { cwd: dir, stdio: "inherit" });
 else symlinkSync(resolve(root, "node_modules"), resolve(dir, "node_modules"), "dir");
 execFileSync("npm", ["run", "build:pages"], { cwd: dir, stdio: "inherit" });
+let visualRoot = resolve(dir, "dist/client");
+if (!update) {
+  const releaseA = resolve(root, "artifacts/visual/release-a");
+  rmSync(releaseA, { recursive: true, force: true });
+  cpSync(visualRoot, releaseA, { recursive: true });
+  const storyPath = resolve(dir, "content/stories/carbon-books.json");
+  const story = JSON.parse(readFileSync(storyPath, "utf8"));
+  story.locales.en.title += " — release B";
+  writeFileSync(storyPath, JSON.stringify(story, null, 2));
+  rmSync(resolve(dir, "dist"), { recursive: true, force: true });
+  execFileSync("npm", ["run", "build:pages"], { cwd: dir, stdio: "inherit" });
+  process.env.ORBIS_RELEASE_A = releaseA;
+  process.env.ORBIS_RELEASE_B = visualRoot;
+  visualRoot = releaseA;
+}
 if (!update && !existsSync(resolve(root, "tests/visual-reference"))) {
   throw new Error(
     "Missing approved visual references. Run npm run visual:update once before evaluation; never run it automatically in publishing.",
@@ -66,7 +89,7 @@ const result = spawnSync(
     stdio: "inherit",
     env: {
       ...process.env,
-      ORBIS_VISUAL_ROOT: resolve(dir, "dist/client"),
+      ORBIS_VISUAL_ROOT: visualRoot,
       ORBIS_READER_ROOT: update ? resolve(dir, "dist/client") : resolve(root, "dist/client"),
     },
   },
