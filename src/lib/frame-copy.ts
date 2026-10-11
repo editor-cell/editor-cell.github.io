@@ -10,7 +10,7 @@ export type FrameCopy = {
   languages: string;
   rights: string;
   look: string;
-  looks: { classic: string; bordo: string; night: string };
+  looks: { classic: string; bordo: string; kahve: string; night: string };
   menu: string;
   close: string;
 };
@@ -25,7 +25,7 @@ const frame: Record<Lang, FrameCopy> = {
     languages: "Diller",
     rights: "Tüm hakları saklıdır.",
     look: "Tema",
-    looks: { classic: "Klasik", bordo: "Bordo", night: "Karanlık" },
+    looks: { classic: "Klasik", bordo: "Bordo", kahve: "Kahverengi", night: "Karanlık" },
     menu: "Menü",
     close: "Kapat",
   },
@@ -38,7 +38,7 @@ const frame: Record<Lang, FrameCopy> = {
     languages: "اللغات",
     rights: "جميع الحقوق محفوظة.",
     look: "المظهر",
-    looks: { classic: "كلاسيكي", bordo: "عنابي", night: "داكن" },
+    looks: { classic: "كلاسيكي", bordo: "عنابي", kahve: "بني", night: "داكن" },
     menu: "القائمة",
     close: "إغلاق",
   },
@@ -51,7 +51,7 @@ const frame: Record<Lang, FrameCopy> = {
     languages: "Languages",
     rights: "All rights reserved.",
     look: "Theme",
-    looks: { classic: "Classic", bordo: "Burgundy", night: "Dark" },
+    looks: { classic: "Classic", bordo: "Burgundy", kahve: "Brown", night: "Dark" },
     menu: "Menu",
     close: "Close",
   },
@@ -64,7 +64,7 @@ const frame: Record<Lang, FrameCopy> = {
     languages: "Langues",
     rights: "Tous droits réservés.",
     look: "Thème",
-    looks: { classic: "Classique", bordo: "Bordeaux", night: "Sombre" },
+    looks: { classic: "Classique", bordo: "Bordeaux", kahve: "Brun", night: "Sombre" },
     menu: "Menu",
     close: "Fermer",
   },
@@ -77,7 +77,7 @@ const frame: Record<Lang, FrameCopy> = {
     languages: "Idiomas",
     rights: "Todos los derechos reservados.",
     look: "Tema",
-    looks: { classic: "Clásico", bordo: "Burdeos", night: "Oscuro" },
+    looks: { classic: "Clásico", bordo: "Burdeos", kahve: "Marrón", night: "Oscuro" },
     menu: "Menú",
     close: "Cerrar",
   },
