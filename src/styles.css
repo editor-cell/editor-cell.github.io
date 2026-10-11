@@ -48,32 +48,31 @@ html[data-look="bordo"] .section-link[data-on="true"] {
   color: var(--color-panel);
   border-color: var(--color-panel);
 }
-/* Brown scheme: the black or burgundy bands (header, footer, menus) are a dark brown,
-   the burgundy and red accents of the other schemes (section names on the cards, the red
-   line of the document chain, buttons) a clear orange, on white paper with black text,
-   as in the classic scheme. */
+/* Brown scheme (Grok's palette): dark brown bands (header, footer, menus), very dark brown
+   text, warm brown lines and labels, on white paper as in the classic scheme. The accent
+   (section names on the cards, the line of the document chain, buttons, the line under
+   the open section) is our clear orange. */
 html[data-look="kahve"] {
   --color-paper: #ffffff;
   --color-sheet: #ffffff;
-  --color-ink: #0c0c0c;
-  --color-muted: #5c5247;
-  --color-mist: #e6d9ca;
-  --color-line: #ece6dd;
-  --color-rule: #a89c8c;
+  --color-ink: #1c130e;
+  --color-muted: #5c4634;
+  --color-mist: #e6d5c2;
+  --color-line: #e3d4c0;
+  --color-rule: #a18468;
   --color-pine: #c94a0a;
-  --color-highlight: #f3eee7;
-  --color-panel: #2f2013;
-  --color-shade: #f4efe8;
+  --color-highlight: #efe2cf;
+  --color-panel: #2a1c14;
+  --color-shade: #efe4d4;
 }
-/* The section bar and the small labels are the brown mixed with white in the classic
-   proportion (68% colour, 32% white): #72675f. The open section is full brown. */
 html[data-look="kahve"] .section-link,
 html[data-look="kahve"] .kicker {
-  color: #72675f;
+  color: #6b4532;
 }
+/* The open section: dark text, underlined in orange. */
 html[data-look="kahve"] .section-link[data-on="true"] {
-  color: var(--color-panel);
-  border-color: var(--color-panel);
+  color: var(--color-ink);
+  border-color: var(--color-pine);
 }
 /* Third scheme: dark, for reading in a dim room. It mirrors the classic one: the band
    stays the darkest thing on the page, the paper is a soft charcoal rather than pure black,

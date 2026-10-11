@@ -11,7 +11,7 @@ export const LOOK_KEY = "orbis-look";
 const BAR: Record<Look, string> = {
   classic: "#0c0c0c",
   bordo: "#5a1523",
-  kahve: "#2f2013",
+  kahve: "#2a1c14",
   night: "#050505",
 };
 
@@ -19,7 +19,7 @@ const BAR: Record<Look, string> = {
 export const LOOK_SWATCH: Record<Look, [string, string]> = {
   classic: ["#0c0c0c", "#f4f4f5"],
   bordo: ["#5a1523", "#fbf7ef"],
-  kahve: ["#2f2013", "#ffffff"],
+  kahve: ["#2a1c14", "#ffffff"],
   // The dark scheme is the classic disc turned over: light where classic is dark.
   night: ["#e7e4dd", "#161616"],
 };
