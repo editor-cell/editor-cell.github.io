@@ -1,0 +1,78 @@
+{
+  "id": "heat-and-the-plan",
+  "theme": "health",
+  "date": "2026-10-09",
+  "image": {
+    "src": "images/heat-and-the-plan.jpg",
+    "credit": "A glass of water and a wall thermometer in hard afternoon light."
+  },
+  "sources": [
+    {
+      "n": 1,
+      "label": "Santé publique France – La vague de chaleur d'août 2003 : que s'est-il passé ?",
+      "url": "https://www.santepubliquefrance.fr/climat/fortes-chaleurs-canicule/article/la-vague-de-chaleur-daout-2003-que-sest-il-passe"
+    },
+    {
+      "n": 2,
+      "label": "NRDC – India's Ahmedabad honored for life-saving heat action and cool roofs plans",
+      "url": "https://www.nrdc.org/media/2019/190926"
+    },
+    {
+      "n": 3,
+      "label": "Ministry of the Environment of Japan – Heat Stroke Alert",
+      "url": "https://www.env.go.jp/en/headline/2512.html"
+    },
+    {
+      "n": 4,
+      "label": "Nippon.com – Heatstroke alerts and cases rise in Japan in 2024",
+      "url": "https://www.nippon.com/en/japan-data/h02383/heatstroke-alerts-and-cases-rise-in-japan-in-2024.html"
+    },
+    {
+      "n": 5,
+      "label": "ISGlobal – Heat-related mortality in Europe during the summer of 2022 (Nature Medicine)",
+      "url": "https://www.isglobal.org/-/el-calor-record-del-verano-de-2022-causo-mas-de-61-000-muertes-en-europa"
+    },
+    {
+      "n": 6,
+      "label": "Scimex – 2022's hot European summer contributed to over 61,000 heat-related deaths",
+      "url": "https://www.scimex.org/newsfeed/2022s-hot-european-summer-contributed-to-over-61-000-heat-related-deaths"
+    }
+  ],
+  "locales": {
+    "en": {
+      "title": "Why the same heat kills more in some places",
+      "dek": "A heat wave is counted twice: by thermometers, and by the registers of deaths. Plans work on the gap between the two.",
+      "region": "Global",
+      "body": "There are two ways to read the trace left by a heat wave: one is the relentless rise of mercury in the thermometer, the other the silent sorrow of death registers. In the shadow of the climate crisis, the fate of cities is determined by how prepared they are for the gap between these two realities.\n\nIn August 2003, when Paris's famously romantic summer evenings gave way to a suffocating disaster, France recorded about 14,800 more deaths than expected in the first twenty days of the month. This was a surge of around 60 percent, and most of the victims were elderly people who breathed their last alone at home. [1] The tragedy proved that public health is not merely a medical issue, but an administrative one. France woke from its slumber and drew up a national action plan: alerts issued by area, lists of isolated older people kept by town halls, and special instructions for care homes and hospitals. [1]\n\nThe city of Ahmedabad in western India learned the same lesson in the scorching May of 2010, when it buried 1,344 of its residents. Its response in 2013 was a heat action plan: early warnings, the mobilisation of health workers, drinking water and shade in public places, and later a \"cool roofs\" programme that lowers indoor temperatures in poor neighbourhoods – an effort credited with preventing nearly 2,300 premature deaths. [2] Japan, on the other hand, seeks its answer in technical precision, relying on a single number. When an index that melts heat, humidity and sunlight into one figure is forecast to reach 33, nationwide alerts go out; in 2024 a stronger alert was added for days when the index is forecast to reach 35 or above. There were 613 alerts in the first year and 1,722 in 2024. [3] [4]\n\nA study estimated that 61,672 people died from the heat across 35 European countries in the summer of 2022, with women dying at a markedly higher rate than men. [5] [6] That figure whispers how far an entire continent still lags in its test against nature. The truth is, heat cannot be stopped at the gates of a city; but with the right action plan, the outcome can be changed on the second and third days, when that scorching wind turns lethal.",
+      "audio": null
+    },
+    "tr": {
+      "title": "Aynı sıcak neden bazı yerlerde daha çok öldürür",
+      "dek": "Bir sıcak hava dalgası iki kez sayılır: termometrelerle ve ölüm kayıtlarıyla. Planlar bu ikisi arasındaki farkla uğraşır.",
+      "region": "Küresel",
+      "body": "Bir sıcak hava dalgasının bıraktığı izi okumanın iki yolu vardır: Biri cıvanın termometredeki amansız yükselişine, diğeri ise ölüm kayıtlarının sessiz hüznüne bakmaktır. İklim krizinin gölgesinde, şehirlerin kaderini bu iki tablo arasındaki uçuruma ne kadar hazırlıklı oldukları belirliyor.\n\nAğustos 2003’te, Paris’in o meşhur romantik yaz akşamları yerini boğucu bir felakete bıraktığında, Fransa ayın ilk yirmi gününde beklenenden yaklaşık 14.800 daha fazla ölüm kaydetti. Bu, yüzde 60 civarında olağanüstü bir artıştı ve kayıpların büyük bir kısmı, evlerinde yapayalnız son nefesini veren yaşlılardı. [1] Bu trajedi, sağlığın sadece tıbbi değil, aynı zamanda idari bir mesele olduğunu kanıtladı. Fransa uykusundan uyanıp ulusal bir eylem planı hazırladı: bölgesel alarmlar, belediyelerin tuttuğu yalnız yaşayan yaşlı listeleri, bakımevleri ve hastaneler için özel talimatlar devreye girdi. [1]\n\nHindistan’ın Ahmedabad kenti ise bu dersi 2010 yılının o kavurucu mayıs ayında, 1.344 sakinini toprağa verdiğinde öğrendi. Şehrin 2013'teki yanıtı bir sıcak hava eylem planı oldu: erken uyarılar, sağlık çalışanlarının seferberliği, kamusal alanlarda içme suyu ve gölge, ardından da yoksul mahallelerdeki evlerin içini serinleten \"serin çatı\" programı. Bu direnişin yaklaşık 2.300 erken ölümü engellediği kabul ediliyor. [2] Japonya ise çareyi teknolojik bir hassasiyette, tek bir sihirli rakamda arıyor. Sıcaklık, nem ve güneşi tek potada eriten bir endeksin 33’e ulaşması beklendiğinde ülke çapında alarmlar çalıyor; 2024’te endeksin 35 ve üzerine çıkacağı günler için daha sert bir uyarı eklendi. İlk yıl 613 kez çalan alarm, 2024'te 1.722 kez çaldı. [3] [4]\n\nBir araştırmanın tahminine göre 2022 yazında 35 Avrupa ülkesinde 61.672 insan sıcak yüzünden can verdi ve kadınlarda ölüm oranı erkeklerden belirgin biçimde yüksekti. [5] [6] Bu tablo, koca bir kıtanın doğayla olan sınavında hâlâ ne kadar geride olduğunu fısıldıyor. Gerçek şu ki, sıcak hava bir şehrin sınır kapılarında durdurulamaz; ancak doğru bir eylem planıyla o yakıcı rüzgârın felakete dönüştüğü ikinci ve üçüncü günlerde kader değiştirilebilir.",
+      "audio": null
+    },
+    "ar": {
+      "title": "",
+      "dek": "",
+      "region": "",
+      "body": "",
+      "audio": null
+    },
+    "fr": {
+      "title": "",
+      "dek": "",
+      "region": "",
+      "body": "",
+      "audio": null
+    },
+    "es": {
+      "title": "",
+      "dek": "",
+      "region": "",
+      "body": "",
+      "audio": null
+    }
+  }
+}

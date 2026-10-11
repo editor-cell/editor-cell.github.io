@@ -8,3 +8,6 @@ artifacts
 AGENTS.md
 *.log
 .DS_Store
+
+# Approved references are generated separately during evaluation, never in a repair patch.
+tests/visual-reference

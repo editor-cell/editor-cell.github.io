@@ -24,3 +24,8 @@ eslint.config.mjs
 vercel.json
 startup.sh
 wrangler.jsonc
+
+# Test sources and reports are never public assets.
+tests
+artifacts
+playwright.config.mjs

@@ -1,0 +1,58 @@
+{
+  "id": "languages-of-record",
+  "theme": "culture",
+  "date": "2026-02-08",
+  "image": {
+    "src": "images/languages-of-record.jpg",
+    "credit": "Closed books, blank paper and a lamp on an archive table."
+  },
+  "sources": [
+    {
+      "n": 1,
+      "label": "UNESCO – Languages in education",
+      "url": "https://www.unesco.org/en/languages-education"
+    },
+    {
+      "n": 2,
+      "label": "UN Statistics Division – Sustainable Development Goals",
+      "url": "https://unstats.un.org/sdgs/"
+    }
+  ],
+  "locales": {
+    "tr": {
+      "title": "Kaydı hangi diller tutar",
+      "dek": "Kamuya açık bir sayı özenli olabilir ve yine de yayımlandığı dilin sınırında durabilir.",
+      "region": "Küresel",
+      "body": "Devletin yayımladığı resmî bir belge, sadece yazıldığı dilin sınırları kadar kamusaldır. Okul yönergelerinden sayım notlarına kadar, bir kentte yaşayanların kendi evlerinde konuşmadığı bir dille yayımlanan her kamu kaydı, aslında görünüşte açık ama pratikte kapalı bir kapıdır. UNESCO, öğrenenlerin kayda değer bir bölümünün iyi anladığı dilde eğitim görmediğini belirterek bu boşluğa dikkat çeker. [1] İstatistiksel veri tabanları da bu iletişim darboğazından nasibini alır; örneğin BM Sürdürülebilir Kalkınma Amaçları veri tabanı, gösterge listesini birden fazla BM dilinde tutmaya çalışsa da çeviri derinliği her yerde eşit değildir. [2] Bir bilginin veya kamu iddiasının gerçek genişliği, onun kaç farklı dilde açılıp okunabildiği ile ölçülür.",
+      "audio": null
+    },
+    "ar": {
+      "title": "أي اللغات تمسك بالسجل",
+      "dek": "قد يكون رقم عام دقيقًا، ثم يقف عند حدود اللغة التي نُشر بها.",
+      "region": "عالمي",
+      "body": "أكثر الناس ما زالوا يلتقون الدولة في لغة. توجيه المدرسة، وحاشية التعداد، وتعليمات الصحة: كل منها مصدر. إذا وُجدت فقط في لغة لا تُتكلَّم في البيت، فالسجل عام في الشكل ومغلق في الممارسة. حساب اليونسكو عن اللغات في التعليم يضع مقياسًا على جانب من هذه الفجوة: شريحة واسعة من المتعلمين لا تُدرَّس بلغة تفهمها جيدًا. [1]\n\nللنظم الإحصائية صيغة المشكلة نفسها. حواشي المؤشرات والمعاجم والمناهج تُنشر غالبًا مرة واحدة، بلغة العمل في المكتب الذي أنتجها. قد ينقل مكتب آخر الرقم من غير أن يستطيع مراجعة التعريف. قاعدة أهداف التنمية المستدامة من قلة الدفاتر العالمية التي تحاول إبقاء قائمة المؤشرات بأكثر من لغة من لغات الأمم المتحدة – وحتى هناك، عمق الترجمة غير متساوٍ. [2]\n\nالمقارنة التي تستحق بسيطة. خذ دعوى واحدة. عدّ اللغات التي يستطيع فيها قارئ أن يفتح الحاشية الأصلية، لا إعادة صياغتها. هذا العدد هو العرض الحقيقي للمصدر.",
+      "audio": null
+    },
+    "en": {
+      "title": "Which languages keep the record",
+      "dek": "A public figure can be careful and still stop at the border of the language it was released in.",
+      "region": "Global",
+      "body": "An official document released by the state is only as public as the borders of its language. From school guidance to census notes, any record published in a language not spoken in a city's homes is formally public but practically closed. UNESCO highlights this gap by noting that a large share of learners are not taught in a language they understand well. [1] Statistical databases suffer from the same bottleneck; for instance, while the UN Sustainable Development Goals database tries to keep indicators in more than one UN language, the depth of translation remains uneven. [2] The true width of a public claim is measured by the number of languages in which it can be opened and read.",
+      "audio": null
+    },
+    "fr": {
+      "title": "Quelles langues tiennent le registre",
+      "dek": "Un chiffre public peut être soigneux et s’arrêter pourtant à la frontière de la langue qui l’a publié.",
+      "region": "Monde",
+      "body": "La plupart des gens rencontrent encore l’État dans une langue. Une note scolaire, une notice de recensement, une consigne de santé sont des sources. Quand elles n’existent que dans une langue qu’une ville ne parle pas chez elle, le registre est officiellement public et pratiquement fermé. Le constat de l’UNESCO sur les langues dans l’éducation mesure une part de cet écart : une large part des apprenants n’est pas instruite dans une langue qu’elle comprend bien. [1]\n\nLes systèmes statistiques ont leur version du même problème. Notes d’indicateur, glossaires et méthodes paraissent souvent une seule fois, dans la langue de travail du service qui les a produits. Un autre service peut citer le chiffre sans pouvoir vérifier la définition. La base des Objectifs de développement durable est l’un des rares livres mondiaux qui tente de tenir la liste des indicateurs dans plus d’une langue des Nations unies – et même là, la profondeur de la traduction reste inégale. [2]\n\nLa comparaison qui vaut est simple. Prendre une affirmation. Compter les langues dans lesquelles un lecteur peut ouvrir la note d’origine, non une paraphrase. Ce nombre est la largeur réelle de la source.",
+      "audio": null
+    },
+    "es": {
+      "title": "Qué lenguas guardan el registro",
+      "dek": "Una cifra pública puede ser cuidadosa y, aun así, detenerse en la frontera de la lengua en que se publicó.",
+      "region": "Global",
+      "body": "La mayoría de la gente sigue encontrándose con el Estado en una lengua. Una guía escolar, una nota censal, una instrucción de salud son fuentes. Si solo existen en una lengua que una ciudad no habla en casa, el registro es formalmente público y en la práctica está cerrado. El recuento de la UNESCO sobre las lenguas en la educación mide una parte de esa brecha: una porción amplia de quienes aprenden no estudia en una lengua que entiende bien. [1]\n\nLos sistemas estadísticos tienen su propia forma del mismo problema. Las notas de los indicadores, los glosarios y los métodos suelen publicarse una sola vez, en la lengua de trabajo de la oficina que los produjo. Otra oficina puede citar la cifra sin poder revisar la definición. La base de los Objetivos de Desarrollo Sostenible es uno de los pocos libros mundiales que intenta mantener la lista de indicadores en más de una lengua de las Naciones Unidas; incluso ahí, la profundidad de la traducción es desigual. [2]\n\nLa comparación que importa es simple. Tomar una afirmación. Contar las lenguas en las que un lector puede abrir la nota de origen, no una paráfrasis. Ese número es el ancho real de la fuente.",
+      "audio": null
+    }
+  }
+}

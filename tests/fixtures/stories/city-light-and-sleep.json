@@ -1,0 +1,64 @@
+{
+  "id": "city-light-and-sleep",
+  "theme": "health",
+  "date": "2026-09-30",
+  "pick": 2,
+  "image": {
+    "src": "images/city-light-and-sleep.jpg",
+    "credit": "An unmade bed and a window onto city lights."
+  },
+  "sources": [
+    {
+      "n": 1,
+      "label": "Falchi et al. – The new world atlas of artificial night sky brightness (Science Advances, 2016)",
+      "url": "https://doi.org/10.1126/sciadv.1600377"
+    },
+    {
+      "n": 2,
+      "label": "Kyba et al. – Citizen scientists report global rapid reductions in the visibility of stars from 2011 to 2022 (Science, 2023)",
+      "url": "https://doi.org/10.1126/science.abq7781"
+    },
+    {
+      "n": 3,
+      "label": "Ohayon & Milesi – Artificial Outdoor Nighttime Lights Associate with Altered Sleep Behavior in the American General Population (Sleep, 2016)",
+      "url": "https://doi.org/10.5665/sleep.5842"
+    }
+  ],
+  "locales": {
+    "tr": {
+      "title": "Kent ışıkları uykuyu nasıl etkiler?",
+      "dek": "İnsanların çoğu artık hiç tam kararmayan bir gökyüzünün altında yaşıyor. Vücudun saati bu ışığı bir işaret olarak okuyor.",
+      "region": "Dünya",
+      "body": "İnsanların çoğu artık hiç tam kararmayan, yıldızları giderek silinen bir gökyüzünün altında uyumaya çalışıyor. 2016'da yapılan bir haritalama, dünya nüfusunun yüzde 80'inden fazlasının, ABD ve Avrupa'da ise insanların yüzde 99'undan fazlasının ışık kirliliği altında yaşadığını ve Samanyolu'nun insanlığın üçte birinden gizlendiğini ortaya koydu. [1] Kyba ve arkadaşlarının 2011-2022 arasındaki gönüllü gözlemlerden yaptığı hesaplamaya göre gökyüzü yılda yaklaşık yüzde 9,6 oranında daha da parlıyor. [2]\n\nVücudumuz ışığı bir \"zaman işareti\" olarak okur. Akşam ışığı, özellikle mavi ışık, vücudu uykuya hazırlayan melatonin hormonunun salgılanmasını geciktirir; sokak aydınlatmasında artık yaygın olan beyaz LED'ler de ışıklarının büyük bölümünü bu mavi aralıkta yayar. Yaklaşık 16.000 Amerikalı üzerinde yapılan bir çalışmada, gece ışığının daha parlak olduğu bölgelerde yaşayanların daha geç yattığı, daha az uyuduğu ve uykularından daha az memnun kaldıkları gözlemlendi. [3] Bu bir ilişki, kanıt değil; yatak odasına ulaşan ışık perdelere ve ekranlara da bağlı. Daha karanlık geceler isteyen kentlerin elindeki araçlar ise basit: göğe değil yere bakan lambalar ve gecenin ilerleyen saatlerinde kısılan daha sıcak ışıklar.",
+      "audio": null
+    },
+    "ar": {
+      "title": "",
+      "dek": "",
+      "region": "",
+      "body": "",
+      "audio": null
+    },
+    "en": {
+      "title": "How do city lights affect sleep?",
+      "dek": "Most people now live under a night sky that never fully darkens. The body's clock reads that light as a signal.",
+      "region": "Global",
+      "body": "Most people now try to sleep under a sky that never truly darkens and whose stars are fading. A 2016 mapping found that over 80 percent of the world's population – and over 99 percent in the US and Europe – live under light-polluted skies, hiding the Milky Way from a third of humanity. [1] From volunteers' reports between 2011 and 2022, Kyba and colleagues calculated that the sky is brightening by about 9.6 percent a year. [2]\n\nOur bodies read light as a \"time signal.\" Evening light, especially blue light, delays the release of melatonin, the hormone preparing us for sleep, and the white LEDs now common in street lighting emit a large share of their light in that blue range. A study of nearly 16,000 Americans found that people in brighter areas tended to go to bed later, sleep less, and feel less satisfied with their rest. [3] The link is an association, not proof; the light that reaches a bedroom also depends on curtains and screens. Cities that want darker nights have simple tools: downward-pointing shielded lamps, warmer hues, and dimming in the late hours.",
+      "audio": null
+    },
+    "fr": {
+      "title": "",
+      "dek": "",
+      "region": "",
+      "body": "",
+      "audio": null
+    },
+    "es": {
+      "title": "",
+      "dek": "",
+      "region": "",
+      "body": "",
+      "audio": null
+    }
+  }
+}

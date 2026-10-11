@@ -1,0 +1,68 @@
+{
+  "id": "migration-and-the-vote",
+  "theme": "politics",
+  "date": "2026-10-08",
+  "image": {
+    "src": "images/migration-and-the-vote.jpg",
+    "credit": "A worn suitcase beside empty chairs in a waiting room."
+  },
+  "sources": [
+    {
+      "n": 1,
+      "label": "Dustmann, Vasiljeva & Damm – Refugee Migration and Electoral Outcomes (Review of Economic Studies, 2019)",
+      "url": "https://doi.org/10.1093/restud/rdy047"
+    },
+    {
+      "n": 2,
+      "label": "Halla, Wagner & Zweimüller – Immigration and Voting for the Far Right (Journal of the European Economic Association, 2017)",
+      "url": "https://doi.org/10.1093/jeea/jvw003"
+    },
+    {
+      "n": 3,
+      "label": "Steinmayr – Contact versus Exposure: Refugee Presence and Voting for the Far Right (Review of Economics and Statistics, 2021)",
+      "url": "https://ideas.repec.org/a/tpr/restat/v103y2021i2p310-327.html"
+    },
+    {
+      "n": 4,
+      "label": "Dinas, Matakos, Xefteris & Hangartner – Waking Up the Golden Dawn (Political Analysis, 2019)",
+      "url": "https://doi.org/10.1017/pan.2018.48"
+    }
+  ],
+  "locales": {
+    "tr": {
+      "title": "Göç seçmeni sağa mı kaydırır?",
+      "dek": "Gelenlerin gerçekte nereye yerleştiğini izleyen çalışmalar bir etki buluyor; ama etkinin büyüklüğü, hatta yönü, temasa bağlı.",
+      "region": "Danimarka · Avusturya · Yunanistan",
+      "body": "Göç yolları sadece demografiyi değil, sandıkların kimyasını da değiştiriyor. Peki ama nasıl? Bu soru genellikle siyasi anketlerin gürültüsü arasında kaybolur; ancak gerçeği, mültecilerin nereye yerleşeceğine kendilerinin değil, devletin karar verdiği o sessiz deney dönemlerinde buluruz.\n\nDanimarka’nın 1986'dan 1998'e uzanan politikası buna kusursuz bir ayna tutar. Mülteciler yerel siyasetin nabzına pek bakılmadan çeşitli belediyelere yerleştirildiğinde, araştırmalar daha fazla mülteci alan belediyelerin çoğunda göçmen karşıtı partilere desteğin arttığını gösterdi. Fakat en büyük ve en kentsel belediyelerde etki tam tersi yönde oldu. [1] Avusturya sokaklarında da benzer bir rüzgâr esti; göçmenlerin daha kalabalık olduğu yerlerde iş güvencesine ve mahallenin niteliğine dair kaygılar, özellikle gelenlerin eğitim seviyesi düşük olduğunda oyları aşırı sağcı Özgürlük Partisi'ne yönlendirdi. [2]\n\nAncak meselenin özü, göçmenle kurulan \"temasın\" derinliğinde saklı. 2015 mülteci hareketinde, mültecilerin yalnızca Avusturya'dan geçip gittiği, yani kısa süre görüldüğü yerlerde aşırı sağa destek artarken; sığınmacıların aylarca kaldığı, bakkalda karşılaşılan birer komşuya dönüştüğü yerlerde bu destek ufak bir düşüş yaşadı. [3] Yunan adalarında 2015’te yaşanan trajedi de bunu doğruluyor: Mülteci botlarının ansızın vurduğu kıyılarda aşırı sağcı Altın Şafak, uzaktaki benzer adalara göre yaklaşık iki puan daha fazla oy kazandı. [4] Yani göçün sağa kaydıran etkisi gerçek ama sınırlı; sandıkta bir çığ değil, birkaç puanlık bir kayma. Yabancılık ve anilik korkuyu beslerken, tanıdıklık ve aynı sokağı paylaşmak o siyasi keskinliği yumuşatabiliyor. Yalnız bu bulguların çoğu Avrupa'dan ve mültecilerden geliyor; başka ülkelere ve işçi göçüne taşınırken dikkatli olmak gerekiyor.",
+      "audio": null
+    },
+    "ar": {
+      "title": "",
+      "dek": "",
+      "region": "",
+      "body": "",
+      "audio": null
+    },
+    "en": {
+      "title": "Does migration move voters to the right?",
+      "dek": "Studies that follow where newcomers actually settled find an effect, but its size and even its direction depend on contact.",
+      "region": "Denmark · Austria · Greece",
+      "body": "Migration routes do not just rewrite demographics; they change the chemistry of the ballot box. But exactly how? The question usually gets lost in the noise of political polling; we find the answer instead in those quiet, experimental periods when the state, not the migrants, decided where people would settle.\n\nDenmark's policy from 1986 to 1998 holds up a clear mirror. When refugees were placed in municipalities with little regard for local politics, studies found that in most municipalities, receiving more refugees raised support for anti-immigration parties. In the largest and most urban municipalities, however, the effect went the other way. [1] A similar wind blew through Austria: where more immigrants lived, worries about jobs and about the quality of neighbourhoods channelled votes to the far-right Freedom Party, especially when the newcomers had little formal education. [2]\n\nThe core of the issue, however, lies in the depth of contact. During the 2015 refugee movement, places where refugees merely passed through Austria – a brief, superficial exposure – saw support for the far right rise. But where asylum seekers stayed for months and became neighbours you might bump into at the grocery store, that support fell slightly. [3] The Greek islands in 2015 confirm this: on shores suddenly reached by refugee boats, the far-right Golden Dawn gained about two percentage points more than on similar islands farther away. [4] In short, migration's rightward pull is real but modest – a shift of a few points, not a landslide. Suddenness and unfamiliarity breed fear, whereas time, familiarity and sharing the same street can soften that sharp political edge. Most of this evidence, though, comes from Europe and from refugees rather than labour migrants, so it should travel to other places with care.",
+      "audio": null
+    },
+    "fr": {
+      "title": "",
+      "dek": "",
+      "region": "",
+      "body": "",
+      "audio": null
+    },
+    "es": {
+      "title": "",
+      "dek": "",
+      "region": "",
+      "body": "",
+      "audio": null
+    }
+  }
+}

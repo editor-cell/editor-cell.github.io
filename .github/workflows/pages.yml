@@ -40,6 +40,18 @@ jobs:
       - name: Run the tests
         run: npm run test:site
       - run: npm run build:pages
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Check reader controls and appearance
+        run: npm run test:browser
+      - name: Preserve browser failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-failure
+          path: |
+            artifacts/browser
+            artifacts/browser-report
       - name: Place the site at the repository root
         run: |
           cp dist/client/.nojekyll dist/client/favicon.svg dist/client/og.jpg dist/client/robots.txt dist/client/sitemap.xml dist/client/feed.xml .

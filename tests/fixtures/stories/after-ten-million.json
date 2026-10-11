@@ -1,0 +1,58 @@
+{
+  "id": "after-ten-million",
+  "theme": "politics",
+  "date": "2026-01-20",
+  "image": {
+    "src": "images/after-ten-million.jpg",
+    "credit": "Mid-rise apartment blocks under an overcast sky."
+  },
+  "sources": [
+    {
+      "n": 1,
+      "label": "United Nations – World Urbanization Prospects",
+      "url": "https://population.un.org/wup/"
+    },
+    {
+      "n": 2,
+      "label": "World Bank – Urban Development",
+      "url": "https://www.worldbank.org/en/topic/urbandevelopment"
+    }
+  ],
+  "locales": {
+    "tr": {
+      "title": "On milyondan sonra",
+      "dek": "Megakent bir istisnaydı. Kamusal kayıtta artık silueti değil planlamayı karşılaştırmaya yetecek kadar kent var.",
+      "region": "Lagos · Dakka · São Paulo",
+      "body": "Bir zamanlar on milyonluk nüfusu aşan \"megakentler\" haritalardaki nadir istisnalardı; ancak bugün Birleşmiş Milletler verilerine göre bu devasa kentler, artık birbirleriyle kıyaslanabilecek koca bir sınıf oluşturuyor. [1] Ne var ki, gökdelenlerin parıltılı siluetlerine veya nüfus tablolarına bakmak, o insanların gerçekte nasıl barındığını asla anlatmaz. Dünya Bankası gibi kurumların verileri, kayıt dışı yerleşimler söz konusu olduğunda resmî rakamların birbirini ne kadar tutmayabildiğini göstermektedir; bir kent kâğıt üzerinde hızla büyürken, temiz su ve hizmet giden evlerin sayısı yerinde sayabilir. [2] Megakentleri birbirinden ayıran şey kulelerinin yüksekliği değil, nüfus sayımının ve altyapı planlamasının o kentteki insanların hızına yetişip yetişemediğidir.",
+      "audio": null
+    },
+    "ar": {
+      "title": "بعد عشرة ملايين",
+      "dek": "كانت المدينة العملاقة استثناءً. في السجل العام اليوم ما يكفي منها لمقارنة التخطيط لا خط الأفق.",
+      "region": "لاغوس · دكا · ساو باولو",
+      "body": "تعدّ الأمم المتحدة المدينة العملاقة عند عشرة ملايين نسمة. كان هذا الخط يدل على الندرة. صار اليوم يدل على فئة تتسع للمقارنة: كيف يُخطَّط للماء والسكك والمسكن حين تكفّ المدينة عن أن تكون استثناءً في الجداول. [1]\n\nجداول السكان لا تقول كيف يُسكَن هؤلاء. ما زالت مسوح الأسر والحسابات الوطنية تختلف في شأن المستوطنات غير الرسمية، والاختلاف هو المتن لا الحاشية. قد تنمو مدينة في السجل الرسمي بينما لا يكاد يتحرك عدد المساكن المخدومة. [2]\n\nالمقارنة المفيدة ليست ترتيب الأبراج. هي ما إذا كان السجل العام – التعداد، ووصلات المرافق، ورخص البناء – يُقرأ في العقد نفسه الذي يعيشه الناس الذين يصفهم. [1]",
+      "audio": null
+    },
+    "en": {
+      "title": "After ten million",
+      "dek": "A megacity used to be an exception. The public record now has enough of them to compare the planning, not the skyline.",
+      "region": "Lagos · Dhaka · São Paulo",
+      "body": "Once, \"megacities\" with populations over ten million were rare exceptions on the map; today, according to UN data, they form a class large enough to be compared with one another. [1] Yet looking at glittering skylines or population tables tells us nothing about how those residents are actually housed. Data from institutions like the World Bank show how far official figures can disagree on informal settlements; a city may officially boom while the count of homes with actual services barely moves. [2] What truly differentiates megacities is not the height of their towers, but whether their census and utility planning can keep pace with the people they encompass.",
+      "audio": null
+    },
+    "fr": {
+      "title": "Après dix millions",
+      "dek": "Une mégapole était une exception. Le registre public en compte désormais assez pour comparer l’urbanisme, non la silhouette.",
+      "region": "Lagos · Dacca · São Paulo",
+      "body": "Les Nations unies comptent une mégapole à partir de dix millions d’habitants. Ce seuil marquait une rareté. Il marque aujourd’hui une classe assez large pour être comparée : comment l’eau, le rail et le logement se planifient quand une ville n’est plus une exception dans les tableaux. [1]\n\nLes tableaux de population ne disent pas comment ces habitants sont logés. Les enquêtes auprès des ménages et les comptes nationaux divergent encore sur les quartiers informels, et cette divergence est le sujet, non une note. Une ville peut croître officiellement tandis que le nombre de logements desservis bouge à peine. [2]\n\nLa comparaison utile n’est pas un classement de tours. C’est de savoir si le registre public – recensement, raccordements, permis de construire – peut se lire dans la même décennie que les personnes qu’il décrit. [1]",
+      "audio": null
+    },
+    "es": {
+      "title": "Después de diez millones",
+      "dek": "Una megaciudad era una excepción. El registro público ya tiene bastantes para comparar la planificación, no el perfil de las torres.",
+      "region": "Lagos · Daca · São Paulo",
+      "body": "Las Naciones Unidas cuentan una megaciudad a partir de diez millones de habitantes. Ese umbral marcaba una rareza. Hoy marca una clase lo bastante amplia para comparar: cómo se planifican el agua, el ferrocarril y la vivienda cuando una ciudad deja de ser una excepción en las tablas. [1]\n\nLas tablas de población no dicen cómo se aloja a esos residentes. Las encuestas de hogares y las cuentas nacionales siguen discrepando sobre los asentamientos informales, y la discrepancia es el asunto, no una nota. Una ciudad puede crecer en el registro mientras el número de viviendas con servicios apenas se mueve. [2]\n\nLa comparación útil no es un ranking de torres. Es si el registro público —censo, conexiones, permisos de obra— puede leerse en la misma década que las personas a las que describe. [1]",
+      "audio": null
+    }
+  }
+}

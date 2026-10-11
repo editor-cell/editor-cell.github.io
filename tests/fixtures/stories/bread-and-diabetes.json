@@ -1,0 +1,63 @@
+{
+  "id": "bread-and-diabetes",
+  "theme": "health",
+  "date": "2026-10-06",
+  "image": {
+    "src": "images/bread-and-diabetes.jpg",
+    "credit": "Two loaves, wheat grains and a glass of water."
+  },
+  "sources": [
+    {
+      "n": 1,
+      "label": "World Health Organization – Diabetes fact sheet",
+      "url": "https://www.who.int/news-room/fact-sheets/detail/diabetes"
+    },
+    {
+      "n": 2,
+      "label": "Aune, Norat, Romundstad & Vatten – Whole grain and refined grain consumption and the risk of type 2 diabetes (European Journal of Epidemiology, 2013)",
+      "url": "https://doi.org/10.1007/s10654-013-9852-5"
+    },
+    {
+      "n": 3,
+      "label": "Hu et al. – Intake of whole grain foods and risk of type 2 diabetes (BMJ, 2020)",
+      "url": "https://doi.org/10.1136/bmj.m2206"
+    }
+  ],
+  "locales": {
+    "tr": {
+      "title": "Sofradaki ekmek ve diyabet",
+      "dek": "Ekmeğin yenip yenmemesinden çok, tahılın neyini koruduğu önemli.",
+      "region": "Dünya",
+      "body": "Sofralarımızın baş tacı ekmek söz konusu olduğunda, mesele ekmeği yiyip yememekten çok, tahılın neyini koruduğudur. Dünya Sağlık Örgütü, diyabetle yaşayan yetişkin sayısının 1990'da yaklaşık 200 milyon iken 2022'de 830 milyona ulaştığını belirtiyor; bunların çoğu, fazla kilo ve az hareketle yakından ilişkili tip 2 diyabet. [1] Araştırmalar, kepeğin ve özün korunduğu tam tahıl ile bunların öğütülüp atıldığı, geriye çoğunlukla nişastanın kaldığı rafine tahılı ayırır. Günde yaklaşık üç porsiyon tam tahıl yiyenlerde tip 2 diyabet riski, neredeyse hiç yemeyenlere göre yaklaşık üçte bir daha düşük bulunmuştur; rafine tahılda ise böyle bir ilişki görülmemiştir. [2]\n\nYaklaşık 195.000 yetişkini on yıllarca izleyen analizler de esmer ekmek, yulaf ezmesi ve tam tahıllı gevrekler için benzer sonuçlar vermiştir. [3] Bunun genel kabul gören açıklaması lif ve tahılın yapısıdır; beyaz undaki nişasta kan şekerini hızla yükseltirken, kepek sindirimi yavaşlatır ve tokluğu uzatır. Yalnız bu çalışmalar insanların ne yediğini gözlemler, onlara ne yiyeceklerini vermez; tam tahıl seçenler başka açılardan da farklı olabilir. Kahverengi renk de her zaman tam tahıl kanıtı değildir, bu yüzden etiketleri iyi okumak gerekir.",
+      "audio": null
+    },
+    "ar": {
+      "title": "",
+      "dek": "",
+      "region": "",
+      "body": "",
+      "audio": null
+    },
+    "en": {
+      "title": "Bread on the table, and diabetes",
+      "dek": "What the grain has kept matters more than whether bread is eaten at all.",
+      "region": "Global",
+      "body": "When it comes to bread on the table, what the grain has kept matters more than whether bread is eaten at all. The WHO notes that adults living with diabetes rose from about 200 million in 1990 to about 830 million in 2022; most have type 2 diabetes, closely linked to excess weight and low activity. [1] Research separates whole grain, which keeps the bran and the germ, from refined grain, which is mostly starch. People eating about three servings of whole grains a day had roughly a third lower risk of developing type 2 diabetes than those eating almost none, while refined grains showed no such association. [2]\n\nAnalyses following nearly 195,000 adults for decades reached similar results for whole-grain foods like dark bread, oatmeal and cereals. [3] The usual explanation lies in fibre and structure: starch from white flour raises blood sugar fast, while bran slows digestion and prolongs fullness. These studies observe what people eat rather than assign it, and people who choose whole grains may differ in other ways. A brown colour, too, is not proof of whole grain, which makes label-reading essential.",
+      "audio": null
+    },
+    "fr": {
+      "title": "",
+      "dek": "",
+      "region": "",
+      "body": "",
+      "audio": null
+    },
+    "es": {
+      "title": "",
+      "dek": "",
+      "region": "",
+      "body": "",
+      "audio": null
+    }
+  }
+}
