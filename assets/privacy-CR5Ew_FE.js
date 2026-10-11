@@ -1,1 +1,0 @@
-import{Mt as e}from"./shell-CnDW825J.js";import{t}from"./legal-BV85bsEC.js";var n=e(),r=()=>(0,n.jsx)(t,{page:`privacy`});export{r as component};
