@@ -1,19 +1,25 @@
 import { useEffect, useState } from "react";
 
 /** Colour schemes for the whole site. "classic" is the original black-and-grey one;
- * "night" is the dark one, for reading in a dim room. */
-export const LOOKS = ["classic", "bordo", "night"] as const;
+ * "kahve" the brown one with orange accents; "night" the dark one, for reading in a dim room. */
+export const LOOKS = ["classic", "bordo", "kahve", "night"] as const;
 export type Look = (typeof LOOKS)[number];
 
 export const LOOK_KEY = "orbis-look";
 
 /** Browser bar colour for each scheme (matches the header). */
-const BAR: Record<Look, string> = { classic: "#0c0c0c", bordo: "#5a1523", night: "#050505" };
+const BAR: Record<Look, string> = {
+  classic: "#0c0c0c",
+  bordo: "#5a1523",
+  kahve: "#47311c",
+  night: "#050505",
+};
 
 /** Swatches shown next to each scheme's name in the menus: panel, paper. */
 export const LOOK_SWATCH: Record<Look, [string, string]> = {
   classic: ["#0c0c0c", "#f4f4f5"],
   bordo: ["#5a1523", "#fbf7ef"],
+  kahve: ["#47311c", "#fbf7f1"],
   // The dark scheme is the classic disc turned over: light where classic is dark.
   night: ["#e7e4dd", "#161616"],
 };

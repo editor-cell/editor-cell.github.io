@@ -48,6 +48,33 @@ html[data-look="bordo"] .section-link[data-on="true"] {
   color: var(--color-panel);
   border-color: var(--color-panel);
 }
+/* Brown scheme: the black or burgundy bands (header, footer, menus) are a deep brown,
+   the burgundy and red accents of the other schemes (section names on the cards, the red
+   line of the document chain, buttons) a clear orange, on a light warm paper with black
+   text. The brown is the one in the Orbis "The Reading Atlas" card. */
+html[data-look="kahve"] {
+  --color-paper: #fbf7f1;
+  --color-sheet: #fffdf9;
+  --color-ink: #0c0c0c;
+  --color-muted: #5c5247;
+  --color-mist: #e9d9c8;
+  --color-line: #ece4d8;
+  --color-rule: #a89c8c;
+  --color-pine: #c94a0a;
+  --color-highlight: #f2e9dc;
+  --color-panel: #47311c;
+  --color-shade: #f3ece1;
+}
+/* The section bar and the small labels are brown mixed with white in the classic
+   proportion (68% colour, 32% white): #827365. The open section is full brown. */
+html[data-look="kahve"] .section-link,
+html[data-look="kahve"] .kicker {
+  color: #827365;
+}
+html[data-look="kahve"] .section-link[data-on="true"] {
+  color: var(--color-panel);
+  border-color: var(--color-panel);
+}
 /* Third scheme: dark, for reading in a dim room. It mirrors the classic one: the band
    stays the darkest thing on the page, the paper is a soft charcoal rather than pure black,
    the text an off-white rather than pure white (less glare on long readings), and the
