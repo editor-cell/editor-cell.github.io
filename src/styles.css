@@ -2017,4 +2017,18 @@ a.group:not(.atlas-own):has(.paper-title) > div.flex.flex-col > p.tabular-nums {
   .atlas-top.records:not([data-depth="1"]) .atlas-brief-under {
     grid-template-rows: min-content min-content min-content 1fr auto auto auto;
   }
+  /* At "Deep" the reading's opening lines fill the room beside the picture, under the
+     summary, so this box opens up like the others; at "Summary" they stay folded away. */
+  .atlas-top.records:not([data-depth="1"]) .atlas-brief-under > .atlas-top-fill {
+    grid-column: 2;
+    grid-row: 4;
+  }
+  .atlas-top.records[data-depth="2"] .atlas-brief-under > .atlas-top-fill {
+    display: none;
+  }
+  /* Three lines at least, so "Deep" shows a change at every width; the side boxes of the
+     same row take the added height with their own opening lines. */
+  .atlas-top.records[data-depth="3"] .atlas-brief-under > .atlas-top-fill {
+    min-height: calc(3 * 1.4 * 0.92rem + 0.375rem);
+  }
 }
