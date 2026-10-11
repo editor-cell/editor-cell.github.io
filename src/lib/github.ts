@@ -94,11 +94,15 @@ export async function checkToken(token: string): Promise<void> {
  * A text file as it is on the main branch right now, or null when there is no such file.
  * Read fresh every time (no browser cache), because it is compared before publishing.
  */
-export async function readRepoFile(token: string, path: string): Promise<string | null> {
+export async function readRepoFile(
+  token: string,
+  path: string,
+  ref: string = REPO.branch,
+): Promise<string | null> {
   let res: Response;
   try {
     res = await fetch(
-      `${API}${repoPath}/contents/${path.split("/").map(encodeURIComponent).join("/")}?ref=${REPO.branch}`,
+      `${API}${repoPath}/contents/${path.split("/").map(encodeURIComponent).join("/")}?ref=${encodeURIComponent(ref)}`,
       {
         cache: "no-store",
         headers: {
@@ -119,7 +123,12 @@ export async function readRepoFile(token: string, path: string): Promise<string 
 }
 
 /** A file to write (base64 content) or, with content null, to delete. */
-export type Change = { path: string; base64: string | null };
+export type Change = {
+  path: string;
+  base64: string | null;
+  /** Expected text at the immutable parent commit; null means the file must be absent. */
+  expected?: string | null;
+};
 
 /** Writes all changes as a single commit on the main branch. Retries once if main moved. */
 export async function commit(token: string, message: string, changes: Change[]): Promise<void> {
@@ -141,6 +150,14 @@ async function commitOnce(token: string, message: string, changes: Change[]) {
     `${repoPath}/git/ref/heads/${REPO.branch}`,
   );
   const head = ref.object.sha;
+  // Every attempt compares against the SAME immutable head used as the parent below.
+  // Main moving afterwards is caught by the non-forced ref update and checked again.
+  for (const change of changes) {
+    if (Object.hasOwn(change, "expected")) {
+      const text = await readRepoFile(token, change.path, head);
+      if (text !== change.expected) throw new PublishError("stale", "changed elsewhere");
+    }
+  }
   const parent = await call<{ tree: { sha: string } }>(token, `${repoPath}/git/commits/${head}`);
 
   // Deleting a file that is not there makes the tree call fail, so only delete what exists.

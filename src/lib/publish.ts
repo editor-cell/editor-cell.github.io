@@ -1,11 +1,4 @@
-import {
-  commit,
-  dataUrlBase64,
-  PublishError,
-  readRepoFile,
-  textToBase64,
-  type Change,
-} from "@/lib/github";
+import { commit, dataUrlBase64, PublishError, textToBase64, type Change } from "@/lib/github";
 import { mediaPath, mediaUrl } from "@/lib/seed";
 import { ALL_LANGS as LANGS, type Story } from "@/lib/types";
 
@@ -78,7 +71,7 @@ export function parseStoryFile(text: string | null | undefined): Story | undefin
  * `base` is the reading's file as it was in the repository when editing began (null: it
  * did not exist yet). If the file is different now, someone saved the reading from another
  * tab or device in the meantime: nothing is written, and a "stale" error is raised, so the
- * newer text is never overwritten silently. Without a `base`, the check is skipped.
+ * newer text is never overwritten silently. A base is required on every save, including a new reading (null).
  *
  * Returns the reading as the site will show it, and the file text that was written.
  */
@@ -86,13 +79,10 @@ export async function publishStory(
   token: string,
   draft: Story,
   before: Story | undefined,
-  base?: string | null,
+  base: string | null,
 ): Promise<{ shown: Story; text: string }> {
   const path = storyFile(draft.id);
-  if (base !== undefined) {
-    const now = await readRepoFile(token, path);
-    if (now !== base) throw new PublishError("stale", "changed elsewhere");
-  }
+  if (base === undefined) throw new PublishError("stale", "start not confirmed");
   // Media to clean up is judged against the file being replaced, when it is known.
   const previous = parseStoryFile(base) ?? before;
   const changes: Change[] = [];
@@ -150,7 +140,7 @@ export async function publishStory(
   }
 
   const text = `${JSON.stringify(file, null, 2)}\n`;
-  changes.push({ path, base64: textToBase64(text) });
+  changes.push({ path, base64: textToBase64(text), expected: base });
   const title = LANGS.map((lang) => file.locales[lang].title.trim()).find(Boolean) ?? file.id;
   await commit(token, `Panel: ${title}`, changes);
 
