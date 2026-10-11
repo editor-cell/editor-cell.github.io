@@ -1,4 +1,5 @@
 # Cloudflare'e yüklenmeyecek dosyalar: kaynak kod ve ayarlar.
+# Medya kaynakları: images/, audio/, videos/ (public/ altında kopya yok).
 # Yalnız derlenmiş sayfalar, görseller, ses ve video yayına çıkar.
 .git
 .github

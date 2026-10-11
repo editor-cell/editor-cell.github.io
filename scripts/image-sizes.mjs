@@ -3,7 +3,7 @@ import { join, parse } from "node:path";
 import sharp from "sharp";
 
 /**
- * Writes smaller WebP copies of every picture in images/ to <out>/assets/img/<name>-<width>.webp
+ * Writes smaller WebP copies of every canonical source picture in images/ (never public/images/) to <out>/assets/img/<name>-<width>.webp
  * (see src/lib/image-set.ts). They sit in assets/, which the "Publish site" workflow already
  * copies and commits. A picture narrower than a width is not enlarged; its copy keeps the
  * picture's own width.

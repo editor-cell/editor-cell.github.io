@@ -20,7 +20,7 @@ the pages; Cloudflare (Workers Builds) then serves them at https://orbisreadinga
 
 1. `git pull` first; work on the latest `main`.
 2. One reading per commit, touching only `content/stories/<id>.json` and its own media
-   (`images/<id>…jpg`, `public/audio/<id>-<lang>.mp3`, `videos/`). Never mix a reading
+   (`images/<id>…jpg`, `audio/<id>-<lang>.mp3`, `videos/`). Never mix a reading
    with a change to site code.
 3. Open every source address before publishing and confirm that the title, authors, year
    and the figure cited are really there. The gates prove a DOI exists, not that it is
@@ -72,3 +72,8 @@ Design and code changes go in their own commits, after `npm run typecheck`,
 `npm run test:site` and `npm run build:pages`, and a look at the built pages at phone
 (390 px) and desktop (1280 px) width. A fix for the phone must not change the desktop
 layout, and the other way round.
+
+Media has one source: repository-root `images/`, `audio/`, `videos/`. Do not add copies
+under `public/`. Vite emits these files at their existing root URLs. Both content checks
+require this source; the built-site check requires the corresponding output. Image
+sizes still come from `images/` and are served under `/assets/img/`.

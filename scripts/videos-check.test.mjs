@@ -20,7 +20,7 @@ const LANGS = [
 function mediaExists(path) {
   if (!path || /^https:/.test(path)) return true;
   const clean = path.replace(/^\//, "");
-  return existsSync(clean) || existsSync(join("public", clean));
+  return existsSync(clean);
 }
 
 const files = existsSync(DIR) ? readdirSync(DIR).filter((name) => name.endsWith(".json")) : [];

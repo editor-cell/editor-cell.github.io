@@ -4,7 +4,7 @@ A sourced reading atlas. Five languages, no breaking-news desk, no opinion page.
 
 Live site: https://orbisreadingatlas.com/
 
-Readings live in content/stories as one JSON file each. The panel (/panel) publishes straight to this repository: text to content/stories, recordings to public/audio, pictures to images/. Each save is one commit; the Publish site workflow rebuilds the pages.
+Readings live in content/stories as one JSON file each. The panel (/panel) publishes straight to this repository: text to content/stories, recordings to audio, pictures to images/. Each save is one commit; the Publish site workflow rebuilds the pages.
 
 ## Browser checks
 
@@ -26,3 +26,12 @@ screenshots and reader controls against the actual build. Failures are written t
 server handles extensionless HTML and returns HTTP 404 for absent files. For restricted
 local environments, `ORBIS_CHROMIUM` can name an already installed Chromium executable;
 use the same executable when generating and comparing references.
+
+## Media sources
+
+`images/`, `audio/` and `videos/` at the repository root are the only media sources.
+The panel writes these paths, both source checks require files here, and the Vite media
+plugin emits them at the same `/images/`, `/audio/`, `/videos/` URLs. `public/` holds
+other static assets, never duplicate media. Image sizing reads `images/` and writes
+WebP variants to `/assets/img/`. Publishing copies the generated media without changing
+its bytes; `.assetsignore` excludes `public/`, never these media directories.

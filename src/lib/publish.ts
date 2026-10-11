@@ -12,7 +12,7 @@ import { ALL_LANGS as LANGS, type Story } from "@/lib/types";
 /**
  * Turns a saved reading into repository changes:
  * - content/stories/<id>.json holds the text, sources and media paths;
- * - a newly chosen recording goes to public/audio/ (the build copies it to audio/);
+ * - a newly chosen recording goes to audio/ (the build copies it to audio/);
  * - a newly chosen picture goes to images/ at the site root, served as it is;
  * - media the reading no longer uses is deleted.
  * New media gets a fresh name each time, so a replaced file is never served from cache.
@@ -40,9 +40,8 @@ function stamp(): string {
 }
 
 /** Where a stored media path lives in the repository. */
-function repoPathOf(stored: string): string | null {
-  if (stored.startsWith("audio/")) return `public/${stored}`;
-  if (stored.startsWith("images/")) return stored;
+export function repoPathOf(stored: string): string | null {
+  if (/^(audio|images|videos)\//.test(stored)) return stored;
   return null;
 }
 
@@ -110,7 +109,7 @@ export async function publishStory(
     if (!audio) continue;
     if (audio.dataUrl.startsWith("data:")) {
       const stored = `audio/${file.id}-${lang}-${when}.${audioExt(audio.mime, audio.name)}`;
-      changes.push({ path: `public/${stored}`, base64: dataUrlBase64(audio.dataUrl) });
+      changes.push({ path: stored, base64: dataUrlBase64(audio.dataUrl) });
       audio.dataUrl = stored;
     } else {
       audio.dataUrl = mediaPath(audio.dataUrl);

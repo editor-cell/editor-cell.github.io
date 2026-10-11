@@ -20,7 +20,7 @@
     "preview:stop": "node scripts/preview.mjs stop",
     "typecheck": "tsc --noEmit",
     "check:auth": "node scripts/check-auth-invariant.mjs",
-    "test:site": "node --experimental-strip-types --test scripts/stories-check.test.mjs scripts/videos-check.test.mjs src/lib/front-order.test.ts src/lib/drafts.test.ts src/lib/search.test.ts src/lib/members/members.test.ts supabase/orbis-members.test.mjs src/lib/app-data/app-data.test.ts src/lib/app-data/readiness-schedule.test.ts src/lib/auth/gate-identity.test.ts src/lib/auth/sign-in-gate.test.ts scripts/search-index.test.mjs scripts/browser-smoke-verdict.test.mjs scripts/migration-plan.test.mjs scripts/preview.test.mjs scripts/sign-out-plan.test.mjs",
+    "test:site": "node --experimental-strip-types --test scripts/stories-check.test.mjs scripts/videos-check.test.mjs scripts/publish.test.mjs scripts/site-server.test.mjs src/lib/front-order.test.ts src/lib/drafts.test.ts src/lib/search.test.ts src/lib/members/members.test.ts supabase/orbis-members.test.mjs src/lib/app-data/app-data.test.ts src/lib/app-data/readiness-schedule.test.ts src/lib/auth/gate-identity.test.ts src/lib/auth/sign-in-gate.test.ts scripts/search-index.test.mjs scripts/browser-smoke-verdict.test.mjs scripts/migration-plan.test.mjs scripts/preview.test.mjs scripts/sign-out-plan.test.mjs",
     "test": "node --test 'scripts/**/*.test.mjs' && node --experimental-strip-types --test src/lib/app-data/app-data.test.ts src/lib/app-data/readiness-schedule.test.ts src/lib/auth/gate-identity.test.ts src/lib/auth/sign-in-gate.test.ts",
     "lint": "eslint .",
     "format": "prettier --write .",

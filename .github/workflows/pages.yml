@@ -17,7 +17,6 @@ on:
       - og.jpg
       - .nojekyll
       - assets/**
-      - audio/**
       - __grok/**
   workflow_dispatch:
 
@@ -70,6 +69,8 @@ jobs:
           done
           if [ -d dist/client/__grok ]; then cp -a dist/client/__grok __grok; fi
           if [ -d dist/client/audio ]; then cp -a dist/client/audio audio; fi
+          # Source media remains at these same root paths.
+          cp -a dist/client/images/. images/
           if [ -d dist/client/videos ]; then rm -rf videos; cp -a dist/client/videos videos; fi
           git config user.name "editor-cell"
           git config user.email "editor@orbisreadingatlas.com"

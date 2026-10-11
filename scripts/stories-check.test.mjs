@@ -31,7 +31,7 @@ const LEGACY = [
 function mediaExists(path) {
   if (!path || /^(https?:|data:|blob:)/.test(path)) return true;
   const clean = path.replace(/^\//, "");
-  return existsSync(clean) || existsSync(join("public", clean));
+  return existsSync(clean);
 }
 
 const files = readdirSync(DIR).filter((name) => name.endsWith(".json"));
