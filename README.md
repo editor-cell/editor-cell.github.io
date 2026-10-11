@@ -39,3 +39,9 @@ its bytes; `.assetsignore` excludes `public/`, never these media directories.
 The publishing step copies every build output except `_shell.html`, using
 `.site-output.json` to remove obsolete outputs. It then compares the file list and every
 file's bytes with `dist/client`; a forgotten folder prevents the publish commit.
+
+Publish runs use GitHub's `queue: max` concurrency (up to 100 waiting runs) and checkout
+current `main` when each run starts. If `main` moves during the build or final push,
+that run succeeds without publishing stale pages; the next queued run builds the newest
+content. No rebase of old generated pages is attempted. Source-only media edits also
+trigger a build; generated page, asset and manifest commits remain ignored.

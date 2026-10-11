@@ -22,6 +22,12 @@ on:
       - __grok/**
   workflow_dispatch:
 
+# Queue every run (default single-pending concurrency would cancel queued saves).
+concurrency:
+  group: orbis-publish-main
+  cancel-in-progress: false
+  queue: max
+
 permissions:
   contents: write
 
@@ -30,6 +36,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -58,9 +67,4 @@ jobs:
           node scripts/publish-output.mjs --stage
           git config user.name "editor-cell"
           git config user.email "editor@orbisreadingatlas.com"
-          if git diff --staged --quiet; then
-            echo "Site already current"
-            exit 0
-          fi
-          git commit -m "[site] publish"
-          git push
+          node scripts/finish-publish.mjs
