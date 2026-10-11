@@ -1,4 +1,6 @@
 import { test, expect } from "playwright/test";
+import { serveFonts } from "./fonts.mjs";
+test.beforeEach(async ({ page }) => serveFonts(page));
 import { mkdirSync, rmSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { placeSite } from "../../scripts/publish-output.mjs";

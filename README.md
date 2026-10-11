@@ -55,3 +55,12 @@ a failed chunk or entry script reloads the clicked destination at most once per 
 and destination. If session storage is blocked, automatic reload is disabled to avoid
 loops. `test:browser` builds A and B from a one-title change and tests old-tab navigation
 with retention, with old assets deliberately removed, and with permanently missing JS.
+
+The application has one static build (`build` delegates to `build:pages`) and one test
+suite (`test` delegates to `test:site`). The unused Better Auth/PGlite application,
+preview bridge, multiplayer samples and alternate hosting setup are removed. Supabase
+membership and the GitHub-token panel are unchanged. PGlite remains a development
+dependency because the protected Supabase SQL tests actually use it. The static PWA
+manifest and icons still come from `public/__grok` at their original addresses.
+Browser font checks fail if the real masthead font does not load. `ORBIS_BROWSER_PROXY`
+is an optional local HTTPS-proxy setting for restricted environments; CI does not set it.

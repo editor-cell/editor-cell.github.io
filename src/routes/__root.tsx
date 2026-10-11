@@ -5,10 +5,8 @@ import {
   Scripts,
   useRouterState,
 } from "@tanstack/react-router";
-import { AuthProvider } from "@/lib/auth/provider";
 import { ListenBar } from "@/components/listen-bar";
 import { NotFoundPage } from "@/components/not-found";
-import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { langMeta } from "@/lib/i18n";
 import { LANG_BOOT, langFromPath } from "@/lib/lang-path";
 import { LOOK_BOOT } from "@/lib/look";
@@ -88,10 +86,7 @@ function RootDocument() {
         />
       </head>
       <body>
-        <PreviewHostBridge />
-        <AuthProvider>
-          <Outlet />
-        </AuthProvider>
+        <Outlet />
         {/* Listening started from a card keeps playing from page to page. */}
         {path.startsWith("/panel") ? null : <ListenBar />}
         <Scripts />

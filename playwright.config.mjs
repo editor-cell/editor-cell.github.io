@@ -1,6 +1,7 @@
 import { defineConfig } from "playwright/test";
 export default defineConfig({
   testDir: "tests/browser",
+  globalSetup: "./tests/browser/fonts.mjs",
   fullyParallel: true,
   workers: 4,
   timeout: 45000,
@@ -13,10 +14,14 @@ export default defineConfig({
   },
   use: {
     browserName: "chromium",
+    ignoreHTTPSErrors: Boolean(process.env.ORBIS_BROWSER_PROXY),
     locale: "en-GB",
     timezoneId: "UTC",
     reducedMotion: "reduce",
     trace: "retain-on-failure",
+    proxy: process.env.ORBIS_BROWSER_PROXY
+      ? { server: new URL(process.env.ORBIS_BROWSER_PROXY).origin, bypass: "127.0.0.1,localhost" }
+      : undefined,
     launchOptions: process.env.ORBIS_CHROMIUM
       ? {
           executablePath: process.env.ORBIS_CHROMIUM,

@@ -1412,55 +1412,6 @@ function RankedRow({
   );
 }
 
-type CardSize = "lead" | "side" | "bottom" | "corner" | "more" | "list";
-
-const CARD_TITLE: Record<CardSize, string> = {
-  lead: "font-extrabold text-[1.95rem] leading-[1.1] md:text-[2.4rem] md:leading-[1.08] lg:text-[2.9rem]",
-  side: "font-bold text-[1.3rem] leading-[1.15] lg:text-[1.45rem]",
-  bottom: "font-bold text-[1.35rem] leading-[1.15] lg:text-[1.55rem]",
-  corner: "font-bold text-[1.45rem] leading-[1.15] lg:text-[1.7rem]",
-  more: "font-bold text-[1.15rem] leading-[1.2] lg:text-[1.25rem]",
-  list: "font-bold text-[1.45rem] leading-[1.15]",
-};
-
-const CARD_SUMMARY: Record<CardSize, string> = {
-  lead: "text-[1.0625rem] leading-[1.35] md:text-[1.3rem]",
-  side: "text-base leading-[1.35]",
-  bottom: "text-base leading-[1.35]",
-  corner: "text-[1.0625rem] leading-[1.38]",
-  more: "",
-  list: "text-base leading-[1.35]",
-};
-
-/** Section name, title, the one-sentence summary and the reading time, in that order. */
-function CardBody({ story, lang, size }: { story: Story; lang: Lang; size: CardSize }) {
-  const copy = useCopy(lang);
-  const summary = size === "more" ? "" : cellSummary(story, lang);
-  const minutes = story.locales[lang].minutes;
-  return (
-    <>
-      <p
-        className={
-          lang === "ar"
-            ? "text-sm leading-snug text-pine"
-            : "text-xs leading-snug uppercase tracking-[0.14em] text-pine"
-        }
-      >
-        {copy.themes[story.theme]}
-      </p>
-      <h2
-        className={`paper-title text-ink underline-offset-[0.14em] decoration-1 group-hover:underline ${CARD_TITLE[size]}`}
-      >
-        {storyTitle(story, lang)}
-      </h2>
-      {summary ? (
-        <p className={`font-body text-pretty text-ink ${CARD_SUMMARY[size]}`}>{summary}</p>
-      ) : null}
-      {minutes ? <ReadTime minutes={minutes} lang={lang} pattern={copy.minRead} story={story} /> : null}
-    </>
-  );
-}
-
 function CardPicture({
   story,
   lang,

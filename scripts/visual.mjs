@@ -95,3 +95,9 @@ const result = spawnSync(
   },
 );
 process.exitCode = result.status ?? 1;
+if (result.status === 0)
+  console.log(
+    update
+      ? `[visual] approved-reference build ${BASELINE_COMMIT}: passed`
+      : "[browser] all checks passed",
+  );

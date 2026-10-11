@@ -1,4 +1,6 @@
 import { test, expect } from "playwright/test";
+import { serveFonts } from "./fonts.mjs";
+test.beforeEach(async ({ page }) => serveFonts(page));
 
 for (const lang of ["en", "tr"]) {
   for (const width of [390, 1280]) {
@@ -20,7 +22,17 @@ for (const lang of ["en", "tr"]) {
               { look, depth },
             );
             await page.goto(`http://127.0.0.1:4180${lang === "tr" ? "/tr" : ""}${path}`);
-            await page.evaluate(() => document.fonts.ready);
+            await page.evaluate(async () => {
+              await document.fonts.load('16px "Bodoni Moda"');
+              await document.fonts.ready;
+            });
+            expect(
+              await page.evaluate(() =>
+                [...document.fonts].some(
+                  (font) => font.family === "Bodoni Moda" && font.status === "loaded",
+                ),
+              ),
+            ).toBe(true);
             await expect(page.locator("html")).toHaveAttribute("lang", lang);
             if (pageName === "home") {
               await page.locator(`[data-depth-step="${depth}"]`).click();

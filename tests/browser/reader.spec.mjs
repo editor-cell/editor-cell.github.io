@@ -1,4 +1,6 @@
 import { test, expect } from "playwright/test";
+import { serveFonts } from "./fonts.mjs";
+test.beforeEach(async ({ page }) => serveFonts(page));
 
 for (const width of [390, 1280]) {
   test(`reader controls at ${width}px`, async ({ page }) => {
@@ -41,7 +43,10 @@ for (const width of [390, 1280]) {
     await expect(page.locator("html")).toHaveAttribute("data-look", "bordo");
     await page.keyboard.press("Escape");
     await page.goto("http://127.0.0.1:4179/tr/");
-    await page.getByRole("button", { name: /^Dinle:/ }).first().click();
+    await page
+      .getByRole("button", { name: /^Dinle:/ })
+      .first()
+      .click();
     await expect(page.locator(".listen-bar")).toBeVisible();
     expect(errors).toEqual([]);
   });
