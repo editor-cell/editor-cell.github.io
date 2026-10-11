@@ -18,12 +18,15 @@ export function ReadTime({
   lang,
   pattern,
   story,
+  sources,
 }: {
   minutes: number;
   lang: Lang;
   pattern: string;
   /** The card's reading; with a recording in `lang`, the line offers to listen. */
   story?: StoryCard;
+  /** "6 sources" after the time, when given: the documents in the reading's chain. */
+  sources?: string;
 }) {
   return (
     <p
@@ -34,6 +37,7 @@ export function ReadTime({
       }
     >
       {pattern.replace("{n}", String(minutes))}
+      {sources ? ` · ${sources}` : null}
       {story ? <CardListen story={story} lang={lang} /> : null}
     </p>
   );

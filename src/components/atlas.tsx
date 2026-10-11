@@ -35,7 +35,15 @@ function Meta({ story, lang, section }: { story: Story; lang: Lang; section: The
         ) : null}
         <span className="whitespace-nowrap">{formatDate(story.date, lang)}</span>
       </p>
-      {minutes ? <ReadTime minutes={minutes} lang={lang} pattern={copy.minRead} story={story} /> : null}
+      {minutes ? (
+        <ReadTime
+          minutes={minutes}
+          lang={lang}
+          pattern={copy.minRead}
+          story={story}
+          sources={story.sources?.length ? sourceCount(story.sources.length, lang) : undefined}
+        />
+      ) : null}
     </div>
   );
 }
@@ -272,6 +280,7 @@ function HomeGrid({ stories, lang }: { stories: Story[]; lang: Lang }) {
   return (
     <div dir={dir}>
       <div className="px-5 md:px-8">
+        <IssueLine stories={stories} lang={lang} />
         <Link
           {...readLink(lang, lead.id)}
           className={`atlas-own group grid grid-cols-1 pt-4 pb-5 md:gap-[clamp(1.5rem,2.6vw,2.4rem)] md:py-6 ${
@@ -447,26 +456,27 @@ function DeepLines({ story, lang, clamp }: { story: Story; lang: Lang; clamp: st
 function Kicker({ story, lang }: { story: Story; lang: Lang }) {
   const copy = useCopy(lang);
   const minutes = story.locales[lang].minutes;
+  const count = story.sources?.length ?? 0;
+  const tone =
+    lang === "ar" ? "text-sm leading-snug" : "text-xs leading-snug uppercase tracking-[0.14em]";
+  // Two lines in every card: the section in its colour, and under it, quieter, the reading
+  // time, the number of documents in the chain and, where there is one, the recording.
   return (
-    <p
-      className={
-        lang === "ar"
-          ? "card-kicker text-sm leading-snug text-pine"
-          : "card-kicker text-xs leading-snug uppercase tracking-[0.14em] text-pine"
-      }
-    >
-      {copy.themes[story.theme]}
-      {minutes ? (
-        <span className="text-muted">
-          {" · "}
-          {/* "1 min read" stays on one line: in a narrow card it moves down whole. */}
-          <span className="whitespace-nowrap">{copy.minRead.replace("{n}", String(minutes))}</span>
-        </span>
+    <div className={`card-kicker ${tone}`}>
+      <p className="text-pine">{copy.themes[story.theme]}</p>
+      {minutes || count ? (
+        <p className="mt-0.5 text-muted">
+          {minutes ? (
+            <span className="whitespace-nowrap">{copy.minRead.replace("{n}", String(minutes))}</span>
+          ) : null}
+          {minutes && count ? " · " : null}
+          {count ? <span className="whitespace-nowrap">{sourceCount(count, lang)}</span> : null}
+          <span className="whitespace-nowrap">
+            <CardListen story={story} lang={lang} />
+          </span>
+        </p>
       ) : null}
-      <span className="whitespace-nowrap">
-        <CardListen story={story} lang={lang} />
-      </span>
-    </p>
+    </div>
   );
 }
 
@@ -497,6 +507,8 @@ const HOME_WORDS: Record<
     lastIssue: string;
     /** The middle column: readings the editor marked as picks. */
     picks: string;
+    /** "Issue 3": the weekly issue a reading belongs to. */
+    issueNo: string;
   }
 > = {
   tr: {
@@ -518,6 +530,7 @@ const HOME_WORDS: Record<
     archive: "Arşivden",
     lastIssue: "Önceki sayı",
     picks: "Editörün seçtikleri",
+    issueNo: "Sayı {n}",
   },
   en: {
     chain: "Document chain",
@@ -538,6 +551,7 @@ const HOME_WORDS: Record<
     archive: "From the archive",
     lastIssue: "Last issue",
     picks: "Editor’s picks",
+    issueNo: "Issue {n}",
   },
   ar: {
     chain: "سلسلة الوثائق",
@@ -558,6 +572,7 @@ const HOME_WORDS: Record<
     archive: "من الأرشيف",
     lastIssue: "العدد السابق",
     picks: "اختيارات المحرر",
+    issueNo: "العدد {n}",
   },
   fr: {
     chain: "Chaîne de documents",
@@ -578,6 +593,7 @@ const HOME_WORDS: Record<
     archive: "Dans les archives",
     lastIssue: "Numéro précédent",
     picks: "Le choix de la rédaction",
+    issueNo: "Numéro {n}",
   },
   es: {
     chain: "Cadena de documentos",
@@ -598,6 +614,7 @@ const HOME_WORDS: Record<
     archive: "Del archivo",
     lastIssue: "Número anterior",
     picks: "Selección del editor",
+    issueNo: "Número {n}",
   },
 };
 
@@ -605,6 +622,33 @@ const HOME_WORDS: Record<
 function sourceCount(n: number, lang: Lang): string {
   const words = HOME_WORDS[lang].sources;
   return (n === 1 ? words.one : words.many).replace("{n}", String(n));
+}
+
+/** "Issue 3", or nothing for a reading that belongs to no issue. */
+function issueName(issue: number | undefined, lang: Lang): string {
+  return issue === undefined ? "" : HOME_WORDS[lang].issueNo.replace("{n}", String(issue));
+}
+
+/**
+ * The front page's one quiet line over the lead: "Issue 3 · 11 October 2026", the newest
+ * issue and the date of its newest reading. Shown only once readings carry an issue.
+ */
+function IssueLine({ stories, lang }: { stories: Story[]; lang: Lang }) {
+  const issue = stories[0]?.issue;
+  if (issue === undefined) return null;
+  const date = stories
+    .filter((story) => story.issue === issue)
+    .reduce((max, story) => (story.date > max ? story.date : max), "");
+  return (
+    <p
+      className={`font-body pt-3 text-muted md:pt-4 ${
+        lang === "ar" ? "text-sm" : "text-xs uppercase tracking-[0.14em]"
+      }`}
+    >
+      {issueName(issue, lang)}
+      {date ? ` · ${formatDate(date, lang)}` : ""}
+    </p>
+  );
 }
 
 /** "IPCC – Sixth Assessment Report" becomes the issuer and the document name. */
@@ -1094,6 +1138,11 @@ function Records({
 function RecordColumns({ plan, lang, depth }: { plan: RecordPlan; lang: Lang; depth: Depth }) {
   const words = HOME_WORDS[lang];
   const { strip, latest, deep, numbered, counted, more } = plan;
+  // The column's issue, named beside its heading when all its readings share one.
+  const lastIssue =
+    latest.length && latest.every((story) => story.issue === latest[0].issue)
+      ? latest[0].issue
+      : undefined;
   const heading = `font-body font-normal ${lang === "ar" ? "text-sm text-pine" : "text-xs uppercase tracking-[0.14em] text-pine"}`;
 
   return (
@@ -1110,7 +1159,15 @@ function RecordColumns({ plan, lang, depth }: { plan: RecordPlan; lang: Lang; de
 
       <div className={`records atlas-bottom ${strip.length ? "mt-5" : ""}`} data-depth={depth} suppressHydrationWarning>
         <section className="atlas-col" aria-label={words.lastIssue}>
-          <h3 className={`${heading} mb-3`}>{words.lastIssue}</h3>
+          <h3 className={`${heading} mb-3`}>
+            {words.lastIssue}
+            {lastIssue !== undefined ? (
+              <span className="text-muted">
+                {" · "}
+                {issueName(lastIssue, lang)}
+              </span>
+            ) : null}
+          </h3>
           <ol>
             {latest.map((story) => (
               <li key={story.id}>
@@ -1214,7 +1271,8 @@ function RecordRow({ story, lang }: { story: Story; lang: Lang }) {
         ) : null}
         <div className="record-layer" data-layer="3">
           <div>
-            <p className="pt-1 text-xs text-muted">{formatDate(story.date, lang)}</p>
+            <p className="pt-1 text-xs text-muted">{story.issue !== undefined ? `${issueName(story.issue, lang)} · ` : ""}
+              {formatDate(story.date, lang)}</p>
           </div>
         </div>
       </div>
