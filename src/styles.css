@@ -267,14 +267,15 @@ body {
   border-bottom: 1px solid var(--color-line);
   background: var(--chain-band, var(--color-highlight));
 }
-/* The band is a light tone of each scheme's own colour, at the lightness of the classic
-   light grey (black washed with white): burgundy and brown take that lightness in their
-   own hue. Classic and dark keep their grey. */
+/* The band is each scheme's band colour washed with white in the classic proportion:
+   the classic light grey #ececee is 7.8% of the black #0c0c0c and the rest white;
+   burgundy #3c0911 and brown #2a1c14 mixed the same way give #f0ecec and #eeeded. Dark keeps
+   its grey. */
 html[data-look="bordo"] {
-  --chain-band: #fae7e7;
+  --chain-band: #f0ecec;
 }
 html[data-look="kahve"] {
-  --chain-band: #f8e9e1;
+  --chain-band: #eeeded;
 }
 .doc-chain-toggle {
   display: flex;
