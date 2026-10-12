@@ -10,8 +10,8 @@ import { CARDS } from "@/lib/seed";
 import { LANGS, type Lang } from "@/lib/types";
 
 /**
- * The editor's members panel, in Turkish: comments, members, members-only texts, videos
- * and blocked words. Only a profile with the editor role gets past the door, and the
+ * The editor's members panel, in Turkish: comments, members, members-only texts and
+ * blocked words. Only a profile with the editor role gets past the door, and the
  * database checks that role again on every change.
  */
 export function EditorPage() {
@@ -48,7 +48,6 @@ function Door() {
           ["yorumlar", "Yorumlar"],
           ["uyeler", "Üyeler"],
           ["metinler", "Üyelere özel metinler"],
-          ["videolar", "Videolar"],
           ["kelimeler", "Yasaklı kelimeler"],
         ].map(([id, label]) => (
           <a key={id} href={`#${id}`} className="inline-flex min-h-9 items-center text-pine">
@@ -59,7 +58,6 @@ function Door() {
       <CommentsBox />
       <MembersBox />
       <TextsBox />
-      <VideosBox />
       <WordsBox />
     </>
   );
@@ -467,125 +465,6 @@ function TextsBox() {
         ) : null}
         <Note text={note} />
       </form>
-    </Box>
-  );
-}
-
-// ---------------------------------------------------------------------------------------
-
-type AdminVideo = { id: string; story_id: string; title: string; path: string; created_at: string };
-
-function VideosBox() {
-  const [storyId, setStoryId] = useState("");
-  const [title, setTitle] = useState("");
-  const [file, setFile] = useState<File | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [list, setList] = useState<AdminVideo[]>([]);
-  const [note, setNote] = useState("");
-  const [inputKey, setInputKey] = useState(0);
-
-  const load = useCallback(async () => {
-    if (!storyId) {
-      setList([]);
-      return;
-    }
-    const client = await supabase();
-    const { data } = await client
-      .from("videos")
-      .select("id, story_id, title, path, created_at")
-      .eq("story_id", storyId)
-      .order("created_at", { ascending: true });
-    setList((data as AdminVideo[]) ?? []);
-  }, [storyId]);
-
-  useEffect(() => {
-    void load();
-  }, [load]);
-
-  async function upload(event: FormEvent) {
-    event.preventDefault();
-    if (!storyId || !file) return;
-    setBusy(true);
-    setNote("Yükleniyor… Büyük dosyalarda birkaç dakika sürebilir; sayfayı kapatmayın.");
-    try {
-      const client = await supabase();
-      const ext = (file.name.split(".").pop() || "mp4").toLowerCase().replace(/[^a-z0-9]/g, "");
-      const path = `${storyId}/${crypto.randomUUID()}.${ext}`;
-      const sent = await client.storage
-        .from("videos")
-        .upload(path, file, { contentType: file.type || "video/mp4", upsert: false });
-      if (sent.error) throw sent.error;
-      const { error } = await client.from("videos").insert({ story_id: storyId, title: title.trim(), path });
-      if (error) {
-        await client.storage.from("videos").remove([path]);
-        throw error;
-      }
-      setTitle("");
-      setFile(null);
-      setInputKey((n) => n + 1);
-      setNote("Video yüklendi.");
-      await load();
-    } catch (error) {
-      setNote(fail(error));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function remove(video: AdminVideo) {
-    if (!window.confirm("Video silinsin mi?")) return;
-    setNote("");
-    try {
-      const client = await supabase();
-      const gone = await client.storage.from("videos").remove([video.path]);
-      if (gone.error) throw gone.error;
-      const { error } = await client.from("videos").delete().eq("id", video.id);
-      if (error) throw error;
-      await load();
-    } catch (error) {
-      setNote(fail(error));
-    }
-  }
-
-  return (
-    <Box id="videolar" title="Videolar">
-      <p className="text-sm text-muted">
-        Videolar kilitli bir depoda durur; yalnız ücretli üyeler izler. Herkes yazıda bir video
-        olduğunu ve başlığını görür. MP4 en uygun biçimdir.
-      </p>
-      <form onSubmit={upload} className="flex flex-col gap-4">
-        <StoryPicker value={storyId} onChange={setStoryId} />
-        <label className="flex flex-col gap-2">
-          <span className="text-sm">Başlık (videonun altında görünür)</span>
-          <input value={title} onChange={(event) => setTitle(event.target.value)} className={fieldClass()} />
-        </label>
-        <label className="flex flex-col gap-2">
-          <span className="text-sm">Dosya</span>
-          <input
-            key={inputKey}
-            type="file"
-            accept="video/mp4,video/webm,video/quicktime"
-            onChange={(event) => setFile(event.target.files?.[0] ?? null)}
-            className="text-sm"
-          />
-        </label>
-        <button type="submit" disabled={busy || !storyId || !file} className={`${buttonClass} self-start`}>
-          Yükle
-        </button>
-        <Note text={note} />
-      </form>
-      {list.length ? (
-        <ol className="flex flex-col">
-          {list.map((video) => (
-            <li key={video.id} className="flex items-center justify-between gap-4 border-b border-line py-3">
-              <span>{video.title || video.path}</span>
-              <button type="button" className={quietButtonClass} onClick={() => void remove(video)}>
-                Sil
-              </button>
-            </li>
-          ))}
-        </ol>
-      ) : null}
     </Box>
   );
 }

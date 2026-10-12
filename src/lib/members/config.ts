@@ -1,5 +1,5 @@
 /**
- * Membership, comments, members-only readings and videos.
+ * Membership, comments and members-only readings.
  *
  * Everything is built and shipped, but nothing shows on the site until `enabled` is true
  * and the two Supabase values are filled in (Supabase → Project Settings → API). The key

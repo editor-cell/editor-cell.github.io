@@ -35,8 +35,6 @@ export type MembersCopy = {
   lockNote: string;
   lockSignIn: string;
   lockPaid: string;
-  video: string;
-  videoLocked: string;
   loading: string;
   closed: string;
   errors: {
@@ -89,8 +87,6 @@ const COPY: Record<Lang, MembersCopy> = {
     lockNote: "Bu yazının devamı ücretli üyelere açık.",
     lockSignIn: "Giriş yap",
     lockPaid: "Üyeliğim",
-    video: "Video",
-    videoLocked: "Bu video ücretli üyelere özel.",
     loading: "Yükleniyor…",
     closed: "Üyelik henüz açılmadı.",
     errors: {
@@ -140,8 +136,6 @@ const COPY: Record<Lang, MembersCopy> = {
     lockNote: "بقية هذه القراءة متاحة للأعضاء المشتركين.",
     lockSignIn: "تسجيل الدخول",
     lockPaid: "عضويتي",
-    video: "فيديو",
-    videoLocked: "هذا الفيديو للأعضاء المشتركين فقط.",
     loading: "جارٍ التحميل…",
     closed: "لم تُفتح العضوية بعد.",
     errors: {
@@ -191,8 +185,6 @@ const COPY: Record<Lang, MembersCopy> = {
     lockNote: "The rest of this reading is open to paid members.",
     lockSignIn: "Sign in",
     lockPaid: "My membership",
-    video: "Video",
-    videoLocked: "This video is for paid members.",
     loading: "Loading…",
     closed: "Membership is not open yet.",
     errors: {
@@ -243,8 +235,6 @@ const COPY: Record<Lang, MembersCopy> = {
     lockNote: "La suite de cette lecture est réservée aux abonnés.",
     lockSignIn: "Se connecter",
     lockPaid: "Mon abonnement",
-    video: "Vidéo",
-    videoLocked: "Cette vidéo est réservée aux abonnés.",
     loading: "Chargement…",
     closed: "L’adhésion n’est pas encore ouverte.",
     errors: {
@@ -295,8 +285,6 @@ const COPY: Record<Lang, MembersCopy> = {
     lockNote: "El resto de esta lectura está abierto a los miembros de pago.",
     lockSignIn: "Iniciar sesión",
     lockPaid: "Mi membresía",
-    video: "Vídeo",
-    videoLocked: "Este vídeo es para miembros de pago.",
     loading: "Cargando…",
     closed: "La membresía aún no está abierta.",
     errors: {

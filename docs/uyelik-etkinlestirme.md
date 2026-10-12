@@ -1,4 +1,4 @@
-# Üyelik, yorumlar, üyelere özel yazılar ve videolar: açma kılavuzu
+# Üyelik, yorumlar ve üyelere özel yazılar: açma kılavuzu
 
 Kod sitede hazır durur ve kapalıdır. Kapalıyken sitede hiçbir şey değişmez; Supabase'e tek bir istek bile gitmez.
 Açmak için aşağıdaki adımlar sırayla yapılır.
@@ -48,7 +48,7 @@ Açmak için aşağıdaki adımlar sırayla yapılır.
 update public.profiles set role = 'editor' where email = 'sizin@adresiniz.com';
 ```
 
-3. Artık `/editor` adresinde editör paneli açılır: yorumlar, üyeler, üyelere özel metinler, videolar, yasaklı kelimeler.
+3. Artık `/editor` adresinde editör paneli açılır: yorumlar, üyeler, üyelere özel metinler, yasaklı kelimeler.
 
 ## Üyelere özel yazı nasıl yayınlanır
 
@@ -57,12 +57,6 @@ update public.profiles set role = 'editor' where email = 'sizin@adresiniz.com';
 2. Tam metin editör panelindeki "Üyelere özel metinler" bölümünden, her dil için ayrı girilir.
 3. Ücretli üye yazıyı açınca giriş bölümünün yerine tam metni görür; diğerleri giriş bölümünü ve "Bu yazının devamı ücretli
    üyelere açık" notunu görür.
-
-## Videolar
-
-Editör panelindeki "Videolar" bölümünden yazı seçilip yüklenir. Dosya kilitli bir depoda durur; ücretli üye birkaç saat
-geçerli bir bağlantıyla izler. Ücretsiz planda tek dosya boyutu ve toplam depolama sınırlıdır; video sayısı artınca ücretli
-plana ya da ayrı bir video hizmetine geçmek gerekir.
 
 ## Kurallar (veri tabanında, sayfada değil)
 

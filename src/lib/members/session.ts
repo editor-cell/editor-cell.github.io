@@ -99,7 +99,7 @@ export function useMember(): Member {
   );
 }
 
-/** Paid members and the editor open members-only readings and videos. */
+/** Paid members and the editor open members-only readings. */
 export function isPaid(profile: Profile | null, now = Date.now()): boolean {
   if (!profile) return false;
   if (profile.role === "editor") return true;

@@ -12,7 +12,7 @@ import {
   RelatedReadings,
   useSignedCopy,
 } from "@/components/reading-extras";
-import { LockNote, StoryVideos, useMemberText } from "@/components/members/locked";
+import { LockNote, useMemberText } from "@/components/members/locked";
 import { Shell } from "@/components/shell";
 import {
   TwinButton,
@@ -327,8 +327,6 @@ function Reading({ story }: { story: Story | null }) {
         ) : null}
 
         <div className="reading-column flex w-full flex-col gap-8">
-          <StoryVideos storyId={story.id} lang={lang} />
-
           {written ? (
             <div
               ref={sources.length ? undefined : (node) => void (readEnd.current = node)}

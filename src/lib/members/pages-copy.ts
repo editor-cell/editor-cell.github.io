@@ -60,7 +60,7 @@ const COPY: Record<Lang, PagesCopy> = {
         points: [
           "Her hafta sekiz yazıdan oluşan dijital dergi",
           "Dergideki yazıları sesli dinleme",
-          "Hediye: bütün içeriklere ve videolara erişim",
+          "Hediye: bütün içeriklere erişim",
           "Ücretsiz üyeliğin bütün imkânları",
           "Kaynaklara dayalı, bağımsız yayıncılığa doğrudan destek",
         ],
@@ -110,7 +110,7 @@ const COPY: Record<Lang, PagesCopy> = {
   ar: {
     membership: {
       title: "العضوية",
-      lead: "معظم قراءات أوربيس متاحة للجميع. بالعضوية يمكنك التعليق تحت المقالات، وبعضوية الداعم تصل إلى المقالات والفيديوهات الخاصة بالأعضاء وتسهم في عمل أوربيس المستقل.",
+      lead: "معظم قراءات أوربيس متاحة للجميع. بالعضوية يمكنك التعليق تحت المقالات، وبعضوية الداعم تصل إلى المقالات الخاصة بالأعضاء وتسهم في عمل أوربيس المستقل.",
       free: {
         name: "العضوية المجانية",
         price: "مجانًا",
@@ -121,7 +121,6 @@ const COPY: Record<Lang, PagesCopy> = {
         name: "عضوية الداعم",
         points: [
           "المقالات الخاصة بالأعضاء كاملة",
-          "الفيديوهات الخاصة بالأعضاء",
           "كل ما في العضوية المجانية",
           "دعم مباشر لنشر مستقل قائم على المصادر",
         ],
@@ -182,7 +181,7 @@ const COPY: Record<Lang, PagesCopy> = {
         points: [
           "A digital magazine of eight articles every week",
           "Audio of every magazine article",
-          "Gift: access to all content and the videos",
+          "Gift: access to all content",
           "Everything in free membership",
           "Direct support for sourced, independent publishing",
         ],
@@ -232,7 +231,7 @@ const COPY: Record<Lang, PagesCopy> = {
   fr: {
     membership: {
       title: "Adhésion",
-      lead: "La plupart des lectures d’Orbis sont ouvertes à tous. Membre, vous pouvez commenter sous les textes ; membre bienfaiteur, vous lisez aussi les textes et regardez les vidéos réservés aux membres, et soutenez l’indépendance d’Orbis.",
+      lead: "La plupart des lectures d’Orbis sont ouvertes à tous. Membre, vous pouvez commenter sous les textes ; membre bienfaiteur, vous lisez aussi les textes réservés aux membres, et soutenez l’indépendance d’Orbis.",
       free: {
         name: "Adhésion gratuite",
         price: "Gratuit",
@@ -243,7 +242,6 @@ const COPY: Record<Lang, PagesCopy> = {
         name: "Adhésion bienfaiteur",
         points: [
           "Les textes réservés aux membres, en entier",
-          "Les vidéos réservées aux membres",
           "Tout ce que comprend l’adhésion gratuite",
           "Un soutien direct à une publication sourcée et indépendante",
         ],
@@ -293,7 +291,7 @@ const COPY: Record<Lang, PagesCopy> = {
   es: {
     membership: {
       title: "Membresía",
-      lead: "La mayoría de las lecturas de Orbis están abiertas a todos. Como miembro puede comentar bajo los textos; como miembro benefactor lee además los textos y ve los vídeos reservados a miembros, y ayuda a que Orbis siga siendo independiente.",
+      lead: "La mayoría de las lecturas de Orbis están abiertas a todos. Como miembro puede comentar bajo los textos; como miembro benefactor lee además los textos reservados a miembros, y ayuda a que Orbis siga siendo independiente.",
       free: {
         name: "Membresía gratuita",
         price: "Gratis",
@@ -304,7 +302,6 @@ const COPY: Record<Lang, PagesCopy> = {
         name: "Membresía benefactora",
         points: [
           "Los textos para miembros, completos",
-          "Los vídeos para miembros",
           "Todo lo de la membresía gratuita",
           "Apoyo directo a una publicación independiente y con fuentes",
         ],

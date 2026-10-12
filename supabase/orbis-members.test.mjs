@@ -177,7 +177,7 @@ test("three reports from three members hide a comment; the editor restores it", 
   assert.equal((await db.query("select id from public.comments")).rows.length, 0);
 });
 
-test("members-only texts and videos open only to paid members and the editor", async () => {
+test("members-only texts open only to paid members and the editor", async () => {
   const db = await setup();
   await as(
     db,
@@ -196,22 +196,4 @@ test("members-only texts and videos open only to paid members and the editor", a
   await db.exec(`update public.profiles set paid_until = now() - interval '1 day' where id = '${READER}'`);
   assert.equal((await read(READER)).rows.length, 0, "expired membership");
   assert.equal((await read(EDITOR)).rows.length, 1, "editor");
-
-  await as(db, EDITOR, "insert into storage.objects (bucket_id, name) values ('videos', 'rivers/a.mp4')");
-  await as(
-    db,
-    EDITOR,
-    "insert into public.videos (story_id, title, path) values ('rivers', 'Nehirler', 'rivers/a.mp4')",
-  );
-  await assert.rejects(
-    as(db, READER, "insert into storage.objects (bucket_id, name) values ('videos', 'x.mp4')"),
-    /row-level/,
-  );
-  assert.equal((await as(db, null, "select title from public.videos")).rows.length, 1, "listed for all");
-  const file = (who) => as(db, who, "select name from storage.objects where bucket_id = 'videos'");
-  assert.equal((await file(READER)).rows.length, 0, "unpaid member cannot open the file");
-  await db.exec(`update public.profiles set paid_until = now() + interval '1 year' where id = '${READER}'`);
-  assert.equal((await file(READER)).rows.length, 1, "paid member can");
-  const bucket = await db.query("select public from storage.buckets where id = 'videos'");
-  assert.equal(bucket.rows[0].public, false);
 });

@@ -1,11 +1,11 @@
--- Orbis members: membership, comments, members-only texts and videos.
+-- Orbis members: membership, comments and members-only texts.
 --
 -- Run once in the Supabase project: SQL Editor → New query → paste this file → Run.
 -- Running it again is safe; it creates only what is missing and replaces the functions.
 --
 -- Who can do what is decided here, in the database, not in the page: the page only asks,
 -- and these rules answer. A reader can never make themselves editor or paid member,
--- read a members-only text or video without a paid membership, or post a link.
+-- read a members-only text without a paid membership, or post a link.
 
 -- ---------------------------------------------------------------------------------------
 -- Members
@@ -274,46 +274,6 @@ create policy "member texts: paid members read" on public.member_texts
 drop policy if exists "member texts: editor writes" on public.member_texts;
 create policy "member texts: editor writes" on public.member_texts
   for all using (public.is_editor()) with check (public.is_editor());
-
--- ---------------------------------------------------------------------------------------
--- Videos. Anyone may see that a reading has a video and its title; the file itself sits
--- in a private bucket and opens only through a short-lived link for paid members.
--- ---------------------------------------------------------------------------------------
-
-create table if not exists public.videos (
-  id uuid primary key default gen_random_uuid(),
-  story_id text not null check (char_length(story_id) between 1 and 200),
-  title text not null default '',
-  path text not null unique,
-  created_at timestamptz not null default now()
-);
-
-create index if not exists videos_story on public.videos (story_id, created_at);
-
-alter table public.videos enable row level security;
-
-drop policy if exists "videos: listed for all" on public.videos;
-create policy "videos: listed for all" on public.videos for select using (true);
-
-drop policy if exists "videos: editor manages" on public.videos;
-create policy "videos: editor manages" on public.videos
-  for all using (public.is_editor()) with check (public.is_editor());
-
-insert into storage.buckets (id, name, public)
-values ('videos', 'videos', false)
-on conflict (id) do update set public = false;
-
-drop policy if exists "orbis videos: paid members watch" on storage.objects;
-create policy "orbis videos: paid members watch" on storage.objects
-  for select to authenticated using (bucket_id = 'videos' and public.is_paid());
-
-drop policy if exists "orbis videos: editor uploads" on storage.objects;
-create policy "orbis videos: editor uploads" on storage.objects
-  for insert to authenticated with check (bucket_id = 'videos' and public.is_editor());
-
-drop policy if exists "orbis videos: editor deletes" on storage.objects;
-create policy "orbis videos: editor deletes" on storage.objects
-  for delete to authenticated using (bucket_id = 'videos' and public.is_editor());
 
 -- ---------------------------------------------------------------------------------------
 -- Read counts (the "Most read" column on the front page)

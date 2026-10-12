@@ -45,7 +45,7 @@ const EN: Record<LegalPage, Doc> & { updated: string; footer: string; agree: str
         heading: "Supporting membership",
         paragraphs: [
           "What you buy: for the period you choose, the Orbis digital magazine of eight articles a week, at least 36,000 characters in total (including spaces, measured on the English text), with audio of each article. Access starts as soon as you pay; you reach it in your browser at orbisreadingatlas.com, signed in to your account.",
-          "Gift: access to all other content on Orbis and to the videos is given to members as a gift; it is not part of what the price pays for.",
+          "Gift: access to all other content on Orbis is given to members as a gift; it is not part of what the price pays for.",
           "Price: {prices}. Taxes due in your country are added on the payment page, which shows the total before you pay. Payment is made by card through the payment provider named on that page.",
           "Renewal and cancellation: membership renews at the end of each period for the same period and price unless you cancel. You can cancel at any time; cancelling stops the next renewal, and access lasts until the end of the period you have paid for.",
           "Refunds: because access is provided immediately on payment, there is no right of withdrawal, and payments are not refunded, including for the rest of a cancelled period.",
@@ -146,7 +146,7 @@ const TR: typeof EN = {
         heading: "Destekçi üyelik",
         paragraphs: [
           "Satışın konusu: seçilen dönem boyunca her hafta, toplamı en az 36.000 karakter (boşluklar dahil, İngilizce metin esas alınır) olan sekiz yazıdan oluşan Orbis dijital dergisi ve bu yazıların sesli dinlenmesi. Erişim ödemeyle hemen başlar; içeriklere orbisreadingatlas.com'da hesabınızla giriş yaparak tarayıcıdan ulaşılır.",
-          "Hediye: Orbis'teki diğer bütün içeriklere ve videolara erişim üyelere hediye olarak sunulur; ödenen ücretin karşılığı değildir.",
+          "Hediye: Orbis'teki diğer bütün içeriklere erişim üyelere hediye olarak sunulur; ödenen ücretin karşılığı değildir.",
           "Fiyat: {prices}. Bulunduğunuz ülkede ödenmesi gereken vergiler ödeme sayfasında eklenir; toplam tutar ödemeden önce gösterilir. Ödeme, o sayfada adı yazan ödeme hizmet sağlayıcısı aracılığıyla kartla yapılır.",
           "Yenileme ve iptal: üyelik, iptal edilmedikçe her dönemin sonunda aynı süre ve fiyatla yenilenir. Dilediğiniz zaman iptal edebilirsiniz; iptal bir sonraki yenilemeyi durdurur, erişim ödenmiş dönemin sonuna kadar sürer.",
           "İade: erişim ödemeyle hemen sağlandığı için cayma hakkı yoktur; ödemeler, iptal edilen dönemin kalanı dahil, iade edilmez.",
