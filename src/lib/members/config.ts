@@ -16,9 +16,9 @@ export const MEMBERS: {
   /** Show "Continue with Google" once Google sign-in is set up in Supabase. */
   google: boolean;
 } = {
-  enabled: false,
-  supabaseUrl: "",
-  supabaseKey: "",
+  enabled: true,
+  supabaseUrl: "https://vrfldrnaesfyizjaqveb.supabase.co",
+  supabaseKey: "sb_publishable_AUo-RXclC8kmtTUH3Cm49g_VQIQSomV",
   google: false,
 };
 

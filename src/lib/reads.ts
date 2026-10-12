@@ -14,6 +14,8 @@ const SEEN_KEY = "orbis-read-";
 /** One count per reading per browser tab session, so reloading a page adds nothing. */
 export function countRead(storyId: string): void {
   if (!membersOn || typeof window === "undefined") return;
+  // Only readers of the real site count; test copies and previews do not.
+  if (!/(^|\.)orbisreadingatlas\.com$/.test(window.location.hostname)) return;
   try {
     if (sessionStorage.getItem(SEEN_KEY + storyId)) return;
     sessionStorage.setItem(SEEN_KEY + storyId, "1");

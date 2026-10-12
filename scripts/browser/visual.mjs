@@ -125,6 +125,11 @@ export async function openSettled(browser, url, { size, look, depth }, fonts, wa
     else document.addEventListener("readystatechange", still, { once: true });
   });
   await context.route(FONT_HOSTS, fonts);
+  // The membership database answers every check with nothing (no comments, no counts), so
+  // a comment written on the live site never changes a picture and no check writes to it.
+  await context.route(/^https:\/\/[a-z0-9]+\.supabase\.co\//, (route) =>
+    route.fulfill({ status: 200, contentType: "application/json", body: "[]" }),
+  );
   const page = await context.newPage();
   watch?.(page);
   await page.goto(url, { waitUntil: "networkidle" });
