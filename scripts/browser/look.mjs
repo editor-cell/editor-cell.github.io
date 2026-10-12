@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { mkdirSync, readFileSync, rmSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { fontRouter, launchBrowser } from "./browser.mjs";
+import { annotate, fontRouter, launchBrowser } from "./browser.mjs";
 import { buildFixtureSite, WORK } from "./fixture-site.mjs";
 import { serveSite } from "./serve.mjs";
 import { runVisual } from "./visual.mjs";
@@ -14,6 +14,14 @@ import { runVisual } from "./visual.mjs";
  * nothing is stored, so no picture can be missing or come from another computer. A view
  * that differs stops the publish; the pictures are kept in .browser-check/out/visual/.
  */
+// Whatever stops the check is also left as a note on the GitHub run.
+for (const event of ["uncaughtException", "unhandledRejection"])
+  process.on(event, (error) => {
+    annotate("Look check", error?.stack ?? String(error));
+    console.error(error);
+    process.exit(1);
+  });
+
 const repo = resolve(process.cwd());
 const reference = readFileSync(join(repo, "tests/visual/reference.txt"), "utf8").trim();
 if (!/^[0-9a-f]{40}$/.test(reference))
@@ -38,6 +46,7 @@ try {
   await Promise.all(Object.values(sites).map((site) => site.close()));
 }
 if (failed.length) {
+  for (const { id, reason } of failed.slice(0, 9)) annotate("Look check", `${id}: ${reason}`);
   console.error(`[look] ${failed.length} view(s) differ; pictures in ${WORK}/out/visual/.`);
   process.exit(1);
 }

@@ -78,3 +78,13 @@ export async function fontRouter(cacheDir) {
 }
 
 export { FONT_HOSTS };
+
+/**
+ * A failure note on the GitHub run page (and readable through GitHub's API), so the
+ * reason a check stopped a publish can be seen without opening the full log.
+ */
+export function annotate(title, message) {
+  if (!process.env.GITHUB_ACTIONS) return;
+  const clean = String(message).replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A");
+  console.log(`::error title=${title}::${clean.slice(0, 900)}`);
+}

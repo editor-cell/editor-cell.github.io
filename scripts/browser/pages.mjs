@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { existsSync, mkdirSync, readdirSync, rmSync, statSync } from "node:fs";
 import { join, relative, resolve, sep } from "node:path";
-import { fontRouter, launchBrowser } from "./browser.mjs";
+import { annotate, fontRouter, launchBrowser } from "./browser.mjs";
 import { serveSite } from "./serve.mjs";
 import { openSettled, WIDTHS } from "./visual.mjs";
 
@@ -15,6 +15,14 @@ import { openSettled, WIDTHS } from "./visual.mjs";
  * page asks for is missing, when the page reports an error, or when it is left empty.
  * Pictures of failing pages are kept in .browser-check/out/pages/.
  */
+
+// Whatever stops the check is also left as a note on the GitHub run.
+for (const event of ["uncaughtException", "unhandledRejection"])
+  process.on(event, (error) => {
+    annotate("Page check", error?.stack ?? String(error));
+    console.error(error);
+    process.exit(1);
+  });
 
 const repo = resolve(process.cwd());
 const root = resolve(repo, process.argv[2] ?? "dist/client");
@@ -185,6 +193,7 @@ try {
 }
 
 for (const { label, problems } of failures.sort((a, b) => a.label.localeCompare(b.label))) {
+  annotate("Page check", `${label}: ${problems.join("; ")}`);
   console.error(`[pages] ${label}`);
   for (const problem of problems) console.error(`  - ${problem}`);
 }

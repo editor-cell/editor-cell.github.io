@@ -9,6 +9,15 @@ import {
 } from "node:fs";
 import { resolve } from "node:path";
 import { execFileSync, spawnSync } from "node:child_process";
+import { annotate } from "./browser/browser.mjs";
+
+// Whatever stops the check is also left as a note on the GitHub run.
+for (const event of ["uncaughtException", "unhandledRejection"])
+  process.on(event, (error) => {
+    annotate("Browser check", error?.stack ?? String(error));
+    console.error(error);
+    process.exit(1);
+  });
 
 export const BASELINE_COMMIT = "5a29fbe50ed946f46f99beb8aecf1223716e9b74";
 const root = process.cwd();
@@ -88,4 +97,7 @@ const result = spawnSync(
   },
 );
 process.exitCode = lookStatus === 0 && result.status === 0 ? 0 : 1;
+if (lookStatus !== 0) annotate("Browser check", "the look check stopped (see its notes)");
+if (result.status !== 0)
+  annotate("Browser check", `the reader checks stopped (exit ${result.status})`);
 if (process.exitCode === 0) console.log("[browser] all checks passed");

@@ -7,7 +7,12 @@ export default defineConfig({
   timeout: 45000,
   retries: 0,
   outputDir: "artifacts/browser",
-  reporter: [["list"], ["html", { outputFolder: "artifacts/browser-report", open: "never" }]],
+  // On GitHub a failing test also leaves a note on the run page ("github").
+  reporter: [
+    ["list"],
+    ...(process.env.GITHUB_ACTIONS ? [["github"]] : []),
+    ["html", { outputFolder: "artifacts/browser-report", open: "never" }],
+  ],
   use: {
     browserName: "chromium",
     ignoreHTTPSErrors: Boolean(process.env.ORBIS_BROWSER_PROXY),
