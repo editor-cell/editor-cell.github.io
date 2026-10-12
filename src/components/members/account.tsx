@@ -128,7 +128,7 @@ function whenRead(iso: string, lang: Lang, now = new Date()): string {
 function History({ lang, userId }: { lang: Lang; userId: string }) {
   const words = membersCopy(lang);
   const copy = copyFor(lang);
-  const { entries, clear } = useHistory(userId);
+  const { entries, available, clear } = useHistory(userId);
   const [asking, setAsking] = useState(false);
   const [error, setError] = useState("");
   const label =
@@ -137,6 +137,7 @@ function History({ lang, userId }: { lang: Lang; userId: string }) {
     .map((entry) => ({ entry, card: findCard(entry.storyId) }))
     .filter((row) => row.card !== undefined);
 
+  if (!available) return null;
   return (
     <section className="flex flex-col gap-3" aria-labelledby="history">
       <h2 id="history" className={`border-b-[3px] border-ink pb-3 font-body font-normal ${label}`}>

@@ -72,12 +72,18 @@ export function useNoteRead(storyId: string | undefined): void {
 
 export type HistoryEntry = { storyId: string; readAt: string };
 
-/** The member's history, newest first: null while loading, [] when empty or unavailable. */
+/**
+ * The member's history, newest first: null while loading, [] when empty. `available` turns
+ * false when the history cannot be read (the database part not set up yet), and the account
+ * page then leaves the section out instead of showing an empty list.
+ */
 export function useHistory(userId: string): {
   entries: HistoryEntry[] | null;
+  available: boolean;
   clear: () => Promise<boolean>;
 } {
   const [entries, setEntries] = useState<HistoryEntry[] | null>(null);
+  const [available, setAvailable] = useState(true);
   useEffect(() => {
     let live = true;
     void supabase()
@@ -89,13 +95,17 @@ export function useHistory(userId: string): {
           .order("read_at", { ascending: false })
           .limit(100),
       )
-      .then(({ data }) => {
+      .then(({ data, error }) => {
         if (!live) return;
+        if (error) {
+          setAvailable(false);
+          return;
+        }
         const rows = (data as { story_id: string; read_at: string }[] | null) ?? [];
         setEntries(rows.map((row) => ({ storyId: row.story_id, readAt: row.read_at })));
       })
       .catch(() => {
-        if (live) setEntries([]);
+        if (live) setAvailable(false);
       });
     return () => {
       live = false;
@@ -114,5 +124,5 @@ export function useHistory(userId: string): {
     }
   }
 
-  return { entries, clear };
+  return { entries, available, clear };
 }
