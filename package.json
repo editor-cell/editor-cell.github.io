@@ -17,7 +17,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "visual:update": "node scripts/browser/set-reference.mjs",
-    "test:browser": "node scripts/visual.mjs"
+    "test:browser": "node scripts/visual.mjs",
+    "test:pages": "node scripts/browser/pages.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",

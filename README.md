@@ -26,6 +26,13 @@ After `npm ci`, install the test browser with `npx playwright install --with-dep
 - **Reader** (`tests/browser`): menu, search, language, depth, chain, listening, schemes,
   the layout boundary and a tab left open across a publish, on frozen readings.
 
+`npm run test:pages` (`scripts/browser/pages.mjs`) runs next, on the real built site with
+this week's readings: every page in every open language at 390 and 1280 px, the front page
+at its three depths. A page stops the publish when anything sticks out past the edge of the
+screen, when drawn text runs out of its own box (a word too long for a title, say), when a
+picture or another file of the site does not load, when the page reports an error, or when
+it is empty. Pictures of failing pages are kept in `.browser-check/out/pages/`.
+
 After a design change the owner has approved, run `npm run visual:update` on that commit and
 commit `tests/visual/reference.txt` alone. The workflow never does this. On a machine that
 cannot reach Google Fonts, `ORBIS_OFFLINE_FONTS=1` lets the reader checks run with fallback

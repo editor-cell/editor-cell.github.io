@@ -5,7 +5,7 @@ Talk to him in Turkish, in plain words, without file paths or code. Every change
 is published by pushing to `main`: the "Publish site" workflow tests, builds and commits
 the pages; Cloudflare (Workers Builds) then serves them at https://orbisreadingatlas.com.
 
-## The three gates (nothing broken reaches readers)
+## The gates (nothing broken reaches readers)
 
 1. `scripts/stories-check.test.mjs` (part of `npm run test:site`): every reading file is
    valid, its id matches its file name, its section, date and titles are right, its
@@ -13,8 +13,13 @@ the pages; Cloudflare (Workers Builds) then serves them at https://orbisreadinga
 2. `scripts/check-built-site.mjs` (last step of `npm run build:pages`): every reading
    page was written with its title, every address inside the site resolves, every DOI is
    registered at doi.org.
-3. A failing gate stops the workflow before the publish commit, so the live site stays as
-   it was. Never weaken or skip a gate to get a reading out; fix the reading.
+3. `scripts/browser/pages.mjs` (`npm run test:pages`, in the workflow after the browser
+   checks): every built page at phone and desktop width; nothing may stick out past the
+   screen, no text may run out of its box (a long unbroken word in a title), every
+   picture loads, no page reports an error. Locally: `npm run build:pages` first.
+
+A failing gate stops the workflow before the publish commit, so the live site stays as it
+was. Never weaken or skip a gate to get a reading out; fix the reading.
 
 ## Adding or changing a reading
 

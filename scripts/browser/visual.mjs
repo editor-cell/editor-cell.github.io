@@ -88,8 +88,11 @@ async function finishMotion(page) {
   );
 }
 
-/** Opens a page in a settled state: settings applied, every picture loaded, motion stopped. */
-export async function openSettled(browser, url, { size, look, depth }, fonts) {
+/**
+ * Opens a page in a settled state: settings applied, every picture loaded, motion stopped.
+ * `watch`, when given, receives the page before it starts loading (to collect its errors).
+ */
+export async function openSettled(browser, url, { size, look, depth }, fonts, watch) {
   const context = await browser.newContext({
     viewport: { width: size.width, height: size.height },
     deviceScaleFactor: 1,
@@ -123,6 +126,7 @@ export async function openSettled(browser, url, { size, look, depth }, fonts) {
   });
   await context.route(FONT_HOSTS, fonts);
   const page = await context.newPage();
+  watch?.(page);
   await page.goto(url, { waitUntil: "networkidle" });
   // Pictures further down load only when scrolled to; load them all now.
   await page.evaluate(async () => {

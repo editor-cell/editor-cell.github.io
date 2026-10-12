@@ -60,6 +60,10 @@ jobs:
           key: browser-reference-${{ hashFiles('tests/visual/reference.txt') }}
       - name: Check reader controls and appearance
         run: npm run test:browser
+      # This week's real readings, every page, phone and desktop: nothing may stick out,
+      # run out of its box, fail to load or report an error.
+      - name: Check every page of the built site
+        run: npm run test:pages
       - name: Preserve browser failure evidence
         if: failure()
         uses: actions/upload-artifact@v6
