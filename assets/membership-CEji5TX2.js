@@ -1,0 +1,1 @@
+import{t as e}from"./pages-Sc8svGmL.js";var t=e;export{t as component};
