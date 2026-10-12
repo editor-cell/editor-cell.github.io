@@ -10,6 +10,7 @@ export function safeBack(value: unknown): string | null {
 /** The new end of a paid membership: added on to what is left, or counted from now. */
 export function extendPaid(current: string | null, months: number, now = new Date()): string {
   const start = current && new Date(current) > now ? new Date(current) : new Date(now);
-  start.setMonth(start.getMonth() + months);
+  // Counted in UTC, so a clock change between now and then cannot shift the hour.
+  start.setUTCMonth(start.getUTCMonth() + months);
   return start.toISOString();
 }

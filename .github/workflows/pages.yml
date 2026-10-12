@@ -33,13 +33,14 @@ permissions:
 
 jobs:
   publish:
-    runs-on: ubuntu-latest
+    # A fixed machine: a new Ubuntu reaches this site only when this line is changed on purpose.
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: main
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -53,7 +54,7 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       # Packages of the approved-look commit, reused until that commit changes.
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: .browser-check/deps
           key: browser-reference-${{ hashFiles('tests/visual/reference.txt') }}
@@ -61,7 +62,7 @@ jobs:
         run: npm run test:browser
       - name: Preserve browser failure evidence
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: browser-failure
           path: |
