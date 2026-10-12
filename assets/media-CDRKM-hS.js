@@ -1,0 +1,1 @@
+import{n as e}from"./videos-BGNNIF5A.js";var t=e;export{t as component};
