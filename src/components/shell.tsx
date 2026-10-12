@@ -7,6 +7,7 @@ import { SearchMark } from "@/components/search-mark";
 import { membersOn } from "@/lib/members/config";
 import { TRIAL, trialNote } from "@/lib/site";
 import { membersCopy } from "@/lib/members/copy";
+import { useMember } from "@/lib/members/session";
 import { paymentOn } from "@/lib/members/plans";
 import { pagesCopy } from "@/lib/members/pages-copy";
 import { LEGAL_PAGES, legalCopy } from "@/lib/legal-copy";
@@ -287,6 +288,7 @@ export function Shell({
   section?: Theme | "all";
 }) {
   const lang = useLang();
+  const signedIn = useMember().status === "in";
   const setPanelLang = useLibrary((s) => s.setLang);
   const navigate = useNavigate();
   const copy = useCopy(lang);
@@ -502,14 +504,24 @@ export function Shell({
                     </li>
                     {(["membership", "newsletter"] as const).map((item) => (
                       <li key={item}>
-                        <Link
-                          {...memberPageLink(lang, item)}
-                          className="inline-flex min-h-9 items-center self-start text-base text-paper"
-                        >
-                          {item === "membership" && !paymentOn
-                            ? pagesCopy(lang).membership.menu
-                            : pagesCopy(lang)[item].title}
-                        </Link>
+                        {/* A signed-in member is past joining: the row leads to the account. */}
+                        {item === "membership" && signedIn ? (
+                          <Link
+                            {...accountLink(lang)}
+                            className="inline-flex min-h-9 items-center self-start text-base text-paper"
+                          >
+                            {membersCopy(lang).account}
+                          </Link>
+                        ) : (
+                          <Link
+                            {...memberPageLink(lang, item)}
+                            className="inline-flex min-h-9 items-center self-start text-base text-paper"
+                          >
+                            {item === "membership" && !paymentOn
+                              ? pagesCopy(lang).membership.menu
+                              : pagesCopy(lang)[item].title}
+                          </Link>
+                        )}
                       </li>
                     ))}
                   </ul>

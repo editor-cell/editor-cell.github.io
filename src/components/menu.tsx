@@ -6,6 +6,7 @@ import { useFrameCopy } from "@/lib/frame-copy";
 import { langMeta, useCopy } from "@/lib/i18n";
 import {
   aboutLink,
+  accountLink,
   homeLink,
   memberPageLink,
   searchLink,
@@ -13,6 +14,8 @@ import {
   stripLang,
 } from "@/lib/lang-path";
 import { paymentOn } from "@/lib/members/plans";
+import { membersCopy } from "@/lib/members/copy";
+import { useMember } from "@/lib/members/session";
 import { pagesCopy } from "@/lib/members/pages-copy";
 import { searchCopy } from "@/lib/search";
 import { LOOKS, LOOK_SWATCH, type Look } from "@/lib/look";
@@ -155,6 +158,7 @@ export function SiteMenu({
   const onAbout = stripLang(path) === "/about";
   const onSearch = stripLang(path) === "/search";
   const here = stripLang(path);
+  const signedIn = useMember().status === "in";
   const [openGroup, setOpenGroup] = useState<Group | null>(readOpen);
   const toggle = (group: Group) => {
     const next = openGroup === group ? null : group;
@@ -309,6 +313,16 @@ export function SiteMenu({
                     <Link {...searchLink(lang)} className={page(onSearch)} onClick={onClose}>
                       {searchCopy(lang).title}
                       <Search aria-hidden="true" strokeWidth={1.5} className="size-4 shrink-0" />
+                    </Link>
+                  </li>
+                ) : item === "membership" && signedIn ? (
+                  <li key={item}>
+                    <Link
+                      {...accountLink(lang)}
+                      className={page(here === "/account")}
+                      onClick={onClose}
+                    >
+                      {membersCopy(lang).account}
                     </Link>
                   </li>
                 ) : item === "membership" || item === "newsletter" ? (
