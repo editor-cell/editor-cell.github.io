@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import { Shell, fieldClass } from "@/components/shell";
-import { MEMBERS, membersOn } from "@/lib/members/config";
+import { membersOn } from "@/lib/members/config";
 import { errorText, membersCopy } from "@/lib/members/copy";
 import { pagesCopy } from "@/lib/members/pages-copy";
 import { memberPageLink } from "@/lib/lang-path";
@@ -47,6 +47,9 @@ function Account({ lang }: { lang: Lang }) {
   const member = useMember();
   const [back, setBack] = useState<string | null>(null);
   useEffect(() => setBack(backFromAddress()), []);
+  // Back from a "forgot your password" e-mail: the new password comes first.
+  const [reset, setReset] = useState(false);
+  useEffect(() => setReset(new URLSearchParams(window.location.search).get("reset") === "1"), []);
 
   if (!membersOn || member.status === "off") {
     const soon = pagesCopy(lang);
@@ -87,7 +90,9 @@ function Account({ lang }: { lang: Lang }) {
         <p className="text-sm text-muted">{status}</p>
         {!isPaid(profile) ? <p className="text-sm text-muted">{words.paidSoon}</p> : null}
       </div>
+      {reset ? <PasswordForm lang={lang} first /> : null}
       <NameForm lang={lang} userId={member.user.id} current={profile?.display_name ?? ""} />
+      {!reset ? <PasswordForm lang={lang} first={false} /> : null}
       {profile?.role === "editor" ? (
         <Link to="/editor" className="inline-flex min-h-11 items-center self-start text-pine">
           Editör paneli
@@ -133,7 +138,10 @@ export function NameForm({
     setNote("");
     try {
       const client = await supabase();
-      const { error } = await client.from("profiles").update({ display_name: value }).eq("id", userId);
+      const { error } = await client
+        .from("profiles")
+        .update({ display_name: value })
+        .eq("id", userId);
       if (error) throw error;
       await refreshProfile();
       setNote(words.saved);
@@ -172,32 +180,67 @@ export function NameForm({
   );
 }
 
+/** Where a link from an e-mail brings the reader back: this account page. */
+function accountAddress(extra = ""): string {
+  return `${window.location.origin}${window.location.pathname}${extra}`;
+}
+
+type Step = "signin" | "join" | "forgot";
+
 /**
- * Sign in or sign up with an e-mail: Supabase sends a link and a 6-digit code. The code
- * is the sure way on a phone, where the link may open in another browser.
+ * Sign in, join or reset a forgotten password. Joining takes an e-mail and a password;
+ * Supabase sends a confirmation link, and the membership is complete once it is tapped.
+ * Signing in afterwards takes the e-mail and the password, nothing else.
  */
 function SignIn({ lang }: { lang: Lang }) {
   const words = membersCopy(lang);
+  const [step, setStep] = useState<Step>("signin");
   const [email, setEmail] = useState("");
-  const [sentTo, setSentTo] = useState<string | null>(null);
-  const [code, setCode] = useState("");
+  const [password, setPassword] = useState("");
+  const [sent, setSent] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
-  async function send(event: FormEvent) {
+  const choose = (next: Step) => {
+    setStep(next);
+    setError("");
+  };
+
+  async function submit(event: FormEvent) {
     event.preventDefault();
     const address = email.trim();
     if (!address) return;
+    if (step !== "forgot" && password.length < 8) {
+      setError(words.errors.weakPassword);
+      return;
+    }
     setBusy(true);
     setError("");
     try {
       const client = await supabase();
-      const { error } = await client.auth.signInWithOtp({
-        email: address,
-        options: { emailRedirectTo: window.location.href, shouldCreateUser: true },
-      });
-      if (error) throw error;
-      setSentTo(address);
+      if (step === "signin") {
+        const { error } = await client.auth.signInWithPassword({ email: address, password });
+        if (error) throw error;
+      } else if (step === "join") {
+        const { data, error } = await client.auth.signUp({
+          email: address,
+          password,
+          options: { emailRedirectTo: accountAddress() },
+        });
+        if (error) throw error;
+        // An address that is already a member comes back with no sign-in methods.
+        if (data.user && (data.user.identities ?? []).length === 0) {
+          setError(words.errors.alreadyMember);
+          return;
+        }
+        setSent(words.sentConfirm(address));
+      } else {
+        const { error } = await client.auth.resetPasswordForEmail(address, {
+          redirectTo: accountAddress("?reset=1"),
+        });
+        if (error) throw error;
+        setSent(words.sentReset(address));
+      }
     } catch (err) {
       setError(errorText(err, lang));
     } finally {
@@ -205,108 +248,174 @@ function SignIn({ lang }: { lang: Lang }) {
     }
   }
 
-  async function verify(event: FormEvent) {
-    event.preventDefault();
-    if (!sentTo) return;
-    setBusy(true);
-    setError("");
-    try {
-      const client = await supabase();
-      const { error } = await client.auth.verifyOtp({
-        email: sentTo,
-        token: code.trim(),
-        type: "email",
-      });
-      if (error) throw error;
-    } catch (err) {
-      setError(errorText(err, lang));
-    } finally {
-      setBusy(false);
-    }
+  if (sent) {
+    return (
+      <div className="flex flex-col gap-4">
+        <h2 className="text-xl">{words.checkEmail}</h2>
+        <p className="text-muted">{sent}</p>
+        <button
+          type="button"
+          className={`${quietButtonClass} self-start`}
+          onClick={() => {
+            setSent(null);
+            choose("signin");
+          }}
+        >
+          {words.back}
+        </button>
+      </div>
+    );
   }
 
-  async function google() {
-    setError("");
-    try {
-      const client = await supabase();
-      const { error } = await client.auth.signInWithOAuth({
-        provider: "google",
-        options: { redirectTo: window.location.href },
-      });
-      if (error) throw error;
-    } catch (err) {
-      setError(errorText(err, lang));
-    }
-  }
+  const tab = (choice: "signin" | "join") => (
+    <button
+      key={choice}
+      type="button"
+      role="tab"
+      aria-selected={step === choice}
+      onClick={() => choose(choice)}
+      className={`-mb-px min-h-11 border-b-2 text-xl ${
+        step === choice ? "border-ink text-ink" : "border-transparent text-muted"
+      }`}
+    >
+      {choice === "join" ? words.join : words.signIn}
+    </button>
+  );
 
   return (
     <div className="flex flex-col gap-6">
-      <h2 className="text-xl">{words.signIn}</h2>
-      {sentTo ? (
-        <form onSubmit={verify} className="flex flex-col gap-4">
-          <p className="text-muted">{words.sent(sentTo)}</p>
-          <label className="flex flex-col gap-2">
-            <span className="text-sm">{words.code}</span>
-            <input
-              value={code}
-              onChange={(event) => setCode(event.target.value)}
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              dir="ltr"
-              maxLength={10}
-              className={`${fieldClass()} tracking-[0.3em]`}
-            />
-          </label>
-          <div className="flex flex-wrap items-center gap-4">
-            <button type="submit" disabled={busy || code.trim().length < 6} className={buttonClass}>
-              {words.verify}
-            </button>
-            <button
-              type="button"
-              className={quietButtonClass}
-              onClick={() => {
-                setSentTo(null);
-                setCode("");
-              }}
-            >
-              {words.otherEmail}
-            </button>
-          </div>
-        </form>
+      {step === "forgot" ? (
+        <h2 className="text-xl">{words.forgot}</h2>
       ) : (
-        <form onSubmit={send} className="flex flex-col gap-4">
-          <p className="text-muted">{words.signInIntro}</p>
+        <div role="tablist" className="flex gap-8 border-b border-line">
+          {tab("signin")}
+          {tab("join")}
+        </div>
+      )}
+      <form onSubmit={submit} className="flex flex-col gap-4">
+        <p className="text-muted">
+          {step === "join"
+            ? words.joinIntro
+            : step === "forgot"
+              ? words.forgotIntro
+              : words.signInIntro}
+        </p>
+        <label className="flex flex-col gap-2">
+          <span className="text-sm">{words.email}</span>
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            autoComplete="email"
+            dir="ltr"
+            className={fieldClass()}
+          />
+        </label>
+        {step !== "forgot" ? (
           <label className="flex flex-col gap-2">
-            <span className="text-sm">{words.email}</span>
+            <span className="text-sm">{words.password}</span>
             <input
-              type="email"
+              type="password"
               required
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              autoComplete="email"
+              minLength={8}
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              autoComplete={step === "join" ? "new-password" : "current-password"}
               dir="ltr"
               className={fieldClass()}
             />
+            {step === "join" ? (
+              <span className="text-xs text-muted">{words.passwordHint}</span>
+            ) : null}
           </label>
-          <button type="submit" disabled={busy} className={`${buttonClass} self-start`}>
-            {words.send}
+        ) : null}
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+          <button type="submit" disabled={busy} className={buttonClass}>
+            {step === "join" ? words.join : step === "forgot" ? words.sendReset : words.signIn}
           </button>
-        </form>
-      )}
-      {MEMBERS.google && !sentTo ? (
-        <button
-          type="button"
-          onClick={() => void google()}
-          className="inline-flex min-h-11 items-center justify-center self-start border border-ink px-5 text-sm"
-        >
-          {words.google}
-        </button>
-      ) : null}
+          {step === "signin" ? (
+            <button type="button" className={quietButtonClass} onClick={() => choose("forgot")}>
+              {words.forgot}
+            </button>
+          ) : null}
+          {step === "forgot" ? (
+            <button type="button" className={quietButtonClass} onClick={() => choose("signin")}>
+              {words.back}
+            </button>
+          ) : null}
+        </div>
+      </form>
       {error ? (
         <p role="alert" className="text-sm text-pine">
           {error}
         </p>
       ) : null}
     </div>
+  );
+}
+
+/**
+ * Sets or changes the member's password. Opened first when the reader comes back from a
+ * "forgot your password" e-mail (the address then ends in ?reset=1).
+ */
+function PasswordForm({ lang, first }: { lang: Lang; first: boolean }) {
+  const words = membersCopy(lang);
+  const [password, setPassword] = useState("");
+  const [note, setNote] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  async function save(event: FormEvent) {
+    event.preventDefault();
+    if (password.length < 8) {
+      setNote(words.errors.weakPassword);
+      return;
+    }
+    setBusy(true);
+    setNote("");
+    try {
+      const client = await supabase();
+      const { error } = await client.auth.updateUser({ password });
+      if (error) throw error;
+      setPassword("");
+      setNote(words.passwordSaved);
+      if (first) window.history.replaceState(null, "", window.location.pathname);
+    } catch (error) {
+      setNote(errorText(error, lang));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <form onSubmit={save} className="flex flex-col gap-2">
+      <label className="flex flex-col gap-2">
+        <span className="text-sm">{words.newPassword}</span>
+        <input
+          type="password"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          minLength={8}
+          autoComplete="new-password"
+          autoFocus={first}
+          dir="ltr"
+          className={fieldClass()}
+        />
+      </label>
+      <p className="text-xs text-muted">
+        {first ? `${words.newPasswordIntro} ` : ""}
+        {words.passwordHint}
+      </p>
+      <div className="flex items-center gap-4">
+        <button type="submit" disabled={busy} className={buttonClass}>
+          {words.save}
+        </button>
+        {note ? (
+          <p role="status" className="text-sm text-muted">
+            {note}
+          </p>
+        ) : null}
+      </div>
+    </form>
   );
 }

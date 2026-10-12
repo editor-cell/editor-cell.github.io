@@ -4,13 +4,22 @@ import type { Lang } from "../types.ts";
 export type MembersCopy = {
   account: string;
   signIn: string;
+  join: string;
   signInIntro: string;
+  joinIntro: string;
   email: string;
-  send: string;
-  sent: (email: string) => string;
-  code: string;
-  verify: string;
-  otherEmail: string;
+  password: string;
+  passwordHint: string;
+  forgot: string;
+  forgotIntro: string;
+  sendReset: string;
+  checkEmail: string;
+  sentConfirm: (email: string) => string;
+  sentReset: (email: string) => string;
+  newPassword: string;
+  newPasswordIntro: string;
+  passwordSaved: string;
+  back: string;
   google: string;
   signOut: string;
   name: string;
@@ -40,6 +49,11 @@ export type MembersCopy = {
   errors: {
     generic: string;
     badCode: string;
+    wrongLogin: string;
+    notConfirmed: string;
+    alreadyMember: string;
+    weakPassword: string;
+    tooManyEmails: string;
     links: string;
     words: string;
     tooFast: string;
@@ -54,15 +68,25 @@ const COPY: Record<Lang, MembersCopy> = {
   tr: {
     account: "Hesap",
     signIn: "Giriş yap",
-    signInIntro:
-      "Üyelik ücretsiz. E-posta adresinizi yazın; size bir giriş bağlantısı ve 6 haneli bir kod gönderelim. Şifre yok.",
+    join: "Üye ol",
+    signInIntro: "E-posta adresinizi ve şifrenizi yazın.",
+    joinIntro:
+      "Üyelik ücretsiz. E-posta adresinizi yazın ve bir şifre belirleyin. Size bir doğrulama bağlantısı göndereceğiz; bağlantıya dokunduğunuzda üyeliğiniz tamamlanır.",
     email: "E-posta adresi",
-    send: "Gönder",
-    sent: (email) =>
-      `${email} adresine bir bağlantı ve kod gönderdik. Bağlantıya dokunun ya da kodu buraya yazın.`,
-    code: "Kod",
-    verify: "Doğrula",
-    otherEmail: "Başka bir adres kullan",
+    password: "Şifre",
+    passwordHint: "En az 8 karakter.",
+    forgot: "Şifremi unuttum",
+    forgotIntro: "E-posta adresinizi yazın; size şifre yenileme bağlantısı gönderelim.",
+    sendReset: "Bağlantı gönder",
+    checkEmail: "E-postanızı kontrol edin",
+    sentConfirm: (email) =>
+      `${email} adresine bir doğrulama bağlantısı gönderdik. Bağlantıya dokunduğunuzda üyeliğiniz tamamlanır; sonra buradan e-posta adresiniz ve şifrenizle giriş yaparsınız.`,
+    sentReset: (email) =>
+      `${email} adresine bir şifre yenileme bağlantısı gönderdik. Bağlantıya dokunun ve yeni şifrenizi belirleyin.`,
+    newPassword: "Şifre",
+    newPasswordIntro: "Yeni şifrenizi yazın.",
+    passwordSaved: "Şifreniz kaydedildi.",
+    back: "Geri dön",
     google: "Google ile devam et",
     signOut: "Çıkış yap",
     name: "Yorumlarda görünecek adınız",
@@ -92,6 +116,11 @@ const COPY: Record<Lang, MembersCopy> = {
     errors: {
       generic: "Bir sorun oldu. Lütfen tekrar deneyin.",
       badCode: "Kod geçersiz ya da süresi dolmuş.",
+      wrongLogin: "E-posta ya da şifre yanlış.",
+      notConfirmed: "E-posta adresiniz henüz doğrulanmadı. Size gönderdiğimiz bağlantıya dokunun.",
+      alreadyMember: "Bu e-posta adresiyle zaten bir üyelik var. Giriş yapın.",
+      weakPassword: "Şifre en az 8 karakter olmalı.",
+      tooManyEmails: "Kısa sürede çok fazla e-posta istendi. Biraz sonra tekrar deneyin.",
       links: "Yorumlarda bağlantı paylaşılamaz.",
       words: "Yorumunuzda izin verilmeyen bir kelime var.",
       tooFast: "Dakikada bir yorum yazılabilir. Biraz sonra tekrar deneyin.",
@@ -104,14 +133,25 @@ const COPY: Record<Lang, MembersCopy> = {
   ar: {
     account: "الحساب",
     signIn: "تسجيل الدخول",
-    signInIntro:
-      "العضوية مجانية. اكتب بريدك الإلكتروني وسنرسل إليك رابط دخول ورمزًا من ستة أرقام. لا حاجة إلى كلمة مرور.",
+    join: "انضم",
+    signInIntro: "اكتب بريدك الإلكتروني وكلمة المرور.",
+    joinIntro:
+      "العضوية مجانية. اكتب بريدك الإلكتروني واختر كلمة مرور. سنرسل إليك رابط تأكيد؛ تكتمل عضويتك عندما تضغط عليه.",
     email: "البريد الإلكتروني",
-    send: "إرسال",
-    sent: (email) => `أرسلنا رابطًا ورمزًا إلى ${email}. اضغط على الرابط أو اكتب الرمز هنا.`,
-    code: "الرمز",
-    verify: "تحقّق",
-    otherEmail: "استخدم عنوانًا آخر",
+    password: "كلمة المرور",
+    passwordHint: "ثمانية أحرف على الأقل.",
+    forgot: "نسيت كلمة المرور",
+    forgotIntro: "اكتب بريدك الإلكتروني وسنرسل إليك رابطًا لتعيين كلمة مرور جديدة.",
+    sendReset: "أرسل الرابط",
+    checkEmail: "تحقّق من بريدك الإلكتروني",
+    sentConfirm: (email) =>
+      `أرسلنا رابط تأكيد إلى ${email}. تكتمل عضويتك عندما تضغط عليه، ثم تدخل من هنا ببريدك وكلمة المرور.`,
+    sentReset: (email) =>
+      `أرسلنا رابطًا إلى ${email} لتعيين كلمة مرور جديدة. اضغط عليه واختر كلمة المرور.`,
+    newPassword: "كلمة المرور",
+    newPasswordIntro: "اكتب كلمة المرور الجديدة.",
+    passwordSaved: "حُفظت كلمة المرور.",
+    back: "رجوع",
     google: "المتابعة باستخدام Google",
     signOut: "تسجيل الخروج",
     name: "الاسم الذي يظهر مع تعليقاتك",
@@ -141,6 +181,11 @@ const COPY: Record<Lang, MembersCopy> = {
     errors: {
       generic: "حدث خطأ. يُرجى المحاولة مرة أخرى.",
       badCode: "الرمز غير صحيح أو انتهت صلاحيته.",
+      wrongLogin: "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+      notConfirmed: "لم يُؤكَّد بريدك الإلكتروني بعد. اضغط على الرابط الذي أرسلناه إليك.",
+      alreadyMember: "توجد عضوية بهذا البريد الإلكتروني. سجّل الدخول.",
+      weakPassword: "يجب أن تتكون كلمة المرور من ثمانية أحرف على الأقل.",
+      tooManyEmails: "طُلبت رسائل كثيرة في وقت قصير. حاول مرة أخرى بعد قليل.",
       links: "لا يمكن مشاركة الروابط في التعليقات.",
       words: "يحتوي تعليقك على كلمة غير مسموح بها.",
       tooFast: "يمكن كتابة تعليق واحد كل دقيقة. حاول بعد قليل.",
@@ -153,14 +198,25 @@ const COPY: Record<Lang, MembersCopy> = {
   en: {
     account: "Account",
     signIn: "Sign in",
-    signInIntro:
-      "Membership is free. Enter your e-mail and we will send you a sign-in link and a 6-digit code. No password.",
+    join: "Join",
+    signInIntro: "Enter your e-mail and your password.",
+    joinIntro:
+      "Membership is free. Enter your e-mail and choose a password. We will send you a confirmation link; your membership is complete once you tap it.",
     email: "E-mail address",
-    send: "Send",
-    sent: (email) => `We sent a link and a code to ${email}. Tap the link, or enter the code here.`,
-    code: "Code",
-    verify: "Verify",
-    otherEmail: "Use another address",
+    password: "Password",
+    passwordHint: "At least 8 characters.",
+    forgot: "Forgot your password?",
+    forgotIntro: "Enter your e-mail and we will send you a link to set a new password.",
+    sendReset: "Send link",
+    checkEmail: "Check your e-mail",
+    sentConfirm: (email) =>
+      `We sent a confirmation link to ${email}. Tap it and your membership is complete; then sign in here with your e-mail and password.`,
+    sentReset: (email) =>
+      `We sent a link to ${email} to set a new password. Tap it and choose your new password.`,
+    newPassword: "Password",
+    newPasswordIntro: "Enter your new password.",
+    passwordSaved: "Your password is saved.",
+    back: "Back",
     google: "Continue with Google",
     signOut: "Sign out",
     name: "Your name on comments",
@@ -190,6 +246,12 @@ const COPY: Record<Lang, MembersCopy> = {
     errors: {
       generic: "Something went wrong. Please try again.",
       badCode: "The code is wrong or has expired.",
+      wrongLogin: "The e-mail or the password is wrong.",
+      notConfirmed: "Your e-mail is not confirmed yet. Tap the link we sent you.",
+      alreadyMember: "There is already a membership with this e-mail. Sign in.",
+      weakPassword: "The password must be at least 8 characters.",
+      tooManyEmails:
+        "Too many e-mails were asked for in a short time. Please try again a little later.",
       links: "Links cannot be shared in comments.",
       words: "Your comment contains a word that is not allowed.",
       tooFast: "One comment a minute. Please try again shortly.",
@@ -202,15 +264,26 @@ const COPY: Record<Lang, MembersCopy> = {
   fr: {
     account: "Compte",
     signIn: "Se connecter",
-    signInIntro:
-      "L’adhésion est gratuite. Saisissez votre e-mail : nous vous enverrons un lien de connexion et un code à 6 chiffres. Pas de mot de passe.",
+    join: "Adhérer",
+    signInIntro: "Saisissez votre adresse et votre mot de passe.",
+    joinIntro:
+      "L’adhésion est gratuite. Saisissez votre adresse et choisissez un mot de passe. Nous vous enverrons un lien de confirmation ; votre adhésion est complète dès que vous le touchez.",
     email: "Adresse e-mail",
-    send: "Envoyer",
-    sent: (email) =>
-      `Nous avons envoyé un lien et un code à ${email}. Touchez le lien ou saisissez le code ici.`,
-    code: "Code",
-    verify: "Vérifier",
-    otherEmail: "Utiliser une autre adresse",
+    password: "Mot de passe",
+    passwordHint: "Au moins 8 caractères.",
+    forgot: "Mot de passe oublié ?",
+    forgotIntro:
+      "Saisissez votre adresse ; nous vous enverrons un lien pour choisir un nouveau mot de passe.",
+    sendReset: "Envoyer le lien",
+    checkEmail: "Vérifiez votre messagerie",
+    sentConfirm: (email) =>
+      `Nous avons envoyé un lien de confirmation à ${email}. Touchez-le et votre adhésion est complète ; connectez-vous ensuite ici avec votre adresse et votre mot de passe.`,
+    sentReset: (email) =>
+      `Nous avons envoyé à ${email} un lien pour choisir un nouveau mot de passe. Touchez-le.`,
+    newPassword: "Mot de passe",
+    newPasswordIntro: "Saisissez votre nouveau mot de passe.",
+    passwordSaved: "Votre mot de passe est enregistré.",
+    back: "Retour",
     google: "Continuer avec Google",
     signOut: "Se déconnecter",
     name: "Votre nom sur les commentaires",
@@ -240,6 +313,12 @@ const COPY: Record<Lang, MembersCopy> = {
     errors: {
       generic: "Un problème est survenu. Veuillez réessayer.",
       badCode: "Le code est incorrect ou a expiré.",
+      wrongLogin: "L’adresse ou le mot de passe est incorrect.",
+      notConfirmed:
+        "Votre adresse n’est pas encore confirmée. Touchez le lien que nous vous avons envoyé.",
+      alreadyMember: "Une adhésion existe déjà avec cette adresse. Connectez-vous.",
+      weakPassword: "Le mot de passe doit compter au moins 8 caractères.",
+      tooManyEmails: "Trop de messages demandés en peu de temps. Réessayez un peu plus tard.",
       links: "Les liens ne sont pas autorisés dans les commentaires.",
       words: "Votre commentaire contient un mot non autorisé.",
       tooFast: "Un commentaire par minute. Réessayez dans un instant.",
@@ -252,15 +331,25 @@ const COPY: Record<Lang, MembersCopy> = {
   es: {
     account: "Cuenta",
     signIn: "Iniciar sesión",
-    signInIntro:
-      "La membresía es gratuita. Escriba su correo y le enviaremos un enlace de acceso y un código de 6 dígitos. Sin contraseña.",
+    join: "Unirse",
+    signInIntro: "Escriba su correo y su contraseña.",
+    joinIntro:
+      "La membresía es gratuita. Escriba su correo y elija una contraseña. Le enviaremos un enlace de confirmación; su membresía queda completa en cuanto lo toque.",
     email: "Correo electrónico",
-    send: "Enviar",
-    sent: (email) =>
-      `Enviamos un enlace y un código a ${email}. Toque el enlace o escriba el código aquí.`,
-    code: "Código",
-    verify: "Verificar",
-    otherEmail: "Usar otra dirección",
+    password: "Contraseña",
+    passwordHint: "Al menos 8 caracteres.",
+    forgot: "¿Olvidó su contraseña?",
+    forgotIntro: "Escriba su correo y le enviaremos un enlace para elegir una contraseña nueva.",
+    sendReset: "Enviar enlace",
+    checkEmail: "Revise su correo",
+    sentConfirm: (email) =>
+      `Enviamos un enlace de confirmación a ${email}. Tóquelo y su membresía queda completa; después inicie sesión aquí con su correo y su contraseña.`,
+    sentReset: (email) =>
+      `Enviamos a ${email} un enlace para elegir una contraseña nueva. Tóquelo.`,
+    newPassword: "Contraseña",
+    newPasswordIntro: "Escriba su nueva contraseña.",
+    passwordSaved: "Su contraseña se ha guardado.",
+    back: "Volver",
     google: "Continuar con Google",
     signOut: "Cerrar sesión",
     name: "Su nombre en los comentarios",
@@ -290,6 +379,12 @@ const COPY: Record<Lang, MembersCopy> = {
     errors: {
       generic: "Algo salió mal. Inténtelo de nuevo.",
       badCode: "El código es incorrecto o ha caducado.",
+      wrongLogin: "El correo o la contraseña no son correctos.",
+      notConfirmed: "Su correo aún no está confirmado. Toque el enlace que le enviamos.",
+      alreadyMember: "Ya existe una membresía con este correo. Inicie sesión.",
+      weakPassword: "La contraseña debe tener al menos 8 caracteres.",
+      tooManyEmails:
+        "Se pidieron demasiados correos en poco tiempo. Inténtelo de nuevo un poco más tarde.",
       links: "No se pueden compartir enlaces en los comentarios.",
       words: "Su comentario contiene una palabra no permitida.",
       tooFast: "Un comentario por minuto. Inténtelo de nuevo en un momento.",
@@ -315,8 +410,16 @@ export function errorText(error: unknown, lang: Lang): string {
   if (text.includes("too_fast")) return words.tooFast;
   if (text.includes("too_many")) return words.tooMany;
   if (text.includes("name_required")) return words.nameRequired;
-  if (text.includes("comments_body_check") || text.includes("check constraint")) return words.length;
+  if (text.includes("comments_body_check") || text.includes("check constraint"))
+    return words.length;
   if (code === "23505" || text.includes("duplicate key")) return words.alreadyReported;
+  if (/invalid login credentials|invalid_credentials/i.test(`${text} ${code}`))
+    return words.wrongLogin;
+  if (/email not confirmed|email_not_confirmed/i.test(`${text} ${code}`)) return words.notConfirmed;
+  if (/already (been )?registered|user_already_exists/i.test(`${text} ${code}`))
+    return words.alreadyMember;
+  if (/password should|weak_password/i.test(`${text} ${code}`)) return words.weakPassword;
+  if (/rate limit|over_email_send_rate_limit/i.test(`${text} ${code}`)) return words.tooManyEmails;
   if (/token|otp|expired|invalid/i.test(text)) return words.badCode;
   return words.generic;
 }
