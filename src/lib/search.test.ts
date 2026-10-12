@@ -230,13 +230,34 @@ test("videos are found by their title and their transcript, beside the readings"
     [videoKey("sea"), "Bu videoda gelgit ölçer ile uydu karşılaştırılıyor."],
   ]);
   const found = (q: string) =>
-    searchAll(cards, [video], "tr", q, bodies).map((f) => (f.kind === "video" ? `video:${f.video.id}` : f.card.id));
+    searchAll(cards, [video], "tr", q, { tr: bodies }).map((f) => (f.kind === "video" ? `video:${f.video.id}` : f.card.id));
   // A word only in the transcript finds the video.
   assert.deepEqual(found("uydu karsilastir"), ["video:sea"]);
   // A word in both: both come back, the title hit first.
   assert.deepEqual(found("deniz"), ["video:sea", "tide"]);
   assert.deepEqual(found("gelgit").sort(), ["tide", "video:sea"]);
   // A video without an index entry, or without this language, is not found.
-  assert.deepEqual(searchAll(cards, [video], "tr", "uydu", new Map()), []);
-  assert.deepEqual(searchAll(cards, [video], "en", "uydu", bodies), []);
+  assert.deepEqual(searchAll(cards, [video], "tr", "uydu", { tr: new Map() }), []);
+  assert.deepEqual(searchAll(cards, [video], "en", "uydu", { tr: bodies }), []);
+});
+
+test("a word typed in the other language still finds the reading, shown in the page's language", () => {
+  const rice = card("rice", "en", { title: "Who feeds Asia's rice bowl" });
+  rice.locales.tr = locale({ title: "Asya'nın pirinç kâsesini kim dolduruyor" });
+  const other = card("other", "en", { title: "Sea levels" });
+  const indexes = {
+    en: new Map([
+      ["rice", "Rice prices rose across the region."],
+      ["other", "Tide gauges stand on the coast."],
+    ]),
+    tr: new Map([["rice", "Pirinç fiyatları bölgede yükseldi."]]),
+  };
+  const found = (lang: Lang, q: string) =>
+    searchAll([rice, other], [], lang, q, indexes).map((f) => (f.kind === "story" ? f.card.id : ""));
+  // A Turkish word on the English page, and an English word on the Turkish page.
+  assert.deepEqual(found("en", "pirinç"), ["rice"]);
+  assert.deepEqual(found("en", "pirinc"), ["rice"]);
+  assert.deepEqual(found("tr", "rice"), ["rice"]);
+  // A reading not written in the page's language is not listed there.
+  assert.deepEqual(found("tr", "tide"), []);
 });

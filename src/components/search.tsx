@@ -5,8 +5,8 @@ import { SearchMark } from "@/components/search-mark";
 import { Shell } from "@/components/shell";
 import { useCopy } from "@/lib/i18n";
 import { readLink, videoLink } from "@/lib/lang-path";
-import { loadSearchBodies, searchAll, searchCopy } from "@/lib/search";
-import type { Lang } from "@/lib/types";
+import { loadSearchIndexes, searchAll, searchCopy, type SearchIndexes } from "@/lib/search";
+import { LANGS } from "@/lib/types";
 import { CARDS } from "@/lib/seed";
 import { formatDate, storyTitle } from "@/lib/text";
 import { useLang } from "@/lib/use-lang";
@@ -37,11 +37,8 @@ export function SearchPage() {
   // so the written page and the open page start out the same.
   const [ready, setReady] = useState(false);
   const [query, setQuery] = useState("");
-  const [index, setIndex] = useState<{
-    lang: Lang;
-    bodies: ReadonlyMap<string, string>;
-  } | null>(null);
-  const [failedLang, setFailedLang] = useState<Lang | null>(null);
+  const [indexes, setIndexes] = useState<SearchIndexes | null>(null);
+  const [failed, setFailed] = useState(false);
   const [requestAttempt, setRequestAttempt] = useState(0);
   const hasQuery = query.trim().length > 0;
 
@@ -63,30 +60,29 @@ export function SearchPage() {
     return () => window.clearTimeout(timer);
   }, [query, ready, path, navigate]);
 
-  // Download one language only, on the first nonempty query. Cancelling the request
-  // prevents an old language or an unmounted page from replacing the current index.
+  // On the first nonempty query, download the texts of every site language: a word is
+  // found whichever language it is typed in. Cancelling the request keeps an unmounted
+  // page from setting state.
   useEffect(() => {
-    if (!ready || !hasQuery || index?.lang === lang) return;
+    if (!ready || !hasQuery || indexes) return;
     const controller = new AbortController();
-    setFailedLang(null);
-    void loadSearchBodies(lang, import.meta.env.BASE_URL, controller.signal)
-      .then((bodies) => {
-        if (!controller.signal.aborted) setIndex({ lang, bodies });
+    setFailed(false);
+    void loadSearchIndexes(LANGS, import.meta.env.BASE_URL, controller.signal)
+      .then((loaded) => {
+        if (!controller.signal.aborted) setIndexes(loaded);
       })
       .catch(() => {
-        if (!controller.signal.aborted) setFailedLang(lang);
+        if (!controller.signal.aborted) setFailed(true);
       });
     return () => controller.abort();
-  }, [lang, ready, hasQuery, index, requestAttempt]);
+  }, [ready, hasQuery, indexes, requestAttempt]);
 
-  const bodies = index?.lang === lang ? index.bodies : undefined;
   const results = useMemo(
-    () => (bodies ? searchAll(CARDS, VIDEOS, lang, query, bodies) : []),
-    [lang, query, bodies],
+    () => (indexes ? searchAll(CARDS, VIDEOS, lang, query, indexes) : []),
+    [lang, query, indexes],
   );
-  const searching = ready && hasQuery && bodies !== undefined;
-  const pending = ready && hasQuery && !bodies && failedLang !== lang;
-  const failed = ready && hasQuery && !bodies && failedLang === lang;
+  const searching = ready && hasQuery && indexes !== null;
+  const pending = ready && hasQuery && !indexes && !failed;
 
   return (
     <Shell>
@@ -101,7 +97,7 @@ export function SearchPage() {
             className="group flex items-center gap-3 border-b border-rule pb-2.5 focus-within:border-ink"
             onSubmit={(event) => {
               event.preventDefault();
-              if (failedLang === lang) setRequestAttempt((attempt) => attempt + 1);
+              if (failed) setRequestAttempt((attempt) => attempt + 1);
               const q = query.trim();
               input.current?.blur();
               void navigate({
@@ -171,7 +167,9 @@ export function SearchPage() {
                           >
                             {videoWords(lang).video}
                           </span>
-                          {length ? <span className="tabular-nums" dir="ltr">{` · ${length}`}</span> : null}
+                          {length ? (
+                            <span className="tabular-nums" dir="ltr">{` · ${length}`}</span>
+                          ) : null}
                           {" · "}
                           <span className="whitespace-nowrap">{formatDate(video.date, lang)}</span>
                         </p>

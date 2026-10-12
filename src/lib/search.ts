@@ -272,38 +272,71 @@ export type Found =
   | { kind: "story"; card: StoryCard; date: string; score: number }
   | { kind: "video"; video: VideoCard; date: string; score: number };
 
+/** The full texts of every site language, as loaded for one search. */
+export type SearchIndexes = Partial<Record<Lang, ReadonlyMap<string, string>>>;
+
 /**
  * Readings and videos together, found the same way: a video's title counts as a reading's
  * title, its sentence as a summary, its transcript as the full text. A video is found
  * only through the index, which holds its transcript.
+ *
+ * A query is matched in every language the index holds, not only the page's: a Turkish
+ * reader on the English page who types "pirinç" still finds the reading about rice. The
+ * best language's score counts; the result is shown in the page's language.
  */
 export function searchAll(
   cards: StoryCard[],
   videos: VideoCard[],
   lang: Lang,
   query: string,
-  bodies: ReadonlyMap<string, string>,
+  indexes: SearchIndexes,
 ): Found[] {
   const words = terms(query);
   if (words.length === 0) return [];
+  const langs = Object.keys(indexes) as Lang[];
   const found: Found[] = [];
   for (const card of cards) {
-    if (!card.locales[lang].written || !bodies.has(card.id)) continue;
-    const fields: Fields = [...fieldsOf(card, lang).slice(0, 3), [bodyWords(bodies, card.id), 1]];
-    const score = scoreOf(fields, words);
+    if (!card.locales[lang].written || !indexes[lang]?.has(card.id)) continue;
+    let score = 0;
+    for (const each of langs) {
+      const bodies = indexes[each];
+      if (!bodies?.has(card.id) || !card.locales[each]?.written) continue;
+      const fields: Fields = [...fieldsOf(card, each).slice(0, 3), [bodyWords(bodies, card.id), 1]];
+      score = Math.max(score, scoreOf(fields, words));
+    }
     if (score) found.push({ kind: "story", card, date: card.date, score });
   }
   for (const video of videos) {
-    const copy = video.locales[lang];
     const key = videoKey(video.id);
-    if (!copy || !bodies.has(key)) continue;
-    const fields: Fields = [
-      [fieldWords(copy.title), 5],
-      [fieldWords(copy.dek), 3],
-      [bodyWords(bodies, key), 1],
-    ];
-    const score = scoreOf(fields, words);
+    if (!video.locales[lang] || !indexes[lang]?.has(key)) continue;
+    let score = 0;
+    for (const each of langs) {
+      const copy = video.locales[each];
+      const bodies = indexes[each];
+      if (!copy || !bodies?.has(key)) continue;
+      const fields: Fields = [
+        [fieldWords(copy.title), 5],
+        [fieldWords(copy.dek), 3],
+        [bodyWords(bodies, key), 1],
+      ];
+      score = Math.max(score, scoreOf(fields, words));
+    }
     if (score) found.push({ kind: "video", video, date: video.date, score });
   }
   return found.sort((a, b) => b.score - a.score || b.date.localeCompare(a.date));
+}
+
+/** The full texts of every site language at once, for a search across languages. */
+export async function loadSearchIndexes(
+  langs: readonly Lang[],
+  baseUrl: string,
+  signal?: AbortSignal,
+  request: typeof fetch = fetch,
+): Promise<SearchIndexes> {
+  const loaded = await Promise.all(
+    langs.map(
+      async (each) => [each, await loadSearchBodies(each, baseUrl, signal, request)] as const,
+    ),
+  );
+  return Object.fromEntries(loaded) as SearchIndexes;
 }

@@ -30,44 +30,76 @@ export function EditorPage() {
 function Door() {
   const member = useMember();
   if (!membersOn || member.status === "off") {
-    return <p className="text-muted">Üyelik kapalı. Açmak için docs/uyelik-etkinlestirme.md dosyasına bakın.</p>;
+    return (
+      <p className="text-muted">
+        Üyelik kapalı. Açmak için docs/uyelik-etkinlestirme.md dosyasına bakın.
+      </p>
+    );
   }
   if (member.status === "loading") return <p className="text-muted">Yükleniyor…</p>;
   if (member.status === "out") {
     return (
-      <Link {...accountLink("tr", "/editor")} className="inline-flex min-h-11 items-center text-pine">
+      <Link
+        {...accountLink("tr", "/editor")}
+        className="inline-flex min-h-11 items-center text-pine"
+      >
         Giriş yap
       </Link>
     );
   }
   if (!isEditor(member)) return <p className="text-muted">Bu sayfa yalnız editöre açık.</p>;
   return (
-    <>
-      <nav className="flex flex-wrap gap-x-5 gap-y-1 text-sm">
-        {[
-          ["yorumlar", "Yorumlar"],
-          ["uyeler", "Üyeler"],
-          ["metinler", "Üyelere özel metinler"],
-          ["kelimeler", "Yasaklı kelimeler"],
-        ].map(([id, label]) => (
-          <a key={id} href={`#${id}`} className="inline-flex min-h-9 items-center text-pine">
-            {label}
-          </a>
-        ))}
-      </nav>
+    <div className="flex flex-col border-b border-line">
       <CommentsBox />
       <MembersBox />
       <TextsBox />
       <WordsBox />
-    </>
+    </div>
   );
 }
 
-function Box({ id, title, children }: { id: string; title: string; children: ReactNode }) {
+/** A section that stays closed until its title is tapped, for lists the editor rarely needs. */
+function FoldBox({ id, title, children }: { id: string; title: string; children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+  // The quick links above jump here by address; arriving that way opens the section.
+  useEffect(() => {
+    const show = () => {
+      if (window.location.hash === `#${id}`) setOpen(true);
+    };
+    show();
+    window.addEventListener("hashchange", show);
+    return () => window.removeEventListener("hashchange", show);
+  }, [id]);
   return (
-    <section id={id} className="flex scroll-mt-24 flex-col gap-5 border-t border-line pt-8">
-      <h2 className="text-2xl">{title}</h2>
-      {children}
+    <section id={id} className="flex scroll-mt-24 flex-col border-t border-line py-3">
+      <h2 className="text-2xl">
+        <button
+          type="button"
+          aria-expanded={open}
+          aria-controls={`${id}-body`}
+          onClick={() => setOpen((was) => !was)}
+          className="group flex min-h-11 w-full items-center justify-between gap-4 text-start"
+        >
+          <span>{title}</span>
+          <svg
+            viewBox="0 0 8 5"
+            className="size-3 shrink-0 opacity-70 transition-transform duration-200 group-aria-expanded:rotate-180"
+            aria-hidden="true"
+          >
+            <path d="M.75.75 4 4.25 7.25.75" fill="none" stroke="currentColor" strokeWidth="1" />
+          </svg>
+        </button>
+      </h2>
+      <div
+        id={`${id}-body`}
+        className={`grid transition-[grid-template-rows] duration-200 ease-out ${
+          open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        }`}
+      >
+        <div className="overflow-hidden" inert={!open}>
+          <div className="flex flex-col gap-5 pb-5 pt-4">{children}</div>
+        </div>
+      </div>
     </section>
   );
 }
@@ -89,7 +121,9 @@ const storyTitle = (id: string) => {
 };
 
 const day = (iso: string | null) =>
-  iso ? new Date(iso).toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric" }) : "";
+  iso
+    ? new Date(iso).toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric" })
+    : "";
 
 // ---------------------------------------------------------------------------------------
 
@@ -160,7 +194,7 @@ function CommentsBox() {
   }
 
   return (
-    <Box id="yorumlar" title="Yorumlar">
+    <FoldBox id="yorumlar" title="Yorumlar">
       <div className="flex gap-5 text-sm">
         <button
           type="button"
@@ -185,7 +219,9 @@ function CommentsBox() {
       {list === null ? (
         <p className="text-sm text-muted">Yükleniyor…</p>
       ) : list.length === 0 ? (
-        <p className="text-sm text-muted">{onlyHidden ? "Gizlenen yorum yok." : "Henüz yorum yok."}</p>
+        <p className="text-sm text-muted">
+          {onlyHidden ? "Gizlenen yorum yok." : "Henüz yorum yok."}
+        </p>
       ) : (
         <ol className="flex flex-col">
           {list.map((c) => (
@@ -201,15 +237,27 @@ function CommentsBox() {
               <p className="whitespace-pre-line break-words">{c.body}</p>
               <div className="flex gap-5 text-sm">
                 {c.hidden ? (
-                  <button type="button" className={quietButtonClass} onClick={() => void act(c.id, "restore")}>
+                  <button
+                    type="button"
+                    className={quietButtonClass}
+                    onClick={() => void act(c.id, "restore")}
+                  >
                     Geri aç
                   </button>
                 ) : (
-                  <button type="button" className={quietButtonClass} onClick={() => void act(c.id, "hide")}>
+                  <button
+                    type="button"
+                    className={quietButtonClass}
+                    onClick={() => void act(c.id, "hide")}
+                  >
                     Gizle
                   </button>
                 )}
-                <button type="button" className={quietButtonClass} onClick={() => void act(c.id, "delete")}>
+                <button
+                  type="button"
+                  className={quietButtonClass}
+                  onClick={() => void act(c.id, "delete")}
+                >
                   Sil
                 </button>
               </div>
@@ -217,7 +265,7 @@ function CommentsBox() {
           ))}
         </ol>
       )}
-    </Box>
+    </FoldBox>
   );
 }
 
@@ -275,7 +323,7 @@ function MembersBox() {
   }
 
   return (
-    <Box id="uyeler" title="Üyeler">
+    <FoldBox id="uyeler" title="Üyeler">
       <p className="text-sm text-muted">
         Ödeme sistemi bağlanana kadar ücretli üyeliği buradan siz verirsiniz. Süre, kalan sürenin
         üstüne eklenir.
@@ -314,7 +362,11 @@ function MembersBox() {
                 <p className="text-sm text-muted">
                   {[
                     p.display_name,
-                    p.role === "editor" ? "Editör" : paid ? `Ücretli, ${day(p.paid_until)} tarihine kadar` : "Ücretsiz",
+                    p.role === "editor"
+                      ? "Editör"
+                      : paid
+                        ? `Ücretli, ${day(p.paid_until)} tarihine kadar`
+                        : "Ücretsiz",
                     `Kayıt: ${day(p.created_at)}`,
                   ]
                     .filter(Boolean)
@@ -322,14 +374,26 @@ function MembersBox() {
                 </p>
                 {p.role !== "editor" ? (
                   <div className="flex flex-wrap gap-x-5 text-sm">
-                    <button type="button" className={quietButtonClass} onClick={() => void setPaid(p, 1)}>
+                    <button
+                      type="button"
+                      className={quietButtonClass}
+                      onClick={() => void setPaid(p, 1)}
+                    >
                       +1 ay
                     </button>
-                    <button type="button" className={quietButtonClass} onClick={() => void setPaid(p, 12)}>
+                    <button
+                      type="button"
+                      className={quietButtonClass}
+                      onClick={() => void setPaid(p, 12)}
+                    >
                       +1 yıl
                     </button>
                     {paid ? (
-                      <button type="button" className={quietButtonClass} onClick={() => void setPaid(p, null)}>
+                      <button
+                        type="button"
+                        className={quietButtonClass}
+                        onClick={() => void setPaid(p, null)}
+                      >
                         Ücretliliği kaldır
                       </button>
                     ) : null}
@@ -340,7 +404,7 @@ function MembersBox() {
           })}
         </ol>
       )}
-    </Box>
+    </FoldBox>
   );
 }
 
@@ -358,7 +422,11 @@ function StoryPicker({ value, onChange }: { value: string; onChange: (id: string
   return (
     <label className="flex flex-col gap-2">
       <span className="text-sm">Yazı</span>
-      <select value={value} onChange={(event) => onChange(event.target.value)} className={fieldClass()}>
+      <select
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className={fieldClass()}
+      >
         <option value="">Seçin</option>
         {CARDS.map((card) => (
           <option key={card.id} value={card.id}>
@@ -386,7 +454,12 @@ function TextsBox() {
     setNote("");
     void supabase()
       .then((client) =>
-        client.from("member_texts").select("body").eq("story_id", storyId).eq("lang", lang).maybeSingle(),
+        client
+          .from("member_texts")
+          .select("body")
+          .eq("story_id", storyId)
+          .eq("lang", lang)
+          .maybeSingle(),
       )
       .then(({ data, error }) => {
         if (!live) return;
@@ -415,12 +488,12 @@ function TextsBox() {
   }
 
   return (
-    <Box id="metinler" title="Üyelere özel metinler">
+    <FoldBox id="metinler" title="Üyelere özel metinler">
       <div className="flex flex-col gap-2 text-sm text-muted">
         <p>
-          Üyelere özel bir yazıda sitenin herkese açık dosyasında yalnız giriş bölümü durur ve dosyada
-          &quot;membersOnly&quot;: true yazar. Yazının tamamı buraya, her dil için ayrı girilir; ücretli
-          üye yazıyı açınca giriş bölümünün yerine bu metin görünür.
+          Üyelere özel bir yazıda sitenin herkese açık dosyasında yalnız giriş bölümü durur ve
+          dosyada &quot;membersOnly&quot;: true yazar. Yazının tamamı buraya, her dil için ayrı
+          girilir; ücretli üye yazıyı açınca giriş bölümünün yerine bu metin görünür.
         </p>
         <p>● işaretli yazılar dosyasında üyelere özel olarak işaretlenmiş olanlar.</p>
       </div>
@@ -465,7 +538,7 @@ function TextsBox() {
         ) : null}
         <Note text={note} />
       </form>
-    </Box>
+    </FoldBox>
   );
 }
 
@@ -514,13 +587,17 @@ function WordsBox() {
   }
 
   return (
-    <Box id="kelimeler" title="Yasaklı kelimeler">
+    <FoldBox id="kelimeler" title="Yasaklı kelimeler">
       <p className="text-sm text-muted">
-        Bu kelimelerden biri tam kelime olarak geçen yorum kaydedilmez; okuyucuya izin verilmeyen bir
-        kelime olduğu söylenir. Kelimenin ekli hâllerini ayrıca eklemek gerekir.
+        Bu kelimelerden biri tam kelime olarak geçen yorum kaydedilmez; okuyucuya izin verilmeyen
+        bir kelime olduğu söylenir. Kelimenin ekli hâllerini ayrıca eklemek gerekir.
       </p>
       <form onSubmit={add} className="flex gap-3">
-        <input value={word} onChange={(event) => setWord(event.target.value)} className={fieldClass()} />
+        <input
+          value={word}
+          onChange={(event) => setWord(event.target.value)}
+          className={fieldClass()}
+        />
         <button type="submit" className={buttonClass}>
           Ekle
         </button>
@@ -540,6 +617,6 @@ function WordsBox() {
           </li>
         ))}
       </ul>
-    </Box>
+    </FoldBox>
   );
 }

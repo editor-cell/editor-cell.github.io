@@ -100,7 +100,7 @@ const COPY: Record<Lang, MembersCopy> = {
       `${email} adresine bir doğrulama bağlantısı gönderdik. Bağlantıya dokunduğunuzda üyeliğiniz tamamlanır; sonra buradan e-posta adresiniz ve şifrenizle giriş yaparsınız.`,
     sentReset: (email) =>
       `${email} adresine bir şifre yenileme bağlantısı gönderdik. Bağlantıya dokunun ve yeni şifrenizi belirleyin.`,
-    newPassword: "Şifre",
+    newPassword: "Yeni şifre",
     changePassword: "Şifreyi değiştir",
     newPasswordIntro: "Yeni şifrenizi yazın.",
     passwordSaved: "Şifreniz kaydedildi.",
@@ -183,7 +183,7 @@ const COPY: Record<Lang, MembersCopy> = {
       `أرسلنا رابط تأكيد إلى ${email}. تكتمل عضويتك عندما تضغط عليه، ثم تدخل من هنا ببريدك وكلمة المرور.`,
     sentReset: (email) =>
       `أرسلنا رابطًا إلى ${email} لتعيين كلمة مرور جديدة. اضغط عليه واختر كلمة المرور.`,
-    newPassword: "كلمة المرور",
+    newPassword: "كلمة المرور الجديدة",
     changePassword: "تغيير كلمة المرور",
     newPasswordIntro: "اكتب كلمة المرور الجديدة.",
     passwordSaved: "حُفظت كلمة المرور.",
@@ -261,7 +261,7 @@ const COPY: Record<Lang, MembersCopy> = {
       `We sent a confirmation link to ${email}. Tap it and your membership is complete; then sign in here with your e-mail and password.`,
     sentReset: (email) =>
       `We sent a link to ${email} to set a new password. Tap it and choose your new password.`,
-    newPassword: "Password",
+    newPassword: "New password",
     changePassword: "Change password",
     newPasswordIntro: "Enter your new password.",
     passwordSaved: "Your password is saved.",
@@ -342,7 +342,7 @@ const COPY: Record<Lang, MembersCopy> = {
       `Nous avons envoyé un lien de confirmation à ${email}. Touchez-le et votre adhésion est complète ; connectez-vous ensuite ici avec votre adresse et votre mot de passe.`,
     sentReset: (email) =>
       `Nous avons envoyé à ${email} un lien pour choisir un nouveau mot de passe. Touchez-le.`,
-    newPassword: "Mot de passe",
+    newPassword: "Nouveau mot de passe",
     changePassword: "Changer le mot de passe",
     newPasswordIntro: "Saisissez votre nouveau mot de passe.",
     passwordSaved: "Votre mot de passe est enregistré.",
@@ -423,7 +423,7 @@ const COPY: Record<Lang, MembersCopy> = {
       `Enviamos un enlace de confirmación a ${email}. Tóquelo y su membresía queda completa; después inicie sesión aquí con su correo y su contraseña.`,
     sentReset: (email) =>
       `Enviamos a ${email} un enlace para elegir una contraseña nueva. Tóquelo.`,
-    newPassword: "Contraseña",
+    newPassword: "Nueva contraseña",
     changePassword: "Cambiar la contraseña",
     newPasswordIntro: "Escriba su nueva contraseña.",
     passwordSaved: "Su contraseña se ha guardado.",

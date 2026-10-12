@@ -17,7 +17,6 @@ export const THEMES = [
   "technology",
   "culture",
   "health",
-  "research",
 ] as const;
 export type Theme = (typeof THEMES)[number];
 
@@ -100,6 +99,8 @@ export function isTheme(value: string): value is Theme {
 
 /** Older two-part sections, mapped to the first half of their old label. */
 const LEGACY_THEMES: Record<string, Theme> = {
+  // "Research" was a section until October 2026; every reading rests on research.
+  research: "science",
   cities: "politics",
   trade: "science",
   knowledge: "culture",
@@ -111,7 +112,7 @@ export function toTheme(value: string): Theme | undefined {
 }
 
 export function normalizeTheme(value: string): Theme {
-  return toTheme(value) ?? "research";
+  return toTheme(value) ?? "science";
 }
 
 export function emptyLocale(): LocaleCopy {
