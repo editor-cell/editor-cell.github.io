@@ -5,9 +5,13 @@ import { errorText, membersCopy } from "./copy.ts";
 import { extendPaid, safeBack } from "./rules.ts";
 import { isPaid, type Profile } from "./session.ts";
 
-test("membership ships switched off", () => {
-  assert.equal(MEMBERS.enabled, false);
-  assert.equal(membersOn, false);
+test("membership is on with the project's public key only", () => {
+  assert.equal(MEMBERS.enabled, true);
+  assert.equal(membersOn, true);
+  assert.match(MEMBERS.supabaseUrl, /^https:\/\/[a-z0-9]+\.supabase\.co$/);
+  // The public key only: a secret key ("sb_secret_…" or a service_role token) never goes
+  // in page code.
+  assert.match(MEMBERS.supabaseKey, /^sb_publishable_/);
 });
 
 test("every language has every sentence", () => {
