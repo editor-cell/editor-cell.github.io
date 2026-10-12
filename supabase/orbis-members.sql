@@ -120,7 +120,7 @@ on conflict (word) do nothing;
 -- Text folded for the word check: case does not count, and the Turkish dotted and dotless
 -- i meet plain i, so "PİÇ" is caught as "piç" whatever the database's locale.
 create or replace function public.fold_text(t text) returns text
-language sql immutable as $$
+language sql immutable set search_path = public as $$
   select lower(translate(t,
     'İIıÀÂÄÇÉÈÊËÎÏÔÖÙÛÜÑÁÍÓÚĞŞ',
     'iiiàâäçéèêëîïôöùûüñáíóúğş'));
@@ -313,3 +313,14 @@ $$;
 
 grant execute on function public.count_read(text) to anon, authenticated;
 grant execute on function public.most_read(int) to anon, authenticated;
+
+-- ---------------------------------------------------------------------------------------
+-- The functions behind the triggers run only as triggers; nobody calls them through the
+-- site's public address. is_editor and is_paid stay callable (the rules above use them),
+-- and so do count_read and most_read (the pages call them).
+-- ---------------------------------------------------------------------------------------
+
+revoke execute on function public.handle_new_user() from public, anon, authenticated;
+revoke execute on function public.guard_profile() from public, anon, authenticated;
+revoke execute on function public.prepare_comment() from public, anon, authenticated;
+revoke execute on function public.count_report() from public, anon, authenticated;
