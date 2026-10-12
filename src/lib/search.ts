@@ -29,8 +29,8 @@ export type SearchCopy = {
 const COPY: Record<Lang, SearchCopy> = {
   tr: {
     title: "Arama",
-    label: "Okumalarda ve videolarda ara",
-    placeholder: "Okumalarda ve videolarda ara",
+    label: "Okumalarda ara",
+    placeholder: "Okumalarda ara",
     submit: "Ara",
     count: (n) => `${n} sonuç`,
     empty: "Aramanızla eşleşen okuma bulunamadı.",
@@ -52,8 +52,8 @@ const COPY: Record<Lang, SearchCopy> = {
   },
   en: {
     title: "Search",
-    label: "Search readings and videos",
-    placeholder: "Search readings and videos",
+    label: "Search the readings",
+    placeholder: "Search the readings",
     submit: "Search",
     count: (n) => (n === 1 ? "1 result" : `${n} results`),
     empty: "No readings match your search.",

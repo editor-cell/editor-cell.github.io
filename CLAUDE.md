@@ -55,6 +55,8 @@ own page `/media/<id>` with the transcript behind a button; search finds a video
 title and transcript. `scripts/videos-check.test.mjs` checks every file. Cloudflare serves
 static files only up to 25 MiB, so a long film goes on outside storage with an https
 `src`. The strip must never change the boxes above it or the depth buttons.
+The search box reads "Search the readings" / "Okumalarda ara" while there are no
+videos; with the first video, the owner wants videos named there again (`src/lib/search.ts`).
 
 ## Test period
 
