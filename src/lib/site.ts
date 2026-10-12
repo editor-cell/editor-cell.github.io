@@ -1,3 +1,4 @@
+import { paymentOn } from "@/lib/members/plans";
 import { aboutCopy } from "@/lib/about-copy";
 import { copyFor, langMeta } from "@/lib/i18n";
 import { DEFAULT_LANG, publicPath, type MemberPage } from "@/lib/lang-path";
@@ -191,7 +192,10 @@ export function memberPageHead(lang: Lang, page: MemberPage) {
   const path = `/${page}`;
   const meta = pageMeta({
     title: `${words.title} — ${SITE_NAME}`,
-    description: clip(words.lead),
+    // While membership is free only, the membership page is described as it now reads.
+    description: clip(
+      page === "membership" && !paymentOn ? pagesCopy(lang).membership.freeLead : words.lead,
+    ),
     url: publicPath(lang, path),
     lang,
   });
