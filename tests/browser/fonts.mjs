@@ -55,6 +55,11 @@ export default async function prepareFonts(config) {
   }
 }
 export async function serveFonts(page) {
+  // The membership database answers with nothing: no test writes to the live project or
+  // waits on it, and a comment on the live site never changes a test.
+  await page.route(/^https:\/\/[a-z0-9]+\.supabase\.co\//, (route) =>
+    route.fulfill({ status: 200, contentType: "application/json", body: "[]" }),
+  );
   if (OFFLINE) {
     await page.route(/^https:\/\/fonts\.(?:googleapis|gstatic)\.com\//, (route) => route.abort());
     return;
