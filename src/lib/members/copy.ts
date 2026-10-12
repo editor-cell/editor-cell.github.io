@@ -19,6 +19,8 @@ export type MembersCopy = {
   sentConfirm: (email: string) => string;
   sentReset: (email: string) => string;
   newPassword: string;
+  /** The quiet link that opens the password form on the account page. */
+  changePassword: string;
   newPasswordIntro: string;
   passwordSaved: string;
   back: string;
@@ -99,12 +101,13 @@ const COPY: Record<Lang, MembersCopy> = {
     sentReset: (email) =>
       `${email} adresine bir şifre yenileme bağlantısı gönderdik. Bağlantıya dokunun ve yeni şifrenizi belirleyin.`,
     newPassword: "Şifre",
+    changePassword: "Şifreyi değiştir",
     newPasswordIntro: "Yeni şifrenizi yazın.",
     passwordSaved: "Şifreniz kaydedildi.",
     back: "Geri dön",
     google: "Google ile devam et",
     signOut: "Çıkış yap",
-    name: "Yorumlarda görünecek adınız",
+    name: "İsminizi seçin",
     nameHint: "2 ile 40 karakter arası.",
     save: "Kaydet",
     saved: "Kaydedildi.",
@@ -181,12 +184,13 @@ const COPY: Record<Lang, MembersCopy> = {
     sentReset: (email) =>
       `أرسلنا رابطًا إلى ${email} لتعيين كلمة مرور جديدة. اضغط عليه واختر كلمة المرور.`,
     newPassword: "كلمة المرور",
+    changePassword: "تغيير كلمة المرور",
     newPasswordIntro: "اكتب كلمة المرور الجديدة.",
     passwordSaved: "حُفظت كلمة المرور.",
     back: "رجوع",
     google: "المتابعة باستخدام Google",
     signOut: "تسجيل الخروج",
-    name: "الاسم الذي يظهر مع تعليقاتك",
+    name: "اختر اسمك",
     nameHint: "من حرفين إلى أربعين حرفًا.",
     save: "حفظ",
     saved: "تم الحفظ.",
@@ -258,12 +262,13 @@ const COPY: Record<Lang, MembersCopy> = {
     sentReset: (email) =>
       `We sent a link to ${email} to set a new password. Tap it and choose your new password.`,
     newPassword: "Password",
+    changePassword: "Change password",
     newPasswordIntro: "Enter your new password.",
     passwordSaved: "Your password is saved.",
     back: "Back",
     google: "Continue with Google",
     signOut: "Sign out",
-    name: "Your name on comments",
+    name: "Choose your name",
     nameHint: "2 to 40 characters.",
     save: "Save",
     saved: "Saved.",
@@ -338,12 +343,13 @@ const COPY: Record<Lang, MembersCopy> = {
     sentReset: (email) =>
       `Nous avons envoyé à ${email} un lien pour choisir un nouveau mot de passe. Touchez-le.`,
     newPassword: "Mot de passe",
+    changePassword: "Changer le mot de passe",
     newPasswordIntro: "Saisissez votre nouveau mot de passe.",
     passwordSaved: "Votre mot de passe est enregistré.",
     back: "Retour",
     google: "Continuer avec Google",
     signOut: "Se déconnecter",
-    name: "Votre nom sur les commentaires",
+    name: "Choisissez votre nom",
     nameHint: "De 2 à 40 caractères.",
     save: "Enregistrer",
     saved: "Enregistré.",
@@ -418,12 +424,13 @@ const COPY: Record<Lang, MembersCopy> = {
     sentReset: (email) =>
       `Enviamos a ${email} un enlace para elegir una contraseña nueva. Tóquelo.`,
     newPassword: "Contraseña",
+    changePassword: "Cambiar la contraseña",
     newPasswordIntro: "Escriba su nueva contraseña.",
     passwordSaved: "Su contraseña se ha guardado.",
     back: "Volver",
     google: "Continuar con Google",
     signOut: "Cerrar sesión",
-    name: "Su nombre en los comentarios",
+    name: "Elija su nombre",
     nameHint: "De 2 a 40 caracteres.",
     save: "Guardar",
     saved: "Guardado.",

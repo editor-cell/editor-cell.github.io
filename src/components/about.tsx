@@ -5,7 +5,7 @@ import { useCopy } from "@/lib/i18n";
 import { homeLink } from "@/lib/lang-path";
 import { paragraphs } from "@/lib/text";
 import { useLang } from "@/lib/use-lang";
-import { EDITORIAL, contactHref, editorialCopy } from "@/lib/editorial";
+import { EDITORIAL, editorialCopy } from "@/lib/editorial";
 
 /** About Orbis, in the language of its address. Same column as a reading. */
 export function AboutPage() {
@@ -13,7 +13,6 @@ export function AboutPage() {
   const copy = useCopy(lang);
   const about = aboutCopy(lang);
   const editorial = editorialCopy(lang);
-  const contact = contactHref();
 
   return (
     <Shell>
@@ -36,19 +35,6 @@ export function AboutPage() {
             <p className="text-sm text-muted">
               {editorial.publisher}: {EDITORIAL.publisherName.trim()}
             </p>
-          ) : null}
-          {contact ? (
-            <section className="flex flex-col gap-3 border-t border-line pt-6">
-              <h2 className="text-2xl">{editorial.contact}</h2>
-              <a
-                href={contact}
-                dir="ltr"
-                className="w-fit break-all text-pine underline underline-offset-4"
-              >
-                {EDITORIAL.contactEmail.trim()}
-              </a>
-              <p className="text-sm text-muted">{editorial.corrections}</p>
-            </section>
           ) : null}
         </div>
       </main>

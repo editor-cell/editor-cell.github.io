@@ -12,7 +12,6 @@ import { pagesCopy } from "@/lib/members/pages-copy";
 import { LEGAL_PAGES, legalCopy } from "@/lib/legal-copy";
 import { searchCopy } from "@/lib/search";
 import { aboutCopy } from "@/lib/about-copy";
-import { EDITORIAL } from "@/lib/editorial";
 import { useFrameCopy } from "@/lib/frame-copy";
 import { langMeta, useCopy } from "@/lib/i18n";
 import {
@@ -515,15 +514,8 @@ export function Shell({
                     ))}
                   </ul>
                   <p className="text-base text-mist">{copy.colophon}</p>
-                  {EDITORIAL.contactEmail ? (
-                    <a
-                      href={`mailto:${EDITORIAL.contactEmail}`}
-                      dir="ltr"
-                      className="inline-flex min-h-9 items-center self-start text-base text-paper underline underline-offset-4"
-                    >
-                      {EDITORIAL.contactEmail}
-                    </a>
-                  ) : null}
+                  {/* No e-mail here: readers talk in the comments; the address stays only on
+                      the legal pages, where the privacy law asks for it. */}
                 </div>
                 <div>
                   <p className="text-sm uppercase tracking-widest text-mist">{copy.sections}</p>

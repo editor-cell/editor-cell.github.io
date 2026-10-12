@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useId, useState, type FormEvent, type ReactNode } from "react";
 import { Shell, fieldClass } from "@/components/shell";
 import { membersOn } from "@/lib/members/config";
 import { errorText, membersCopy } from "@/lib/members/copy";
@@ -77,7 +77,7 @@ function Account({ lang }: { lang: Lang }) {
       ? words.editor
       : isPaid(profile) && profile?.paid_until
         ? words.paid(formatDate(profile.paid_until.slice(0, 10), lang))
-        : words.free;
+        : null; // a free member sees no label: membership is simply theirs
 
   return (
     <div className="flex flex-col gap-8">
@@ -98,12 +98,27 @@ function Account({ lang }: { lang: Lang }) {
         <p dir="ltr" className="text-start">
           {member.user.email}
         </p>
-        <p className="text-sm text-muted">{status}</p>
+        {status ? <p className="text-sm text-muted">{status}</p> : null}
       </div>
       <History lang={lang} userId={member.user.id} />
       {reset ? <PasswordForm lang={lang} first /> : null}
-      <NameForm lang={lang} userId={member.user.id} current={profile?.display_name ?? ""} />
-      {!reset ? <PasswordForm lang={lang} first={false} /> : null}
+      {/* The name and the password stay folded, like the language list, so the page stays
+          calm; a reader who came from the reset e-mail gets the open form above instead. */}
+      <div className="flex flex-col border-b border-line">
+        <Fold label={words.name}>
+          <NameForm
+            lang={lang}
+            userId={member.user.id}
+            current={profile?.display_name ?? ""}
+            folded
+          />
+        </Fold>
+        {!reset ? (
+          <Fold label={words.changePassword}>
+            <PasswordForm lang={lang} first={false} />
+          </Fold>
+        ) : null}
+      </div>
       {profile?.role === "editor" ? (
         <Link to="/editor" className="inline-flex min-h-11 items-center self-start text-pine">
           Editör paneli
@@ -133,6 +148,42 @@ function whenRead(iso: string, lang: Lang, now = new Date()): string {
 }
 
 /** The member's reading history, newest first, with a way to clear it. */
+/** A folded row: the label with a caret, the content sliding open under it on a tap. */
+function Fold({ label, children }: { label: string; children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+  const id = useId();
+  return (
+    <div className="border-t border-line">
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls={id}
+        onClick={() => setOpen((was) => !was)}
+        className="group flex min-h-12 w-full items-center justify-between gap-4 text-start"
+      >
+        <span>{label}</span>
+        <svg
+          viewBox="0 0 8 5"
+          className="size-2.5 shrink-0 opacity-70 transition-transform duration-200 group-aria-expanded:rotate-180"
+          aria-hidden="true"
+        >
+          <path d="M.75.75 4 4.25 7.25.75" fill="none" stroke="currentColor" strokeWidth="1" />
+        </svg>
+      </button>
+      <div
+        id={id}
+        className={`grid transition-[grid-template-rows] duration-200 ease-out ${
+          open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        }`}
+      >
+        <div className="overflow-hidden" inert={!open}>
+          <div className="pb-5 pt-1">{children}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function History({ lang, userId }: { lang: Lang; userId: string }) {
   const words = membersCopy(lang);
   const copy = copyFor(lang);
@@ -220,11 +271,14 @@ export function NameForm({
   userId,
   current,
   onSaved,
+  folded = false,
 }: {
   lang: Lang;
   userId: string;
   current: string;
   onSaved?: () => void;
+  /** Inside a fold the row above already names the field, so its label is for screen readers only. */
+  folded?: boolean;
 }) {
   const words = membersCopy(lang);
   const [name, setName] = useState(current);
@@ -261,7 +315,7 @@ export function NameForm({
   return (
     <form onSubmit={save} className="flex flex-col gap-2">
       <label className="flex flex-col gap-2">
-        <span className="text-sm">{words.name}</span>
+        <span className={folded ? "sr-only" : "text-sm"}>{words.name}</span>
         <input
           value={name}
           onChange={(event) => setName(event.target.value)}
