@@ -419,7 +419,7 @@ const COPY: Record<Lang, MembersCopy> = {
       `Enviamos a ${email} un enlace para elegir una contraseña nueva. Tóquelo.`,
     newPassword: "Contraseña",
     newPasswordIntro: "Escriba su nueva contraseña.",
-    passwordSaved: "Su contraseña ha sido guardada.",
+    passwordSaved: "Su contraseña se ha guardado.",
     back: "Volver",
     google: "Continuar con Google",
     signOut: "Cerrar sesión",
@@ -447,34 +447,61 @@ const COPY: Record<Lang, MembersCopy> = {
     lockPaid: "Mi membresía",
     loading: "Cargando…",
     closed: "La membresía aún no está abierta.",
-    joinInvite:
-      "Únase gratis para escribir un comentario y mantener una lista de todo lo que ha leído.",
+    joinInvite: "Únase gratis para comentar y guardar la lista de todo lo que ha leído.",
     haveAccount: "¿Ya es miembro?",
     history: "Historial de lectura",
     historyEmpty:
-      "Aún no ha abierto ninguna lectura. Las lecturas que abra aparecerán aquí, la más reciente primero.",
+      "Todavía no ha abierto ninguna lectura. Las lecturas que abra aparecerán aquí, la más reciente primero.",
     readOn: (when) =>
       when === "today" ? "Leído hoy" : when === "yesterday" ? "Leído ayer" : `Leído el ${when}`,
     clearHistory: "Borrar historial",
-    clearAsk: "¿Eliminar todo su historial de lectura?",
-    clearYes: "Sí, eliminar",
+    clearAsk: "¿Borrar todo su historial de lectura?",
+    clearYes: "Sí, borrar",
     clearNo: "Cancelar",
     errors: {
-      generic: "Algo salió mal. Por favor, inténtelo de nuevo.",
-      badCode: "El código es incorrecto o ha expirado.",
-      wrongLogin: "El correo o la contraseña son incorrectos.",
+      generic: "Algo salió mal. Inténtelo de nuevo.",
+      badCode: "El código es incorrecto o ha caducado.",
+      wrongLogin: "El correo o la contraseña no son correctos.",
       notConfirmed: "Su correo aún no está confirmado. Toque el enlace que le enviamos.",
       alreadyMember: "Ya existe una membresía con este correo. Inicie sesión.",
       weakPassword: "La contraseña debe tener al menos 8 caracteres.",
       tooManyEmails:
-        "Se solicitaron demasiados correos en poco tiempo. Por favor, inténtelo de nuevo más tarde.",
+        "Se pidieron demasiados correos en poco tiempo. Inténtelo de nuevo un poco más tarde.",
       links: "No se pueden compartir enlaces en los comentarios.",
       words: "Su comentario contiene una palabra no permitida.",
-      tooFast: "Un comentario por minuto. Por favor, inténtelo de nuevo en un momento.",
+      tooFast: "Un comentario por minuto. Inténtelo de nuevo en un momento.",
       tooMany: "Ha alcanzado el límite de comentarios de hoy.",
-      nameRequired: "Elija el nombre que aparece en sus comentarios antes de escribir.",
+      nameRequired: "Elija el nombre que aparecerá en sus comentarios antes de escribir.",
       length: "Un comentario debe tener entre 2 y 2000 caracteres.",
       alreadyReported: "Ya ha denunciado este comentario.",
     },
   },
 };
+
+export function membersCopy(lang: Lang): MembersCopy {
+  return COPY[lang];
+}
+
+/** The reader-facing message for an error the database or Supabase sent back. */
+export function errorText(error: unknown, lang: Lang): string {
+  const words = COPY[lang].errors;
+  const text = String((error as { message?: unknown } | null)?.message ?? error ?? "");
+  const code = String((error as { code?: unknown } | null)?.code ?? "");
+  if (text.includes("links")) return words.links;
+  if (text.includes("words")) return words.words;
+  if (text.includes("too_fast")) return words.tooFast;
+  if (text.includes("too_many")) return words.tooMany;
+  if (text.includes("name_required")) return words.nameRequired;
+  if (text.includes("comments_body_check") || text.includes("check constraint"))
+    return words.length;
+  if (code === "23505" || text.includes("duplicate key")) return words.alreadyReported;
+  if (/invalid login credentials|invalid_credentials/i.test(`${text} ${code}`))
+    return words.wrongLogin;
+  if (/email not confirmed|email_not_confirmed/i.test(`${text} ${code}`)) return words.notConfirmed;
+  if (/already (been )?registered|user_already_exists/i.test(`${text} ${code}`))
+    return words.alreadyMember;
+  if (/password should|weak_password/i.test(`${text} ${code}`)) return words.weakPassword;
+  if (/rate limit|over_email_send_rate_limit/i.test(`${text} ${code}`)) return words.tooManyEmails;
+  if (/token|otp|expired|invalid/i.test(text)) return words.badCode;
+  return words.generic;
+}
