@@ -12,11 +12,11 @@
     "build:pages": "ORBIS_PAGES=1 vite build && node scripts/pages-shell.mjs && node scripts/check-built-site.mjs",
     "preview": "node scripts/site-server.mjs dist/client 8081",
     "typecheck": "tsc --noEmit",
-    "test:site": "node --experimental-strip-types --test scripts/*.test.mjs src/lib/front-order.test.ts src/lib/drafts.test.ts src/lib/search.test.ts src/lib/members/members.test.ts supabase/orbis-members.test.mjs",
+    "test:site": "node --experimental-strip-types --test scripts/*.test.mjs src/lib/front-order.test.ts src/lib/drafts.test.ts src/lib/search.test.ts src/lib/members/members.test.ts supabase/orbis-members.test.mjs scripts/browser/serve.test.mjs",
     "test": "npm run test:site",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "visual:update": "node scripts/visual.mjs --update",
+    "visual:update": "node scripts/browser/set-reference.mjs",
     "test:browser": "node scripts/visual.mjs"
   },
   "dependencies": {

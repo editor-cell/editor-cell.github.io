@@ -35,3 +35,4 @@ playwright.config.mjs
 
 # Source content is embedded in generated pages/chunks.
 content
+.browser-check

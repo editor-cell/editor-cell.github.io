@@ -10,7 +10,7 @@ AGENTS.md
 .DS_Store
 
 # Approved references are generated separately during evaluation, never in a repair patch.
-tests/visual-reference
 
 # Recreated by Vite from the single breakpoint list.
 src/styles/breakpoints.generated.css
+.browser-check

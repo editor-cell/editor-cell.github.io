@@ -1,0 +1,19 @@
+{
+  "id": "fixture-map",
+  "date": "2026-09-20",
+  "src": "videos/fixture-map.mp4",
+  "poster": "videos/fixture-map-poster.jpg",
+  "duration": 140,
+  "locales": {
+    "en": {
+      "title": "Where the grain goes",
+      "dek": "A short animated film, drawn from public records.",
+      "transcript": "This is a fixture transcript for the visual check. It does not appear on the live site."
+    },
+    "tr": {
+      "title": "Deneme videosu: Where the grain goes",
+      "dek": "Kamu kayıtlarından çizilmiş kısa bir animasyon.",
+      "transcript": "Bu, görünüm denemesi için bir deneme metnidir. Canlı sitede görünmez."
+    }
+  }
+}

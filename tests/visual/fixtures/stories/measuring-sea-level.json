@@ -1,0 +1,65 @@
+{
+  "id": "measuring-sea-level",
+  "theme": "science",
+  "date": "2026-10-02",
+  "issue": 2,
+  "rank": 7,
+  "image": {
+    "src": "images/measuring-sea-level.jpg",
+    "credit": "A wooden post in shallow water beside a concrete pier."
+  },
+  "sources": [
+    {
+      "n": 1,
+      "label": "Permanent Service for Mean Sea Level (PSMSL)",
+      "url": "https://psmsl.org/"
+    },
+    {
+      "n": 2,
+      "label": "NASA – Sea Level Change: observations from space",
+      "url": "https://sealevel.nasa.gov/"
+    },
+    {
+      "n": 3,
+      "label": "IPCC – Sixth Assessment Report, Working Group I, Summary for Policymakers",
+      "url": "https://www.ipcc.ch/report/ar6/wg1/chapter/summary-for-policymakers/"
+    }
+  ],
+  "locales": {
+    "tr": {
+      "title": "Deniz seviyesi nasıl ölçülür?",
+      "dek": "Yılda birkaç milimetrelik yükseliş; gelgit ölçerlerden, uydulardan ve hareket eden kara için yapılan bir düzeltmeden elde ediliyor.",
+      "region": "Dünya",
+      "body": "Deniz hiçbir zaman durgun değildir; gelgitler ve rüzgârlar onu her gün metrelerce oynatır. Yükselişi ölçmenin en eski yolu olan gelgit ölçerler suyun karaya göre yüksekliğini kaydeder; örneğin Ortalama Deniz Seviyesi Kalıcı Servisi 1933'ten beri bu kayıtları toplamaktadır. [1] Ancak karalar da hareket eder; bazı kıyı kentleri altından yeraltı suyu çekildiği için çöker. Bu yüzden modern gelgit ölçerler, karanın kendi hareketini ölçen uydu konum alıcılarıyla birlikte çalışır. 1992'den beri uydular da radar altimetresiyle deniz yüzeyine sinyal göndererek açık denizi doğrudan ölçmektedir. [2]\n\nBu kayıtlar birleştiğinde gerçek şudur: Hükümetlerarası İklim Değişikliği Paneli'ne göre küresel ortalama deniz seviyesi 1901-2018 arasında yaklaşık 20 santimetre yükseldi; hız 1971-2006 arasında yılda 1,9 milimetre iken 2006-2018 arasında 3,7 milimetreye çıktı. [3] Su ısındıkça genleşiyor ve eriyen buzullar denizlere su katıyor; kıyıların kaderini yılda birkaç milimetrelik bu amansız ilerleyiş çiziyor.",
+      "audio": null
+    },
+    "ar": {
+      "title": "",
+      "dek": "",
+      "region": "",
+      "body": "",
+      "audio": null
+    },
+    "en": {
+      "title": "How is sea level measured?",
+      "dek": "A rise of a few millimetres a year is built from tide gauges, satellites and a correction for land that moves.",
+      "region": "Global",
+      "body": "The sea is never still; tides and winds move its surface daily. The oldest tool, the tide gauge, records water height against land, with the Permanent Service for Mean Sea Level collecting such records since 1933. [1] Yet land moves too, with coastal cities often sinking as groundwater is pumped out, so modern gauges are paired with satellite positioning receivers that measure the movement of the land itself. Since 1992, satellites using radar altimeters have also measured the open ocean directly by timing radar pulses. [2]\n\nCombined, these records reveal a stark truth: according to the IPCC, global mean sea level rose by about 20 centimetres between 1901 and 2018, with the rate accelerating from 1.9 millimetres a year (1971-2006) to 3.7 millimetres (2006-2018). [3] As warming water expands and melting glaciers add water to the oceans, the fate of coasts is dictated by this relentless, millimetre-by-millimetre advance.",
+      "audio": null
+    },
+    "fr": {
+      "title": "",
+      "dek": "",
+      "region": "",
+      "body": "",
+      "audio": null
+    },
+    "es": {
+      "title": "",
+      "dek": "",
+      "region": "",
+      "body": "",
+      "audio": null
+    }
+  }
+}

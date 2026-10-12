@@ -9,23 +9,27 @@ Readings live in content/stories as one JSON file each. The panel (/panel) publi
 ## Browser checks
 
 After `npm ci`, install the test browser with `npx playwright install --with-deps chromium`.
-`npm run visual:update` generates the 80 reference images from commit
-`5a29fbe50ed946f46f99beb8aecf1223716e9b74`, using its own locked dependencies.
-The frozen readings and media are independent of editorial changes. References are
-excluded from repair patches: the evaluator runs this command before comparison.
-Approved references must be made available in `tests/visual-reference` before the
-publishing gate is enabled (for example, commit them separately after owner approval).
-The workflow never generates or accepts new references automatically; a missing
-reference set stops publication. For an approved future redesign, change the reference
-commit explicitly and regenerate only with the owner's approval, using the same browser
-and operating system as CI.
+`npm run test:browser` runs before every publish and has two parts:
 
-`npm run test:browser` builds a separate frozen-content site, then checks 80 exact
-screenshots and reader controls against the actual build. Failures are written to
-`artifacts/browser` and `artifacts/browser-report`, also uploaded by CI. The static
-server handles extensionless HTML and returns HTTP 404 for absent files. For restricted
-local environments, `ORBIS_CHROMIUM` can name an already installed Chromium executable;
-use the same executable when generating and comparing references.
+- **Look** (`scripts/browser/look.mjs`): the approved commit (`tests/visual/reference.txt`)
+  and the current code are both built with the frozen readings in `tests/visual/fixtures`
+  and photographed side by side in the same run: 96 views (English and Turkish, 390 and
+  1280 px, four schemes, the front page at three depths, a section and a reading, plus the
+  video, about, membership and not-found pages). Nothing is stored, so no reference can be
+  missing or come from another computer. Every pixel must match, any change of colour
+  included. Differences are kept in `.browser-check/out/`. The words of the front page's
+  faint filler text are covered in the pictures (their line count varies from load to load
+  with the same code); their box is compared in the picture, and their text, face, size,
+  colour and visibility are compared separately, with one line of play in the count. The
+  real faces are required: before every picture, every font file the page asked for must
+  have arrived and Tinos and Playfair Display must be in use; otherwise the check stops.
+- **Reader** (`tests/browser`): menu, search, language, depth, chain, listening, schemes,
+  the layout boundary and a tab left open across a publish, on frozen readings.
+
+After a design change the owner has approved, run `npm run visual:update` on that commit and
+commit `tests/visual/reference.txt` alone. The workflow never does this. On a machine that
+cannot reach Google Fonts, `ORBIS_OFFLINE_FONTS=1` lets the reader checks run with fallback
+faces; `ORBIS_CHROMIUM` can name an installed Chromium.
 
 ## Media sources
 

@@ -36,6 +36,10 @@ for (const retain of [true, false]) {
       await page.locator('button[aria-controls="site-menu"]').click();
       await page.locator('#site-menu a[href="/health"]').click();
       await expect(page).toHaveURL(base + "/health");
+      // Without the old code the tab reloads itself once; a click made while that reload is
+      // still under way is lost, so the reader (and this test) clicks once it has finished.
+      if (!retain) await expect.poll(() => documents.length).toBe(2);
+      await page.waitForLoadState("networkidle");
       await page.locator('main a[href="/read/bread-and-diabetes"]:visible').first().click();
       await expect(page).toHaveURL(base + "/read/bread-and-diabetes");
       const story = JSON.parse(readFileSync("tests/fixtures/stories/bread-and-diabetes.json"));

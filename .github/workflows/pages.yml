@@ -52,6 +52,11 @@ jobs:
       - run: npm run build:pages
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
+      # Packages of the approved-look commit, reused until that commit changes.
+      - uses: actions/cache@v4
+        with:
+          path: .browser-check/deps
+          key: browser-reference-${{ hashFiles('tests/visual/reference.txt') }}
       - name: Check reader controls and appearance
         run: npm run test:browser
       - name: Preserve browser failure evidence
@@ -60,6 +65,7 @@ jobs:
         with:
           name: browser-failure
           path: |
+            .browser-check/out
             artifacts/browser
             artifacts/browser-report
       - name: Place the site at the repository root

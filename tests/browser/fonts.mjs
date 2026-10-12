@@ -4,7 +4,14 @@ import { createHash } from "node:crypto";
 export const CACHE = "artifacts/font-cache.json";
 const FONT_URL = /const FONTS =\s*"([^"]+)"/.exec(readFileSync("src/routes/__root.tsx", "utf8"))[1];
 const fingerprint = createHash("sha256").update(FONT_URL).digest("hex");
+/**
+ * ORBIS_OFFLINE_FONTS=1 is for a machine that cannot reach Google Fonts (a closed test
+ * box): every page then uses the fallback faces, the approved and the current build alike,
+ * so the comparison stays fair. The workflow never sets it and always uses the real faces.
+ */
+export const OFFLINE = process.env.ORBIS_OFFLINE_FONTS === "1";
 export default async function prepareFonts(config) {
+  if (OFFLINE) return;
   if (existsSync(CACHE) && JSON.parse(readFileSync(CACHE)).fingerprint === fingerprint) return;
   const use = config.projects[0].use;
   const client = await request.newContext({
@@ -48,6 +55,10 @@ export default async function prepareFonts(config) {
   }
 }
 export async function serveFonts(page) {
+  if (OFFLINE) {
+    await page.route(/^https:\/\/fonts\.(?:googleapis|gstatic)\.com\//, (route) => route.abort());
+    return;
+  }
   const { resources } = JSON.parse(readFileSync(CACHE));
   await page.route(/^https:\/\/fonts\.(?:googleapis|gstatic)\.com\//, async (route) => {
     const resource = resources[route.request().url()];

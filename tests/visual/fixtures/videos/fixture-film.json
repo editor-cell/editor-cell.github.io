@@ -1,0 +1,19 @@
+{
+  "id": "fixture-film",
+  "date": "2026-10-08",
+  "src": "videos/fixture-film.mp4",
+  "poster": "videos/fixture-film-poster.jpg",
+  "duration": 95,
+  "locales": {
+    "en": {
+      "title": "How a river is measured",
+      "dek": "A short animated film, drawn from public records.",
+      "transcript": "This is a fixture transcript for the visual check. It does not appear on the live site."
+    },
+    "tr": {
+      "title": "Deneme videosu: How a river is measured",
+      "dek": "Kamu kayıtlarından çizilmiş kısa bir animasyon.",
+      "transcript": "Bu, görünüm denemesi için bir deneme metnidir. Canlı sitede görünmez."
+    }
+  }
+}

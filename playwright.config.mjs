@@ -8,10 +8,6 @@ export default defineConfig({
   retries: 0,
   outputDir: "artifacts/browser",
   reporter: [["list"], ["html", { outputFolder: "artifacts/browser-report", open: "never" }]],
-  snapshotPathTemplate: "{testDir}/../visual-reference/{arg}{ext}",
-  expect: {
-    toHaveScreenshot: { animations: "disabled", caret: "hide", threshold: 0, maxDiffPixels: 0 },
-  },
   use: {
     browserName: "chromium",
     ignoreHTTPSErrors: Boolean(process.env.ORBIS_BROWSER_PROXY),
