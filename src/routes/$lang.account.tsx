@@ -6,8 +6,12 @@ import { SITE_NAME } from "@/lib/site";
 
 /** The member's account in Turkish, Arabic, French or Spanish: /tr/account, … */
 export const Route = createFileRoute("/$lang/account")({
-  validateSearch: (search: Record<string, unknown>): { back?: string } =>
-    typeof search.back === "string" ? { back: search.back } : {},
+  validateSearch: (search: Record<string, unknown>): { back?: string; join?: true } => ({
+    ...(typeof search.back === "string" ? { back: search.back } : {}),
+    ...(search.join === true || search.join === "true" || search.join === 1 || search.join === "1"
+      ? { join: true as const }
+      : {}),
+  }),
   beforeLoad: ({ params, search }) => {
     if (params.lang === DEFAULT_LANG) throw redirect({ to: "/account", search, replace: true });
     if (!isPrefixed(params.lang)) throw redirect({ to: "/", replace: true });

@@ -315,6 +315,53 @@ grant execute on function public.count_read(text) to anon, authenticated;
 grant execute on function public.most_read(int) to anon, authenticated;
 
 -- ---------------------------------------------------------------------------------------
+-- Reading history (the member's own list on the account page)
+-- ---------------------------------------------------------------------------------------
+-- One row per member and reading, holding the last time it was opened. A member sees and
+-- clears only their own rows; the editor sees nobody's. Rows are written only through
+-- note_read, which keeps the newest 300 readings of each member and drops the rest.
+
+create table if not exists public.history (
+  user_id uuid not null references auth.users (id) on delete cascade,
+  story_id text not null check (story_id ~ '^[a-z0-9-]{1,80}$'),
+  read_at timestamptz not null default now(),
+  primary key (user_id, story_id)
+);
+
+create index if not exists history_user_read_at on public.history (user_id, read_at desc);
+
+alter table public.history enable row level security;
+
+drop policy if exists "history: own reads" on public.history;
+create policy "history: own reads" on public.history
+  for select using (user_id = auth.uid());
+
+drop policy if exists "history: own clears" on public.history;
+create policy "history: own clears" on public.history
+  for delete using (user_id = auth.uid());
+
+create or replace function public.note_read(p_story text) returns void
+language plpgsql security definer set search_path = public as $$
+declare
+  me uuid := auth.uid();
+begin
+  if me is null or p_story is null or p_story !~ '^[a-z0-9-]{1,80}$' then
+    return;
+  end if;
+  insert into public.history (user_id, story_id, read_at) values (me, p_story, now())
+  on conflict (user_id, story_id) do update set read_at = now();
+  delete from public.history h
+  where h.user_id = me
+    and h.story_id not in (
+      select story_id from public.history where user_id = me order by read_at desc limit 300
+    );
+end;
+$$;
+
+revoke execute on function public.note_read(text) from public, anon;
+grant execute on function public.note_read(text) to authenticated;
+
+-- ---------------------------------------------------------------------------------------
 -- The functions behind the triggers run only as triggers; nobody calls them through the
 -- site's public address. is_editor and is_paid stay callable (the rules above use them),
 -- and so do count_read and most_read (the pages call them).

@@ -27,7 +27,7 @@ import { imageSet } from "@/lib/image-set";
 import { langMeta, useCopy } from "@/lib/i18n";
 import { homeLink, readLink, rememberLang, sectionLink } from "@/lib/lang-path";
 import { formatDate, hasCopy } from "@/lib/text";
-import { countRead } from "@/lib/reads";
+import { countRead, useNoteRead } from "@/lib/reads";
 import { LANGS, type Lang, type Story } from "@/lib/types";
 import { useLang } from "@/lib/use-lang";
 
@@ -151,6 +151,8 @@ function Reading({ story }: { story: Story | null }) {
   useEffect(() => {
     if (storyId) countRead(storyId);
   }, [storyId]);
+  // The signed-in member's own reading history.
+  useNoteRead(storyId);
 
   useEffect(() => {
     const saved = TYPE_STEPS.indexOf(readType() as (typeof TYPE_STEPS)[number]);

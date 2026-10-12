@@ -71,14 +71,19 @@ async function as(db, id, sql, params = []) {
 }
 
 const comment = (db, id, body, story = "rivers") =>
-  as(db, id, "insert into public.comments (story_id, lang, body) values ($1, 'tr', $2) returning *", [
-    story,
-    body,
-  ]);
+  as(
+    db,
+    id,
+    "insert into public.comments (story_id, lang, body) values ($1, 'tr', $2) returning *",
+    [story, body],
+  );
 
 /** Lets the next comment of this member through the one-a-minute limit. */
 const age = (db, id) =>
-  db.query("update public.comments set created_at = created_at - interval '2 minutes' where user_id = $1", [id]);
+  db.query(
+    "update public.comments set created_at = created_at - interval '2 minutes' where user_id = $1",
+    [id],
+  );
 
 test("a sign-up gets a profile; a reader cannot raise their own role or paid time", async () => {
   const db = await setup();
@@ -90,15 +95,27 @@ test("a sign-up gets a profile; a reader cannot raise their own role or paid tim
     /not_allowed/,
   );
   await assert.rejects(
-    as(db, READER, `update public.profiles set paid_until = now() + interval '1 year' where id = '${READER}'`),
+    as(
+      db,
+      READER,
+      `update public.profiles set paid_until = now() + interval '1 year' where id = '${READER}'`,
+    ),
     /not_allowed/,
   );
-  await as(db, READER, `update public.profiles set display_name = '  Ayşe  ' where id = '${READER}'`);
+  await as(
+    db,
+    READER,
+    `update public.profiles set display_name = '  Ayşe  ' where id = '${READER}'`,
+  );
   const named = await db.query(`select display_name from public.profiles where id = '${READER}'`);
   assert.equal(named.rows[0].display_name, "Ayşe");
   const all = await as(db, EDITOR, "select * from public.profiles");
   assert.equal(all.rows.length, 5, "the editor sees every member");
-  await as(db, EDITOR, `update public.profiles set paid_until = now() + interval '1 month' where id = '${READER}'`);
+  await as(
+    db,
+    EDITOR,
+    `update public.profiles set paid_until = now() + interval '1 month' where id = '${READER}'`,
+  );
 });
 
 test("comments: members write, everyone reads; links, blocked words and haste are refused", async () => {
@@ -110,7 +127,10 @@ test("comments: members write, everyone reads; links, blocked words and haste ar
 
   const visitor = await as(db, null, "select body from public.comments where story_id = 'rivers'");
   assert.equal(visitor.rows.length, 1, "a visitor reads comments");
-  await assert.rejects(comment(db, null, "Ziyaretçi yorumu"), /permission denied|sign_in_required|row-level/);
+  await assert.rejects(
+    comment(db, null, "Ziyaretçi yorumu"),
+    /permission denied|sign_in_required|row-level/,
+  );
 
   await assert.rejects(comment(db, READER, "İkinci yorum hemen"), /too_fast/);
   await age(db, READER);
@@ -185,15 +205,55 @@ test("members-only texts open only to paid members and the editor", async () => 
     "insert into public.member_texts (story_id, lang, body) values ('rivers', 'tr', 'Tam metin')",
   );
   await assert.rejects(
-    as(db, READER, "insert into public.member_texts (story_id, lang, body) values ('x', 'tr', 'y')"),
+    as(
+      db,
+      READER,
+      "insert into public.member_texts (story_id, lang, body) values ('x', 'tr', 'y')",
+    ),
     /row-level/,
   );
   const read = (who) => as(db, who, "select body from public.member_texts");
   assert.equal((await read(null)).rows.length, 0, "visitor");
   assert.equal((await read(READER)).rows.length, 0, "unpaid member");
-  await db.exec(`update public.profiles set paid_until = now() + interval '1 month' where id = '${READER}'`);
+  await db.exec(
+    `update public.profiles set paid_until = now() + interval '1 month' where id = '${READER}'`,
+  );
   assert.equal((await read(READER)).rows[0].body, "Tam metin", "paid member");
-  await db.exec(`update public.profiles set paid_until = now() - interval '1 day' where id = '${READER}'`);
+  await db.exec(
+    `update public.profiles set paid_until = now() - interval '1 day' where id = '${READER}'`,
+  );
   assert.equal((await read(READER)).rows.length, 0, "expired membership");
   assert.equal((await read(EDITOR)).rows.length, 1, "editor");
+});
+
+test("reading history: each member sees and clears only their own list", async () => {
+  const db = await setup();
+  await as(db, READER, "select public.note_read('rivers-running-dry')");
+  await as(db, READER, "select public.note_read('heat-and-the-plan')");
+  await as(db, READER, "select public.note_read('rivers-running-dry')");
+  await as(db, OTHER, "select public.note_read('grain-moves')");
+  await as(db, null, "select public.note_read('grain-moves')");
+  await as(db, READER, "select public.note_read('Not A Story; drop')");
+
+  const own = await as(db, READER, "select story_id from public.history order by read_at desc");
+  assert.deepEqual(
+    own.rows.map((row) => row.story_id).sort(),
+    ["heat-and-the-plan", "rivers-running-dry"],
+    "one row per reading, a second visit only moves it up",
+  );
+  const visitor = await as(db, null, "select * from public.history");
+  assert.equal(visitor.rows.length, 0, "a visitor sees no history and writes none");
+  const editor = await as(db, EDITOR, "select * from public.history");
+  assert.equal(editor.rows.length, 0, "the editor does not see members' history");
+  await assert.rejects(
+    as(db, READER, `insert into public.history (user_id, story_id) values ('${OTHER}', 'x')`),
+    /row-level|permission denied/,
+  );
+
+  await as(db, READER, `delete from public.history where user_id = '${OTHER}'`);
+  const other = await db.query(`select * from public.history where user_id = '${OTHER}'`);
+  assert.equal(other.rows.length, 1, "a member cannot clear another member's list");
+  await as(db, READER, "delete from public.history");
+  const cleared = await db.query(`select * from public.history where user_id = '${READER}'`);
+  assert.equal(cleared.rows.length, 0, "a member clears their own list");
 });

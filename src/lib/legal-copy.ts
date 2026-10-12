@@ -78,7 +78,7 @@ const EN: Record<LegalPage, Doc> & { updated: string; footer: string; agree: str
       {
         heading: "Members",
         paragraphs: [
-          "When you join, we keep your e-mail address, the name you choose for your comments, your comments, and your membership status. We use them to run your account and the comment section.",
+          "When you join, we keep your e-mail address, the name you choose for your comments, your comments, your membership status, and the list of readings you have opened. We use them to run your account and the comment section. Your reading history is shown only to you, and you can clear it at any time on your account page.",
           "The legal basis is the performance of our agreement with you (KVKK article 5/2-c; GDPR article 6(1)(b)).",
         ],
       },
@@ -179,7 +179,7 @@ const TR: typeof EN = {
       {
         heading: "Üyeler",
         paragraphs: [
-          "Üye olduğunuzda e-posta adresiniz, yorumlarınızda görünmesini seçtiğiniz ad, yorumlarınız ve üyelik durumunuz saklanır. Bunlar hesabınızı ve yorum bölümünü yürütmek için kullanılır.",
+          "Üye olduğunuzda e-posta adresiniz, yorumlarınızda görünmesini seçtiğiniz ad, yorumlarınız, üyelik durumunuz ve açtığınız yazıların listesi saklanır. Bunlar hesabınızı ve yorum bölümünü yürütmek için kullanılır. Okuma geçmişinizi yalnız siz görürsünüz ve hesap sayfanızdan istediğiniz zaman silebilirsiniz.",
           "Hukuki sebep, sizinle aramızdaki sözleşmenin ifasıdır (KVKK m. 5/2-c; GDPR m. 6/1-b).",
         ],
       },

@@ -12,6 +12,7 @@ import {
   sectionLink,
   stripLang,
 } from "@/lib/lang-path";
+import { paymentOn } from "@/lib/members/plans";
 import { pagesCopy } from "@/lib/members/pages-copy";
 import { searchCopy } from "@/lib/search";
 import { LOOKS, LOOK_SWATCH, type Look } from "@/lib/look";
@@ -119,7 +120,9 @@ function rowClass(on: boolean, first: boolean) {
 }
 
 function Tick({ on }: { on: boolean }) {
-  return on ? <Check aria-hidden="true" strokeWidth={1.75} className="size-4 shrink-0 text-ink" /> : null;
+  return on ? (
+    <Check aria-hidden="true" strokeWidth={1.75} className="size-4 shrink-0 text-ink" />
+  ) : null;
 }
 
 /**
@@ -158,8 +161,7 @@ export function SiteMenu({
     saveOpen(next);
     setOpenGroup(next);
   };
-  const currentSection =
-    section === "all" ? copy.home : section ? copy.themes[section] : undefined;
+  const currentSection = section === "all" ? copy.home : section ? copy.themes[section] : undefined;
   const page = (on: boolean) =>
     on
       ? "inline-flex min-h-12 items-center gap-3 text-[17px] font-bold text-ink underline underline-offset-4"
@@ -316,7 +318,9 @@ export function SiteMenu({
                       className={page(here === `/${item}`)}
                       onClick={onClose}
                     >
-                      {pagesCopy(lang)[item].title}
+                      {item === "membership" && !paymentOn
+                        ? pagesCopy(lang).membership.menu
+                        : pagesCopy(lang)[item].title}
                     </Link>
                   </li>
                 ) : item === "about" ? (

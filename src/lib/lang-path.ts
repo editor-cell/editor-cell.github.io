@@ -98,9 +98,14 @@ export function aboutLink(lang: Lang) {
     : ({ to: "/$lang/about", params: { lang } } as const);
 }
 
-/** The member's account page; `back` is the page to return to after signing in. */
-export function accountLink(lang: Lang, back?: string) {
-  const search = back ? { back } : {};
+/**
+ * The member's account page; `back` is the page to return to after signing in, and
+ * `join` opens the form on "Join Free" instead of "Sign in".
+ */
+export function accountLink(lang: Lang, back?: string, join?: boolean) {
+  const search: { back?: string; join?: true } = {};
+  if (back) search.back = back;
+  if (join) search.join = true;
   return lang === DEFAULT_LANG
     ? ({ to: "/account", search } as const)
     : ({ to: "/$lang/account", params: { lang }, search } as const);

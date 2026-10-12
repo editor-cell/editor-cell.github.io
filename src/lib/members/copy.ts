@@ -46,6 +46,17 @@ export type MembersCopy = {
   lockPaid: string;
   loading: string;
   closed: string;
+  /** Under a reading, for a reader who is not signed in. */
+  joinInvite: string;
+  haveAccount: string;
+  history: string;
+  historyEmpty: string;
+  /** "Read today", "Read 9 October", … */
+  readOn: (when: "today" | "yesterday" | string) => string;
+  clearHistory: string;
+  clearAsk: string;
+  clearYes: string;
+  clearNo: string;
   errors: {
     generic: string;
     badCode: string;
@@ -68,7 +79,7 @@ const COPY: Record<Lang, MembersCopy> = {
   tr: {
     account: "Hesap",
     signIn: "Giriş yap",
-    join: "Üye ol",
+    join: "Ücretsiz kayıt ol",
     signInIntro: "E-posta adresinizi ve şifrenizi yazın.",
     joinIntro:
       "Üyelik ücretsiz. E-posta adresinizi yazın ve bir şifre belirleyin. Size bir doğrulama bağlantısı göndereceğiz; bağlantıya dokunduğunuzda üyeliğiniz tamamlanır.",
@@ -113,6 +124,21 @@ const COPY: Record<Lang, MembersCopy> = {
     lockPaid: "Üyeliğim",
     loading: "Yükleniyor…",
     closed: "Üyelik henüz açılmadı.",
+    joinInvite:
+      "Yorum yazmak ve okuduğunuz bütün yazıların listesini tutmak için ücretsiz kayıt olun.",
+    haveAccount: "Zaten üye misiniz?",
+    history: "Okuma geçmişi",
+    historyEmpty: "Henüz bir yazı açmadınız. Açtığınız yazılar burada, en yenisi üstte görünür.",
+    readOn: (when) =>
+      when === "today"
+        ? "Bugün okundu"
+        : when === "yesterday"
+          ? "Dün okundu"
+          : `${when} tarihinde okundu`,
+    clearHistory: "Geçmişi temizle",
+    clearAsk: "Bütün okuma geçmişiniz silinsin mi?",
+    clearYes: "Evet, sil",
+    clearNo: "Vazgeç",
     errors: {
       generic: "Bir sorun oldu. Lütfen tekrar deneyin.",
       badCode: "Kod geçersiz ya da süresi dolmuş.",
@@ -133,7 +159,7 @@ const COPY: Record<Lang, MembersCopy> = {
   ar: {
     account: "الحساب",
     signIn: "تسجيل الدخول",
-    join: "انضم",
+    join: "انضم مجانًا",
     signInIntro: "اكتب بريدك الإلكتروني وكلمة المرور.",
     joinIntro:
       "العضوية مجانية. اكتب بريدك الإلكتروني واختر كلمة مرور. سنرسل إليك رابط تأكيد؛ تكتمل عضويتك عندما تضغط عليه.",
@@ -178,6 +204,16 @@ const COPY: Record<Lang, MembersCopy> = {
     lockPaid: "عضويتي",
     loading: "جارٍ التحميل…",
     closed: "لم تُفتح العضوية بعد.",
+    joinInvite: "انضم مجانًا لتكتب تعليقًا وتحتفظ بقائمة بكل ما قرأته.",
+    haveAccount: "هل أنت عضو بالفعل؟",
+    history: "سجل القراءة",
+    historyEmpty: "لم تفتح أي قراءة بعد. ستظهر هنا القراءات التي تفتحها، الأحدث أولًا.",
+    readOn: (when) =>
+      when === "today" ? "قُرئت اليوم" : when === "yesterday" ? "قُرئت أمس" : `قُرئت في ${when}`,
+    clearHistory: "مسح السجل",
+    clearAsk: "هل تريد حذف سجل القراءة كله؟",
+    clearYes: "نعم، احذف",
+    clearNo: "إلغاء",
     errors: {
       generic: "حدث خطأ. يُرجى المحاولة مرة أخرى.",
       badCode: "الرمز غير صحيح أو انتهت صلاحيته.",
@@ -198,7 +234,7 @@ const COPY: Record<Lang, MembersCopy> = {
   en: {
     account: "Account",
     signIn: "Sign in",
-    join: "Join",
+    join: "Join Free",
     signInIntro: "Enter your e-mail and your password.",
     joinIntro:
       "Membership is free. Enter your e-mail and choose a password. We will send you a confirmation link; your membership is complete once you tap it.",
@@ -243,6 +279,17 @@ const COPY: Record<Lang, MembersCopy> = {
     lockPaid: "My membership",
     loading: "Loading…",
     closed: "Membership is not open yet.",
+    joinInvite: "Join free to write a comment and to keep a list of everything you have read.",
+    haveAccount: "Already a member?",
+    history: "Reading history",
+    historyEmpty:
+      "You have not opened a reading yet. The readings you open appear here, newest first.",
+    readOn: (when) =>
+      when === "today" ? "Read today" : when === "yesterday" ? "Read yesterday" : `Read ${when}`,
+    clearHistory: "Clear history",
+    clearAsk: "Delete your whole reading history?",
+    clearYes: "Yes, delete",
+    clearNo: "Cancel",
     errors: {
       generic: "Something went wrong. Please try again.",
       badCode: "The code is wrong or has expired.",
@@ -264,7 +311,7 @@ const COPY: Record<Lang, MembersCopy> = {
   fr: {
     account: "Compte",
     signIn: "Se connecter",
-    join: "Adhérer",
+    join: "Inscription gratuite",
     signInIntro: "Saisissez votre adresse et votre mot de passe.",
     joinIntro:
       "L’adhésion est gratuite. Saisissez votre adresse et choisissez un mot de passe. Nous vous enverrons un lien de confirmation ; votre adhésion est complète dès que vous le touchez.",
@@ -310,6 +357,18 @@ const COPY: Record<Lang, MembersCopy> = {
     lockPaid: "Mon abonnement",
     loading: "Chargement…",
     closed: "L’adhésion n’est pas encore ouverte.",
+    joinInvite:
+      "Inscrivez-vous gratuitement pour commenter et garder la liste de tout ce que vous avez lu.",
+    haveAccount: "Déjà membre ?",
+    history: "Historique de lecture",
+    historyEmpty:
+      "Vous n’avez encore ouvert aucune lecture. Les lectures que vous ouvrez apparaissent ici, la plus récente en premier.",
+    readOn: (when) =>
+      when === "today" ? "Lu aujourd’hui" : when === "yesterday" ? "Lu hier" : `Lu le ${when}`,
+    clearHistory: "Effacer l’historique",
+    clearAsk: "Supprimer tout votre historique de lecture ?",
+    clearYes: "Oui, supprimer",
+    clearNo: "Annuler",
     errors: {
       generic: "Un problème est survenu. Veuillez réessayer.",
       badCode: "Le code est incorrect ou a expiré.",
@@ -331,7 +390,7 @@ const COPY: Record<Lang, MembersCopy> = {
   es: {
     account: "Cuenta",
     signIn: "Iniciar sesión",
-    join: "Unirse",
+    join: "Únase gratis",
     signInIntro: "Escriba su correo y su contraseña.",
     joinIntro:
       "La membresía es gratuita. Escriba su correo y elija una contraseña. Le enviaremos un enlace de confirmación; su membresía queda completa en cuanto lo toque.",
@@ -376,6 +435,17 @@ const COPY: Record<Lang, MembersCopy> = {
     lockPaid: "Mi membresía",
     loading: "Cargando…",
     closed: "La membresía aún no está abierta.",
+    joinInvite: "Únase gratis para comentar y guardar la lista de todo lo que ha leído.",
+    haveAccount: "¿Ya es miembro?",
+    history: "Historial de lectura",
+    historyEmpty:
+      "Todavía no ha abierto ninguna lectura. Las lecturas que abra aparecerán aquí, la más reciente primero.",
+    readOn: (when) =>
+      when === "today" ? "Leído hoy" : when === "yesterday" ? "Leído ayer" : `Leído el ${when}`,
+    clearHistory: "Borrar historial",
+    clearAsk: "¿Borrar todo su historial de lectura?",
+    clearYes: "Sí, borrar",
+    clearNo: "Cancelar",
     errors: {
       generic: "Algo salió mal. Inténtelo de nuevo.",
       badCode: "El código es incorrecto o ha caducado.",

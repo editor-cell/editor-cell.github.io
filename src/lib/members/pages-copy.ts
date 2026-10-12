@@ -5,6 +5,11 @@ export type PagesCopy = {
   membership: {
     title: string;
     lead: string;
+    /** The menu and footer link while membership is free only. */
+    menu: string;
+    /** The page's heading and lead while membership is free only. */
+    heading: string;
+    freeLead: string;
     free: { name: string; price: string; points: string[]; action: string };
     paid: { name: string; points: string[]; action: string };
     /** The unit after a price: "/ ay", "/ 3 ay", … */
@@ -49,11 +54,19 @@ const COPY: Record<Lang, PagesCopy> = {
     membership: {
       title: "Üyelik",
       lead: "Orbis’teki okumaların çoğu herkese açık. Üye olarak yazıların altında yorum yazabilir, destekçi üyelikle her hafta sekiz yazıdan oluşan dijital dergiyi okuyup dinleyebilir, Orbis’in bağımsız çalışmasına katkı verebilirsiniz.",
+      menu: "Ücretsiz kayıt ol",
+      heading: "Orbis’e katılın",
+      freeLead:
+        "Orbis’teki bütün yazılar herkese açık; okumak da dinlemek de ücretsiz. Üyelik de ücretsiz.",
       free: {
         name: "Ücretsiz üyelik",
         price: "Ücretsiz",
-        points: ["Yazıların altında yorum yazma", "Yorumlarda görünecek adınızı seçme"],
-        action: "Ücretsiz üye ol",
+        points: [
+          "Yazıların altında yorum yazma",
+          "Okuduğunuz bütün yazıların listesi; hangi cihazdan girerseniz girin",
+          "Haftalık bülten, açıldığında",
+        ],
+        action: "Ücretsiz kayıt ol",
       },
       paid: {
         name: "Destekçi üyelik",
@@ -111,10 +124,17 @@ const COPY: Record<Lang, PagesCopy> = {
     membership: {
       title: "العضوية",
       lead: "معظم قراءات أوربيس متاحة للجميع. بالعضوية يمكنك التعليق تحت المقالات، وبعضوية الداعم تصل إلى المقالات الخاصة بالأعضاء وتسهم في عمل أوربيس المستقل.",
+      menu: "انضم مجانًا",
+      heading: "انضم إلى أوربيس",
+      freeLead: "كل قراءات أوربيس متاحة للجميع، قراءةً واستماعًا، والعضوية مجانية أيضًا.",
       free: {
         name: "العضوية المجانية",
         price: "مجانًا",
-        points: ["التعليق تحت المقالات", "اختيار الاسم الظاهر في التعليقات"],
+        points: [
+          "التعليق تحت المقالات",
+          "قائمة بكل ما قرأته، من أي جهاز تدخل منه",
+          "النشرة الأسبوعية، عند إطلاقها",
+        ],
         action: "انضم مجانًا",
       },
       paid: {
@@ -170,11 +190,18 @@ const COPY: Record<Lang, PagesCopy> = {
     membership: {
       title: "Membership",
       lead: "Most Orbis readings are open to everyone. As a member you can comment under the readings; as a supporting member you also read and listen to the weekly digital magazine of eight articles and help keep Orbis independent.",
+      menu: "Join Free",
+      heading: "Join Orbis",
+      freeLead: "Every reading on Orbis is free to read and to listen to. Joining is free too.",
       free: {
         name: "Free membership",
         price: "Free",
-        points: ["Comment under the readings", "Choose the name shown on your comments"],
-        action: "Join free",
+        points: [
+          "Write comments under the readings",
+          "Your reading history, on any device you sign in from",
+          "The weekly newsletter, when it opens",
+        ],
+        action: "Join Free",
       },
       paid: {
         name: "Supporting membership",
@@ -232,11 +259,19 @@ const COPY: Record<Lang, PagesCopy> = {
     membership: {
       title: "Adhésion",
       lead: "La plupart des lectures d’Orbis sont ouvertes à tous. Membre, vous pouvez commenter sous les textes ; membre bienfaiteur, vous lisez aussi les textes réservés aux membres, et soutenez l’indépendance d’Orbis.",
+      menu: "Inscription gratuite",
+      heading: "Rejoindre Orbis",
+      freeLead:
+        "Toutes les lectures d’Orbis sont gratuites, à lire comme à écouter. L’inscription aussi est gratuite.",
       free: {
         name: "Adhésion gratuite",
         price: "Gratuit",
-        points: ["Commenter sous les lectures", "Choisir le nom affiché sur vos commentaires"],
-        action: "Adhérer gratuitement",
+        points: [
+          "Commenter sous les lectures",
+          "Votre historique de lecture, sur tout appareil où vous vous connectez",
+          "La lettre hebdomadaire, dès son lancement",
+        ],
+        action: "Inscription gratuite",
       },
       paid: {
         name: "Adhésion bienfaiteur",
@@ -292,11 +327,19 @@ const COPY: Record<Lang, PagesCopy> = {
     membership: {
       title: "Membresía",
       lead: "La mayoría de las lecturas de Orbis están abiertas a todos. Como miembro puede comentar bajo los textos; como miembro benefactor lee además los textos reservados a miembros, y ayuda a que Orbis siga siendo independiente.",
+      menu: "Únase gratis",
+      heading: "Únase a Orbis",
+      freeLead:
+        "Todas las lecturas de Orbis son gratuitas, para leer y para escuchar. Unirse también es gratis.",
       free: {
         name: "Membresía gratuita",
         price: "Gratis",
-        points: ["Comentar bajo las lecturas", "Elegir el nombre que aparece en sus comentarios"],
-        action: "Unirse gratis",
+        points: [
+          "Comentar bajo las lecturas",
+          "Su historial de lectura, en cualquier dispositivo desde el que entre",
+          "El boletín semanal, cuando se lance",
+        ],
+        action: "Únase gratis",
       },
       paid: {
         name: "Membresía benefactora",

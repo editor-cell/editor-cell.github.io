@@ -4,10 +4,13 @@ import { Shell, fieldClass } from "@/components/shell";
 import { membersOn } from "@/lib/members/config";
 import { errorText, membersCopy } from "@/lib/members/copy";
 import { pagesCopy } from "@/lib/members/pages-copy";
-import { memberPageLink } from "@/lib/lang-path";
+import { memberPageLink, readLink } from "@/lib/lang-path";
 import { safeBack } from "@/lib/members/rules";
 import { isPaid, refreshProfile, supabase, useMember } from "@/lib/members/session";
-import { formatDate } from "@/lib/text";
+import { formatDate, storyTitle } from "@/lib/text";
+import { copyFor } from "@/lib/i18n";
+import { useHistory } from "@/lib/reads";
+import { findCard } from "@/lib/seed";
 import type { Lang } from "@/lib/types";
 import { useLang } from "@/lib/use-lang";
 
@@ -88,8 +91,8 @@ function Account({ lang }: { lang: Lang }) {
           {member.user.email}
         </p>
         <p className="text-sm text-muted">{status}</p>
-        {!isPaid(profile) ? <p className="text-sm text-muted">{words.paidSoon}</p> : null}
       </div>
+      <History lang={lang} userId={member.user.id} />
       {reset ? <PasswordForm lang={lang} first /> : null}
       <NameForm lang={lang} userId={member.user.id} current={profile?.display_name ?? ""} />
       {!reset ? <PasswordForm lang={lang} first={false} /> : null}
@@ -106,6 +109,99 @@ function Account({ lang }: { lang: Lang }) {
         {words.signOut}
       </button>
     </div>
+  );
+}
+
+/** "today", "yesterday" or the date, for the line under a reading in the history. */
+function whenRead(iso: string, lang: Lang, now = new Date()): string {
+  const day = (d: Date) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+  const read = new Date(iso);
+  if (day(read) === day(now)) return "today";
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  if (day(read) === day(yesterday)) return "yesterday";
+  const local = `${read.getFullYear()}-${String(read.getMonth() + 1).padStart(2, "0")}-${String(read.getDate()).padStart(2, "0")}`;
+  return formatDate(local, lang);
+}
+
+/** The member's reading history, newest first, with a way to clear it. */
+function History({ lang, userId }: { lang: Lang; userId: string }) {
+  const words = membersCopy(lang);
+  const copy = copyFor(lang);
+  const { entries, clear } = useHistory(userId);
+  const [asking, setAsking] = useState(false);
+  const [error, setError] = useState("");
+  const label =
+    lang === "ar" ? "text-sm text-pine" : "text-xs uppercase tracking-[0.14em] text-pine";
+  const rows = (entries ?? [])
+    .map((entry) => ({ entry, card: findCard(entry.storyId) }))
+    .filter((row) => row.card !== undefined);
+
+  return (
+    <section className="flex flex-col gap-3" aria-labelledby="history">
+      <h2 id="history" className={`border-b-[3px] border-ink pb-3 font-body font-normal ${label}`}>
+        {words.history}
+      </h2>
+      {entries === null ? (
+        <p className="text-muted">{words.loading}</p>
+      ) : rows.length === 0 ? (
+        <p className="text-muted">{words.historyEmpty}</p>
+      ) : (
+        <>
+          <ul className="flex flex-col">
+            {rows.map(({ entry, card }) =>
+              card ? (
+                <li key={entry.storyId} className="flex flex-col gap-1 border-b border-line py-3">
+                  <Link
+                    {...readLink(lang, card.id)}
+                    className="paper-title text-lg font-bold leading-snug text-ink"
+                  >
+                    {storyTitle(card, lang)}
+                  </Link>
+                  <span className="flex flex-wrap items-baseline gap-x-3 text-sm text-muted">
+                    <span className={label}>{copy.themes[card.theme]}</span>
+                    <span>{words.readOn(whenRead(entry.readAt, lang))}</span>
+                  </span>
+                </li>
+              ) : null,
+            )}
+          </ul>
+          {asking ? (
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+              <span className="text-sm">{words.clearAsk}</span>
+              <button
+                type="button"
+                className={quietButtonClass}
+                onClick={() =>
+                  void clear().then((done) => {
+                    setAsking(false);
+                    setError(done ? "" : words.errors.generic);
+                  })
+                }
+              >
+                {words.clearYes}
+              </button>
+              <button type="button" className={quietButtonClass} onClick={() => setAsking(false)}>
+                {words.clearNo}
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              className={`${quietButtonClass} self-start`}
+              onClick={() => setAsking(true)}
+            >
+              {words.clearHistory}
+            </button>
+          )}
+          {error ? (
+            <p role="alert" className="text-sm text-pine">
+              {error}
+            </p>
+          ) : null}
+        </>
+      )}
+    </section>
   );
 }
 
@@ -195,6 +291,15 @@ type Step = "signin" | "join" | "forgot";
 function SignIn({ lang }: { lang: Lang }) {
   const words = membersCopy(lang);
   const [step, setStep] = useState<Step>("signin");
+  // Arriving from a "Join Free" button: the join form comes first.
+  useEffect(() => {
+    try {
+      const join = new URLSearchParams(window.location.search).get("join");
+      if (join === "true" || join === "1") setStep("join");
+    } catch {
+      /* sign-in stays first */
+    }
+  }, []);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [sent, setSent] = useState<string | null>(null);

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { membersOn } from "@/lib/members/config";
-import { supabase } from "@/lib/members/session";
+import { supabase, useMember } from "@/lib/members/session";
 
 /**
  * Read counts for the "Most read" column. They are kept in the same Supabase project as
@@ -50,4 +50,69 @@ export function useMostRead(limit: number): string[] | null {
     };
   }, [limit]);
   return ids;
+}
+
+/**
+ * The signed-in member's reading history (supabase/orbis-members.sql, the "history" part).
+ * Opening a reading puts it at the top of the member's own list; nothing is sent for a
+ * visitor who is not signed in.
+ */
+export function useNoteRead(storyId: string | undefined): void {
+  const member = useMember();
+  const userId = member.status === "in" ? member.user.id : null;
+  useEffect(() => {
+    if (!membersOn || !storyId || !userId) return;
+    void supabase()
+      .then((client) => client.rpc("note_read", { p_story: storyId }))
+      .catch(() => {
+        /* a missed entry is not worth troubling the reader */
+      });
+  }, [storyId, userId]);
+}
+
+export type HistoryEntry = { storyId: string; readAt: string };
+
+/** The member's history, newest first: null while loading, [] when empty or unavailable. */
+export function useHistory(userId: string): {
+  entries: HistoryEntry[] | null;
+  clear: () => Promise<boolean>;
+} {
+  const [entries, setEntries] = useState<HistoryEntry[] | null>(null);
+  useEffect(() => {
+    let live = true;
+    void supabase()
+      .then((client) =>
+        client
+          .from("history")
+          .select("story_id, read_at")
+          .eq("user_id", userId)
+          .order("read_at", { ascending: false })
+          .limit(100),
+      )
+      .then(({ data }) => {
+        if (!live) return;
+        const rows = (data as { story_id: string; read_at: string }[] | null) ?? [];
+        setEntries(rows.map((row) => ({ storyId: row.story_id, readAt: row.read_at })));
+      })
+      .catch(() => {
+        if (live) setEntries([]);
+      });
+    return () => {
+      live = false;
+    };
+  }, [userId]);
+
+  async function clear(): Promise<boolean> {
+    try {
+      const client = await supabase();
+      const { error } = await client.from("history").delete().eq("user_id", userId);
+      if (error) return false;
+      setEntries([]);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  return { entries, clear };
 }

@@ -128,10 +128,15 @@ function Soon({ label, soon, className }: { label: string; soon: string; classNa
   );
 }
 
-/** /membership: the free and the supporting membership side by side, stacked on a phone. */
+/**
+ * /membership. While there is no payment, only the free membership: what it gives and the
+ * "Join Free" button. Once a payment provider is set, the free and the supporting membership
+ * stand side by side, stacked on a phone.
+ */
 export function MembershipPage() {
   const lang = useLang();
   const words = pagesCopy(lang).membership;
+  if (!paymentOn) return <FreeMembership lang={lang} />;
   return (
     <Page title={words.title} lead={words.lead}>
       <div className="grid md:grid-cols-2 md:gap-12">
@@ -140,7 +145,10 @@ export function MembershipPage() {
           <p className="paper-title mt-6 text-4xl font-bold leading-none">{words.free.price}</p>
           <Points items={words.free.points} />
           {membersOn ? (
-            <Link {...accountLink(lang)} className={`${outlineButton} mt-8 self-start`}>
+            <Link
+              {...accountLink(lang, undefined, true)}
+              className={`${outlineButton} mt-8 self-start`}
+            >
               {words.free.action}
             </Link>
           ) : (
@@ -174,6 +182,41 @@ export function MembershipPage() {
             {words.signIn}
             <span className="ms-2 text-pine">{words.soon}</span>
           </>
+        )}
+      </p>
+    </Page>
+  );
+}
+
+/** The free membership alone: the reading history, comments and newsletter it brings. */
+function FreeMembership({ lang }: { lang: Lang }) {
+  const words = pagesCopy(lang).membership;
+  return (
+    <Page title={words.heading} lead={words.freeLead}>
+      <section className="flex max-w-xl flex-col">
+        <Points items={words.free.points} />
+        {membersOn ? (
+          <Link
+            {...accountLink(lang, undefined, true)}
+            className={`${buttonClass} mt-8 self-start`}
+          >
+            {words.free.action}
+          </Link>
+        ) : (
+          <Soon label={words.free.action} soon={words.soon} className={buttonClass} />
+        )}
+      </section>
+      <p className="border-t border-line pt-6 text-sm text-muted">
+        {words.haveAccount}{" "}
+        {membersOn ? (
+          <Link
+            {...accountLink(lang)}
+            className="text-pine underline underline-offset-4 hover:underline"
+          >
+            {words.signIn}
+          </Link>
+        ) : (
+          words.signIn
         )}
       </p>
     </Page>

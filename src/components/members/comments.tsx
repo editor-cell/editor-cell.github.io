@@ -206,12 +206,21 @@ export function Comments({ storyId, lang }: { storyId: string; lang: Lang }) {
 
       <div className="mt-8">
         {member.status === "out" ? (
-          <Link
-            {...accountLink(lang, here)}
-            className="inline-flex min-h-11 items-center text-sm text-pine underline underline-offset-4 hover:underline"
-          >
-            {words.signInToComment}
-          </Link>
+          <div className="flex flex-col gap-4 border-b border-line pb-6">
+            <p className="text-pretty">{words.joinInvite}</p>
+            <Link {...accountLink(lang, here, true)} className={`${buttonClass} self-start`}>
+              {words.join}
+            </Link>
+            <p className="text-sm text-muted">
+              {words.haveAccount}{" "}
+              <Link
+                {...accountLink(lang, here)}
+                className="text-pine underline underline-offset-4 hover:underline"
+              >
+                {words.signIn}
+              </Link>
+            </p>
+          </div>
         ) : member.status === "in" && !named ? (
           <div className="flex flex-col gap-3 border-t border-line pt-6">
             <p className="text-sm text-muted">{words.errors.nameRequired}</p>

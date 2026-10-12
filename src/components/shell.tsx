@@ -7,6 +7,7 @@ import { SearchMark } from "@/components/search-mark";
 import { membersOn } from "@/lib/members/config";
 import { TRIAL, trialNote } from "@/lib/site";
 import { membersCopy } from "@/lib/members/copy";
+import { paymentOn } from "@/lib/members/plans";
 import { pagesCopy } from "@/lib/members/pages-copy";
 import { LEGAL_PAGES, legalCopy } from "@/lib/legal-copy";
 import { searchCopy } from "@/lib/search";
@@ -505,7 +506,9 @@ export function Shell({
                           {...memberPageLink(lang, item)}
                           className="inline-flex min-h-9 items-center self-start text-base text-paper"
                         >
-                          {pagesCopy(lang)[item].title}
+                          {item === "membership" && !paymentOn
+                            ? pagesCopy(lang).membership.menu
+                            : pagesCopy(lang)[item].title}
                         </Link>
                       </li>
                     ))}
