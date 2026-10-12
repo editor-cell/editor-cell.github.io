@@ -1,0 +1,1 @@
+import{n as e}from"./atlas-D5SHUIX_.js";var t=e;export{t as component};
