@@ -1,1 +1,0 @@
-import{Vt as e}from"./shell-C_ysCea9.js";import{n as t}from"./index-BLEajalb.js";import{r as n}from"./videos-xHpjtPIp.js";var r=e();function i(){return(0,r.jsx)(n,{video:t.useLoaderData()})}export{i as component};

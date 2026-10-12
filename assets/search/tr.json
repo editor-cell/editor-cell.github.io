@@ -46,7 +46,7 @@
   },
   {
     "id": "consumption-and-wellbeing",
-    "theme": "research",
+    "theme": "economy",
     "date": "2026-10-05",
     "title": "Daha çok tüketmek daha iyi yaşamak mı demek?",
     "dek": "Gelir ve yaşam memnuniyeti birlikte artıyor; ama her adım bir öncekinden daha azını satın alıyor. Tartışma, bunun nerede ve kimin için durduğu üzerine.",
@@ -127,7 +127,7 @@
   },
   {
     "id": "register-of-trials",
-    "theme": "research",
+    "theme": "health",
     "date": "2025-08-19",
     "title": "Deneylerin kütüğü",
     "dek": "Kamuya açık bir kütüğe girmeyen bir çalışma hem bulunması hem sayılması güç bir kayıttır.",

@@ -1,1 +1,0 @@
-import{t as e}from"./about-DPXA-3OD.js";var t=e;export{t as component};

@@ -46,7 +46,7 @@
   },
   {
     "id": "consumption-and-wellbeing",
-    "theme": "research",
+    "theme": "economy",
     "date": "2026-10-05",
     "title": "Does consuming more mean living better?",
     "dek": "Income and life satisfaction rise together, but each step buys less than the one before. The argument is over where, and for whom, it stops.",
@@ -127,7 +127,7 @@
   },
   {
     "id": "register-of-trials",
-    "theme": "research",
+    "theme": "health",
     "date": "2025-08-19",
     "title": "The register of trials",
     "dek": "A study that never enters a public register is harder to find, and harder to count.",
