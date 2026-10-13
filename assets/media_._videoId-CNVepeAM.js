@@ -1,1 +1,0 @@
-import{Bt as e}from"./shell-Bdwv_FRa.js";import{a as t}from"./index-BIDCZRC1.js";import{r as n}from"./videos-DvZFLoCV.js";var r=e();function i(){return(0,r.jsx)(n,{video:t.useLoaderData()})}export{i as component};
