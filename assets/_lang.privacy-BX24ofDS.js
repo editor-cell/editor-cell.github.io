@@ -1,0 +1,1 @@
+import{Bt as e}from"./shell-Bdwv_FRa.js";import{t}from"./legal-R9pVQqju.js";var n=e(),r=()=>(0,n.jsx)(t,{page:`privacy`});export{r as component};

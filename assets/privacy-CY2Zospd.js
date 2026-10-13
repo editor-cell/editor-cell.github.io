@@ -1,1 +1,0 @@
-import{It as e}from"./shell-CTtIL0DJ.js";import{t}from"./legal-Divb4ZeS.js";var n=e(),r=()=>(0,n.jsx)(t,{page:`privacy`});export{r as component};
