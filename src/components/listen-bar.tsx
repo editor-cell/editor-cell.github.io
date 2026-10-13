@@ -1,6 +1,4 @@
-import { MEDIA } from "@/lib/breakpoints";
-import { Link, useRouterState } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { Pause, Play, X } from "lucide-react";
 import { Pick } from "@/components/pick";
 import { SkipButton } from "@/components/player";
@@ -27,14 +25,13 @@ import {
  * at the end of the title line. A spacer of the same height keeps the page's last lines
  * from sitting under it.
  *
- * On a wide screen, on the front page, the panel's contents stand under the lead picture,
- * edge to edge with it, instead of in the middle of the screen. Phones keep the panel as it is.
+ * The contents stand in the middle of the screen on every page and at every width, so the
+ * panel never looks pushed to one side when the reader scrolls away from the top.
  */
 export function ListenBar() {
   const now = useListen();
   const clip = now.clip;
   const copy = useCopy(clip?.lang ?? "en");
-  const column = useLeadPictureColumn(Boolean(clip));
   if (!clip) return null;
 
   const span = now.duration > 0 ? Math.min(now.time, now.duration) / now.duration : 0;
@@ -49,21 +46,7 @@ export function ListenBar() {
         className="listen-bar no-print fixed inset-x-0 bottom-0 z-40 border-t border-ink bg-sheet text-ink"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
-        <div
-          className="reading-player mx-auto flex w-full max-w-2xl min-w-0 flex-col px-5 pt-1.5 pb-1 md:px-8"
-          style={
-            column
-              ? {
-                  marginLeft: column.left,
-                  marginRight: "auto",
-                  width: column.width,
-                  maxWidth: "none",
-                  paddingLeft: 0,
-                  paddingRight: 0,
-                }
-              : undefined
-          }
-        >
+        <div className="reading-player mx-auto flex w-full max-w-2xl min-w-0 flex-col px-5 pt-1.5 pb-1 md:px-8">
           <div className="flex items-center gap-3">
             <Link
               {...readLink(clip.lang, clip.id)}
@@ -180,48 +163,4 @@ export function ListenBar() {
       </section>
     </>
   );
-}
-
-/**
- * Where the front page's lead picture stands across the screen, on a wide screen only;
- * null on a phone or on any page without that picture. Measured again when the window
- * changes size or the reader moves to another page.
- */
-function useLeadPictureColumn(active: boolean) {
-  const path = useRouterState({ select: (state) => state.location.pathname });
-  const [column, setColumn] = useState<{ left: number; width: number } | null>(null);
-  useEffect(() => {
-    if (!active) {
-      setColumn(null);
-      return;
-    }
-    const wide = window.matchMedia(MEDIA.desktop);
-    let frame = 0;
-    const measure = () => {
-      const picture = document.querySelector<HTMLElement>("[data-lead-picture]");
-      if (!wide.matches || !picture) {
-        setColumn(null);
-        return;
-      }
-      const box = picture.getBoundingClientRect();
-      const next = { left: Math.round(box.left), width: Math.round(box.width) };
-      setColumn((prev) =>
-        prev && prev.left === next.left && prev.width === next.width ? prev : next,
-      );
-    };
-    const later = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(measure);
-    };
-    measure();
-    later();
-    window.addEventListener("resize", later);
-    wide.addEventListener("change", later);
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("resize", later);
-      wide.removeEventListener("change", later);
-    };
-  }, [active, path]);
-  return column;
 }
