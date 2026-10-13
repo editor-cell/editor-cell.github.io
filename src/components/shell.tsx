@@ -31,29 +31,23 @@ import { LOOKS, LOOK_SWATCH, useLook, type Look } from "@/lib/look";
 import { LANGS, THEMES, type Lang, type Theme } from "@/lib/types";
 import { useLang } from "@/lib/use-lang";
 
-/** The mark beside the name. In the header it is a size smaller on a phone. */
-function Meridian({ header = false }: { header?: boolean }) {
+/**
+ * The name on the dark bands: the owner's emblem (wire globe round the wreathed O,
+ * burgundy dot in the middle) stands in for the O, then "RBIS". Screen readers hear "ORBIS".
+ * Light backgrounds (the menu, print) keep the plain lettering: the emblem is white.
+ */
+function OrbisName({ className }: { className: string }) {
   return (
-    <span
-      className={
-        header
-          ? "relative inline-flex h-12 w-7 items-center justify-center md:h-16 md:w-9 lg:h-20 lg:w-11"
-          : "relative inline-flex h-8 w-8 items-center justify-center"
-      }
-      aria-hidden="true"
-    >
-      <span
-        className={
-          header ? "absolute h-12 w-px bg-paper md:h-16 lg:h-20" : "absolute h-8 w-px bg-paper"
-        }
+    <span className={`masthead-name inline-flex items-center ${className}`} aria-label="ORBIS">
+      <img
+        src="/__grok/orbis-mark.png"
+        alt=""
+        aria-hidden="true"
+        width={240}
+        height={240}
+        className="me-[0.06em] h-[1.12em] w-[1.12em] shrink-0"
       />
-      <span
-        className={
-          header
-            ? "size-2.5 rounded-full bg-paper md:size-3 lg:size-3.5"
-            : "size-2 rounded-full bg-paper"
-        }
-      />
+      <span aria-hidden="true">RBIS</span>
     </span>
   );
 }
@@ -223,18 +217,6 @@ export function FrameTools() {
   );
 }
 
-/** The mark beside the name in the header: the same hairline and dot, light on the black band. */
-function InkMark() {
-  return (
-    <span
-      className="relative inline-flex h-8 w-4 items-center justify-center md:h-10 md:w-5"
-      aria-hidden="true"
-    >
-      <span className="absolute h-8 w-px bg-paper md:h-10" />
-      <span className="size-[7px] rounded-full bg-paper md:size-2" />
-    </span>
-  );
-}
 
 /**
  * Site frame shared by every page: header, section bar, footer (black, or burgundy in the second scheme).
@@ -370,11 +352,8 @@ export function Shell({
               {...homeLink(lang)}
               className="inline-flex min-h-11 shrink-0 items-center gap-2 py-2.5 md:gap-2.5 md:py-3"
             >
-              <InkMark />
               <span className="flex flex-col">
-                <span className="masthead-name text-[1.85rem] leading-none md:text-[2.35rem]">
-                  ORBIS
-                </span>
+                <OrbisName className="text-[1.85rem] leading-none md:text-[2.35rem]" />
                 <span
                   lang={meta.html}
                   dir={meta.dir}
@@ -490,8 +469,7 @@ export function Shell({
                     dir="ltr"
                     className="inline-flex min-h-11 items-center gap-3 self-start text-paper"
                   >
-                    <Meridian />
-                    <span className="masthead-name text-[1.75rem] leading-none">ORBIS</span>
+                    <OrbisName className="text-[1.75rem] leading-none" />
                   </Link>
                   <ul className="flex flex-col">
                     <li>
