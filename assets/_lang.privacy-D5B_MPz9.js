@@ -1,1 +1,0 @@
-import{It as e}from"./shell-tKPbv-RM.js";import{t}from"./legal-DeNcDeW-.js";var n=e(),r=()=>(0,n.jsx)(t,{page:`privacy`});export{r as component};
