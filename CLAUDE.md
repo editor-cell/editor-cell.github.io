@@ -13,13 +13,18 @@ the pages; Cloudflare (Workers Builds) then serves them at https://orbisreadinga
 2. `scripts/check-built-site.mjs` (last step of `npm run build:pages`): every reading
    page was written with its title, every address inside the site resolves, every DOI is
    registered at doi.org.
-3. `scripts/browser/pages.mjs` (`npm run test:pages`, in the workflow after the browser
-   checks): every built page at phone and desktop width; nothing may stick out past the
+3. `scripts/browser/pages.mjs` (`npm run test:pages`, the only browser check in the
+   workflow): every built page at phone and desktop width; nothing may stick out past the
    screen, no text may run out of its box (a long unbroken word in a title), every
    picture loads, no page reports an error. Locally: `npm run build:pages` first.
 
 A failing gate stops the workflow before the publish commit, so the live site stays as it
 was. Never weaken or skip a gate to get a reading out; fix the reading.
+
+On 13 Oct 2026 the owner took the look comparison (`npm run test:browser`) out of the
+publish: it was slow and caught nothing a reading change could break. Do not put it back
+without asking him. The workflow already runs the gates, so do not repeat them locally
+before every push; push and let the workflow check.
 
 ## Adding or changing a reading
 
@@ -38,7 +43,7 @@ was. Never weaken or skip a gate to get a reading out; fix the reading.
    lists below. An issue of eight leaves box 9 to the next reading. Never guess a rank;
    ask the owner. Readings without an issue follow by date. The membership terms still
    sell "eight articles a week": a ninth is extra, not part of what is sold.
-5. Run `npm run test:site && npm run build:pages` locally; both must pass.
+5. No local run needed; the workflow runs `test:site` and `build:pages` and stops on failure.
 6. Push, watch the "Publish site" run, then the Cloudflare status on the `[site] publish`
    commit (`gh api repos/editor-cell/editor-cell.github.io/commits/<sha>/check-runs`),
    then look at the live page.
