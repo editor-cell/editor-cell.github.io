@@ -1073,7 +1073,6 @@ type RecordPlan = {
 
 /** Which reading goes where; the phone and the desktop are planned apart. */
 function planRecords(stories: Story[], mostRead: Story[], desk: boolean): RecordPlan {
-  const counted = mostRead.length > 0;
   // The middle column holds the editor's picks in the editor's order (1, then 2): two on a
   // desktop, one on a phone. With no picks it is not shown. The picks leave the other lists.
   const deep = stories
@@ -1088,9 +1087,12 @@ function planRecords(stories: Story[], mostRead: Story[], desk: boolean): Record
   const latestCount = Math.min(4, Math.max(1, remaining.length - 3));
   const latest = remaining.slice(0, latestCount);
   const after = remaining.slice(latestCount);
-  const numbered = counted
-    ? mostRead.filter((story) => !picked.has(story.id))
-    : after.slice(0, desk ? 3 : 5);
+  // "Most read" takes the column only when, after the picks leave it, it still holds three
+  // readings; otherwise the column keeps the newest readings under "More readings", so it is
+  // never left empty and the row keeps its three columns.
+  const read = mostRead.filter((story) => !picked.has(story.id)).slice(0, desk ? 3 : 5);
+  const counted = read.length >= 3;
+  const numbered = counted ? read : after.slice(0, desk ? 3 : 5);
   const shown = new Set([...strip, ...latest, ...deep, ...numbered].map((s) => s.id));
   const more = stories.filter((story) => !shown.has(story.id));
   return { strip, latest, deep, numbered, counted, more };
@@ -1108,7 +1110,9 @@ function Records({
   /** A reading the desktop already shows in the top boxes; the phone still lists it here. */
   deskSkip?: string;
 }) {
-  const ranked = useMostRead(5);
+  // The count covers the whole site; most of the top readings sit in the newest issue above,
+  // so ask for enough to find the archive's own most read.
+  const ranked = useMostRead(50);
   useColumnFill(depth);
   if (stories.length === 0) return null;
   const byId = new Map(stories.map((story) => [story.id, story]));
