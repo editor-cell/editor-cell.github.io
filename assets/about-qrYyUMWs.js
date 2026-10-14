@@ -1,0 +1,1 @@
+import{t as e}from"./about-ClvHjxZy.js";var t=e;export{t as component};
