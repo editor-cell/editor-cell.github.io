@@ -1,0 +1,1 @@
+import{Bt as e}from"./shell-DDOqMm-V.js";import{t}from"./legal-Cdg64gxW.js";var n=e(),r=()=>(0,n.jsx)(t,{page:`terms`});export{r as component};
