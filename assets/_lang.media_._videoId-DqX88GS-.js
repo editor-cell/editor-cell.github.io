@@ -1,1 +1,0 @@
-import{Bt as e}from"./shell-DtdsGuxs.js";import{n as t}from"./index-CoqzdGD1.js";import{r as n}from"./videos-BGsnlnPe.js";var r=e();function i(){return(0,r.jsx)(n,{video:t.useLoaderData()})}export{i as component};
