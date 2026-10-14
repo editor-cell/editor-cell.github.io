@@ -1,1 +1,0 @@
-import{t as e}from"./about-DtYRo5ui.js";var t=e;export{t as component};
