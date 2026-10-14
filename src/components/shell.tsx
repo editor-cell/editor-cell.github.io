@@ -49,7 +49,7 @@ function OrbisName({ className, children }: { className: string; children?: Reac
         aria-hidden="true"
         width={240}
         height={240}
-        className="me-[0.12em] -mt-[0.11em] h-[1.32em] w-[1.32em] shrink-0"
+        className="me-[0.12em] -mt-[0.21em] h-[1.32em] w-[1.32em] shrink-0"
       />
       <span className="flex flex-col">
         <span className="masthead-name" role="img" aria-label="ORBIS">
