@@ -1,0 +1,1 @@
+import{t as e}from"./account-BSIPvd2_.js";var t=e;export{t as component};
