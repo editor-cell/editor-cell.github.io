@@ -44,7 +44,7 @@ function OrbisName({ className, children }: { className: string; children?: Reac
   return (
     <span className={`inline-flex items-start ${className}`}>
       <img
-        src="/__grok/orbis-mark.png?v=20261014-6"
+        src="/__grok/orbis-mark.png?v=20261014-7"
         alt=""
         aria-hidden="true"
         width={240}
