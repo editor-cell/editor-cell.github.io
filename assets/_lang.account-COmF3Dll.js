@@ -1,1 +1,0 @@
-import{t as e}from"./account-CQ2-2eR3.js";var t=e;export{t as component};
