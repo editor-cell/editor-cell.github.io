@@ -33,10 +33,10 @@ import { useLang } from "@/lib/use-lang";
 
 /**
  * The name on the dark bands: the owner's emblem (the wreathed O with planets and stars,
- * burgundy dot in the middle; his drawing of 14 Oct 2026) stands in for the O, then "RBIS".
+ * the white Earth inside orbit rings in the middle; his drawing of 14 Oct 2026) stands in for the O, then "RBIS".
  * Screen readers hear "ORBIS".
  * As in the owner's logo, the emblem is drawn larger than the letters (about 1.75 times
- * their height) and its burgundy dot sits level with the middle of "RBIS"; the motto, when
+ * their height) and its Earth sits level with the middle of "RBIS"; the motto, when
  * given, runs under "RBIS" beside the emblem, left-aligned, in a slanted hand.
  * Light backgrounds (the menu, print) keep the plain lettering: the emblem is white.
  */
@@ -44,7 +44,7 @@ function OrbisName({ className, children }: { className: string; children?: Reac
   return (
     <span className={`inline-flex items-start ${className}`}>
       <img
-        src="/__grok/orbis-mark.png?v=20261014-5"
+        src="/__grok/orbis-mark.png?v=20261014-6"
         alt=""
         aria-hidden="true"
         width={240}
