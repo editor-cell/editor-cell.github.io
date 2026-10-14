@@ -1,0 +1,1 @@
+import{t as e}from"./pages-Dk799njv.js";var t=e;export{t as component};
