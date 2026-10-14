@@ -1,0 +1,1 @@
+import{n as e}from"./pages-DRyx60ym.js";var t=e;export{t as component};

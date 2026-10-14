@@ -1,0 +1,1 @@
+import{t as e}from"./about-DpoNvnu4.js";var t=e;export{t as component};
