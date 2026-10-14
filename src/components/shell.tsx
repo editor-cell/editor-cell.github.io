@@ -34,20 +34,28 @@ import { useLang } from "@/lib/use-lang";
 /**
  * The name on the dark bands: the owner's emblem (wire globe round the wreathed O,
  * burgundy dot in the middle) stands in for the O, then "RBIS". Screen readers hear "ORBIS".
+ * As in the owner's logo, the emblem is drawn larger than the letters (about 1.75 times
+ * their height) and its burgundy dot sits level with the middle of "RBIS"; the motto, when
+ * given, runs under "RBIS" beside the emblem, not under it.
  * Light backgrounds (the menu, print) keep the plain lettering: the emblem is white.
  */
-function OrbisName({ className }: { className: string }) {
+function OrbisName({ className, children }: { className: string; children?: React.ReactNode }) {
   return (
-    <span className={`masthead-name inline-flex items-center ${className}`} aria-label="ORBIS">
+    <span className={`inline-flex items-start ${className}`}>
       <img
         src="/__grok/orbis-mark.png"
         alt=""
         aria-hidden="true"
         width={240}
         height={240}
-        className="me-[0.06em] h-[1.12em] w-[1.12em] shrink-0"
+        className="me-[0.12em] -mt-[0.14em] h-[1.24em] w-[1.24em] shrink-0"
       />
-      <span aria-hidden="true">RBIS</span>
+      <span className="flex flex-col">
+        <span className="masthead-name" role="img" aria-label="ORBIS">
+          <span aria-hidden="true">RBIS</span>
+        </span>
+        {children}
+      </span>
     </span>
   );
 }
@@ -352,8 +360,7 @@ export function Shell({
               {...homeLink(lang)}
               className="inline-flex min-h-11 shrink-0 items-center gap-2 py-2.5 md:gap-2.5 md:py-3"
             >
-              <span className="flex flex-col">
-                <OrbisName className="text-[1.85rem] leading-none md:text-[2.35rem]" />
+              <OrbisName className="text-[1.85rem] leading-none md:text-[2.35rem]">
                 <span
                   lang={meta.html}
                   dir={meta.dir}
@@ -361,7 +368,7 @@ export function Shell({
                 >
                   {copy.heroLead} {copy.hero}
                 </span>
-              </span>
+              </OrbisName>
             </Link>
 
             <div>
