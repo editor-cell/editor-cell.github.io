@@ -1,0 +1,1 @@
+import{n as e}from"./pages-D3NuARcP.js";var t=e;export{t as component};
