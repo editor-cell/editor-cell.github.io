@@ -32,11 +32,12 @@ import { LANGS, THEMES, type Lang, type Theme } from "@/lib/types";
 import { useLang } from "@/lib/use-lang";
 
 /**
- * The name on the dark bands: the owner's emblem (wire globe round the wreathed O,
- * burgundy dot in the middle) stands in for the O, then "RBIS". Screen readers hear "ORBIS".
+ * The name on the dark bands: the owner's emblem (the wreathed O with planets and stars,
+ * burgundy dot in the middle; his drawing of 14 Oct 2026) stands in for the O, then "RBIS".
+ * Screen readers hear "ORBIS".
  * As in the owner's logo, the emblem is drawn larger than the letters (about 1.75 times
  * their height) and its burgundy dot sits level with the middle of "RBIS"; the motto, when
- * given, runs under "RBIS" beside the emblem, not under it.
+ * given, runs under "RBIS" beside the emblem, left-aligned, in a slanted hand.
  * Light backgrounds (the menu, print) keep the plain lettering: the emblem is white.
  */
 function OrbisName({ className, children }: { className: string; children?: React.ReactNode }) {
@@ -48,7 +49,7 @@ function OrbisName({ className, children }: { className: string; children?: Reac
         aria-hidden="true"
         width={240}
         height={240}
-        className="me-[0.12em] -mt-[0.14em] h-[1.24em] w-[1.24em] shrink-0"
+        className="me-[0.12em] -mt-[0.11em] h-[1.32em] w-[1.32em] shrink-0"
       />
       <span className="flex flex-col">
         <span className="masthead-name" role="img" aria-label="ORBIS">
@@ -364,7 +365,7 @@ export function Shell({
                 <span
                   lang={meta.html}
                   dir={meta.dir}
-                  className="mt-1 font-body text-[10px] leading-none tracking-[0.02em] text-paper/80 md:text-[11px]"
+                  className="masthead-motto mt-[0.06em] text-left text-[0.5em] leading-[1.1] text-paper/90"
                 >
                   {copy.heroLead} {copy.hero}
                 </span>

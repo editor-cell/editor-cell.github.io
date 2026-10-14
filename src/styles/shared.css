@@ -162,6 +162,19 @@ body {
   letter-spacing: 0.06em;
 }
 
+/* The motto under the name in the header: a slanted hand, as in the owner's logo.
+   The hand has no Arabic letters, so the Arabic motto keeps its own face, upright. */
+.masthead-motto {
+  font-family: "Pinyon Script", "Tinos", "Times New Roman", serif;
+  font-weight: 400;
+  font-style: normal;
+  letter-spacing: 0.01em;
+}
+
+:lang(ar) .masthead-motto {
+  font-family: "Noto Naskh Arabic", Georgia, serif;
+}
+
 /* Front page card titles. Weight and size are set in the markup per card. */
 .paper-title {
   font-family: "Playfair Display", "Times New Roman", serif;
