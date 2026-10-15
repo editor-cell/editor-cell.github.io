@@ -80,13 +80,18 @@ html[data-look="bordo"] {
   --color-shade: #f3eee2;
 }
 
-/* In the burgundy scheme the section bar and the small labels (Readings, Index)
-   are burgundy mixed with white, in the same proportion as the classic grey:
-   #5a5a5a is 68% of the classic black #0c0c0c and 32% white; #7a585d is 68%
-   of the burgundy #3c0911 and 32% white. */
+/* In the burgundy scheme the section bar and the small labels (Readings, Index) are the
+   burgundy of the band mixed with the paper of the page, in the same proportion as the
+   classic grey (#5a5a5a is 68% of the classic black and 32% white): 68% burgundy, 32% paper.
+   The section names on the cards (the green accent) are mixed the same way. Until 15 Oct
+   2026 evening the burgundy was mixed with pure white (#7a585d) and the green was unmixed. */
 html[data-look="bordo"] .section-link,
 html[data-look="bordo"] .kicker {
-  color: #7a585d;
+  color: color-mix(in srgb, var(--color-panel) 68%, var(--color-paper));
+}
+
+html[data-look="bordo"] .card-kicker > p:first-child {
+  color: color-mix(in srgb, var(--color-pine) 68%, var(--color-paper));
 }
 
 /* The open section is full black in the classic scheme, so here it is full burgundy. */
