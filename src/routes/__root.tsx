@@ -30,7 +30,7 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { name: "theme-color", content: "#fbf7ef" },
+      { name: "theme-color", content: "#ffffff" },
       ...pageMeta({ title: SITE_NAME, description: SITE_DESCRIPTION, url: "/" }),
       // During the test period no page is listed by search engines (see TRIAL in site.ts).
       ...(TRIAL ? [{ name: "robots", content: "noindex, nofollow" }] : []),
@@ -40,17 +40,17 @@ export const Route = createRootRoute({
         rel: "icon",
         type: "image/png",
         sizes: "192x192",
-        href: "/__grok/orbis-192.png?v=20261015-7",
+        href: "/__grok/orbis-192.png?v=20261015-8",
       },
-      { rel: "icon", type: "image/svg+xml", href: "/__grok/orbis-favicon.svg?v=20261015-7" },
+      { rel: "icon", type: "image/svg+xml", href: "/__grok/orbis-favicon.svg?v=20261015-8" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       // The font stylesheet starts downloading at once but does not hold up the first paint
       // (FONT_BOOT below attaches it); until the faces arrive the page shows in Times.
       { rel: "preload", as: "style", href: FONTS },
       { rel: "stylesheet", href: appCss },
-      { rel: "manifest", href: "/__grok/orbis.webmanifest?v=20261015-7" },
-      { rel: "apple-touch-icon", href: "/__grok/orbis-180.png?v=20261015-7" },
+      { rel: "manifest", href: "/__grok/orbis.webmanifest?v=20261015-8" },
+      { rel: "apple-touch-icon", href: "/__grok/orbis-180.png?v=20261015-8" },
     ],
   }),
   component: RootDocument,

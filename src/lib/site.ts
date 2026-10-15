@@ -33,7 +33,7 @@ export function trialNote(lang: Lang): string {
   return TRIAL_NOTE[lang];
 }
 /** The 1200×630 card shown when a page without its own picture is shared. */
-export const SITE_CARD = `${SITE_URL}/og.jpg?v=20261014-3`;
+export const SITE_CARD = `${SITE_URL}/og.jpg?v=20261015-1`;
 
 const DESCRIPTION: Record<Lang, string> = {
   tr: "Orbis: İngilizce ve Türkçe kaynaklı okumalar.",

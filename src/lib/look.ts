@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-/** Colour schemes for the whole site. "kagit" (15 Oct 2026, the main one) is black on cream
+/** Colour schemes for the whole site. "kagit" (15 Oct 2026, the main one) is black on white
  * paper, the bands included; "classic" the black-band one (Mürekkep); "bordo" the burgundy
  * bands; "kahve" the brown one with orange accents; "night" the dark one, for a dim room. */
 export const LOOKS = ["kagit", "classic", "bordo", "kahve", "night"] as const;
@@ -13,7 +13,7 @@ export const LOOK_KEY = "orbis-look";
 
 /** Browser bar colour for each scheme (matches the header). */
 export const BAR: Record<Look, string> = {
-  kagit: "#fbf7ef",
+  kagit: "#ffffff",
   classic: "#0c0c0c",
   bordo: "#3c0911",
   kahve: "#2a1c14",
@@ -22,8 +22,8 @@ export const BAR: Record<Look, string> = {
 
 /** Swatches shown next to each scheme's name in the menus: panel, paper. */
 export const LOOK_SWATCH: Record<Look, [string, string]> = {
-  // Black letters on cream: the cream half above, the ink below.
-  kagit: ["#fbf7ef", "#0c0c0c"],
+  // Black letters on white: the white half above, the ink below.
+  kagit: ["#ffffff", "#0c0c0c"],
   classic: ["#0c0c0c", "#f4efe6"],
   bordo: ["#3c0911", "#fbf7ef"],
   kahve: ["#2a1c14", "#ffffff"],
