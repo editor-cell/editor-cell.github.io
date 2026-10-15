@@ -47,13 +47,8 @@ export function visualCases() {
   return cases;
 }
 
-/**
- * Faces every page uses: the text (Tinos). Since 15 Oct 2026 the name in the band is the
- * owner's wordmark, a picture, so Playfair Display (headlines, drop capitals) is no longer
- * on every page; where a page does ask for it, a file that fails to arrive still stops the
- * check below.
- */
-export const REQUIRED_FACES = ["Tinos"];
+/** Faces every page uses: the text (Tinos) and the name in the band (Playfair Display). */
+export const REQUIRED_FACES = ["Tinos", "Playfair Display"];
 
 /**
  * Stops the check unless the site's real faces are on the page: every face the page asked
