@@ -502,6 +502,38 @@
   .records[data-depth="3"] .deep-card .atlas-fill {
     min-height: calc(5 * 1.45 * 0.95rem + 0.5rem);
   }
+  /* The latest column: its readings share the column's height, and each one's opening text
+     runs on into its share, so the column never ends in an empty space beside the picks.
+     The picture keeps its own shape at the top of the row. */
+  .atlas-bottom > .atlas-latest > ol {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .atlas-bottom > .atlas-latest > ol > li {
+    flex: 1 1 auto;
+    display: flex;
+  }
+  .atlas-bottom > .atlas-latest > ol > li > a {
+    flex: 1 1 auto;
+  }
+  .atlas-bottom .atlas-latest .record-row > .record-thumb {
+    align-self: start;
+    aspect-ratio: 3 / 4;
+  }
+  .atlas-bottom .atlas-latest .record-text {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+  .atlas-bottom .atlas-latest .record-opening {
+    display: none;
+  }
+  .atlas-bottom.records[data-depth="1"] .atlas-latest > ol,
+  .atlas-bottom.records[data-depth="1"] .atlas-latest > ol > li {
+    display: block;
+  }
   /* The numbered column is narrow: the picture goes above the title at the column's
      full width, so the title and the section line are no longer squeezed. The first
      three carry a picture; the rest of the list is text only. */

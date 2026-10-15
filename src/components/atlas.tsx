@@ -1075,22 +1075,33 @@ type RecordPlan = {
 function planRecords(stories: Story[], mostRead: Story[], desk: boolean): RecordPlan {
   // The middle column holds the editor's picks in the editor's order (1, then 2): two on a
   // desktop, one on a phone. With no picks it is not shown. The picks leave the other lists.
-  const deep = stories
+  const picks = stories
     .filter((story) => story.pick !== undefined)
     .sort((a, b) => (a.pick ?? 0) - (b.pick ?? 0))
     .slice(0, desk ? 2 : 1);
+  // Desktop: the column is always two boxes, one under the other. When only one pick is
+  // left for the archive, the oldest other reading takes the second box.
+  const spare =
+    desk && picks.length === 1
+      ? stories.filter((story) => story.pick === undefined).slice(-1)
+      : [];
+  const deep = [...picks, ...spare];
   const picked = new Set(deep.map((s) => s.id));
   const rest = stories.filter((story) => !picked.has(story.id));
   // Phone: a picture strip from eight readings. Desktop: the strip only past thirteen.
   const strip = rest.length >= (desk ? 13 : 8) ? rest.slice(0, 4) : [];
   const remaining = rest.slice(strip.length);
-  const latestCount = Math.min(4, Math.max(1, remaining.length - 3));
+  // The latest column keeps at least two readings on a desktop, so it is never a lone box
+  // beside the two picks.
+  const latestCount = Math.min(4, Math.max(desk ? 2 : 1, remaining.length - 3));
   const latest = remaining.slice(0, latestCount);
   const after = remaining.slice(latestCount);
-  // "Most read" takes the column only when, after the picks leave it, it still holds three
-  // readings; otherwise the column keeps the newest readings under "More readings", so it is
-  // never left empty and the row keeps its three columns.
-  const read = mostRead.filter((story) => !picked.has(story.id)).slice(0, desk ? 3 : 5);
+  // "Most read" takes the column only when, after the picks and the latest column leave it,
+  // it still holds three readings (no reading stands in two columns side by side);
+  // otherwise the column keeps the newest readings under "More readings", so it is never
+  // left empty and the row keeps its three columns.
+  const listed = new Set([...picked, ...(desk ? latest.map((s) => s.id) : [])]);
+  const read = mostRead.filter((story) => !listed.has(story.id)).slice(0, desk ? 3 : 5);
   const counted = read.length >= 3;
   const numbered = counted ? read : after.slice(0, desk ? 3 : 5);
   const shown = new Set([...strip, ...latest, ...deep, ...numbered].map((s) => s.id));
@@ -1170,7 +1181,7 @@ function RecordColumns({ plan, lang, depth }: { plan: RecordPlan; lang: Lang; de
       ) : null}
 
       <div className={`records atlas-bottom ${strip.length ? "mt-5" : ""}`} data-depth={depth} suppressHydrationWarning>
-        <section className="atlas-col" aria-label={words.lastIssue}>
+        <section className="atlas-col atlas-latest" aria-label={words.lastIssue}>
           <h3 className={`${heading} mb-3`}>
             {words.lastIssue}
             {lastIssue !== undefined ? (
@@ -1183,7 +1194,7 @@ function RecordColumns({ plan, lang, depth }: { plan: RecordPlan; lang: Lang; de
           <ol>
             {latest.map((story) => (
               <li key={story.id}>
-                <RecordRow story={story} lang={lang} />
+                <RecordRow story={story} lang={lang} fill />
               </li>
             ))}
           </ol>
@@ -1234,7 +1245,7 @@ function RecordColumns({ plan, lang, depth }: { plan: RecordPlan; lang: Lang; de
 }
 
 /** A record with a small picture on its start side; the picture and summary fold with depth. */
-function RecordRow({ story, lang }: { story: Story; lang: Lang }) {
+function RecordRow({ story, lang, fill = false }: { story: Story; lang: Lang; fill?: boolean }) {
   const summary = cellSummary(story, lang);
   const opening = openingLines(story, lang, summary);
   return (
@@ -1280,6 +1291,13 @@ function RecordRow({ story, lang }: { story: Story; lang: Lang }) {
               </p>
             </div>
           </div>
+        ) : null}
+        {/* Desktop, latest column: the opening text runs on into the room the column leaves. */}
+        {fill ? (
+          <ColumnFill
+            text={fillText(story, lang, summary)}
+            className="pt-1.5 text-[0.88rem] leading-[1.4] text-muted"
+          />
         ) : null}
         <div className="record-layer record-date" data-layer="3">
           <div>
