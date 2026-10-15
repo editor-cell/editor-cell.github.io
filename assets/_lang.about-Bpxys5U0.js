@@ -1,0 +1,1 @@
+import{t as e}from"./about-0POFL-4w.js";var t=e;export{t as component};
