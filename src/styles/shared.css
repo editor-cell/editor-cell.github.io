@@ -164,10 +164,12 @@ body {
 
 /* The motto under the name in the header: a slanted hand, as in the owner's logo.
    The hand has no Arabic letters, so the Arabic motto keeps its own face, upright. */
+/* The motto: a plain serif italic, slanted but easy to read at its small size (the
+   copperplate script used before could not be read on a phone). */
 .masthead-motto {
-  font-family: "Pinyon Script", "Tinos", "Times New Roman", serif;
+  font-family: "Tinos", "Times New Roman", serif;
   font-weight: 400;
-  font-style: normal;
+  font-style: italic;
   letter-spacing: 0.01em;
 }
 
