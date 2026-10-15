@@ -408,8 +408,8 @@
     grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 0.7fr);
     column-gap: 1.5rem;
   }
-  /* No editor's picks: the two remaining columns share the width. */
-  .atlas-bottom:not(:has(> .atlas-picks)) {
+  /* Without the middle column the two remaining columns share the width. */
+  .atlas-bottom:not(:has(> .atlas-popular)) {
     grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
   }
   /* Headline mode is not a balancing act: no equal-height columns, no reserved room and no
@@ -503,7 +503,7 @@
     min-height: calc(5 * 1.45 * 0.95rem + 0.5rem);
   }
   /* The latest column: its readings share the column's height, and each one's opening text
-     runs on into its share, so the column never ends in an empty space beside the picks.
+     runs on into its share, so the column never ends in an empty space beside the two in depth.
      The picture keeps its own shape at the top of the row. */
   .atlas-bottom > .atlas-latest > ol {
     flex: 1 1 auto;

@@ -85,13 +85,6 @@ for (const file of files) {
       );
     }
 
-    if (story.pick !== undefined) {
-      assert.ok(
-        Number.isInteger(story.pick) && story.pick >= 1,
-        `${file}: editor's pick must be 1, 2, …`,
-      );
-    }
-
     const written = LANGS.filter((lang) => (story.locales?.[lang]?.body ?? "").trim());
     assert.ok(written.length > 0, `${file}: published but no language has a text`);
     for (const lang of written) {

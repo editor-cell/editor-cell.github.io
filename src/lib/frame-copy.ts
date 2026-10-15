@@ -10,7 +10,7 @@ export type FrameCopy = {
   languages: string;
   rights: string;
   look: string;
-  looks: { kagit: string; classic: string; bordo: string; kahve: string; night: string };
+  looks: { classic: string; night: string };
   menu: string;
   close: string;
 };
@@ -25,7 +25,7 @@ const frame: Record<Lang, FrameCopy> = {
     languages: "Diller",
     rights: "Tüm hakları saklıdır.",
     look: "Tema",
-    looks: { kagit: "Kâğıt", classic: "Mürekkep", bordo: "Bordo", kahve: "Kahverengi", night: "Karanlık" },
+    looks: { classic: "Mürekkep", night: "Karanlık" },
     menu: "Menü",
     close: "Kapat",
   },
@@ -38,7 +38,7 @@ const frame: Record<Lang, FrameCopy> = {
     languages: "اللغات",
     rights: "جميع الحقوق محفوظة.",
     look: "المظهر",
-    looks: { kagit: "ورقي", classic: "حبري", bordo: "عنابي", kahve: "بني", night: "داكن" },
+    looks: { classic: "حبري", night: "داكن" },
     menu: "القائمة",
     close: "إغلاق",
   },
@@ -51,7 +51,7 @@ const frame: Record<Lang, FrameCopy> = {
     languages: "Languages",
     rights: "All rights reserved.",
     look: "Theme",
-    looks: { kagit: "Paper", classic: "Ink", bordo: "Burgundy", kahve: "Brown", night: "Dark" },
+    looks: { classic: "Ink", night: "Dark" },
     menu: "Menu",
     close: "Close",
   },
@@ -64,7 +64,7 @@ const frame: Record<Lang, FrameCopy> = {
     languages: "Langues",
     rights: "Tous droits réservés.",
     look: "Thème",
-    looks: { kagit: "Papier", classic: "Encre", bordo: "Bordeaux", kahve: "Brun", night: "Sombre" },
+    looks: { classic: "Encre", night: "Sombre" },
     menu: "Menu",
     close: "Fermer",
   },
@@ -77,7 +77,7 @@ const frame: Record<Lang, FrameCopy> = {
     languages: "Idiomas",
     rights: "Todos los derechos reservados.",
     look: "Tema",
-    looks: { kagit: "Papel", classic: "Tinta", bordo: "Burdeos", kahve: "Marrón", night: "Oscuro" },
+    looks: { classic: "Tinta", night: "Oscuro" },
     menu: "Menú",
     close: "Cerrar",
   },

@@ -13,7 +13,7 @@ export const WIDTHS = [
   { name: "phone", width: 390, height: 844 },
   { name: "desktop", width: 1280, height: 800 },
 ];
-const LOOKS = ["classic", "bordo", "kahve", "night"];
+const LOOKS = ["classic", "night"];
 
 /** Every page and setting that is photographed, at both widths. */
 export function visualCases() {

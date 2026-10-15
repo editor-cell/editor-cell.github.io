@@ -1,42 +1,34 @@
 import { useEffect, useState } from "react";
 
-/** Colour schemes for the whole site. "bordo" (Bordo) is the main one from 15 Oct 2026
- * evening: burgundy bands with the cream logo on cream paper. "classic" (Mürekkep, main
- * until then) has black bands with the cream logo; "kagit" is black on white paper, the
- * bands included; "bordo" the burgundy
- * bands; "kahve" the brown one with orange accents; "night" the dark one, for a dim room. */
-export const LOOKS = ["bordo", "classic", "kagit", "kahve", "night"] as const;
+/** Colour schemes for the whole site. Since 15 Oct 2026 night there are two: "classic"
+ * (Mürekkep, the main one: black bands with the cream logo on white paper) and "night" (the
+ * dark one, for a dim room). Bordo, Kâğıt and Kahverengi were taken out the same night; a
+ * reader who had chosen one of them simply sees the main scheme. */
+export const LOOKS = ["classic", "night"] as const;
 export type Look = (typeof LOOKS)[number];
 
 /** The scheme a reader sees until they choose another. */
-export const MAIN_LOOK: Look = "bordo";
+export const MAIN_LOOK: Look = "classic";
 
 export const LOOK_KEY = "orbis-look";
 
 /** Browser bar colour for each scheme (matches the header). */
 export const BAR: Record<Look, string> = {
-  kagit: "#ffffff",
   classic: "#0c0c0c",
-  bordo: "#3c0911",
-  kahve: "#2a1c14",
   night: "#050505",
 };
 
 /** Swatches shown next to each scheme's name in the menus: panel, paper. */
 export const LOOK_SWATCH: Record<Look, [string, string]> = {
-  // Black letters on white: the white half above, the ink below.
-  kagit: ["#ffffff", "#0c0c0c"],
   classic: ["#0c0c0c", "#f4efe6"],
-  bordo: ["#3c0911", "#fbf7ef"],
-  kahve: ["#2a1c14", "#ffffff"],
   // The dark scheme is the classic disc turned over: light where classic is dark.
   night: ["#e7e4dd", "#161616"],
 };
 
 /**
- * Runs in <head> before the page paints, so a reader who chose another scheme never sees
- * a flash of the main one first. The page is written with data-look="bordo" (the main
- * scheme); Mürekkep (classic) is the plain stylesheet, with no data-look.
+ * Runs in <head> before the page paints, so a reader who chose the dark scheme never sees
+ * a flash of the main one first. The page is written with no data-look (the main scheme,
+ * Mürekkep, is the plain stylesheet); a stored choice that is no longer offered is ignored.
  */
 export const LOOK_BOOT = `try{var l=localStorage.getItem("${LOOK_KEY}"),b=${JSON.stringify(BAR)};if(l&&b[l]){var h=document.documentElement;if(l==="classic")h.removeAttribute("data-look");else h.setAttribute("data-look",l);var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",b[l])}}catch(e){}`;
 

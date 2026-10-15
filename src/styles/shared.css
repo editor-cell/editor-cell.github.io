@@ -21,115 +21,13 @@
   --radius-lg: 2px;
 }
 
-/* On the black and burgundy bands the name and links are the logo's cream, not pure white
-   (the owner's Mürekkep and Bordo logos, 15 Oct 2026). */
-html:not([data-look]) .bg-panel,
-html[data-look="bordo"] .bg-panel {
+/* On the black bands the name and links are the logo's cream, not pure white (the owner's
+   Mürekkep logo, 15 Oct 2026). */
+html:not([data-look]) .bg-panel {
   --color-paper: #f4efe6;
 }
 
-/* The paper scheme: black on white paper everywhere, the bands included, so the logo
-   stands black on white. A black hairline closes the band at the top and bottom of the
-   page, as a printed masthead's rule. Accents keep the classic burgundy. Until 15 Oct 2026
-   evening the paper was cream; the owner then asked for every scheme but Bordo (cream)
-   and Dark (charcoal) to stand on white, so the greys here are the classic ones. */
-html[data-look="kagit"] {
-  --color-paper: #ffffff;
-  --color-sheet: #ffffff;
-  --color-ink: #0c0c0c;
-  --color-muted: #5a5a5a;
-  --color-mist: #d4d4d4;
-  --color-line: #e6e6e6;
-  --color-rule: #9a9a9a;
-  --color-pine: #6e2432;
-  --color-highlight: #ececee;
-  --color-panel: #ffffff;
-  --color-shade: #e9e9eb;
-  --chain-band: #ececee;
-}
-
-/* Inside the band the light and dark roles turn over: the name and links black, the small
-   labels a warm grey. */
-html[data-look="kagit"] .bg-panel {
-  --color-paper: #0c0c0c;
-  --color-mist: #5a5a5a;
-  --color-muted: #d4d4d4;
-}
-
-html[data-look="kagit"] header .bg-panel {
-  border-bottom: 1px solid #0c0c0c;
-}
-
-html[data-look="kagit"] footer.bg-panel {
-  border-top: 2px solid #0c0c0c;
-}
-
-/* Second scheme: burgundy header and footer, lightest beige paper, black text, dark green accents.
-   The classic scheme above stays as it is; this only applies when chosen. */
-html[data-look="bordo"] {
-  --color-paper: #fbf7ef;
-  --color-sheet: #fffdf8;
-  --color-ink: #0c0c0c;
-  --color-muted: #5b5348;
-  --color-mist: #e8d3d6;
-  --color-line: #ebe3d4;
-  --color-rule: #a99f8d;
-  --color-pine: #1d5b3f;
-  --color-highlight: #f1e8d8;
-  --color-panel: #3c0911;
-  --color-shade: #f3eee2;
-}
-
-/* In the burgundy scheme the section bar and the small labels (Readings, Index) are the
-   burgundy of the band mixed with the paper of the page, in the same proportion as the
-   classic grey (#5a5a5a is 68% of the classic black and 32% white): 68% burgundy, 32% paper.
-   The section names on the cards (the green accent) are mixed the same way. Until 15 Oct
-   2026 evening the burgundy was mixed with pure white (#7a585d) and the green was unmixed. */
-html[data-look="bordo"] .section-link,
-html[data-look="bordo"] .kicker {
-  color: color-mix(in srgb, var(--color-panel) 68%, var(--color-paper));
-}
-
-html[data-look="bordo"] .card-kicker > p:first-child {
-  color: color-mix(in srgb, var(--color-pine) 68%, var(--color-paper));
-}
-
-/* The open section is full black in the classic scheme, so here it is full burgundy. */
-html[data-look="bordo"] .section-link[data-on="true"] {
-  color: var(--color-panel);
-  border-color: var(--color-panel);
-}
-
-/* Brown scheme (Grok's palette): dark brown bands (header, footer, menus), very dark brown
-   text, warm brown lines and labels, on white paper as in the classic scheme. The accent
-   (section names on the cards, the line of the document chain, buttons, the line under
-   the open section) is our clear orange. */
-html[data-look="kahve"] {
-  --color-paper: #ffffff;
-  --color-sheet: #ffffff;
-  --color-ink: #1c130e;
-  --color-muted: #5c4634;
-  --color-mist: #e6d5c2;
-  --color-line: #e3d4c0;
-  --color-rule: #a18468;
-  --color-pine: #c94a0a;
-  --color-highlight: #efe2cf;
-  --color-panel: #2a1c14;
-  --color-shade: #efe4d4;
-}
-
-html[data-look="kahve"] .section-link,
-html[data-look="kahve"] .kicker {
-  color: #6b4532;
-}
-
-/* The open section: dark text, underlined in orange. */
-html[data-look="kahve"] .section-link[data-on="true"] {
-  color: var(--color-ink);
-  border-color: var(--color-pine);
-}
-
-/* Third scheme: dark, for reading in a dim room. It mirrors the classic one: the band
+/* Second scheme: dark, for reading in a dim room. It mirrors the classic one: the band
    stays the darkest thing on the page, the paper is a soft charcoal rather than pure black,
    the text an off-white rather than pure white (less glare on long readings), and the
    classic burgundy accents are lifted to a light rose so they still read on dark paper. */
@@ -343,19 +241,7 @@ body {
 .doc-chain {
   border-top: 1px solid var(--color-pine);
   border-bottom: 1px solid var(--color-line);
-  background: var(--chain-band, var(--color-highlight));
-}
-
-/* The band is each scheme's band colour washed with white in the classic proportion:
-   the classic light grey #ececee is 7.8% of the black #0c0c0c and the rest white;
-   burgundy #3c0911 and brown #2a1c14 mixed the same way give #f0ecec and #eeeded. Dark keeps
-   its grey. */
-html[data-look="bordo"] {
-  --chain-band: #f0ecec;
-}
-
-html[data-look="kahve"] {
-  --chain-band: #eeeded;
+  background: var(--color-highlight);
 }
 
 .doc-chain-toggle {

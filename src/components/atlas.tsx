@@ -505,6 +505,8 @@ const HOME_WORDS: Record<
     inDepth: string;
     mostRead: string;
     more: string;
+    /** The numbered column while there are no read counts yet: readings older than the middle column's. */
+    earlier: string;
     /** Screen-reader name of the eight boxes of the newest issue (no visible heading). */
     thisIssue: string;
     /** Name of the depth buttons, for screen readers. */
@@ -513,8 +515,6 @@ const HOME_WORDS: Record<
     archive: string;
     /** The first column under it: the issue before the newest. */
     lastIssue: string;
-    /** The middle column: readings the editor marked as picks. */
-    picks: string;
     /** "Issue 3": the weekly issue a reading belongs to. */
     issueNo: string;
   }
@@ -533,11 +533,11 @@ const HOME_WORDS: Record<
     inDepth: "Uzun okuma",
     mostRead: "En çok okunanlar",
     more: "Diğer yazılar",
+    earlier: "Daha eski yazılar",
     thisIssue: "Bu sayı",
     view: "Görünüm",
     archive: "Arşivden",
     lastIssue: "Önceki sayı",
-    picks: "Editörün seçtikleri",
     issueNo: "Sayı {n}",
   },
   en: {
@@ -554,11 +554,11 @@ const HOME_WORDS: Record<
     inDepth: "Long read",
     mostRead: "Most read",
     more: "More readings",
+    earlier: "Earlier readings",
     thisIssue: "This issue",
     view: "View",
     archive: "From the archive",
     lastIssue: "Last issue",
-    picks: "Editor’s picks",
     issueNo: "Issue {n}",
   },
   ar: {
@@ -575,11 +575,11 @@ const HOME_WORDS: Record<
     inDepth: "قراءة مطوّلة",
     mostRead: "الأكثر قراءة",
     more: "قراءات أخرى",
+    earlier: "قراءات أقدم",
     thisIssue: "هذا العدد",
     view: "طريقة العرض",
     archive: "من الأرشيف",
     lastIssue: "العدد السابق",
-    picks: "اختيارات المحرر",
     issueNo: "العدد {n}",
   },
   fr: {
@@ -596,11 +596,11 @@ const HOME_WORDS: Record<
     inDepth: "Lecture longue",
     mostRead: "Les plus lus",
     more: "Autres lectures",
+    earlier: "Lectures plus anciennes",
     thisIssue: "Ce numéro",
     view: "Affichage",
     archive: "Dans les archives",
     lastIssue: "Numéro précédent",
-    picks: "Le choix de la rédaction",
     issueNo: "Numéro {n}",
   },
   es: {
@@ -617,11 +617,11 @@ const HOME_WORDS: Record<
     inDepth: "Lectura larga",
     mostRead: "Lo más leído",
     more: "Más lecturas",
+    earlier: "Lecturas anteriores",
     thisIssue: "Este número",
     view: "Vista",
     archive: "Del archivo",
     lastIssue: "Número anterior",
-    picks: "Selección del editor",
     issueNo: "Número {n}",
   },
 };
@@ -1073,37 +1073,30 @@ type RecordPlan = {
 
 /** Which reading goes where; the phone and the desktop are planned apart. */
 function planRecords(stories: Story[], mostRead: Story[], desk: boolean): RecordPlan {
-  // The middle column holds the editor's picks in the editor's order (1, then 2): two on a
-  // desktop, one on a phone. With no picks it is not shown. The picks leave the other lists.
-  const picks = stories
-    .filter((story) => story.pick !== undefined)
-    .sort((a, b) => (a.pick ?? 0) - (b.pick ?? 0))
-    .slice(0, desk ? 2 : 1);
-  // Desktop: the column is always two boxes, one under the other. When only one pick is
-  // left for the archive, the oldest other reading takes the second box.
-  const spare =
-    desk && picks.length === 1
-      ? stories.filter((story) => story.pick === undefined).slice(-1)
-      : [];
-  const deep = [...picks, ...spare];
-  const picked = new Set(deep.map((s) => s.id));
-  const rest = stories.filter((story) => !picked.has(story.id));
+  // The middle column holds the readings in depth: two boxes, one under the other, on a
+  // desktop, one on a phone. It is "Most read" once the read counts are in; until then it
+  // carries the next readings after the last issue under "More readings".
+  const deepCount = desk ? 2 : 1;
   // Phone: a picture strip from eight readings. Desktop: the strip only past thirteen.
-  const strip = rest.length >= (desk ? 13 : 8) ? rest.slice(0, 4) : [];
-  const remaining = rest.slice(strip.length);
+  const strip = stories.length >= (desk ? 13 : 8) ? stories.slice(0, 4) : [];
+  const remaining = stories.slice(strip.length);
   // The latest column keeps at least two readings on a desktop, so it is never a lone box
-  // beside the two picks.
-  const latestCount = Math.min(4, Math.max(desk ? 2 : 1, remaining.length - 3));
+  // beside the two in depth.
+  const latestCount = Math.min(4, Math.max(desk ? 2 : 1, remaining.length - deepCount - 3));
   const latest = remaining.slice(0, latestCount);
   const after = remaining.slice(latestCount);
-  // "Most read" takes the column only when, after the picks and the latest column leave it,
-  // it still holds three readings (no reading stands in two columns side by side);
-  // otherwise the column keeps the newest readings under "More readings", so it is never
-  // left empty and the row keeps its three columns.
-  const listed = new Set([...picked, ...(desk ? latest.map((s) => s.id) : [])]);
-  const read = mostRead.filter((story) => !listed.has(story.id)).slice(0, desk ? 3 : 5);
-  const counted = read.length >= 3;
-  const numbered = counted ? read : after.slice(0, desk ? 3 : 5);
+  // "Most read" takes the middle column only when, after the latest column leaves it, it
+  // still holds enough readings to fill the boxes (no reading stands in two columns side by
+  // side); otherwise the column keeps the next readings under "More readings" and the
+  // numbered column beside it reads "Earlier readings".
+  const inLatest = new Set(desk ? latest.map((s) => s.id) : []);
+  const read = mostRead.filter((story) => !inLatest.has(story.id));
+  const counted = read.length >= deepCount;
+  const deep = counted ? read.slice(0, deepCount) : after.slice(0, deepCount);
+  const inDeep = new Set(deep.map((s) => s.id));
+  // The numbered column takes the next readings that are left: "More readings" beside
+  // "Most read", "Earlier readings" beside the next readings of the middle column.
+  const numbered = after.filter((story) => !inDeep.has(story.id)).slice(0, desk ? 3 : 5);
   const shown = new Set([...strip, ...latest, ...deep, ...numbered].map((s) => s.id));
   const more = stories.filter((story) => !shown.has(story.id));
   return { strip, latest, deep, numbered, counted, more };
@@ -1201,8 +1194,8 @@ function RecordColumns({ plan, lang, depth }: { plan: RecordPlan; lang: Lang; de
         </section>
 
         {deep.length ? (
-          <section className="atlas-col atlas-picks" aria-label={words.picks}>
-            <h3 className={`${heading} mb-3`}>{words.picks}</h3>
+          <section className="atlas-col atlas-popular" aria-label={counted ? words.mostRead : words.more}>
+            <h3 className={`${heading} mb-3`}>{counted ? words.mostRead : words.more}</h3>
             {deep.length === 1 ? (
               <DeepCard story={deep[0]} lang={lang} />
             ) : (
@@ -1218,8 +1211,8 @@ function RecordColumns({ plan, lang, depth }: { plan: RecordPlan; lang: Lang; de
         ) : null}
 
         {numbered.length ? (
-          <section className="atlas-col" aria-label={counted ? words.mostRead : words.more}>
-            <h3 className={`${heading} mb-3`}>{counted ? words.mostRead : words.more}</h3>
+          <section className="atlas-col atlas-numbered" aria-label={counted ? words.more : words.earlier}>
+            <h3 className={`${heading} mb-3`}>{counted ? words.more : words.earlier}</h3>
             <ol className="atlas-ranked">
               {numbered.map((story, index) => (
                 <li key={story.id}>

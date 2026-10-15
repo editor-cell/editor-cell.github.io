@@ -89,7 +89,6 @@ export function readStoryIndex(dir) {
           ...(story.membersOnly === true ? { membersOnly: true } : {}),
           ...(Number.isInteger(story.issue) ? { issue: story.issue } : {}),
           ...(Number.isInteger(story.rank) ? { rank: story.rank } : {}),
-          ...(Number.isInteger(story.pick) ? { pick: story.pick } : {}),
           locales,
         },
       ];
