@@ -1,0 +1,1 @@
+import{r as e}from"./pages-YZN706_R.js";var t=e;export{t as component};
