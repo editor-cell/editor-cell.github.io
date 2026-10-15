@@ -1,0 +1,1 @@
+import{t as e}from"./about-Cy58fVUM.js";var t=e;export{t as component};
