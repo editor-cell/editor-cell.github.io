@@ -34,11 +34,11 @@ import { useLang } from "@/lib/use-lang";
 /**
  * The name on the dark bands: plain lettering, "ORBIS" (15 Oct 2026: the owner put the
  * letter O back; the seal stays as the site icon only). The motto, when given, runs
- * under the name, left-aligned, in a slanted hand.
+ * under the name, centred on it, in a slanted hand.
  */
 function OrbisName({ className, children }: { className: string; children?: React.ReactNode }) {
   return (
-    <span className={`inline-flex flex-col items-start ${className}`}>
+    <span className={`inline-flex flex-col items-center ${className}`}>
       <span className="masthead-name">ORBIS</span>
       {children}
     </span>
@@ -349,7 +349,7 @@ export function Shell({
                 <span
                   lang={meta.html}
                   dir={meta.dir}
-                  className="masthead-motto mt-[0.06em] text-left text-[0.5em] leading-[1.1] text-paper/90"
+                  className="masthead-motto mt-[0.06em] text-center text-[0.5em] leading-[1.1] text-paper/90"
                 >
                   {copy.heroLead} {copy.hero}
                 </span>
