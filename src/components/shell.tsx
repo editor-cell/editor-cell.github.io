@@ -32,32 +32,15 @@ import { LANGS, THEMES, type Lang, type Theme } from "@/lib/types";
 import { useLang } from "@/lib/use-lang";
 
 /**
- * The name on the dark bands: the owner's seal (the Earth inside orbit rings, leafy
- * branches on both sides, a double outer ring; his final drawing of 15 Oct 2026, 08:41,
- * which replaced the busier seal with planets and a galaxy) stands in for the O, then "RBIS".
- * Screen readers hear "ORBIS".
- * As in the owner's logo, the emblem is drawn larger than the letters (about 1.75 times
- * their height) and its Earth sits level with the middle of "RBIS"; the motto, when
- * given, runs under "RBIS" beside the emblem, left-aligned, in a slanted hand.
- * Light backgrounds (the menu, print) keep the plain lettering: the emblem is white.
+ * The name on the dark bands: plain lettering, "ORBIS" (15 Oct 2026: the owner put the
+ * letter O back; the seal stays as the site icon only). The motto, when given, runs
+ * under the name, left-aligned, in a slanted hand.
  */
 function OrbisName({ className, children }: { className: string; children?: React.ReactNode }) {
   return (
-    <span className={`inline-flex items-start ${className}`}>
-      <img
-        src="/__grok/orbis-mark.png?v=20261015-5"
-        alt=""
-        aria-hidden="true"
-        width={240}
-        height={240}
-        className="me-[0.12em] -mt-[0.21em] translate-y-[0.08em] h-[1.32em] w-[1.32em] shrink-0"
-      />
-      <span className="flex flex-col">
-        <span className="masthead-name" role="img" aria-label="ORBIS">
-          <span aria-hidden="true">RBIS</span>
-        </span>
-        {children}
-      </span>
+    <span className={`inline-flex flex-col items-start ${className}`}>
+      <span className="masthead-name">ORBIS</span>
+      {children}
     </span>
   );
 }
