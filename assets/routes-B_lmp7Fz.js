@@ -1,0 +1,1 @@
+import{n as e}from"./atlas-CtMJ_bGi.js";var t=e;export{t as component};
