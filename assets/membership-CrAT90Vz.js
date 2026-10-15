@@ -1,0 +1,1 @@
+import{t as e}from"./pages-BNy_Feyo.js";var t=e;export{t as component};
