@@ -32,8 +32,10 @@ import { LANGS, THEMES, type Lang, type Theme } from "@/lib/types";
 import { useLang } from "@/lib/use-lang";
 
 /**
- * The name on the dark bands: a plain ring, the letter O, with a small globe
- * inside it (15 Oct 2026). Then "RBIS".
+ * The name on the dark bands: the owner's seal (the Earth in the middle, Saturn, the moon
+ * and stars above, a galaxy below, leafy branches on both sides; his drawing sent on the
+ * morning of 15 Oct 2026, which replaced the plain ring tried before it) stands in for
+ * the O, then "RBIS".
  * Screen readers hear "ORBIS".
  * As in the owner's logo, the emblem is drawn larger than the letters (about 1.75 times
  * their height) and its Earth sits level with the middle of "RBIS"; the motto, when
@@ -44,7 +46,7 @@ function OrbisName({ className, children }: { className: string; children?: Reac
   return (
     <span className={`inline-flex items-start ${className}`}>
       <img
-        src="/__grok/orbis-mark.png?v=20261015-3"
+        src="/__grok/orbis-mark.png?v=20261015-4"
         alt=""
         aria-hidden="true"
         width={240}
