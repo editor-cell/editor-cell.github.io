@@ -1,0 +1,1 @@
+import{n as e}from"./atlas-BejxMsH3.js";var t=e;export{t as component};

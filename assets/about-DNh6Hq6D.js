@@ -1,0 +1,1 @@
+import{t as e}from"./about-Bn8jYgPU.js";var t=e;export{t as component};
