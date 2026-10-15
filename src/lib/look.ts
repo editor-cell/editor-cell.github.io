@@ -1,14 +1,19 @@
 import { useEffect, useState } from "react";
 
-/** Colour schemes for the whole site. "classic" is the original black-and-grey one;
- * "kahve" the brown one with orange accents; "night" the dark one, for reading in a dim room. */
-export const LOOKS = ["classic", "bordo", "kahve", "night"] as const;
+/** Colour schemes for the whole site. "kagit" (15 Oct 2026, the main one) is black on cream
+ * paper, the bands included; "classic" the black-band one (Mürekkep); "bordo" the burgundy
+ * bands; "kahve" the brown one with orange accents; "night" the dark one, for a dim room. */
+export const LOOKS = ["kagit", "classic", "bordo", "kahve", "night"] as const;
 export type Look = (typeof LOOKS)[number];
+
+/** The scheme a reader sees until they choose another. */
+export const MAIN_LOOK: Look = "kagit";
 
 export const LOOK_KEY = "orbis-look";
 
 /** Browser bar colour for each scheme (matches the header). */
-const BAR: Record<Look, string> = {
+export const BAR: Record<Look, string> = {
+  kagit: "#fbf7ef",
   classic: "#0c0c0c",
   bordo: "#3c0911",
   kahve: "#2a1c14",
@@ -17,7 +22,9 @@ const BAR: Record<Look, string> = {
 
 /** Swatches shown next to each scheme's name in the menus: panel, paper. */
 export const LOOK_SWATCH: Record<Look, [string, string]> = {
-  classic: ["#0c0c0c", "#f4f4f5"],
+  // Black letters on cream: the cream half above, the ink below.
+  kagit: ["#fbf7ef", "#0c0c0c"],
+  classic: ["#0c0c0c", "#f4efe6"],
   bordo: ["#3c0911", "#fbf7ef"],
   kahve: ["#2a1c14", "#ffffff"],
   // The dark scheme is the classic disc turned over: light where classic is dark.
@@ -25,17 +32,18 @@ export const LOOK_SWATCH: Record<Look, [string, string]> = {
 };
 
 /**
- * Runs in <head> before the page paints, so a reader who chose burgundy
- * never sees a flash of the black header first.
+ * Runs in <head> before the page paints, so a reader who chose another scheme never sees
+ * a flash of the main one first. The page is written with data-look="kagit"; the classic
+ * scheme is the plain stylesheet, with no data-look.
  */
-export const LOOK_BOOT = `try{var l=localStorage.getItem("${LOOK_KEY}"),b=${JSON.stringify(BAR)};if(l&&l!=="classic"&&b[l]){document.documentElement.setAttribute("data-look",l);var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",b[l])}}catch(e){}`;
+export const LOOK_BOOT = `try{var l=localStorage.getItem("${LOOK_KEY}"),b=${JSON.stringify(BAR)};if(l&&b[l]){var h=document.documentElement;if(l==="classic")h.removeAttribute("data-look");else h.setAttribute("data-look",l);var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",b[l])}}catch(e){}`;
 
 function readLook(): Look {
   try {
     const saved = localStorage.getItem(LOOK_KEY);
-    return (LOOKS as readonly string[]).includes(saved ?? "") ? (saved as Look) : "classic";
+    return (LOOKS as readonly string[]).includes(saved ?? "") ? (saved as Look) : MAIN_LOOK;
   } catch {
-    return "classic";
+    return MAIN_LOOK;
   }
 }
 
@@ -49,7 +57,7 @@ function applyLook(look: Look) {
 const listeners = new Set<(look: Look) => void>();
 
 export function useLook(): [Look, (look: Look) => void] {
-  const [look, setLookState] = useState<Look>("classic");
+  const [look, setLookState] = useState<Look>(MAIN_LOOK);
 
   useEffect(() => {
     setLookState(readLook());

@@ -21,6 +21,47 @@
   --radius-lg: 2px;
 }
 
+/* On the black and burgundy bands the name and links are the logo's cream, not pure white
+   (the owner's Mürekkep and Bordo logos, 15 Oct 2026). */
+html:not([data-look]) .bg-panel,
+html[data-look="bordo"] .bg-panel {
+  --color-paper: #f4efe6;
+}
+
+/* The main scheme (15 Oct 2026): black on cream paper everywhere, the bands included, so
+   the logo stands black on cream. A black hairline closes the band at the top and bottom
+   of the page, as a printed masthead's rule. Accents keep the classic burgundy. */
+html[data-look="kagit"] {
+  --color-paper: #fbf7ef;
+  --color-sheet: #fffdf8;
+  --color-ink: #0c0c0c;
+  --color-muted: #57524a;
+  --color-mist: #e3dccf;
+  --color-line: #e8e0d1;
+  --color-rule: #a99f8d;
+  --color-pine: #6e2432;
+  --color-highlight: #f1eadc;
+  --color-panel: #fbf7ef;
+  --color-shade: #f2ecdf;
+  --chain-band: #f3eee4;
+}
+
+/* Inside the band the light and dark roles turn over: the name and links black, the small
+   labels a warm grey. */
+html[data-look="kagit"] .bg-panel {
+  --color-paper: #0c0c0c;
+  --color-mist: #57524a;
+  --color-muted: #e3dccf;
+}
+
+html[data-look="kagit"] header .bg-panel {
+  border-bottom: 1px solid #0c0c0c;
+}
+
+html[data-look="kagit"] footer.bg-panel {
+  border-top: 2px solid #0c0c0c;
+}
+
 /* Second scheme: burgundy header and footer, lightest beige paper, black text, dark green accents.
    The classic scheme above stays as it is; this only applies when chosen. */
 html[data-look="bordo"] {

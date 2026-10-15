@@ -2,6 +2,7 @@ import { MEDIA } from "@/lib/breakpoints";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { SiteMenu } from "@/components/menu";
+import { OrbisLockup } from "@/components/orbis-lockup";
 import { Pick } from "@/components/pick";
 import { SearchMark } from "@/components/search-mark";
 import { membersOn } from "@/lib/members/config";
@@ -30,20 +31,6 @@ import { useLibrary } from "@/lib/library";
 import { LOOKS, LOOK_SWATCH, useLook, type Look } from "@/lib/look";
 import { LANGS, THEMES, type Lang, type Theme } from "@/lib/types";
 import { useLang } from "@/lib/use-lang";
-
-/**
- * The name on the dark bands: plain lettering, "ORBIS" (15 Oct 2026: the owner put the
- * letter O back; the seal stays as the site icon only). The motto, when given, runs
- * under the name, centred on it, in a slanted hand.
- */
-function OrbisName({ className, children }: { className: string; children?: React.ReactNode }) {
-  return (
-    <span className={`inline-flex flex-col items-center ${className}`}>
-      <span className="masthead-name">ORBIS</span>
-      {children}
-    </span>
-  );
-}
 
 function Swatch({ look }: { look: Look }) {
   const [panel, paper] = LOOK_SWATCH[look];
@@ -345,15 +332,7 @@ export function Shell({
               {...homeLink(lang)}
               className="inline-flex min-h-11 shrink-0 items-center gap-2 py-2.5 md:gap-2.5 md:py-3"
             >
-              <OrbisName className="text-[1.85rem] leading-none md:text-[2.35rem]">
-                <span
-                  lang={meta.html}
-                  dir={meta.dir}
-                  className="masthead-motto mt-[0.06em] text-center text-[0.5em] leading-[1.1] text-paper/90"
-                >
-                  {copy.heroLead} {copy.hero}
-                </span>
-              </OrbisName>
+              <OrbisLockup className="h-[3.9rem] md:h-[5rem]" />
             </Link>
 
             <div>
@@ -461,7 +440,7 @@ export function Shell({
                     dir="ltr"
                     className="inline-flex min-h-11 items-center gap-3 self-start text-paper"
                   >
-                    <OrbisName className="text-[1.75rem] leading-none" />
+                    <OrbisLockup className="h-[3.6rem]" />
                   </Link>
                   <ul className="flex flex-col">
                     <li>

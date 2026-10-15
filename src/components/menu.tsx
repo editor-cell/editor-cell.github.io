@@ -19,6 +19,7 @@ import { useMember } from "@/lib/members/session";
 import { pagesCopy } from "@/lib/members/pages-copy";
 import { searchCopy } from "@/lib/search";
 import { LOOKS, LOOK_SWATCH, type Look } from "@/lib/look";
+import { OrbisLockup } from "@/components/orbis-lockup";
 import { LANGS, THEMES, type Lang, type Theme } from "@/lib/types";
 
 /** Pages under the three lists. Contact is added here later; nothing else has to move. */
@@ -208,8 +209,8 @@ export function SiteMenu({
         className="absolute inset-y-0 start-0 flex w-full max-w-sm flex-col bg-paper text-ink shadow-lg"
       >
         <div className="flex items-center justify-between gap-4 border-b border-rule px-5 py-5">
-          <span dir="ltr" className="masthead-name text-[2rem] leading-none">
-            ORBIS
+          <span dir="ltr">
+            <OrbisLockup className="h-[3rem]" />
           </span>
           <button
             ref={closeRef}

@@ -30,7 +30,7 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { name: "theme-color", content: "#0c0c0c" },
+      { name: "theme-color", content: "#fbf7ef" },
       ...pageMeta({ title: SITE_NAME, description: SITE_DESCRIPTION, url: "/" }),
       // During the test period no page is listed by search engines (see TRIAL in site.ts).
       ...(TRIAL ? [{ name: "robots", content: "noindex, nofollow" }] : []),
@@ -64,7 +64,7 @@ function RootDocument() {
   const lang = path.startsWith("/panel") ? "en" : langFromPath(path);
   const meta = langMeta[lang];
   return (
-    <html lang={meta.html} dir={meta.dir} suppressHydrationWarning>
+    <html lang={meta.html} dir={meta.dir} data-look="kagit" suppressHydrationWarning>
       <head>
         <link {...feedLink(lang)} />
         <HeadContent />
