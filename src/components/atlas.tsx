@@ -1214,9 +1214,9 @@ function RecordColumns({ plan, lang, depth }: { plan: RecordPlan; lang: Lang; de
           <section className="atlas-col atlas-numbered" aria-label={counted ? words.more : words.earlier}>
             <h3 className={`${heading} mb-3`}>{counted ? words.more : words.earlier}</h3>
             <ol className="atlas-ranked">
-              {numbered.map((story, index) => (
+              {numbered.map((story) => (
                 <li key={story.id}>
-                  <RankedRow story={story} lang={lang} n={index + 1} depth={depth} />
+                  <RankedRow story={story} lang={lang} depth={depth} />
                 </li>
               ))}
             </ol>
@@ -1360,28 +1360,15 @@ function DeepCard({ story, lang }: { story: Story; lang: Lang }) {
   );
 }
 
-/** The numbered column: a large number, the title, and the summary when depth allows.
- *  The picture is the reading's own, and it stays visible at every depth. */
-function RankedRow({
-  story,
-  lang,
-  n,
-  depth,
-}: {
-  story: Story;
-  lang: Lang;
-  n: number;
-  depth: Depth;
-}) {
+/** The side column: the title, and the summary when depth allows. The picture is the
+ *  reading's own, and it stays visible at every depth. */
+function RankedRow({ story, lang, depth }: { story: Story; lang: Lang; depth: Depth }) {
   const summary = cellSummary(story, lang);
   return (
     <Link
       {...readLink(lang, story.id)}
-      className="atlas-own group grid grid-cols-[1.75rem_minmax(0,1fr)] gap-3 border-b border-line py-3.5"
+      className="atlas-own group grid grid-cols-[minmax(0,1fr)] border-b border-line py-3.5"
     >
-      <span className="paper-title font-bold text-[1.6rem] leading-none text-ink tabular-nums">
-        {n}
-      </span>
       <div className="ranked-body flex min-w-0 items-start gap-3">
         {story.image ? (
           <div className="ranked-pic w-[4.75rem] shrink-0">
