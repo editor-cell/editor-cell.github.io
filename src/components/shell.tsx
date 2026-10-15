@@ -32,14 +32,22 @@ import { LANGS, THEMES, type Lang, type Theme } from "@/lib/types";
 import { useLang } from "@/lib/use-lang";
 
 /**
- * The name on the dark bands: plain lettering, "ORBIS" (15 Oct 2026: the owner put the
- * letter O back; the seal stays as the site icon only). The motto, when given, runs
- * under the name, centred on it, in a slanted hand.
+ * The name on the dark bands: the owner's wordmark (15 Oct 2026), "ORBIS" in a high-contrast
+ * serif whose O is a planet with a ring and a small moon. It is a picture in the cream of
+ * the drawing, transparent around the letters, so it sits on every theme's band.
+ * Screen readers hear "ORBIS". The motto, when given, runs under it, centred.
+ * Light backgrounds (the menu, print) keep the plain lettering.
  */
 function OrbisName({ className, children }: { className: string; children?: React.ReactNode }) {
   return (
     <span className={`inline-flex flex-col items-center ${className}`}>
-      <span className="masthead-name">ORBIS</span>
+      <img
+        src="/__grok/orbis-wordmark.png?v=20261015-6"
+        alt="ORBIS"
+        width={1078}
+        height={326}
+        className="block h-[1.4em] w-auto"
+      />
       {children}
     </span>
   );
