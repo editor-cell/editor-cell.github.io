@@ -1,0 +1,1 @@
+import{t as e}from"./pages-DO15jxbd.js";var t=e;export{t as component};
