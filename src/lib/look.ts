@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 
-/** Colour schemes for the whole site. "classic" (Mürekkep, the main one again from 15 Oct
- * 2026 afternoon) has black bands with the cream logo; "kagit" is black on white paper, the
+/** Colour schemes for the whole site. "bordo" (Bordo) is the main one from 15 Oct 2026
+ * evening: burgundy bands with the cream logo on cream paper. "classic" (Mürekkep, main
+ * until then) has black bands with the cream logo; "kagit" is black on white paper, the
  * bands included; "bordo" the burgundy
  * bands; "kahve" the brown one with orange accents; "night" the dark one, for a dim room. */
-export const LOOKS = ["classic", "kagit", "bordo", "kahve", "night"] as const;
+export const LOOKS = ["bordo", "classic", "kagit", "kahve", "night"] as const;
 export type Look = (typeof LOOKS)[number];
 
 /** The scheme a reader sees until they choose another. */
-export const MAIN_LOOK: Look = "classic";
+export const MAIN_LOOK: Look = "bordo";
 
 export const LOOK_KEY = "orbis-look";
 
@@ -34,8 +35,8 @@ export const LOOK_SWATCH: Record<Look, [string, string]> = {
 
 /**
  * Runs in <head> before the page paints, so a reader who chose another scheme never sees
- * a flash of the main one first. The main (classic) scheme is the plain stylesheet, with
- * no data-look.
+ * a flash of the main one first. The page is written with data-look="bordo" (the main
+ * scheme); Mürekkep (classic) is the plain stylesheet, with no data-look.
  */
 export const LOOK_BOOT = `try{var l=localStorage.getItem("${LOOK_KEY}"),b=${JSON.stringify(BAR)};if(l&&b[l]){var h=document.documentElement;if(l==="classic")h.removeAttribute("data-look");else h.setAttribute("data-look",l);var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",b[l])}}catch(e){}`;
 

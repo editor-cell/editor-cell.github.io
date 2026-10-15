@@ -30,7 +30,7 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { name: "theme-color", content: "#0c0c0c" },
+      { name: "theme-color", content: "#3c0911" },
       ...pageMeta({ title: SITE_NAME, description: SITE_DESCRIPTION, url: "/" }),
       // During the test period no page is listed by search engines (see TRIAL in site.ts).
       ...(TRIAL ? [{ name: "robots", content: "noindex, nofollow" }] : []),
@@ -40,17 +40,17 @@ export const Route = createRootRoute({
         rel: "icon",
         type: "image/png",
         sizes: "192x192",
-        href: "/__grok/orbis-192.png?v=20261015-9",
+        href: "/__grok/orbis-192.png?v=20261015-10",
       },
-      { rel: "icon", type: "image/svg+xml", href: "/__grok/orbis-favicon.svg?v=20261015-9" },
+      { rel: "icon", type: "image/svg+xml", href: "/__grok/orbis-favicon.svg?v=20261015-10" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       // The font stylesheet starts downloading at once but does not hold up the first paint
       // (FONT_BOOT below attaches it); until the faces arrive the page shows in Times.
       { rel: "preload", as: "style", href: FONTS },
       { rel: "stylesheet", href: appCss },
-      { rel: "manifest", href: "/__grok/orbis.webmanifest?v=20261015-9" },
-      { rel: "apple-touch-icon", href: "/__grok/orbis-180.png?v=20261015-9" },
+      { rel: "manifest", href: "/__grok/orbis.webmanifest?v=20261015-10" },
+      { rel: "apple-touch-icon", href: "/__grok/orbis-180.png?v=20261015-10" },
     ],
   }),
   component: RootDocument,
@@ -64,7 +64,7 @@ function RootDocument() {
   const lang = path.startsWith("/panel") ? "en" : langFromPath(path);
   const meta = langMeta[lang];
   return (
-    <html lang={meta.html} dir={meta.dir} suppressHydrationWarning>
+    <html lang={meta.html} dir={meta.dir} data-look="bordo" suppressHydrationWarning>
       <head>
         <link {...feedLink(lang)} />
         <HeadContent />
