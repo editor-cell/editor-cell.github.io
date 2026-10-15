@@ -1,0 +1,1 @@
+import{t as e}from"./about-6A_ikzbr.js";var t=e;export{t as component};
