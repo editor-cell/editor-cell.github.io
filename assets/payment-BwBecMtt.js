@@ -1,0 +1,1 @@
+import{r as e}from"./pages-CXznePb9.js";var t=e;export{t as component};
