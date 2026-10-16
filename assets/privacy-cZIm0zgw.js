@@ -1,0 +1,1 @@
+import{Bt as e}from"./shell-BKwVBJRt.js";import{t}from"./legal-Cw70R1Za.js";var n=e(),r=()=>(0,n.jsx)(t,{page:`privacy`});export{r as component};
