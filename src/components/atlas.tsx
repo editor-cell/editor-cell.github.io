@@ -558,7 +558,7 @@ const HOME_WORDS: Record<
     thisIssue: "This issue",
     view: "View",
     archive: "From the archive",
-    lastIssue: "Last issue",
+    lastIssue: "Previous issue",
     issueNo: "Issue {n}",
   },
   ar: {
