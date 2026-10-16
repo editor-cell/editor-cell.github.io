@@ -210,7 +210,7 @@ export function SiteMenu({
       >
         <div className="flex items-center justify-between gap-4 border-b border-rule px-5 py-5">
           <span dir="ltr">
-            <OrbisLockup className="h-[3rem]" />
+            <OrbisLockup className="h-[2.1rem]" />
           </span>
           <button
             ref={closeRef}
