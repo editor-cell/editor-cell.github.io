@@ -1,22 +1,18 @@
-import { useId } from "react";
 import lockup from "@/assets/orbis-lockup.svg?raw";
 
 /**
- * The owner's logo (15 Oct 2026): ORBIS with the globe inside the O and "The reading atlas."
- * under it, drawn in the current text colour, so it is black on the paper band and light on
- * the dark ones. Each copy gets its own clip id: a copy hidden on one screen (the footer, the
- * menu) must not take the globe's outline away from the one that shows.
+ * The owner's logo (16 Oct 2026): ORBIS in thin Didone capitals with "The reading atlas." in
+ * script under it, drawn in the current text colour, so it is cream on the black bands and
+ * light on the dark one. The mark is one traced outline, so it needs no ids of its own and
+ * any number of copies (header, footer, menu) can sit on a page.
  */
 export function OrbisLockup({ className }: { className: string }) {
-  const id = useId().replace(/[^a-zA-Z0-9_-]/g, "");
-  const html = lockup
-    .replaceAll("orbis-disc", `orbis-disc-${id}`)
-    .replace("<svg ", '<svg width="100%" height="100%" aria-hidden="true" ');
+  const html = lockup.replace("<svg ", '<svg width="100%" height="100%" aria-hidden="true" ');
   return (
     <span
       role="img"
       aria-label="Orbis. The reading atlas."
-      className={`block aspect-[3341/1332] ${className}`}
+      className={`block aspect-[913/348] ${className}`}
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );
