@@ -1,9 +1,9 @@
 import lockup from "@/assets/orbis-lockup.svg?raw";
 
 /**
- * The owner's logo (16 Oct 2026): ORBIS in thin Didone capitals with "The reading atlas." in
- * script under it, drawn in the current text colour, so it is cream on the black bands and
- * light on the dark one. The mark is one traced outline, so it needs no ids of its own and
+ * The owner's logo (16 Oct 2026): ORBIS in Cormorant Garamond Bold, the same letter as the
+ * site icons, with "The reading atlas." in script under it, drawn in the current text colour,
+ * so it is cream on the black bands and light on the dark one. The mark is plain outlines, so it needs no ids of its own and
  * any number of copies (header, footer, menu) can sit on a page.
  */
 export function OrbisLockup({ className }: { className: string }) {
