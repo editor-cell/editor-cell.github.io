@@ -108,16 +108,16 @@ body {
   letter-spacing: 0.06em;
 }
 
-/* The motto under the name on the black bands: Charm, a calligraphic hand whose small r
-   reads clearly, set wide like the ORBIS above it and as wide as the name (the owner,
-   16 Oct 2026, evening; Parisienne and Petit Formal Script came before it). The negative end
-   margin takes back the spacing after the last letter, so the line stays centred. */
+/* The motto under the name on the black bands: "the reading atlas" in bold Bodoni, upright
+   and lower case, the same family as ORBIS and the O of the site icons (the owner, 16 Oct
+   2026, night; the script hands tried before it could not be read well). */
 .masthead-motto {
-  font-family: "Charm", "Tinos", "Times New Roman", cursive;
-  font-weight: 400;
+  font-family: "Bodoni Moda", "Times New Roman", serif;
+  font-weight: 700;
   font-style: normal;
-  letter-spacing: 0.12em;
-  margin-inline-end: -0.12em;
+  font-optical-sizing: auto;
+  letter-spacing: 0.03em;
+  margin-inline-end: -0.03em;
 }
 
 :lang(ar) .masthead-motto {

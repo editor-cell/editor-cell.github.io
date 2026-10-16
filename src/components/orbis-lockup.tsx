@@ -13,7 +13,7 @@ export function OrbisLockup({
 }: {
   className: string;
   /** On the black bands the owner wants "The reading atlas." centred under the name
-   * (16 Oct 2026, evening), in a formal hand, set wide like the name; the menu shows the name alone. */
+   * (16 Oct 2026, evening), in bold Bodoni, lower case; the menu shows the name alone. */
   mottoClassName?: string;
 }) {
   const html = lockup.replace("<svg ", '<svg width="100%" height="100%" aria-hidden="true" ');
@@ -30,7 +30,7 @@ export function OrbisLockup({
     <span className="inline-flex flex-col items-center">
       {mark}
       <span lang="en" className={`masthead-motto mt-1 leading-tight whitespace-nowrap ${mottoClassName}`}>
-        The reading atlas.
+        the reading atlas
       </span>
     </span>
   );
