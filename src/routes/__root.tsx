@@ -36,35 +36,35 @@ export const Route = createRootRoute({
       ...(TRIAL ? [{ name: "robots", content: "noindex, nofollow" }] : []),
     ],
     links: [
-      // The tab icons carry a heavier ring than the home-screen ones: the hairline O of the
-      // 512 px mark all but disappears at 16 to 32 px.
+      // The tab icons use a tighter crop than the home-screen ones: the swirl around the ring
+      // turns to mush at 16 to 32 px, so the ring has to fill more of the square there.
       {
         rel: "icon",
         type: "image/png",
         sizes: "32x32",
-        href: "/__grok/orbis-32.png?v=20261016-2",
+        href: "/__grok/orbis-32.png?v=20261016-3",
       },
       {
         rel: "icon",
         type: "image/png",
         sizes: "48x48",
-        href: "/__grok/orbis-48.png?v=20261016-2",
+        href: "/__grok/orbis-48.png?v=20261016-3",
       },
       {
         rel: "icon",
         type: "image/png",
         sizes: "192x192",
-        href: "/__grok/orbis-192.png?v=20261016-2",
+        href: "/__grok/orbis-192.png?v=20261016-3",
       },
-      { rel: "icon", type: "image/svg+xml", href: "/__grok/orbis-favicon.svg?v=20261016-2" },
+      { rel: "icon", type: "image/svg+xml", href: "/__grok/orbis-favicon.svg?v=20261016-3" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       // The font stylesheet starts downloading at once but does not hold up the first paint
       // (FONT_BOOT below attaches it); until the faces arrive the page shows in Times.
       { rel: "preload", as: "style", href: FONTS },
       { rel: "stylesheet", href: appCss },
-      { rel: "manifest", href: "/__grok/orbis.webmanifest?v=20261016-2" },
-      { rel: "apple-touch-icon", href: "/__grok/orbis-180.png?v=20261016-2" },
+      { rel: "manifest", href: "/__grok/orbis.webmanifest?v=20261016-3" },
+      { rel: "apple-touch-icon", href: "/__grok/orbis-180.png?v=20261016-3" },
     ],
   }),
   component: RootDocument,
