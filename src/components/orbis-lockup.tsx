@@ -1,11 +1,11 @@
 import lockup from "@/assets/orbis-lockup.svg?raw";
 
 /**
- * The owner's logo (16 Oct 2026, evening): ORBİS in wide-set, high-contrast serif capitals
- * with the dotted İ, traced from his picture, no motto under it ("the other one was a timid
- * hand"). Drawn in the current text colour, so it is cream on the black bands and light on
- * the dark one. The mark is plain outlines, so it needs no ids of its own and any number of
- * copies (header, footer, menu) can sit on a page.
+ * The owner's logo (16 Oct 2026, evening): ORBIS in wide-set, high-contrast serif capitals,
+ * traced from his picture. The picture had a Turkish dotted İ; the dot was taken off, since
+ * the site's name is English. Drawn in the current text colour, so it is cream on the black
+ * bands and light on the dark one. The mark is plain outlines, so it needs no ids of its own
+ * and any number of copies (header, footer, menu) can sit on a page.
  */
 export function OrbisLockup({
   className,
@@ -21,7 +21,7 @@ export function OrbisLockup({
     <span
       role="img"
       aria-label="Orbis"
-      className={`block aspect-[1516/380] ${className}`}
+      className={`block aspect-[1516/308] ${className}`}
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );

@@ -332,7 +332,7 @@ export function Shell({
               {...homeLink(lang)}
               className="inline-flex min-h-11 shrink-0 items-center gap-2 py-2.5 md:gap-2.5 md:py-3"
             >
-              <OrbisLockup className="h-[2.4rem] md:h-[3.3rem]" mottoClassName="text-[0.88rem] md:text-[1.15rem]" />
+              <OrbisLockup className="h-[1.95rem] md:h-[2.68rem]" mottoClassName="text-[0.88rem] md:text-[1.15rem]" />
             </Link>
 
             <div>
@@ -440,7 +440,7 @@ export function Shell({
                     dir="ltr"
                     className="inline-flex min-h-11 items-center gap-3 self-start text-paper"
                   >
-                    <OrbisLockup className="h-[2.2rem]" mottoClassName="text-[0.82rem]" />
+                    <OrbisLockup className="h-[1.78rem]" mottoClassName="text-[0.82rem]" />
                   </Link>
                   <ul className="flex flex-col">
                     <li>
