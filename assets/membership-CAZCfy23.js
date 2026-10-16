@@ -1,0 +1,1 @@
+import{t as e}from"./pages-Bj-GwPwi.js";var t=e;export{t as component};

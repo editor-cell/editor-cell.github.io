@@ -1,0 +1,1 @@
+import{t as e}from"./about-3VMZ_Nld.js";var t=e;export{t as component};

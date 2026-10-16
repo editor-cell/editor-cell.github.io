@@ -1,0 +1,1 @@
+import{n as e}from"./atlas-BRai1MWt.js";var t=e;export{t as component};

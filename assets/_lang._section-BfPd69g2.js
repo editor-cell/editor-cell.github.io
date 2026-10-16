@@ -1,1 +1,0 @@
-import{Bt as e,xt as t}from"./shell-DUiCA-PL.js";import{o as n}from"./index-CJ33Aol-.js";import{r}from"./atlas-Dmc4pthb.js";var i=e();function a(){let{section:e}=n.useParams();return(0,i.jsx)(r,{theme:t(e)})}export{a as component};

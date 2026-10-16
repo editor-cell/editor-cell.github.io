@@ -1,0 +1,1 @@
+import{t as e}from"./search-DJKF68PD.js";var t=e;export{t as component};

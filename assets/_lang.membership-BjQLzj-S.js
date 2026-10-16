@@ -1,1 +1,0 @@
-import{t as e}from"./pages-BtaSrv70.js";var t=e;export{t as component};
