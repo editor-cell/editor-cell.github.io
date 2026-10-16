@@ -108,14 +108,16 @@ body {
   letter-spacing: 0.06em;
 }
 
-/* The motto under the name on the black bands: Parisienne, a slanted hand that stays easy
-   to read at its small size (the owner, 16 Oct 2026, evening: "okunaklı şık bir el yazısı").
-   The copperplate script used before could not be read on a phone. */
+/* The motto under the name on the black bands: Petit Formal Script, a formal hand whose
+   small r reads clearly (Parisienne's did not), set wide like the ORBİS above it so the two
+   speak the same language (the owner, 16 Oct 2026, evening). The negative end margin takes
+   back the spacing after the last letter, so the line stays centred under the name. */
 .masthead-motto {
-  font-family: "Parisienne", "Tinos", "Times New Roman", cursive;
+  font-family: "Petit Formal Script", "Tinos", "Times New Roman", cursive;
   font-weight: 400;
   font-style: normal;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.1em;
+  margin-inline-end: -0.1em;
 }
 
 :lang(ar) .masthead-motto {
