@@ -1,1 +1,0 @@
-import{t as e}from"./about-0B_s4jNG.js";var t=e;export{t as component};
