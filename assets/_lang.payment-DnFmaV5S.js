@@ -1,1 +1,0 @@
-import{r as e}from"./pages-aqveSwow.js";var t=e;export{t as component};

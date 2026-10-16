@@ -1,1 +1,0 @@
-import{Bt as e}from"./shell-DTdrXiba.js";import{t}from"./index-D495otou.js";import{t as n}from"./reading-CaT9f_X-.js";var r=e();function i(){return(0,r.jsx)(n,{story:t.useLoaderData()})}export{i as component};
