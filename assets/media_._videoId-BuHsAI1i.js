@@ -1,1 +1,0 @@
-import{Bt as e}from"./shell-B_cj8VRX.js";import{a as t}from"./index-BmTTy3ai.js";import{r as n}from"./videos-Cjz516MJ.js";var r=e();function i(){return(0,r.jsx)(n,{video:t.useLoaderData()})}export{i as component};
