@@ -1,0 +1,1 @@
+import{Bt as e}from"./shell-DTdrXiba.js";import{t}from"./legal-CTot-Kqc.js";var n=e(),r=()=>(0,n.jsx)(t,{page:`privacy`});export{r as component};

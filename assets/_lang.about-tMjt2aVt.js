@@ -1,1 +1,0 @@
-import{t as e}from"./about-CPKQ3Sob.js";var t=e;export{t as component};
