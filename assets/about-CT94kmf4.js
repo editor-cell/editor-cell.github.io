@@ -1,0 +1,1 @@
+import{t as e}from"./about-DqlXLfOP.js";var t=e;export{t as component};
