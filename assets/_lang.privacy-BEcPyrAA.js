@@ -1,0 +1,1 @@
+import{Bt as e}from"./shell-DUiCA-PL.js";import{t}from"./legal-Dc60DIeT.js";var n=e(),r=()=>(0,n.jsx)(t,{page:`privacy`});export{r as component};

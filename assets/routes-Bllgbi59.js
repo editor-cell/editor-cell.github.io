@@ -1,0 +1,1 @@
+import{n as e}from"./atlas-Dmc4pthb.js";var t=e;export{t as component};

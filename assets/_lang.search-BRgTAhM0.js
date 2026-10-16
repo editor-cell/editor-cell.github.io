@@ -1,0 +1,1 @@
+import{t as e}from"./search-BZNG0A-m.js";var t=e;export{t as component};

@@ -1,0 +1,1 @@
+import{Bt as e}from"./shell-DUiCA-PL.js";import{n as t}from"./index-CJ33Aol-.js";import{r as n}from"./videos-CgDqvmh9.js";var r=e();function i(){return(0,r.jsx)(n,{video:t.useLoaderData()})}export{i as component};
