@@ -1,1 +1,0 @@
-import{t as e}from"./search-BXOSacVu.js";var t=e;export{t as component};
