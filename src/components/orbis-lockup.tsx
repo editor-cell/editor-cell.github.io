@@ -29,7 +29,7 @@ export function OrbisLockup({
   return (
     <span className="inline-flex flex-col items-center">
       {mark}
-      <span lang="en" className={`masthead-motto mt-1 leading-tight whitespace-nowrap ${mottoClassName}`}>
+      <span lang="en" className={`masthead-motto leading-none whitespace-nowrap ${mottoClassName}`}>
         the reading atlas
       </span>
     </span>
