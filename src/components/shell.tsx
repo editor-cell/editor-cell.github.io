@@ -111,14 +111,13 @@ export function FrameTools() {
   const copy = useCopy(lang);
   const frame = useFrameCopy(lang);
   if (!tools) return null;
-  // The black band carries the name alone (the owner, 16 Oct 2026, evening), so the tools
-  // sit on the paper at the end of the section strip, dark on light like its words.
-  const hover = "hover:text-ink";
+  // The tools sit on the black band, light on dark like the name.
+  const hover = "hover:text-paper";
   const divider = (
-    <span aria-hidden="true" className="mx-1.5 hidden h-4 w-px bg-ink/20 md:block" />
+    <span aria-hidden="true" className="mx-1.5 hidden h-4 w-px bg-paper/25 md:block" />
   );
   return (
-    <div dir="ltr" className="flex shrink-0 items-center ps-1 pe-3 text-ink/80 md:ps-2 md:pe-6">
+    <div dir="ltr" className="flex shrink-0 items-center text-paper/85">
       <Link
         {...searchLink(lang)}
         aria-label={searchCopy(lang).title}
@@ -130,7 +129,7 @@ export function FrameTools() {
       {divider}
       <div className="hidden md:block">
         <Pick
-          tone="page"
+          tone="panel"
           align="end"
           label={copy.language}
           value={tools.lang}
@@ -150,7 +149,7 @@ export function FrameTools() {
       {/* The colour scheme stays on the band at every width, a phone included. */}
       <div>
         <Pick
-          tone="page"
+          tone="panel"
           align="end"
           label={frame.look}
           value={tools.look}
@@ -166,7 +165,7 @@ export function FrameTools() {
           }))}
           buttonClassName="group inline-flex h-11 w-9 items-center justify-center"
         >
-          <HeaderSwatch look={tools.look} />
+          <HeaderSwatch look={tools.look} dark />
         </Pick>
       </div>
       {/* Account once sign-up is on; until then the membership options. On the band at
@@ -328,29 +327,29 @@ export function Shell({
         <header dir="ltr" className="no-print relative">
           {/* The black band carries the name, the motto and the tools, as the footer band does;
               the section strip runs under it on the paper. */}
-          {/* The black band carries the name and its motto alone, in the middle (the owner,
-              16 Oct 2026, evening); the tools sit on the paper at the end of the section strip. */}
-          <div
-            className={`flex items-center gap-x-6 bg-panel px-5 text-paper md:px-8 ${inPanel ? "justify-between" : "justify-center"}`}
-          >
+          <div className="flex items-center justify-between gap-x-6 bg-panel px-5 text-paper md:px-8">
             <Link
               {...homeLink(lang)}
-              className="inline-flex min-h-11 shrink-0 items-center gap-2 py-3 md:gap-2.5 md:py-4"
+              className="inline-flex min-h-11 shrink-0 items-center gap-2 py-2.5 md:gap-2.5 md:py-3"
             >
               <OrbisLockup className="h-[2.4rem] md:h-[3.3rem]" mottoClassName="text-[1.15rem] md:text-[1.55rem]" />
             </Link>
 
-            {/* The editing panel stays out of the reader's menu; open it at /panel. */}
-            {inPanel ? (
-              <nav className="flex items-center gap-4 text-sm">
-                <Link {...homeLink(lang)} className="inline-flex min-h-11 items-center text-mist">
-                  {copy.atlas}
-                </Link>
-                <Link to="/panel" className="inline-flex min-h-11 items-center text-paper">
-                  {copy.panel}
-                </Link>
-              </nav>
-            ) : null}
+            <div>
+              {/* The editing panel stays out of the reader's menu; open it at /panel. */}
+              {inPanel ? (
+                <nav className="flex items-center gap-4 text-sm">
+                  <Link {...homeLink(lang)} className="inline-flex min-h-11 items-center text-mist">
+                    {copy.atlas}
+                  </Link>
+                  <Link to="/panel" className="inline-flex min-h-11 items-center text-paper">
+                    {copy.panel}
+                  </Link>
+                </nav>
+              ) : (
+                <FrameTools />
+              )}
+            </div>
           </div>
 
           {/* The test period: one quiet line on the paper, under the black band. */}
@@ -364,13 +363,12 @@ export function Shell({
             </p>
           ) : null}
 
-          <div dir="ltr" className="flex items-stretch border-b border-rule bg-paper">
           <nav
             aria-label={copy.sections}
             dir={meta.dir}
             lang={meta.html}
             data-start="true"
-            className="section-bar relative min-w-0 flex-1 bg-paper"
+            className="section-bar relative min-w-0 border-b border-rule bg-paper"
           >
             <div
               ref={bar}
@@ -396,8 +394,6 @@ export function Shell({
               ))}
             </div>
           </nav>
-          {inPanel ? null : <FrameTools />}
-          </div>
         </header>
         {menuOpen ? (
           <SiteMenu
