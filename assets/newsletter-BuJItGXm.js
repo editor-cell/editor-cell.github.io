@@ -1,0 +1,1 @@
+import{n as e}from"./pages-C_Mexq4_.js";var t=e;export{t as component};
