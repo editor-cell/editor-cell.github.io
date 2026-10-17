@@ -864,7 +864,6 @@ a.group:not(.atlas-own):has(.paper-title) > div.flex.flex-col > p.tabular-nums {
     transition: none !important;
   }
   .source-row,
-  .reading-cite,
   figure {
     break-inside: avoid;
   }

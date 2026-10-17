@@ -6,7 +6,6 @@ import { DocumentChain } from "@/components/atlas";
 import { Prose } from "@/components/prose";
 import { Comments } from "@/components/members/comments";
 import {
-  CiteBox,
   PdfButton,
   readingUrl,
   RelatedReadings,
@@ -391,8 +390,6 @@ function Reading({ story }: { story: Story | null }) {
               <DocumentChain story={story} lang={lang} page />
             </section>
           ) : null}
-
-          <CiteBox story={story} lang={lang} />
 
           <RelatedReadings story={story} lang={lang} />
 

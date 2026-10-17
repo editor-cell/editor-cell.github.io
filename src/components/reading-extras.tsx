@@ -1,17 +1,16 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import { ReadTime } from "@/components/read-time";
 import { useCopy } from "@/lib/i18n";
 import { publicPath, readLink } from "@/lib/lang-path";
 import { CARDS } from "@/lib/seed";
 import { absoluteUrl, SITE_NAME } from "@/lib/site";
-import { formatDate, storyTitle } from "@/lib/text";
+import { storyTitle } from "@/lib/text";
 import type { Lang, Story, StoryCard } from "@/lib/types";
 
 /**
  * What sits at the end of a reading and around it, open to every reader:
  * - a passage copied from the reading carries its source with it;
- * - a ready citation, copied with one tap;
  * - "Save as PDF or print": the browser's own print sheet, with a clean page (styles.css, @media print);
  * - a few related readings, same section first.
  */
@@ -20,9 +19,6 @@ const WORDS: Record<
   Lang,
   {
     source: string;
-    cite: string;
-    copy: string;
-    copied: string;
     pdf: string;
     pdfLong: string;
     related: string;
@@ -30,81 +26,39 @@ const WORDS: Record<
 > = {
   tr: {
     source: "Kaynak",
-    cite: "Bu okumayı kaynak göster",
-    copy: "Kopyala",
-    copied: "Kopyalandı",
     pdf: "PDF",
     pdfLong: "PDF olarak kaydet ya da yazdır",
     related: "İlgili okumalar",
   },
   en: {
     source: "Source",
-    cite: "Cite this reading",
-    copy: "Copy",
-    copied: "Copied",
     pdf: "PDF",
     pdfLong: "Save as PDF or print",
     related: "Related readings",
   },
   ar: {
     source: "المصدر",
-    cite: "الاستشهاد بهذه القراءة",
-    copy: "نسخ",
-    copied: "تم النسخ",
     pdf: "PDF",
     pdfLong: "حفظ بصيغة PDF أو طباعة",
     related: "قراءات ذات صلة",
   },
   fr: {
     source: "Source",
-    cite: "Citer cette lecture",
-    copy: "Copier",
-    copied: "Copié",
     pdf: "PDF",
     pdfLong: "Enregistrer en PDF ou imprimer",
     related: "Lectures liées",
   },
   es: {
     source: "Fuente",
-    cite: "Citar esta lectura",
-    copy: "Copiar",
-    copied: "Copiado",
     pdf: "PDF",
     pdfLong: "Guardar como PDF o imprimir",
     related: "Lecturas relacionadas",
   },
 };
 
-/** Quotation marks around a title, as each language sets them. */
-const QUOTES: Record<Lang, [string, string]> = {
-  tr: ["“", "”"],
-  en: ["“", "”"],
-  ar: ["«", "»"],
-  fr: ["« ", " »"],
-  es: ["«", "»"],
-};
-
 /** The public address of a reading in a language. */
 export function readingUrl(lang: Lang, storyId: string): string {
   return absoluteUrl(publicPath(lang, `/read/${storyId}`));
-}
-
-/** Author. “Title.” Orbis, 20 January 2026. — without the address. Arabic names the site
- * as the Arabic pages do and uses the Arabic comma, so the line reads in one direction. */
-function citationText(story: Story, lang: Lang): string {
-  const [open, close] = QUOTES[lang];
-  const author = story.author?.trim();
-  const title = storyTitle(story, lang).replace(/[.。]$/, "");
-  const site =
-    lang === "ar"
-      ? `أوربيس، ${formatDate(story.date, lang)}.`
-      : `${SITE_NAME}, ${formatDate(story.date, lang)}.`;
-  return [author ? `${author}.` : "", `${open}${title}.${close}`, site].filter(Boolean).join(" ");
-}
-
-/** The full citation as copied: the text, then the address. */
-export function citation(story: Story, lang: Lang): string {
-  return `${citationText(story, lang)} ${readingUrl(lang, story.id)}`;
 }
 
 /**
@@ -177,55 +131,6 @@ export function PdfButton({ lang }: { lang: Lang }) {
     >
       <span dir="ltr">{words.pdf}</span>
     </button>
-  );
-}
-
-/** The ready citation, with a copy link beside its heading. */
-export function CiteBox({ story, lang }: { story: Story; lang: Lang }) {
-  const words = WORDS[lang];
-  const text = citation(story, lang);
-  const [copied, setCopied] = useState(false);
-  const timer = useRef<number | undefined>(undefined);
-  useEffect(() => () => window.clearTimeout(timer.current), []);
-
-  async function copy() {
-    try {
-      await navigator.clipboard.writeText(text);
-    } catch {
-      // Older browsers: select the citation so the reader can copy it by hand.
-      const node = document.getElementById("citation-text");
-      if (node) window.getSelection()?.selectAllChildren(node);
-      return;
-    }
-    setCopied(true);
-    window.clearTimeout(timer.current);
-    timer.current = window.setTimeout(() => setCopied(false), 2000);
-  }
-
-  const label =
-    lang === "ar" ? "text-sm text-pine" : "text-xs uppercase tracking-[0.14em] text-pine";
-  return (
-    <section className="reading-cite border-t border-line pt-8" aria-labelledby="cite-heading">
-      <div className="flex items-baseline justify-between gap-4">
-        <h2 id="cite-heading" className={`font-body font-normal ${label}`}>
-          {words.cite}
-        </h2>
-        <button
-          type="button"
-          onClick={copy}
-          aria-live="polite"
-          className="no-print inline-flex min-h-9 items-center text-sm text-pine"
-        >
-          {copied ? words.copied : words.copy}
-        </button>
-      </div>
-      <p id="citation-text" className="mt-3 break-words text-[0.95rem] leading-relaxed">
-        {citationText(story, lang)}{" "}
-        <span dir="ltr" className={lang === "ar" ? "block text-start" : ""}>
-          {readingUrl(lang, story.id)}
-        </span>
-      </p>
-    </section>
   );
 }
 
