@@ -42,7 +42,6 @@ function Meta({ story, lang, section }: { story: Story; lang: Lang; section: The
           lang={lang}
           pattern={copy.minRead}
           story={story}
-          sources={story.sources?.length ? sourceCount(story.sources.length, lang) : undefined}
         />
       ) : null}
     </div>
@@ -317,9 +316,6 @@ function HomeGrid({ stories, lang }: { stories: Story[]; lang: Lang }) {
         </Link>
       </div>
 
-      {/* The chain sits right under the reading it belongs to, before any other card. */}
-      <DocumentChain story={lead} lang={lang} />
-
       {/* From here down every reading follows the depth control, the top cards included. */}
       {rest.length ? <DepthBar lang={lang} depth={depth} choose={choose} /> : null}
 
@@ -464,21 +460,16 @@ function DeepLines({ story, lang, clamp }: { story: Story; lang: Lang; clamp: st
 function Kicker({ story, lang }: { story: Story; lang: Lang }) {
   const copy = useCopy(lang);
   const minutes = story.locales[lang].minutes;
-  const count = story.sources?.length ?? 0;
   const tone =
     lang === "ar" ? "text-sm leading-snug" : "text-xs leading-snug uppercase tracking-[0.14em]";
   // Two lines in every card: the section in its colour, and under it, quieter, the reading
-  // time, the number of documents in the chain and, where there is one, the recording.
+  // time and, where there is one, the recording. The sources show on the reading page only.
   return (
     <div className={`card-kicker ${tone}`}>
       <p className="text-pine">{copy.themes[story.theme]}</p>
-      {minutes || count ? (
+      {minutes ? (
         <p className="mt-0.5 text-muted">
-          {minutes ? (
-            <span className="whitespace-nowrap">{copy.minRead.replace("{n}", String(minutes))}</span>
-          ) : null}
-          {minutes && count ? " · " : null}
-          {count ? <span className="whitespace-nowrap">{sourceCount(count, lang)}</span> : null}
+          <span className="whitespace-nowrap">{copy.minRead.replace("{n}", String(minutes))}</span>
           <span className="whitespace-nowrap">
             <CardListen story={story} lang={lang} />
           </span>
