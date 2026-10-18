@@ -29,14 +29,14 @@ export type SearchCopy = {
 const COPY: Record<Lang, SearchCopy> = {
   tr: {
     title: "Arama",
-    label: "Okumalarda ara",
-    placeholder: "Okumalarda ara",
+    label: "Okumalarda ve videolarda ara",
+    placeholder: "Okumalarda ve videolarda ara",
     submit: "Ara",
     count: (n) => `${n} sonuç`,
-    empty: "Aramanızla eşleşen okuma bulunamadı.",
+    empty: "Aramanızla eşleşen okuma ya da video bulunamadı.",
     loading: "Arama hazırlanıyor…",
     failed: "Arama verileri yüklenemedi. Lütfen tekrar deneyin.",
-    description: "Orbis okumalarında arama.",
+    description: "Orbis okumalarında ve videolarında arama.",
   },
   ar: {
     title: "البحث",
@@ -52,14 +52,14 @@ const COPY: Record<Lang, SearchCopy> = {
   },
   en: {
     title: "Search",
-    label: "Search the readings",
-    placeholder: "Search the readings",
+    label: "Search readings and videos",
+    placeholder: "Search readings and videos",
     submit: "Search",
     count: (n) => (n === 1 ? "1 result" : `${n} results`),
-    empty: "No readings match your search.",
+    empty: "No readings or videos match your search.",
     loading: "Preparing search…",
     failed: "Search data could not be loaded. Please try again.",
-    description: "Search the readings on Orbis.",
+    description: "Search the readings and videos on Orbis.",
   },
   fr: {
     title: "Recherche",
