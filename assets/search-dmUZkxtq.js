@@ -1,0 +1,1 @@
+import{t as e}from"./search-Bor29Fa3.js";var t=e;export{t as component};
