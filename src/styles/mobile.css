@@ -344,3 +344,14 @@
     vertical-align: -0.1em;
   }
 }
+
+/* The media strip on a phone: no room kept for a scrollbar the phone never shows, and a
+   lone video takes the whole width instead of leaving an empty strip beside it. */
+@media (--orbis-phone) {
+  .media-strip {
+    padding-bottom: 0;
+  }
+  .media-strip:has(> li:only-child) {
+    grid-auto-columns: 100%;
+  }
+}

@@ -79,7 +79,7 @@ export function MediaStrip({ lang }: { lang: Lang }) {
   const words = videoWords(lang);
   const arrow = langMeta[lang].dir === "rtl" ? "←" : "→";
   return (
-    <section data-media-strip aria-labelledby="atlas-media" className="px-5 pt-6 md:px-8 md:pt-8">
+    <section data-media-strip aria-labelledby="atlas-media" className="px-5 pt-4 md:px-8 md:pt-8">
       <div className="mb-3 flex items-baseline justify-between gap-4 border-t border-rule pt-3 md:mb-4">
         <h2 id="atlas-media" className={`font-body font-normal ${kickerClass(lang)}`}>
           {words.videos}
@@ -169,8 +169,8 @@ export function VideoPage({ video }: { video: Video | null }) {
   const transcript = copy?.transcript ? paragraphs(copy.transcript) : [];
   return (
     <Shell>
-      <main className="px-5 py-8 md:px-12 md:py-12">
-        <div className="mx-auto flex max-w-3xl flex-col gap-5">
+      <main className="px-5 pt-2 pb-0 md:px-12 md:py-12">
+        <div className="mx-auto flex max-w-3xl flex-col gap-4 md:gap-5">
           <Link
             {...mediaLink(lang)}
             className="inline-flex min-h-11 w-fit items-center text-sm text-pine"
@@ -202,7 +202,7 @@ export function VideoPage({ video }: { video: Video | null }) {
                 className="-mx-5 block aspect-video h-auto w-[calc(100%+2.5rem)] max-w-none bg-ink md:mx-0 md:w-full md:max-w-full"
               />
               {transcript.length ? (
-                <section className="border-t border-rule pt-4">
+                <section className="-mt-2 md:mt-0 md:border-t md:border-rule md:pt-4">
                   <button
                     type="button"
                     aria-expanded={open}
