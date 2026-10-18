@@ -133,5 +133,13 @@
     "dek": "Kamuya açık bir kütüğe girmeyen bir çalışma hem bulunması hem sayılması güç bir kayıttır.",
     "region": "Küresel",
     "body": "Tıp dünyasında bir klinik deney, bir sonuca ulaşmadan çok önce aslında bir plandır. Kimlerin alınacağını ve neyin ölçüleceğini gösteren bu planlar, ilk katılımcı henüz görülmeden kamuya açık kütüklere işlenebilir; Dünya Sağlık Örgütü de standartlarına uyan bu kütüklerin hepsini tek yerden aramayı sağlayan küresel bir kapı tutar. ABD Ulusal Tıp Kütüphanesi tarafından yürütülen devasa kayıt sistemi bu kütüklerin en büyüğüdür; ancak bu sistem sadece tek bir defterdir, rafın tamamı değil. Tıp dergileri editörleri de deneylerin bu kütüklere kaydedilmesini sadece bir nezaket değil, güvenilirliğin temel bir parçası olarak görür. Kamuya açık hiçbir kütüğe işlenmemiş ve sonradan geri dönülüp hangi sorunun sorulduğu okunamayan bir deney, karanlıkta kaybolmaya çok daha açıktır."
+  },
+  {
+    "id": "video:water-cycle",
+    "kind": "video",
+    "date": "2026-10-18",
+    "title": "Su döngüsü",
+    "dek": "Aynı suyun deniz, gökyüzü ve kara arasındaki bitmeyen yolculuğu.",
+    "body": "Su hiçbir zaman tek bir yerde durmaz. Aynı su deniz, gökyüzü ve kara arasında tekrar tekrar yer değiştirir. Bu yolculuğa su döngüsü denir. Her şey güneşle başlar. Güneş denizin yüzeyini ısıtır ve suyun bir kısmı göze görünmeyen bir gaza, su buharına dönüşür. Bitkiler de yapraklarından su buharı verir. Sıcak ve nemli hava yükselir. Yükseldikçe soğur ve buhar yeniden küçük su damlacıklarına döner. Sayısız damlacık bir araya gelince bulut olur. Bulutun içinde damlacıklar birleşip büyür. Havada duramayacak kadar ağırlaşınca yağmur olarak düşer. Havanın soğuk olduğu yerlerde kar yağar. Karaya düşen suyun bir kısmı derelere ve nehirlere akar. Bir kısmı toprağa sızar ve orada birikir. Er ya da geç çoğu yeniden denize ulaşır. Orada güneş onu bir kez daha ısıtır. Döngü hiç durmaz."
   }
 ]

@@ -1,0 +1,1 @@
+import{t as e}from"./about-GUxFL7LK.js";var t=e;export{t as component};

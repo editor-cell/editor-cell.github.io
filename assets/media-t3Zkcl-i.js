@@ -1,0 +1,1 @@
+import{n as e}from"./videos-CeFyA2r6.js";var t=e;export{t as component};
