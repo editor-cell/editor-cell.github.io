@@ -1,0 +1,1 @@
+import{t as e}from"./pages-C2Kanc-C.js";var t=e;export{t as component};
