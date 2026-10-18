@@ -18,7 +18,7 @@ export type FrameCopy = {
 const frame: Record<Lang, FrameCopy> = {
   tr: {
     all: "Tümü",
-    about: "Orbis hakkında",
+    about: "Hakkında",
     index: "Dizin",
     emptySection: "Bu bölümde henüz okuma yok.",
     principle: "Her okuma kamusal belgelere dayanır. Son dakika masası da görüş sayfası da yoktur.",

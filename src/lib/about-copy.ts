@@ -7,7 +7,7 @@ import type { Lang } from "@/lib/types";
  */
 export const ABOUT: Record<Lang, { title: string; body: string }> = {
   tr: {
-    title: "Orbis hakkında",
+    title: "Hakkında",
     body: "Orbis kaynaklı okumalar tutar. Belge zinciri her metnin dibindedir.",
   },
   ar: {

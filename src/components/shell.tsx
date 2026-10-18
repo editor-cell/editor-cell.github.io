@@ -438,7 +438,7 @@ export function Shell({
                   <Link
                     {...homeLink(lang)}
                     dir="ltr"
-                    className="inline-flex min-h-11 items-center gap-3 self-start text-paper"
+                    className="inline-flex min-h-11 items-center gap-3 mb-3 self-start text-paper md:mb-0"
                   >
                     <OrbisLockup className="h-[1.78rem]" mottoClassName="mt-[0.7rem] text-[0.75rem]" />
                   </Link>
