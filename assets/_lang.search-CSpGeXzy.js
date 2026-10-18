@@ -1,0 +1,1 @@
+import{t as e}from"./search-Pg-9rzzd.js";var t=e;export{t as component};
