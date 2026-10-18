@@ -243,7 +243,7 @@ function Reading({ story }: { story: Story | null }) {
             </div>
           </div>
           {/* Phone: one thin line of PDF, share and the player. Wide screen, one line:
-              share, player, PDF, text size. */}
+              share, player, PDF. The text size sits right above the text on every screen. */}
           <div className="reading-tools no-print flex flex-wrap items-center gap-x-2 gap-y-2 py-1 sm:gap-x-3 md:py-2.5">
             <div className="order-2 flex md:order-3 md:ms-auto">
               <PdfButton lang={lang} />
@@ -273,17 +273,6 @@ function Reading({ story }: { story: Story | null }) {
                 />
               </div>
             ) : null}
-            <div className="order-1 hidden shrink-0 items-center md:order-4 md:-ms-2 md:flex">
-              <TypeSize
-                step={typeStep}
-                onDown={() => setStep(typeStep - 1)}
-                onUp={() => setStep(typeStep + 1)}
-                onReset={() => setStep(1)}
-                label={copy.textSize}
-                downLabel={copy.typeDown}
-                upLabel={copy.typeUp}
-              />
-            </div>
           </div>
           {canTwin && twinOpen ? (
             <TwinPanel story={story} lang={lang} twin={twin} choose={chooseTwin} />
@@ -299,7 +288,8 @@ function Reading({ story }: { story: Story | null }) {
               preload="none"
               playsInline
               autoPlay={false}
-              controlsList="nodownload"
+              controlsList="nodownload noplaybackrate noremoteplayback"
+              disablePictureInPicture
               src={story.video.src}
               aria-label={videoCaption || AI_VIDEO_NOTE[lang]}
               className="block aspect-video h-auto w-full max-w-full bg-ink"
@@ -334,8 +324,8 @@ function Reading({ story }: { story: Story | null }) {
               className="flex flex-col gap-8"
             >
               <div className="flex flex-col gap-3">
-                {/* On a phone the text size sits right above the text, after the picture. */}
-                <div className="no-print flex justify-end md:hidden">
+                {/* The text size sits right above the text, at its right, after the picture. */}
+                <div className="no-print flex justify-end">
                   <TypeSize
                     step={typeStep}
                     onDown={() => setStep(typeStep - 1)}

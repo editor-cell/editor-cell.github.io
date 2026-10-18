@@ -195,7 +195,8 @@ export function VideoPage({ video }: { video: Video | null }) {
                 controls
                 preload="metadata"
                 playsInline
-                controlsList="nodownload"
+                controlsList="nodownload noplaybackrate noremoteplayback"
+                disablePictureInPicture
                 src={video.src}
                 poster={video.poster}
                 aria-label={copy.title}
