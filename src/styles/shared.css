@@ -850,11 +850,14 @@ a.group:not(.atlas-own):has(.paper-title) > div.flex.flex-col > p.tabular-nums {
     font-size: 0.75rem;
     word-break: break-all;
   }
+  /* The row of round source marks is a screen summary; the phone and desktop rules set it
+     in columns, which on paper pushed the second source to the right (18 Oct 2026). On
+     paper only the full source list below is printed. */
   .doc-chain-host,
   .doc-chain-preview,
   .doc-chain-go,
   .doc-chain-open {
-    display: none;
+    display: none !important;
   }
   /* On paper the sources are always printed in full, open or closed on screen. */
   .chain-panel {
