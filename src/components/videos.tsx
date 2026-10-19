@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Shell } from "@/components/shell";
 import { imageSet } from "@/lib/image-set";
 import { langMeta } from "@/lib/i18n";
@@ -105,9 +105,20 @@ export function MediaStrip({ lang }: { lang: Lang }) {
   );
 }
 
+/** The browser-history place of the list of videos, when the reader has opened it. */
+let listPlace: number | null = null;
+function historyPlace(): number | null {
+  if (typeof window === "undefined") return null;
+  const place = (window.history.state as { __TSR_index?: number } | null)?.__TSR_index;
+  return typeof place === "number" ? place : null;
+}
+
 /** Every video, newest first: a still at the start of each row, then its words. */
 export function VideoListPage() {
   const lang = useLang();
+  useEffect(() => {
+    listPlace = historyPlace();
+  }, []);
   const words = videoWords(lang);
   const videos = videosIn(lang);
   return (
@@ -124,11 +135,11 @@ export function VideoListPage() {
             {words.empty}
           </p>
         ) : null}
-        <ol className="border-t border-rule px-5 md:px-8">
+        <ol className="-mb-5 border-t border-rule px-5 md:mb-0 md:px-8">
           {videos.map((video, index) => {
             const copy = video.locales[lang];
             return (
-              <li key={video.id} className="border-b border-line last:border-b-0">
+              <li key={video.id} className="border-b border-line last:border-b-0 last:[&>a]:pb-0 md:last:[&>a]:pb-5">
                 <Link
                   {...videoLink(lang, video.id)}
                   className="group grid grid-cols-[minmax(0,9rem)_minmax(0,1fr)] items-start gap-4 py-5 md:grid-cols-[minmax(0,18rem)_minmax(0,1fr)] md:gap-7"
@@ -171,8 +182,18 @@ export function VideoPage({ video }: { video: Video | null }) {
     <Shell>
       <main className="px-5 pt-2 pb-0 md:px-12 md:py-12">
         <div className="mx-auto flex max-w-3xl flex-col gap-4 md:gap-5">
+          {/* "All videos" goes up, not forward: back to the list the reader came from, or in
+              the video's place, so the phone's back button then leaves the videos at once. */}
           <Link
             {...mediaLink(lang)}
+            replace
+            onClick={(event) => {
+              const here = historyPlace();
+              if (here !== null && listPlace !== null && here === listPlace + 1) {
+                event.preventDefault();
+                window.history.back();
+              }
+            }}
             className="inline-flex min-h-11 w-fit items-center text-sm text-pine"
           >
             <span aria-hidden="true">{arrow}</span>&nbsp;{words.back}
