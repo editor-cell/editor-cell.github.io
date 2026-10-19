@@ -1,0 +1,1 @@
+import{t as e}from"./about-Cv8a4PDq.js";var t=e;export{t as component};
