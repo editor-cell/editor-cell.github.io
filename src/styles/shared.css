@@ -609,15 +609,21 @@ body {
     background: var(--color-highlight);
   }
 
-  /* Fade at the end of the section bar: tells a phone reader the row scrolls. */
+  /* Fade at the end of the section bar: tells a phone reader the row scrolls. It is wide
+     and ends in plain paper, so a name running off the edge thins out letter by letter
+     and its cut edge is never seen ("ECONO|" sliced in half). */
+  .section-bar {
+    --strip-fade: transparent, var(--color-paper) 80%;
+  }
+
   .section-bar::after {
     content: "";
     position: absolute;
     inset-block: 0;
     inset-inline-end: 0;
-    width: 2.5rem;
+    width: 4.5rem;
     pointer-events: none;
-    background: linear-gradient(to right, transparent, var(--color-paper));
+    background: linear-gradient(to right, var(--strip-fade));
     transition: opacity 150ms ease;
   }
 
@@ -626,7 +632,7 @@ body {
   }
 
   [dir="rtl"] .section-bar::after {
-    background: linear-gradient(to left, transparent, var(--color-paper));
+    background: linear-gradient(to left, var(--strip-fade));
   }
 
   /* The same fade at the start once the row has been scrolled, so a section name cut by
@@ -637,9 +643,9 @@ body {
     z-index: 1;
     inset-block: 0;
     inset-inline-start: 0;
-    width: 2.5rem;
+    width: 4.5rem;
     pointer-events: none;
-    background: linear-gradient(to left, transparent, var(--color-paper));
+    background: linear-gradient(to left, var(--strip-fade));
     opacity: 0;
     transition: opacity 150ms ease;
   }
@@ -649,7 +655,7 @@ body {
   }
 
   [dir="rtl"] .section-bar::before {
-    background: linear-gradient(to right, transparent, var(--color-paper));
+    background: linear-gradient(to right, var(--strip-fade));
   }
 
   /* Section bar scrolls sideways without showing a scrollbar. */
