@@ -1,0 +1,1 @@
+import{t as e}from"./search-C4_bei6y.js";var t=e;export{t as component};
