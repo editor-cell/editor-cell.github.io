@@ -74,6 +74,10 @@ html[data-look="night"] .menu-scrim {
   background: rgb(0 0 0 / 0.6);
 }
 
+html[data-look="night"] .search-scrim {
+  background: rgb(0 0 0 / 0.45);
+}
+
 /* Switching schemes eases the paper and text over instead of snapping. */
 body {
   transition:
@@ -813,6 +817,7 @@ a.group:not(.atlas-own):has(.paper-title) > div.flex.flex-col > p.tabular-nums {
   .reading-progress,
   .reading-player,
   .menu-scrim,
+  .search-scrim,
   #site-menu,
   video {
     display: none !important;

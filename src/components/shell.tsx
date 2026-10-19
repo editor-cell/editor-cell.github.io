@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { SiteMenu } from "@/components/menu";
 import { OrbisLockup } from "@/components/orbis-lockup";
 import { Pick } from "@/components/pick";
+import { SearchBar } from "@/components/search-bar";
 import { SearchMark } from "@/components/search-mark";
 import { membersOn } from "@/lib/members/config";
 import { TRIAL, trialNote } from "@/lib/site";
@@ -69,6 +70,8 @@ function Caret() {
 type Tools = {
   openMenu: () => void;
   menuOpen: boolean;
+  toggleSearch: () => void;
+  searchOpen: boolean;
   menuButton: React.RefObject<HTMLButtonElement | null>;
   look: Look;
   setLook: (look: Look) => void;
@@ -118,10 +121,17 @@ export function FrameTools() {
   );
   return (
     <div dir="ltr" className="flex shrink-0 items-center text-paper/85">
+      {/* Opens the search bar under the band; before the page has started, the link still
+          leads to the search page. */}
       <Link
         {...searchLink(lang)}
         aria-label={searchCopy(lang).title}
+        aria-expanded={tools.searchOpen}
         title={searchCopy(lang).title}
+        onClick={(event) => {
+          event.preventDefault();
+          tools.toggleSearch();
+        }}
         className={`inline-flex h-11 w-9 shrink-0 items-center justify-center ${hover}`}
       >
         <SearchMark className="size-[17px] md:size-[18px]" />
@@ -262,6 +272,7 @@ export function Shell({
   const menuButton = useRef<HTMLButtonElement | null>(null);
   const [look, setLook] = useLook();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const footerBrand = useFitToText(lang);
 
   // On a phone the section row scrolls sideways: bring the open section into view.
@@ -290,6 +301,9 @@ export function Shell({
     };
   }, [section, lang]);
 
+  // A result opens another page: the bar closes behind it.
+  useEffect(() => setSearchOpen(false), [path]);
+
   useEffect(() => {
     document.documentElement.lang = meta.html;
     document.documentElement.dir = meta.dir;
@@ -312,6 +326,8 @@ export function Shell({
   const tools: Tools = {
     openMenu: () => setMenuOpen(true),
     menuOpen,
+    toggleSearch: () => setSearchOpen((open) => !open),
+    searchOpen,
     menuButton,
     look,
     setLook,
@@ -327,7 +343,11 @@ export function Shell({
         <header dir="ltr" className="no-print relative">
           {/* The black band carries the name, the motto and the tools, as the footer band does;
               the section strip runs under it on the paper. */}
-          <div className="flex items-center justify-between gap-x-6 bg-panel px-5 text-paper md:px-8">
+          <div
+            className={`flex items-center justify-between gap-x-6 bg-panel px-5 text-paper md:px-8 ${
+              searchOpen ? "relative z-40" : ""
+            }`}
+          >
             <Link
               {...homeLink(lang)}
               className="inline-flex min-h-11 shrink-0 items-center gap-2 py-2.5 md:gap-2.5 md:py-3"
@@ -351,6 +371,12 @@ export function Shell({
               )}
             </div>
           </div>
+
+          {searchOpen && !inPanel ? (
+            <div dir={meta.dir} lang={meta.html}>
+              <SearchBar onClose={() => setSearchOpen(false)} />
+            </div>
+          ) : null}
 
           {/* The test period: one quiet line on the paper, under the black band. */}
           {TRIAL && !inPanel ? (
@@ -411,6 +437,10 @@ export function Shell({
             }}
             onLang={setLang}
             onLook={setLook}
+            onSearch={() => {
+              setMenuOpen(false);
+              setSearchOpen(true);
+            }}
           />
         ) : null}
 

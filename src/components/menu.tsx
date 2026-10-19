@@ -141,6 +141,7 @@ export function SiteMenu({
   onClose,
   onLang,
   onLook,
+  onSearch,
 }: {
   lang: Lang;
   section?: Theme | "all";
@@ -149,6 +150,8 @@ export function SiteMenu({
   onClose: () => void;
   onLang: (lang: Lang) => void;
   onLook: (look: Look) => void;
+  /** Opens the search bar under the masthead in place of the search page. */
+  onSearch: () => void;
 }) {
   const copy = useCopy(lang);
   const frame = useFrameCopy(lang);
@@ -157,7 +160,7 @@ export function SiteMenu({
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
   const onAbout = stripLang(path) === "/about";
-  const onSearch = stripLang(path) === "/search";
+  const onSearchPage = stripLang(path) === "/search";
   const here = stripLang(path);
   const signedIn = useMember().status === "in";
   const [openGroup, setOpenGroup] = useState<Group | null>(readOpen);
@@ -311,7 +314,14 @@ export function SiteMenu({
               {MENU_PAGES.map((item) =>
                 item === "search" ? (
                   <li key={item}>
-                    <Link {...searchLink(lang)} className={page(onSearch)} onClick={onClose}>
+                    <Link
+                      {...searchLink(lang)}
+                      className={page(onSearchPage)}
+                      onClick={(event) => {
+                        event.preventDefault();
+                        onSearch();
+                      }}
+                    >
                       {searchCopy(lang).title}
                       <Search aria-hidden="true" strokeWidth={1.5} className="size-4 shrink-0" />
                     </Link>

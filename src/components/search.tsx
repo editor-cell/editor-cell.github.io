@@ -1,16 +1,10 @@
-import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { ReadTime } from "@/components/read-time";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
+import { Count, ResultList, useSearch } from "@/components/search-bar";
 import { SearchMark } from "@/components/search-mark";
 import { Shell } from "@/components/shell";
-import { useCopy } from "@/lib/i18n";
-import { readLink, videoLink } from "@/lib/lang-path";
-import { loadSearchIndexes, searchAll, searchCopy, type SearchIndexes } from "@/lib/search";
-import { LANGS } from "@/lib/types";
-import { CARDS } from "@/lib/seed";
-import { formatDate, storyTitle } from "@/lib/text";
+import { searchCopy } from "@/lib/search";
 import { useLang } from "@/lib/use-lang";
-import { VIDEOS, formatDuration, videoWords } from "@/lib/videos";
 
 /** The query in the address (?q=…), so a search can be shared and survives a reload. */
 function queryFromAddress(search: string): string {
@@ -22,13 +16,11 @@ function queryFromAddress(search: string): string {
 }
 
 /**
- * The search page: one large field on a rule, then the matching readings as a plain
- * list — title, the reading's one-sentence summary, section and date, and the reading
- * time on its own line under the date, as on the cards. Results follow the typing.
+ * The search page, kept for shared addresses (/search?q=…): one large field on a rule,
+ * then the matching readings as a plain list. Results follow the typing.
  */
 export function SearchPage() {
   const lang = useLang();
-  const copy = useCopy(lang);
   const words = searchCopy(lang);
   const navigate = useNavigate();
   const path = useRouterState({ select: (s) => s.location.pathname });
@@ -37,10 +29,7 @@ export function SearchPage() {
   // so the written page and the open page start out the same.
   const [ready, setReady] = useState(false);
   const [query, setQuery] = useState("");
-  const [indexes, setIndexes] = useState<SearchIndexes | null>(null);
-  const [failed, setFailed] = useState(false);
-  const [requestAttempt, setRequestAttempt] = useState(0);
-  const hasQuery = query.trim().length > 0;
+  const { results, failed, searching, pending, retry } = useSearch(query, ready);
 
   useEffect(() => {
     const q = queryFromAddress(window.location.search);
@@ -60,30 +49,6 @@ export function SearchPage() {
     return () => window.clearTimeout(timer);
   }, [query, ready, path, navigate]);
 
-  // On the first nonempty query, download the texts of every site language: a word is
-  // found whichever language it is typed in. Cancelling the request keeps an unmounted
-  // page from setting state.
-  useEffect(() => {
-    if (!ready || !hasQuery || indexes) return;
-    const controller = new AbortController();
-    setFailed(false);
-    void loadSearchIndexes(LANGS, import.meta.env.BASE_URL, controller.signal)
-      .then((loaded) => {
-        if (!controller.signal.aborted) setIndexes(loaded);
-      })
-      .catch(() => {
-        if (!controller.signal.aborted) setFailed(true);
-      });
-    return () => controller.abort();
-  }, [ready, hasQuery, indexes, requestAttempt]);
-
-  const results = useMemo(
-    () => (indexes ? searchAll(CARDS, VIDEOS, lang, query, indexes) : []),
-    [lang, query, indexes],
-  );
-  const searching = ready && hasQuery && indexes !== null;
-  const pending = ready && hasQuery && !indexes && !failed;
-
   return (
     <Shell>
       <main>
@@ -97,7 +62,7 @@ export function SearchPage() {
             className="group flex items-center gap-3 border-b border-rule pb-2.5 focus-within:border-ink"
             onSubmit={(event) => {
               event.preventDefault();
-              if (failed) setRequestAttempt((attempt) => attempt + 1);
+              retry();
               const q = query.trim();
               input.current?.blur();
               void navigate({
@@ -126,100 +91,11 @@ export function SearchPage() {
               <SearchMark className="size-5" />
             </button>
           </form>
-          {searching && results.length > 0 ? (
-            <p
-              aria-live="polite"
-              className={
-                lang === "ar"
-                  ? "mt-3.5 text-xs text-muted tabular-nums"
-                  : "mt-3.5 text-xs uppercase tracking-widest text-muted tabular-nums"
-              }
-            >
-              {words.count(results.length)}
-            </p>
-          ) : null}
+          {searching && results.length > 0 ? <Count n={results.length} className="mt-3.5" /> : null}
         </div>
 
         {searching && results.length > 0 ? (
-          <ol className="px-5 md:px-8">
-            {results.map((found) => {
-              if (found.kind === "video") {
-                const { video } = found;
-                const local = video.locales[lang];
-                const length = formatDuration(video.duration);
-                return (
-                  <li key={`video-${video.id}`} className="border-b border-line last:border-b-0">
-                    <Link {...videoLink(lang, video.id)} className="group flex flex-col gap-2 py-5">
-                      <h2 className="text-lg leading-snug group-hover:underline group-hover:underline-offset-4 lg:text-xl">
-                        {local?.title}
-                      </h2>
-                      {local?.dek ? (
-                        <p className="max-w-2xl text-pretty text-[15px] leading-snug text-muted">
-                          {local.dek}
-                        </p>
-                      ) : null}
-                      <div className="mt-1 flex flex-col items-start gap-1 text-xs text-muted">
-                        <p>
-                          <span
-                            className={
-                              lang === "ar" ? "text-pine" : "uppercase tracking-widest text-pine"
-                            }
-                          >
-                            {videoWords(lang).video}
-                          </span>
-                          {length ? (
-                            <span className="tabular-nums" dir="ltr">{` · ${length}`}</span>
-                          ) : null}
-                          {" · "}
-                          <span className="whitespace-nowrap">{formatDate(video.date, lang)}</span>
-                        </p>
-                      </div>
-                    </Link>
-                  </li>
-                );
-              }
-              const story = found.card;
-              const local = story.locales[lang];
-              const summary = local.dek.trim() || local.lead;
-              return (
-                <li key={story.id} className="border-b border-line last:border-b-0">
-                  <Link {...readLink(lang, story.id)} className="group flex flex-col gap-2 py-5">
-                    <h2 className="text-lg leading-snug group-hover:underline group-hover:underline-offset-4 lg:text-xl">
-                      {storyTitle(story, lang)}
-                    </h2>
-                    {summary ? (
-                      <p
-                        className={`max-w-2xl text-pretty text-[15px] leading-snug text-muted ${local.dek.trim() ? "" : "line-clamp-3"}`}
-                      >
-                        {summary}
-                      </p>
-                    ) : null}
-                    <div className="mt-1 flex flex-col items-start gap-1 text-xs text-muted">
-                      <p>
-                        <span
-                          className={
-                            lang === "ar" ? "text-pine" : "uppercase tracking-widest text-pine"
-                          }
-                        >
-                          {copy.themes[story.theme]}
-                        </span>
-                        {" · "}
-                        <span className="whitespace-nowrap">{formatDate(story.date, lang)}</span>
-                      </p>
-                      {local.minutes ? (
-                        <ReadTime
-                          minutes={local.minutes}
-                          lang={lang}
-                          pattern={copy.minRead}
-                          story={story}
-                        />
-                      ) : null}
-                    </div>
-                  </Link>
-                </li>
-              );
-            })}
-          </ol>
+          <ResultList results={results} className="px-5 md:px-8" />
         ) : null}
 
         {searching && results.length === 0 ? (
