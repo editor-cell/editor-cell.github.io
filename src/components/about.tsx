@@ -3,13 +3,12 @@ import { Shell } from "@/components/shell";
 import { Trail } from "@/components/trail";
 import { paragraphs } from "@/lib/text";
 import { useLang } from "@/lib/use-lang";
-import { EDITORIAL, editorialCopy } from "@/lib/editorial";
 
-/** About Orbis, in the language of its address. Same column as a reading. */
+/** About Orbis, in the language of its address. Same column as a reading. The publisher's
+ *  name stays on the terms and privacy pages only (the owner, 19 Oct 2026). */
 export function AboutPage() {
   const lang = useLang();
   const about = aboutCopy(lang);
-  const editorial = editorialCopy(lang);
 
   return (
     <Shell>
@@ -24,11 +23,6 @@ export function AboutPage() {
               </p>
             ))}
           </div>
-          {EDITORIAL.publisherName.trim() ? (
-            <p className="text-sm text-muted">
-              {editorial.publisher}: {EDITORIAL.publisherName.trim()}
-            </p>
-          ) : null}
         </div>
       </main>
     </Shell>
