@@ -528,16 +528,15 @@ body {
     cursor: pointer;
   }
 
+  /* Headings without a face of their own (About, the legal pages, search, the account)
+     take the headline face of the readings and cards, so no page title stands apart. */
   h1,
   h2,
   h3 {
-    font-family: var(--font-display);
-    font-weight: 600;
+    font-family: "Playfair Display", "Times New Roman", serif;
+    font-weight: 700;
     line-height: 1.15;
     text-wrap: balance;
-    /* Low optical size keeps Bodoni's hairlines (the bar of "A") visible on phones. */
-    font-optical-sizing: none;
-    font-variation-settings: "opsz" 14;
   }
 
   :lang(ar) {

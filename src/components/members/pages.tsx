@@ -57,16 +57,22 @@ function Page({
             </h1>
             <p className="reading-dek">{lead}</p>
           </header>
-          <div className="flex flex-col gap-10 border-t-[3px] border-ink pt-8">{children}</div>
+          {/* The rule runs to the screen's edges on a phone and stays in the column on a wide
+              screen. */}
+          <div className="-mx-5 flex flex-col gap-10 border-t border-ink px-5 pt-8 md:mx-0 md:px-0">
+            {children}
+          </div>
         </div>
       </main>
     </Shell>
   );
 }
 
-function Points({ items }: { items: string[] }) {
+/** The numbered points. `under` when a rule already stands right above them (the page's or
+ *  a heading's), so they start under it instead of under a second, thinner one. */
+function Points({ items, under = false }: { items: string[]; under?: boolean }) {
   return (
-    <ol className="mt-6 border-t border-line">
+    <ol className={under ? "" : "mt-6 border-t border-line"}>
       {items.map((item, index) => (
         <li
           key={item}
@@ -90,7 +96,7 @@ function PriceList({ lang }: { lang: Lang }) {
   return (
     <div className="mt-6 flex flex-col gap-2">
       <p className="flex flex-wrap items-baseline gap-x-2">
-        <span className="paper-title text-4xl font-bold leading-none tabular-nums">
+        <span className="paper-title text-4xl font-bold leading-none tabular-nums lining-nums">
           {price(first, lang)}
         </span>
         <span className="text-sm text-muted">/ {words.per[first]}</span>
@@ -104,7 +110,7 @@ function PriceList({ lang }: { lang: Lang }) {
               ) : (
                 <span aria-hidden="true">·</span>
               )}
-              <span className="paper-title text-2xl font-bold leading-none text-ink tabular-nums">
+              <span className="paper-title text-2xl font-bold leading-none text-ink tabular-nums lining-nums">
                 {price(period, lang)}
               </span>
               <span className="text-sm">/ {words.per[period]}</span>
@@ -194,7 +200,7 @@ function FreeMembership({ lang }: { lang: Lang }) {
   return (
     <Page title={words.heading} lead={words.freeLead}>
       <section className="flex max-w-xl flex-col">
-        <Points items={words.free.points} />
+        <Points items={words.free.points} under />
         {membersOn ? (
           <Link
             {...accountLink(lang, undefined, true)}
@@ -206,7 +212,7 @@ function FreeMembership({ lang }: { lang: Lang }) {
           <Soon label={words.free.action} soon={words.soon} className={buttonClass} />
         )}
       </section>
-      <p className="border-t border-line pt-6 text-sm text-muted">
+      <p className="max-w-xl border-t border-line pt-6 text-sm text-muted">
         {words.haveAccount}{" "}
         {membersOn ? (
           <Link
@@ -296,7 +302,7 @@ export function PaymentPage() {
           </fieldset>
           <section className="flex flex-col">
             <h2 className={sectionHead(lang)}>{words.includes}</h2>
-            <Points items={all.membership.paid.points} />
+            <Points items={all.membership.paid.points} under />
           </section>
         </div>
 
@@ -309,7 +315,7 @@ export function PaymentPage() {
           <p className="flex items-baseline justify-between gap-4 border-t border-line pt-4">
             <span className="text-sm text-muted">{words.total}</span>
             <span className="text-end tabular-nums">
-              <span className="paper-title text-3xl font-bold leading-none">
+              <span className="paper-title text-3xl font-bold leading-none lining-nums">
                 {price(period, lang)}
               </span>{" "}
               <span className="text-sm text-muted">/ {per}</span>

@@ -40,8 +40,12 @@ function Cited({
   let last = 0;
   let match: RegExpExecArray | null;
   while ((match = re.exec(text)) !== null) {
-    if (match.index > last) nodes.push(text.slice(last, match.index));
     const n = Number(match[1]);
+    let before = text.slice(last, match.index);
+    // A source number sits against the word before it, as a superscript does, so it never
+    // wraps alone to the start of the next line. Between two numbers the space stays.
+    if (sourceNums.has(n) && before.trim()) before = before.trimEnd();
+    if (before) nodes.push(before);
     const key = `${match.index}-${n}`;
     if (sourceNums.has(n)) {
       nodes.push(

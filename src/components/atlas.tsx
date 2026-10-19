@@ -1376,7 +1376,7 @@ function RankedRow({ story, lang, depth }: { story: Story; lang: Lang; depth: De
           </div>
         ) : null}
         <div className="ranked-text min-w-0 flex-1">
-        <h4 className="font-body text-[0.98rem] leading-[1.3] text-ink decoration-1 underline-offset-[0.14em] group-hover:underline">
+        <h4 className="paper-title font-bold text-[1rem] leading-[1.2] text-ink decoration-1 underline-offset-[0.14em] group-hover:underline">
           {storyTitle(story, lang)}
         </h4>
         {summary ? (
@@ -1454,7 +1454,7 @@ function Column({
   return (
     <Link
       {...readLink(lang, story.id)}
-      className={`flex min-w-0 flex-col gap-2 px-5 py-6 md:py-8 lg:px-6 ${tall ? "md:aspect-[3/4]" : ""} ${className}`}
+      className={`flex min-w-0 flex-col gap-2 px-5 py-6 md:px-8 md:py-8 ${tall ? "md:aspect-[3/4]" : ""} ${className}`}
     >
       <h2 className="text-lg leading-snug">{storyTitle(story, lang)}</h2>
       {excerpt ? (
