@@ -2,8 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Shell } from "@/components/shell";
 import { imageSet } from "@/lib/image-set";
-import { langMeta } from "@/lib/i18n";
-import { mediaLink, videoLink } from "@/lib/lang-path";
+import { langMeta, useCopy } from "@/lib/i18n";
+import { homeLink, mediaLink, videoLink } from "@/lib/lang-path";
 import { formatDate, paragraphs } from "@/lib/text";
 import type { Lang, Video, VideoCard } from "@/lib/types";
 import { useLang } from "@/lib/use-lang";
@@ -113,6 +113,49 @@ function historyPlace(): number | null {
   return typeof place === "number" ? place : null;
 }
 
+/** Where the page sits, as on a reading: Home › Videos, and on a video Home › Videos › title.
+ * On a video, "Videos" goes up, not forward: back to the list the reader came from, or in
+ * the video's place, so the phone's back button then leaves the videos at once. */
+function VideoTrail({ lang, title }: { lang: Lang; title?: string }) {
+  const copy = useCopy(lang);
+  const words = videoWords(lang);
+  const mark = langMeta[lang].dir === "rtl" ? "‹" : "›";
+  const crumb = "inline-flex min-h-8 shrink-0 items-center hover:text-ink";
+  return (
+    <nav
+      aria-label={copy.trail}
+      className="no-print flex w-full min-w-0 items-center gap-2 text-xs text-muted"
+    >
+      <Link {...homeLink(lang)} className={crumb}>
+        {copy.home}
+      </Link>
+      <span aria-hidden="true">{mark}</span>
+      {title ? (
+        <>
+          <Link
+            {...mediaLink(lang)}
+            replace
+            onClick={(event) => {
+              const here = historyPlace();
+              if (here !== null && listPlace !== null && here === listPlace + 1) {
+                event.preventDefault();
+                window.history.back();
+              }
+            }}
+            className={crumb}
+          >
+            {words.videos}
+          </Link>
+          <span aria-hidden="true">{mark}</span>
+          <span className="min-w-0 truncate">{title}</span>
+        </>
+      ) : (
+        <span className="min-w-0 truncate">{words.videos}</span>
+      )}
+    </nav>
+  );
+}
+
 /** Every video, newest first: a still at the start of each row, then its words. */
 export function VideoListPage() {
   const lang = useLang();
@@ -124,7 +167,10 @@ export function VideoListPage() {
   return (
     <Shell>
       <main>
-        <div className="px-5 pt-6 pb-4 md:px-8 md:pt-8 md:pb-6">
+        <div className="px-5 pt-5 pb-4 md:px-8 md:pt-8 md:pb-6">
+          <div className="mb-3">
+            <VideoTrail lang={lang} />
+          </div>
           <h1 className="paper-title font-bold text-[2.4rem] leading-[1.05] md:text-[3rem]">
             {words.videos}
           </h1>
@@ -175,29 +221,13 @@ export function VideoPage({ video }: { video: Video | null }) {
   const lang = useLang();
   const words = videoWords(lang);
   const [open, setOpen] = useState(false);
-  const arrow = langMeta[lang].dir === "rtl" ? "→" : "←";
   const copy = video?.locales[lang];
   const transcript = copy?.transcript ? paragraphs(copy.transcript) : [];
   return (
     <Shell>
-      <main className="px-5 pt-2 pb-0 md:px-12 md:py-12">
+      <main className="px-5 pt-5 pb-0 md:px-12 md:py-12">
         <div className="mx-auto flex max-w-3xl flex-col gap-4 md:gap-5">
-          {/* "All videos" goes up, not forward: back to the list the reader came from, or in
-              the video's place, so the phone's back button then leaves the videos at once. */}
-          <Link
-            {...mediaLink(lang)}
-            replace
-            onClick={(event) => {
-              const here = historyPlace();
-              if (here !== null && listPlace !== null && here === listPlace + 1) {
-                event.preventDefault();
-                window.history.back();
-              }
-            }}
-            className="inline-flex min-h-11 w-fit items-center text-sm text-pine"
-          >
-            <span aria-hidden="true">{arrow}</span>&nbsp;{words.back}
-          </Link>
+          <VideoTrail lang={lang} title={copy?.title} />
           {video && copy ? (
             <>
               <div className="flex flex-col gap-2">
