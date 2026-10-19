@@ -13,6 +13,7 @@ import {
 } from "@/components/reading-extras";
 import { LockNote, useMemberText } from "@/components/members/locked";
 import { Shell } from "@/components/shell";
+import { Trail } from "@/components/trail";
 import {
   TwinButton,
   TwinHeading,
@@ -200,26 +201,16 @@ function Reading({ story }: { story: Story | null }) {
           <span className="ms-3 text-muted">{readingUrl(lang, story.id)}</span>
         </p>
         {/* Where the reading sits: home, its section, its title. */}
-        <nav
-          aria-label={copy.trail}
-          className="no-print reading-column -mb-3 flex w-full min-w-0 items-center gap-2 text-xs text-muted"
-        >
-          <Link
-            {...homeLink(lang)}
-            className="inline-flex min-h-8 shrink-0 items-center hover:text-ink"
-          >
-            {copy.home}
-          </Link>
-          <span aria-hidden="true">{langMeta[lang].dir === "rtl" ? "‹" : "›"}</span>
-          <Link
-            {...sectionLink(lang, story.theme)}
-            className="inline-flex min-h-8 shrink-0 items-center hover:text-ink"
-          >
-            {copy.themes[story.theme]}
-          </Link>
-          <span aria-hidden="true">{langMeta[lang].dir === "rtl" ? "‹" : "›"}</span>
-          <span className="min-w-0 truncate">{locale.title || story.locales.en.title}</span>
-        </nav>
+        <Trail
+          lang={lang}
+          here={locale.title || story.locales.en.title}
+          parent={(className) => (
+            <Link {...sectionLink(lang, story.theme)} className={className}>
+              {copy.themes[story.theme]}
+            </Link>
+          )}
+          className="reading-column -mb-3"
+        />
 
         <ReadingProgress start={readStart} end={readEnd} />
         <header ref={readStart} className="reading-column flex w-full flex-col gap-4">

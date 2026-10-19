@@ -1,9 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Shell } from "@/components/shell";
+import { Trail } from "@/components/trail";
 import { imageSet } from "@/lib/image-set";
-import { langMeta, useCopy } from "@/lib/i18n";
-import { homeLink, mediaLink, videoLink } from "@/lib/lang-path";
+import { langMeta } from "@/lib/i18n";
+import { mediaLink, videoLink } from "@/lib/lang-path";
 import { formatDate, paragraphs } from "@/lib/text";
 import type { Lang, Video, VideoCard } from "@/lib/types";
 import { useLang } from "@/lib/use-lang";
@@ -117,42 +118,29 @@ function historyPlace(): number | null {
  * On a video, "Videos" goes up, not forward: back to the list the reader came from, or in
  * the video's place, so the phone's back button then leaves the videos at once. */
 function VideoTrail({ lang, title }: { lang: Lang; title?: string }) {
-  const copy = useCopy(lang);
   const words = videoWords(lang);
-  const mark = langMeta[lang].dir === "rtl" ? "‹" : "›";
-  const crumb = "inline-flex min-h-8 shrink-0 items-center hover:text-ink";
+  if (!title) return <Trail lang={lang} here={words.videos} />;
   return (
-    <nav
-      aria-label={copy.trail}
-      className="no-print flex w-full min-w-0 items-center gap-2 text-xs text-muted"
-    >
-      <Link {...homeLink(lang)} className={crumb}>
-        {copy.home}
-      </Link>
-      <span aria-hidden="true">{mark}</span>
-      {title ? (
-        <>
-          <Link
-            {...mediaLink(lang)}
-            replace
-            onClick={(event) => {
-              const here = historyPlace();
-              if (here !== null && listPlace !== null && here === listPlace + 1) {
-                event.preventDefault();
-                window.history.back();
-              }
-            }}
-            className={crumb}
-          >
-            {words.videos}
-          </Link>
-          <span aria-hidden="true">{mark}</span>
-          <span className="min-w-0 truncate">{title}</span>
-        </>
-      ) : (
-        <span className="min-w-0 truncate">{words.videos}</span>
+    <Trail
+      lang={lang}
+      here={title}
+      parent={(className) => (
+        <Link
+          {...mediaLink(lang)}
+          replace
+          onClick={(event) => {
+            const here = historyPlace();
+            if (here !== null && listPlace !== null && here === listPlace + 1) {
+              event.preventDefault();
+              window.history.back();
+            }
+          }}
+          className={className}
+        >
+          {words.videos}
+        </Link>
       )}
-    </nav>
+    />
   );
 }
 

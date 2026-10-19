@@ -1,10 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Shell } from "@/components/shell";
+import { Trail } from "@/components/trail";
 import { buttonClass } from "@/components/members/account";
 import { membersOn } from "@/lib/members/config";
-import { useCopy } from "@/lib/i18n";
-import { accountLink, homeLink, legalLink, memberPageLink } from "@/lib/lang-path";
+import { accountLink, legalLink, memberPageLink } from "@/lib/lang-path";
 import { legalCopy } from "@/lib/legal-copy";
 import { pagesCopy } from "@/lib/members/pages-copy";
 import {
@@ -33,24 +33,21 @@ const outlineButton =
 function Page({
   title,
   lead,
+  parent,
   children,
 }: {
   title: string;
   lead: string;
+  /** A page between Home and this one in the trail at the top. */
+  parent?: (className: string) => React.ReactNode;
   children: React.ReactNode;
 }) {
   const lang = useLang();
-  const copy = useCopy(lang);
   return (
     <Shell>
       <main className="px-5 py-10 md:px-12 md:py-14">
         <div className="mx-auto flex max-w-3xl flex-col gap-8">
-          <Link
-            {...homeLink(lang)}
-            className="inline-flex min-h-11 items-center self-start text-sm text-pine"
-          >
-            {copy.back}
-          </Link>
+          <Trail lang={lang} here={title} parent={parent} className="-mb-3" />
           <header className="flex max-w-2xl flex-col gap-4">
             <h1 className="paper-title text-4xl font-bold leading-[1.08] md:text-5xl md:leading-[1.05]">
               {title}
@@ -287,7 +284,15 @@ export function PaymentPage() {
   );
 
   return (
-    <Page title={words.title} lead={words.lead}>
+    <Page
+      title={words.title}
+      lead={words.lead}
+      parent={(className) => (
+        <Link {...memberPageLink(lang, "membership")} className={className}>
+          {all.membership.title}
+        </Link>
+      )}
+    >
       <div className="grid gap-10 md:grid-cols-[minmax(0,1fr)_18rem] md:items-start">
         <div className="flex min-w-0 flex-col gap-10">
           <fieldset className="flex flex-col border-t border-line">

@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { Shell } from "@/components/shell";
+import { Trail } from "@/components/trail";
 import { EDITORIAL } from "@/lib/editorial";
-import { useCopy } from "@/lib/i18n";
-import { homeLink, legalLink } from "@/lib/lang-path";
+import { legalLink } from "@/lib/lang-path";
 import { LEGAL_PAGES, LEGAL_UPDATED, legalCopy, type LegalPage } from "@/lib/legal-copy";
 import { pagesCopy } from "@/lib/members/pages-copy";
 import { periodsFor, price } from "@/lib/members/plans";
@@ -27,18 +27,13 @@ function fill(text: string, lang: Lang): string {
 /** One legal page: title, date, numbered sections, and the other page at the foot. */
 export function LegalPageView({ page }: { page: LegalPage }) {
   const lang = useLang();
-  const copy = useCopy(lang);
   const all = legalCopy(lang);
   const doc = all[page];
   return (
     <Shell>
       <main className="px-5 py-10 md:px-12 md:py-14">
         <article className="mx-auto flex max-w-2xl flex-col gap-8">
-          <div className="flex items-center justify-between gap-4 text-sm">
-            <Link {...homeLink(lang)} className="inline-flex min-h-11 items-center text-pine">
-              {copy.back}
-            </Link>
-          </div>
+          <Trail lang={lang} here={doc.title} className="-mb-3" />
           <header className="flex flex-col gap-4">
             <h1 className="text-4xl md:text-5xl">{doc.title}</h1>
             <p className="text-pretty text-lg text-muted">{fill(doc.lead, lang)}</p>

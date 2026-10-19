@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useId, useState, type FormEvent, type ReactNode } from "react";
 import { Shell, fieldClass } from "@/components/shell";
+import { Trail } from "@/components/trail";
 import { membersOn } from "@/lib/members/config";
 import { errorText, membersCopy } from "@/lib/members/copy";
 import { pagesCopy } from "@/lib/members/pages-copy";
@@ -35,6 +36,7 @@ export function AccountPage() {
     <Shell>
       <main className="px-5 py-10 md:px-12 md:py-14">
         <div className="mx-auto flex max-w-xl flex-col gap-8">
+          <Trail lang={lang} here={words.account} className="-mb-3" />
           <div className="flex items-center justify-between gap-4">
             <h1 className="text-3xl md:text-4xl">{words.account}</h1>
           </div>
