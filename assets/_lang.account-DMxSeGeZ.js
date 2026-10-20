@@ -1,1 +1,0 @@
-import{t as e}from"./account-P_0xFURU.js";var t=e;export{t as component};
