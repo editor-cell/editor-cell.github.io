@@ -215,31 +215,39 @@ export function ReadingPlayer({
     <div className="reading-player w-full min-w-0">
       {/* One line, always: the seek line gives up width before anything moves down. */}
       <div className="flex w-full min-w-0 flex-nowrap items-center gap-x-1.5 sm:gap-x-3">
-        <button
-          type="button"
-          onClick={() => void toggle()}
-          aria-label={playing ? pause : listen}
-          className="inline-flex h-8 shrink-0 items-center justify-center gap-x-2.5 text-ink sm:justify-start"
-        >
-          {/* A filled round button in the accent, as on the listening apps: the one control
-              the eye finds first. The triangle sits a hair right of centre to look centred. */}
-          <span aria-hidden="true" className="play-disc size-8">
+        {/* Back · play · ahead as one group, as on the listening apps: the play button, filled
+            in the accent and a size larger, between the two turning arrows. */}
+        <div className="flex shrink-0 items-center gap-x-0.5 sm:gap-x-1">
+          <SkipButton direction="back" label={back} onClick={() => skip(-SKIP_SECONDS)} />
+          <button
+            type="button"
+            onClick={() => void toggle()}
+            aria-label={playing ? pause : listen}
+            className="play-disc size-9"
+          >
+            {/* The triangle sits a hair right of centre to look centred. */}
             {playing ? (
-              <Pause className="size-3.5" fill="currentColor" strokeWidth={0} />
+              <Pause className="size-4" fill="currentColor" strokeWidth={0} aria-hidden="true" />
             ) : (
               <Play
-                className="ms-0.5 size-3.5 rtl:-scale-x-100"
+                className="ms-0.5 size-4 rtl:-scale-x-100"
                 fill="currentColor"
                 strokeWidth={0}
+                aria-hidden="true"
               />
             )}
-          </span>
-          {/* On a phone the word gives its room to the PDF and share marks on the same line. */}
-          <span className="hidden text-[11px] uppercase tracking-[0.18em] sm:inline">
-            {playing ? pause : listen}
-          </span>
-        </button>
-        <SkipButton direction="back" label={back} onClick={() => skip(-SKIP_SECONDS)} />
+          </button>
+          <SkipButton direction="ahead" label={ahead} onClick={() => skip(SKIP_SECONDS)} />
+        </div>
+        {/* The word, beside the group on a wide screen; on a phone it gives its room to the
+            PDF and share marks on the same line. The button above already carries it. */}
+        <span
+          aria-hidden="true"
+          onClick={() => void toggle()}
+          className="hidden shrink-0 cursor-pointer text-[11px] uppercase tracking-[0.18em] text-ink sm:inline"
+        >
+          {playing ? pause : listen}
+        </span>
         <div className="seek-line">
           <div className="seek-rule" aria-hidden="true">
             <span className="seek-fill" style={{ width: pct }} />
@@ -257,7 +265,6 @@ export function ReadingPlayer({
             onChange={(event) => seek(Number(event.target.value))}
           />
         </div>
-        <SkipButton direction="ahead" label={ahead} onClick={() => skip(SKIP_SECONDS)} />
         <span dir="ltr" className="shrink-0 text-[11px] tabular-nums tracking-wide text-muted">
           {fmt(progress)}
           <span className="px-1 text-rule" aria-hidden="true">
