@@ -1455,6 +1455,176 @@ button.play-disc:active {
   cursor: pointer;
 }
 
+/* ---------- The panel at the foot of the screen (October 2026) ----------
+   Listening and films play in one kind of panel: a black band like the masthead, in every
+   scheme, cream type, the accent burgundy for the play button and a lighter rose for the
+   part already heard or seen, so it reads on black. One at a time. */
+.dock {
+  --color-ink: #f4efe6;
+  --color-paper: #0c0c0c;
+  --color-sheet: #0c0c0c;
+  --color-muted: #a8a39a;
+  --color-rule: #5a5a5a;
+  --color-line: rgb(255 255 255 / 0.14);
+  --color-mist: rgb(255 255 255 / 0.25);
+  --color-pine: #d07a8a;
+  border-top: 1px solid #262626;
+  background: #0c0c0c;
+  color: #f4efe6;
+  transition:
+    transform 350ms cubic-bezier(0.22, 0.7, 0.2, 1),
+    visibility 0s;
+}
+
+.dock .play-disc {
+  background: #7a2a3a;
+  color: #f4efe6;
+}
+
+.dock .seek-fill,
+.dock .seek-knob {
+  background: var(--color-pine);
+}
+
+.dock .seek-knob {
+  box-shadow: 0 0 0 2px #0c0c0c;
+}
+
+/* The film's panel waits off screen, empty, until a film is started. */
+.dock.is-idle {
+  visibility: hidden;
+  transform: translateY(100%);
+  pointer-events: none;
+}
+
+/* Folded: the part heard or seen runs along the top edge of the strip. */
+.dock-progress {
+  position: absolute;
+  top: -1px;
+  inset-inline-start: 0;
+  height: 2px;
+  background: var(--color-pine);
+}
+
+.dock-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  color: var(--color-muted);
+  transition: color 150ms ease;
+}
+
+.dock-icon:hover {
+  color: var(--color-ink);
+}
+
+/* The reading's picture (or the film's still), small, at the start of the strip. */
+.dock-thumb {
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 2px;
+  background: #222;
+}
+
+.listen-bar .dock-thumb {
+  width: 3rem;
+  height: 3rem;
+}
+
+.video-dock .dock-thumb {
+  width: 4.5rem;
+  aspect-ratio: 16 / 9;
+}
+
+/* Open, the big play button in the middle (listening) or the film's own bar (films) does
+   the playing; the strip keeps its play button and the film its still for when folded. */
+.dock.is-open .dock-play,
+.video-dock.is-open .dock-thumb {
+  display: none;
+}
+
+/* The listening controls fold away under the strip. */
+.dock-more {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 350ms cubic-bezier(0.22, 0.7, 0.2, 1);
+}
+
+.dock.is-folded .dock-more {
+  grid-template-rows: 0fr;
+}
+
+.dock-more > * {
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* The film's screen unrolls from the top of the band like a projection screen pulled down
+   from its roller: the band rises as the picture comes down into view, top first. */
+.dock-screen {
+  position: relative;
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 650ms cubic-bezier(0.22, 0.7, 0.2, 1);
+}
+
+.video-dock.is-open .dock-screen {
+  grid-template-rows: 1fr;
+}
+
+.dock-roll {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.dock-roll > .film {
+  box-shadow: none;
+}
+
+/* The roller: a dark rod along the top of the screen. */
+.dock-screen::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  inset-inline: 0;
+  z-index: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(to bottom, #4a4a4a, #1a1a1a);
+  opacity: 0;
+  transition: opacity 300ms ease;
+  pointer-events: none;
+}
+
+.video-dock.is-open .dock-screen::before {
+  opacity: 1;
+}
+
+/* The still on a video's page while its film plays in the panel. */
+.film-here {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 0.6rem 0.75rem;
+  background: rgb(0 0 0 / 0.6);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+.film-still {
+  cursor: pointer;
+}
+
+.film-still:hover .film-start-ring,
+.film-still:focus-visible .film-start-ring {
+  transform: scale(1.08);
+  background: rgb(110 36 50);
+}
+
 /* The search field's hint is set in italic so it reads as a hint, not as typed text. */
 .search-field::placeholder {
   font-style: italic;

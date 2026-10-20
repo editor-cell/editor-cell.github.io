@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Film } from "@/components/film";
+import { VideoStart } from "@/components/video-dock";
 import { Shell } from "@/components/shell";
 import { Trail } from "@/components/trail";
 import { imageSet } from "@/lib/image-set";
@@ -231,12 +231,15 @@ export function VideoPage({ video }: { video: Video | null }) {
                 ) : null}
                 <p className="text-sm text-muted">{formatDate(video.date, lang)}</p>
               </div>
-              <Film
-                src={video.src}
-                poster={video.poster}
-                length={video.duration}
-                label={copy.title}
-                lang={lang}
+              <VideoStart
+                clip={{
+                  id: video.id,
+                  lang,
+                  title: copy.title,
+                  src: video.src,
+                  poster: video.poster,
+                  duration: video.duration,
+                }}
                 className="-mx-5 w-[calc(100%+2.5rem)] max-w-none md:mx-0 md:w-full md:max-w-full"
               />
               {transcript.length ? (

@@ -47,8 +47,11 @@ export function Film({
   length = 0,
   preload = "metadata",
   className = "",
+  bare = false,
+  onScreen,
 }: {
-  src: string;
+  /** Left out in the panel at the foot of the page, which sets the film itself. */
+  src?: string;
   poster?: string;
   /** The length in seconds as the video's file gives it, until the film reports its own. */
   length?: number;
@@ -56,6 +59,10 @@ export function Film({
   lang: Lang;
   preload?: "metadata" | "none";
   className?: string;
+  /** No start screen: the film is started from outside (the panel's screen). */
+  bare?: boolean;
+  /** Receives the video element once it is on the page. */
+  onScreen?: (el: HTMLVideoElement | null) => void;
 }) {
   const words = videoWords(lang);
   const box = useRef<HTMLDivElement | null>(null);
@@ -78,6 +85,13 @@ export function Film({
   const run = useRef<{ side: Side; until: number } | null>(null);
   const jumpTimer = useRef<number | undefined>(undefined);
   const barShown = useRef(false);
+
+  useEffect(() => {
+    onScreen?.(film.current);
+    return () => onScreen?.(null);
+    // Handed over once: the element lives as long as the player.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const onStart = (event: Event) => {
@@ -267,6 +281,12 @@ export function Film({
           setPlaying(false);
           wake(true);
         }}
+        onLoadStart={() => {
+          // A new film: no old time, length or failure carried over.
+          setFailed(false);
+          setTime(0);
+          setReported(0);
+        }}
         onTimeUpdate={(event) => setTime(event.currentTarget.currentTime)}
         onLoadedMetadata={(event) => {
           const d = event.currentTarget.duration;
@@ -279,7 +299,7 @@ export function Film({
         onError={() => setFailed(true)}
       />
 
-      {!started ? (
+      {!started && !bare ? (
         <button
           type="button"
           onClick={() => void toggle()}

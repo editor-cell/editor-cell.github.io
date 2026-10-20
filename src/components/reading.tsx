@@ -1,7 +1,7 @@
 import { imageSizes } from "@/lib/breakpoints";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Film } from "@/components/film";
+import { VideoStart } from "@/components/video-dock";
 import { ListenButton } from "@/components/player";
 import { DocumentChain } from "@/components/atlas";
 import { Prose } from "@/components/prose";
@@ -245,6 +245,7 @@ function Reading({ story }: { story: Story | null }) {
                   lang,
                   title: locale.title || story.locales.en.title,
                   src: locale.audio.dataUrl,
+                  image: story.image?.src,
                 }}
                 listen={copy.listen}
                 pause={copy.pause}
@@ -272,11 +273,14 @@ function Reading({ story }: { story: Story | null }) {
             shows the video in the picture's place; the picture stays on the cards. */}
         {story.video ? (
           <figure className="flex max-w-full flex-col gap-2">
-            <Film
-              src={story.video.src}
-              preload="none"
-              label={videoCaption || AI_VIDEO_NOTE[lang]}
-              lang={lang}
+            <VideoStart
+              clip={{
+                id: story.id,
+                lang,
+                title: videoCaption || locale.title || story.locales.en.title,
+                src: story.video.src,
+                reading: true,
+              }}
               className="w-full max-w-full"
             />
             <figcaption className="text-xs leading-snug text-muted">

@@ -48,7 +48,9 @@ export function CardListen({ story, lang }: { story: StoryCard; lang: Lang }) {
       <span aria-hidden="true" className="text-muted">
         {" · "}
       </span>
-      <ListenMark clip={{ id: story.id, lang, title: storyTitle(story, lang), src }} />
+      <ListenMark
+        clip={{ id: story.id, lang, title: storyTitle(story, lang), src, image: story.image?.src }}
+      />
     </>
   );
 }

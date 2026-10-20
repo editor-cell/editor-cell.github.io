@@ -7,6 +7,7 @@ import {
   useRouterState,
 } from "@tanstack/react-router";
 import { ListenBar } from "@/components/listen-bar";
+import { VideoDock } from "@/components/video-dock";
 import { NotFoundPage } from "@/components/not-found";
 import { langMeta } from "@/lib/i18n";
 import { LANG_BOOT, langFromPath } from "@/lib/lang-path";
@@ -102,8 +103,9 @@ function RootDocument() {
       </head>
       <body>
         <Outlet />
-        {/* Listening started from a card keeps playing from page to page. */}
+        {/* Listening and films keep playing from page to page, in their panel at the foot. */}
         {path.startsWith("/panel") ? null : <ListenBar />}
+        {path.startsWith("/panel") ? null : <VideoDock />}
         <Scripts />
       </body>
     </html>

@@ -73,6 +73,12 @@ export type VideoWords = {
   failed: string;
   /** After the number of a jump made by double taps: "10 seconds". */
   seconds: string;
+  /** The panel at the foot of the page (the film's, and the listening bar's). */
+  foldPanel: string;
+  openPanel: string;
+  closeFilm: string;
+  /** On a video's still while the film plays in the panel. */
+  inPanel: string;
 };
 
 const WORDS: Record<Lang, VideoWords> = {
@@ -95,6 +101,10 @@ const WORDS: Record<Lang, VideoWords> = {
     exitFullscreen: "Tam ekrandan çık",
     failed: "Video oynatılamadı. Bağlantınızı kontrol edip yeniden deneyin.",
     seconds: "saniye",
+    foldPanel: "Paneli küçült",
+    openPanel: "Paneli aç",
+    closeFilm: "Videoyu kapat",
+    inPanel: "Aşağıdaki panelde oynuyor",
   },
   en: {
     videos: "Videos",
@@ -115,6 +125,10 @@ const WORDS: Record<Lang, VideoWords> = {
     exitFullscreen: "Exit full screen",
     failed: "The video could not be played. Check your connection and try again.",
     seconds: "seconds",
+    foldPanel: "Fold the panel",
+    openPanel: "Open the panel",
+    closeFilm: "Close the video",
+    inPanel: "Playing in the panel below",
   },
   ar: {
     videos: "الفيديوهات",
@@ -135,6 +149,10 @@ const WORDS: Record<Lang, VideoWords> = {
     exitFullscreen: "الخروج من ملء الشاشة",
     failed: "تعذّر تشغيل الفيديو. تحقّق من الاتصال وحاول مرة أخرى.",
     seconds: "ثانية",
+    foldPanel: "تصغير اللوحة",
+    openPanel: "فتح اللوحة",
+    closeFilm: "إغلاق الفيديو",
+    inPanel: "يُعرض في اللوحة أدناه",
   },
   fr: {
     videos: "Vidéos",
@@ -155,6 +173,10 @@ const WORDS: Record<Lang, VideoWords> = {
     exitFullscreen: "Quitter le plein écran",
     failed: "La vidéo n’a pas pu être lue. Vérifiez votre connexion et réessayez.",
     seconds: "secondes",
+    foldPanel: "Réduire le panneau",
+    openPanel: "Ouvrir le panneau",
+    closeFilm: "Fermer la vidéo",
+    inPanel: "En lecture dans le panneau ci-dessous",
   },
   es: {
     videos: "Vídeos",
@@ -175,6 +197,10 @@ const WORDS: Record<Lang, VideoWords> = {
     exitFullscreen: "Salir de pantalla completa",
     failed: "No se pudo reproducir el vídeo. Compruebe su conexión e inténtelo de nuevo.",
     seconds: "segundos",
+    foldPanel: "Plegar el panel",
+    openPanel: "Abrir el panel",
+    closeFilm: "Cerrar el vídeo",
+    inPanel: "Se reproduce en el panel de abajo",
   },
 };
 
