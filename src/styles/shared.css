@@ -109,8 +109,8 @@ body {
 .masthead-name {
   font-family: "Bodoni Moda", "Times New Roman", serif;
   font-weight: 700;
-  font-optical-sizing: auto;
-  font-variation-settings: normal;
+  font-optical-sizing: none;
+  font-variation-settings: "opsz" 11;
   letter-spacing: 0.06em;
 }
 
@@ -131,11 +131,13 @@ body {
 }
 
 /* Front page card titles. Size is set in the markup per card. Bodoni is bold at most (its
-   heavier cuts turn into a fat face) and set a shade tight, as Bodoni titles are. */
+   heavier cuts turn into a fat face) and set a shade tight, as Bodoni titles are. At every
+   size it takes the cut drawn for small type (opsz 11): at its own large-size cut the
+   hairlines vanish in the glare of white paper (the owner, 20 Oct 2026). */
 .paper-title {
   font-family: "Bodoni Moda", "Times New Roman", serif;
-  font-optical-sizing: auto;
-  font-variation-settings: normal;
+  font-optical-sizing: none;
+  font-variation-settings: "opsz" 11;
   letter-spacing: -0.015em;
 }
 
@@ -178,6 +180,8 @@ body {
   float: left;
   margin: 0.08em 0.1em 0 0;
   font-family: "Bodoni Moda", "Times New Roman", serif;
+  font-optical-sizing: none;
+  font-variation-settings: "opsz" 11;
   font-size: 3.55em;
   font-weight: 700;
   line-height: 0.82;
@@ -545,6 +549,8 @@ body {
   h2,
   h3 {
     font-family: "Bodoni Moda", "Times New Roman", serif;
+    font-optical-sizing: none;
+    font-variation-settings: "opsz" 11;
     font-weight: 700;
     line-height: 1.15;
     letter-spacing: -0.015em;
