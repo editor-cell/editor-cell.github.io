@@ -83,7 +83,9 @@ launch day, set `TRIAL` to false.
 Design and code changes go in their own commits, after `npm run typecheck`,
 `npm run test:site` and `npm run build:pages`, and a look at the built pages at phone
 (390 px) and desktop (1280 px) width. A fix for the phone must not change the desktop
-layout, and the other way round.
+layout, and the other way round. The owner wants the two to match: the same controls, in the
+same order, working the same way on a phone and a desktop (20 Oct 2026); only what the
+width itself forces (a line that wraps, a pointer instead of a finger) may differ.
 
 Media has one source: repository-root `images/`, `audio/`, `videos/`. Do not add copies
 under `public/`. Vite emits these files at their existing root URLs. Both content checks
