@@ -1,0 +1,1 @@
+import{r as e}from"./pages-DAPH0xff.js";var t=e;export{t as component};
