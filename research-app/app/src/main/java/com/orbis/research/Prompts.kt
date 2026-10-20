@@ -5,8 +5,6 @@ package com.orbis.research
  * against the real model. The model's answers only steer the search; they are never shown as text.
  */
 object Prompts {
-    const val NO_THINK = "/no_think"
-
     const val TRANSLATE_SYSTEM = "You are a professional Turkish-English translator. You translate a statement into " +
         "accurate English, keeping every term's exact meaning. Output only the translation."
     fun translate(claim: String) = "Translate into English. If it is already English, repeat it unchanged.\n\n" +
@@ -14,9 +12,12 @@ object Prompts {
         "Translation: In countries that raised tobacco taxes, smoking rates fell.\n\n" +
         "$claim\nTranslation:"
 
-    /** Qwen3 thinks aloud unless told not to; other models get the message as it is. */
-    fun forModel(modelPath: String, user: String) =
-        if (modelPath.contains("qwen3", ignoreCase = true)) "$user $NO_THINK" else user
+    /**
+     * The start of the model's answer. Qwen3 thinks aloud first; an empty thinking block, as its
+     * own template writes when thinking is off, makes it answer at once.
+     */
+    fun answerPrefix(modelPath: String) =
+        if (modelPath.contains("qwen3", ignoreCase = true)) "<think>\n\n</think>\n\n" else ""
 
     const val PHRASES_SYSTEM = "You write search keywords for a library of official reports, statistics and research papers."
     fun phrases(english: String) = "Claim: $english\n\nWrite 6 short English search phrases (2 to 4 words each) that the documents " +

@@ -103,11 +103,12 @@ Java_com_orbis_research_LlmNative_nativeFree(JNIEnv *, jobject, jlong handle) {
     delete e;
 }
 
-// Runs system + user messages through the model's chat template and generates at most
-// maxTokens tokens, greedily. A non-empty grammar (GBNF) restricts what can be produced.
+// Runs system + user messages through the model's chat template, appends [prefix] as the start
+// of the model's answer, and generates at most maxTokens tokens, greedily. A non-empty grammar
+// (GBNF) restricts what can be produced.
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_orbis_research_LlmNative_nativeGenerate(JNIEnv * env, jobject, jlong handle, jstring jsys,
-                                           jstring juser, jstring jgrammar, jint maxTokens) {
+                                           jstring juser, jstring jgrammar, jstring jprefix, jint maxTokens) {
     auto * e = (Engine *) handle;
     if (!e) return nullptr;
     std::string sys = jstr(env, jsys), user = jstr(env, juser), grammar = jstr(env, jgrammar);
@@ -125,6 +126,7 @@ Java_com_orbis_research_LlmNative_nativeGenerate(JNIEnv * env, jobject, jlong ha
     }
     if (n < 0) return nullptr;
     std::string prompt(buf.data(), n);
+    prompt += jstr(env, jprefix);
 
     const int n_ctx = (int) llama_n_ctx(e->ctx);
     std::vector<llama_token> toks(prompt.size() + 16);

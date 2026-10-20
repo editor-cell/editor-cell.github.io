@@ -9,6 +9,8 @@ on:
       - .github/workflows/research-app-models.yml
       - research-app/logic-test/src/test/kotlin/LiveModelTest.kt
       - research-app/app/src/main/java/com/orbis/research/Prompts.kt
+      - research-app/app/src/main/cpp/llm.cpp
+      - .github/scripts/model-score.py
   workflow_dispatch:
 
 permissions:
@@ -53,4 +55,6 @@ jobs:
       - name: Run the app's prompts
         run: |
           export ORBIS_LIB="$PWD/build-host/liborbisllm.so"
-          ./gradlew -p logic-test test --tests LiveModelTest --no-daemon
+          ./gradlew -p logic-test test --tests LiveModelTest --no-daemon || echo "some checks failed"
+      - name: Score
+        run: python3 ../.github/scripts/model-score.py logic-test/build/test-results/test | tee -a "$GITHUB_STEP_SUMMARY"

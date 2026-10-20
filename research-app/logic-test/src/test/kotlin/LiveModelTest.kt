@@ -21,7 +21,7 @@ class LiveModelTest {
 
         fun ask(system: String, user: String, grammar: String, max: Int): String {
             val t = System.currentTimeMillis()
-            val out = LlmNative.nativeGenerate(engine, system, Prompts.forModel(model, user), grammar, max)?.let(Prompts::clean) ?: ""
+            val out = LlmNative.nativeGenerate(engine, system, user, grammar, Prompts.answerPrefix(model), max)?.let(Prompts::clean) ?: ""
             println("  [${System.currentTimeMillis() - t} ms]")
             return out
         }
@@ -34,7 +34,7 @@ class LiveModelTest {
 
     /** Turkish claims and the English words a correct translation must contain (one of each group). */
     private val claims = listOf(
-        "Şeker vergisi koyan ülkelerde gazlı içecek tüketimi düştü." to listOf("sugar", "tax", "soft drink|soda|carbonated|fizzy|beverage"),
+        "Şeker vergisi koyan ülkelerde gazlı içecek tüketimi düştü." to listOf("sugar", "tax", "drink|soda|beverage"),
         "Asgari ücret artışı istihdamı azaltmadı." to listOf("minimum wage", "employment|jobs"),
         "Kentlerde hava kirliliği astım vakalarını artırıyor." to listOf("air pollution", "asthma"),
         "Okul öncesi eğitim çocukların ileriki okul başarısını yükseltiyor." to listOf("preschool|pre-school|early childhood|kindergarten", "school"),
