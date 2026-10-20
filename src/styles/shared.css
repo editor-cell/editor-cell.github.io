@@ -1174,6 +1174,11 @@ a.group:not(.atlas-own):has(.paper-title) > div.flex.flex-col > p.tabular-nums {
   }
 }
 
+/* The phone's times of the reading player; on a wide screen the times sit on the line. */
+.listen-ends {
+  display: none;
+}
+
 /* ---------- Players (October 2026) ----------
    The round play button of both listening players: filled with the accent, the triangle in
    the paper's colour, so it reads in the classic and the night scheme alike. */

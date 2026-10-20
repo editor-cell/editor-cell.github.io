@@ -245,11 +245,13 @@ export function ReadingPlayer({
 
   return (
     <div className="reading-player w-full min-w-0">
-      {/* One line, always: the seek line gives up width before anything moves down. */}
-      <div className="flex w-full min-w-0 flex-nowrap items-center gap-x-1.5 sm:gap-x-3">
+      {/* Wide screen: one line, the seek line giving up width before anything moves down.
+          Phone (mobile.css): stacked as in the bar at the foot of the screen, the seek line
+          the full width, the times under its ends, then the speed and the group of keys. */}
+      <div className="listen-row flex w-full min-w-0 flex-nowrap items-center gap-x-1.5 sm:gap-x-3">
         {/* Back · play · ahead as one group, as on the listening apps: the play button, filled
             in the accent and a size larger, between the two turning arrows. */}
-        <div className="flex shrink-0 items-center gap-x-0.5 sm:gap-x-1">
+        <div className="listen-keys flex shrink-0 items-center gap-x-0.5 sm:gap-x-1">
           <SkipButton direction="back" label={back} onClick={() => view.skip(-SKIP_SECONDS)} />
           <button
             type="button"
@@ -276,7 +278,7 @@ export function ReadingPlayer({
         <span
           aria-hidden="true"
           onClick={() => void view.toggle()}
-          className="hidden shrink-0 cursor-pointer text-[11px] uppercase tracking-[0.18em] text-ink sm:inline"
+          className="listen-word hidden shrink-0 cursor-pointer text-[11px] uppercase tracking-[0.18em] text-ink sm:inline"
         >
           {view.playing ? pause : listen}
         </span>
@@ -297,14 +299,26 @@ export function ReadingPlayer({
             onChange={(event) => view.seek(Number(event.target.value))}
           />
         </div>
-        <span dir="ltr" className="shrink-0 text-[11px] tabular-nums tracking-wide text-muted">
+        <span
+          dir="ltr"
+          className="listen-time shrink-0 text-[11px] tabular-nums tracking-wide text-muted"
+        >
           {fmt(view.progress)}
           <span className="px-1 text-rule" aria-hidden="true">
             —
           </span>
           {fmt(view.duration)}
         </span>
-        <span className="inline-flex shrink-0">
+        {/* The phone's times, under the two ends of the seek line: heard, and still to go. */}
+        <span
+          dir="ltr"
+          aria-hidden="true"
+          className="listen-ends text-[11px] tabular-nums tracking-wide text-muted"
+        >
+          <span>{fmt(view.progress)}</span>
+          <span>−{fmt(Math.max(0, view.duration - view.progress))}</span>
+        </span>
+        <span className="listen-speed inline-flex shrink-0">
           <Pick
             tone="page"
             align="end"
