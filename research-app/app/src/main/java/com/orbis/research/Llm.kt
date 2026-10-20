@@ -33,12 +33,8 @@ object Llm {
         handle = 0L; loadedPath = null
     }
 
-    /** Qwen3 thinks aloud unless told not to; its thoughts are dropped from the answer. */
     suspend fun generate(system: String, user: String, grammar: String = "", maxTokens: Int = 64): String? = lock.withLock {
         if (handle == 0L) return@withLock null
-        val thinks = loadedPath?.contains("qwen3", ignoreCase = true) == true
-        val u = if (thinks) "$user ${Prompts.NO_THINK}" else user
-        LlmNative.nativeGenerate(handle, system, u, grammar, maxTokens)
-            ?.replace(Regex("(?s)<think>.*?</think>"), "")?.trim()
+        LlmNative.nativeGenerate(handle, system, Prompts.forModel(loadedPath ?: "", user), grammar, maxTokens)?.let(Prompts::clean)
     }
 }

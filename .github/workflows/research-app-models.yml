@@ -1,0 +1,56 @@
+name: Research app (model comparison)
+
+# Runs the app's prompts on several free, open models: Turkish claims translated correctly,
+# paragraphs labelled correctly, and how long each takes. Used to choose the models the app offers.
+on:
+  push:
+    branches: [ccr-b3ffb058-472a31]
+    paths:
+      - .github/workflows/research-app-models.yml
+      - research-app/logic-test/src/test/kotlin/LiveModelTest.kt
+      - research-app/app/src/main/java/com/orbis/research/Prompts.kt
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compare:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        model:
+          - https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q4_k_m.gguf
+          - https://huggingface.co/unsloth/Qwen3-1.7B-GGUF/resolve/main/Qwen3-1.7B-Q4_K_M.gguf
+          - https://huggingface.co/Qwen/Qwen3-4B-GGUF/resolve/main/Qwen3-4B-Q4_K_M.gguf
+          - https://huggingface.co/ggml-org/gemma-3-1b-it-GGUF/resolve/main/gemma-3-1b-it-Q4_K_M.gguf
+          - https://huggingface.co/ggml-org/gemma-3-4b-it-GGUF/resolve/main/gemma-3-4b-it-Q4_K_M.gguf
+    defaults:
+      run:
+        working-directory: research-app
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+      - run: ./fetch-llama.sh
+      - name: Build the model bridge
+        run: |
+          cmake -S app/src/main/cpp -B build-host -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF \
+            -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_TOOLS=OFF \
+            -DLLAMA_BUILD_EXAMPLES=OFF -DLLAMA_BUILD_SERVER=OFF -DLLAMA_BUILD_COMMON=OFF -DLLAMA_BUILD_APP=OFF \
+            -DLLAMA_CURL=OFF -DLLAMA_OPENSSL=OFF > /dev/null
+          cmake --build build-host -j4 --target orbisllm
+      - name: Fetch the model
+        run: |
+          name=$(basename "${{ matrix.model }}")
+          curl -fsSL -o ~/"$name" "${{ matrix.model }}"
+          ls -la ~/"$name"
+          echo "ORBIS_MODEL=$HOME/$name" >> "$GITHUB_ENV"
+      - name: Run the app's prompts
+        run: |
+          export ORBIS_LIB="$PWD/build-host/liborbisllm.so"
+          ./gradlew -p logic-test test --tests LiveModelTest --no-daemon

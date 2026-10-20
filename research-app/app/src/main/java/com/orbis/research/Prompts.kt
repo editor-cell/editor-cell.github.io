@@ -7,8 +7,16 @@ package com.orbis.research
 object Prompts {
     const val NO_THINK = "/no_think"
 
-    const val TRANSLATE_SYSTEM = "You translate short statements into English. Output only the translation, nothing else."
-    fun translate(claim: String) = "Translate into English. If it is already English, repeat it unchanged:\n\n$claim"
+    const val TRANSLATE_SYSTEM = "You are a professional Turkish-English translator. You translate a statement into " +
+        "accurate English, keeping every term's exact meaning. Output only the translation."
+    fun translate(claim: String) = "Translate into English. If it is already English, repeat it unchanged.\n\n" +
+        "Example: Tütün vergisini artıran ülkelerde sigara içme oranı azaldı.\n" +
+        "Translation: In countries that raised tobacco taxes, smoking rates fell.\n\n" +
+        "$claim\nTranslation:"
+
+    /** Qwen3 thinks aloud unless told not to; other models get the message as it is. */
+    fun forModel(modelPath: String, user: String) =
+        if (modelPath.contains("qwen3", ignoreCase = true)) "$user $NO_THINK" else user
 
     const val PHRASES_SYSTEM = "You write search keywords for a library of official reports, statistics and research papers."
     fun phrases(english: String) = "Claim: $english\n\nWrite 6 short English search phrases (2 to 4 words each) that the documents " +
@@ -18,7 +26,8 @@ object Prompts {
     /** Drops the thinking block Qwen3 may write before its answer. */
     fun clean(raw: String) = raw.replace(Regex("(?s)<think>.*?</think>"), "").trim()
 
-    fun firstLine(raw: String?) = raw?.lines()?.firstOrNull { it.isNotBlank() }?.trim()?.trim('"')
+    fun firstLine(raw: String?) = raw?.lines()?.firstOrNull { it.isNotBlank() }?.trim()
+        ?.removePrefix("Translation:")?.trim()?.trim('"')
 
     private val stop = setOf(
         "the", "and", "for", "that", "with", "from", "this", "those", "these", "are", "was", "were", "has", "have",
@@ -35,7 +44,7 @@ object Prompts {
             .distinct().toList()
 
     const val PHRASES_GRAMMAR = "root ::= line line line line? line? line? line? line?\n" +
-        "line ::= [a-zA-Z0-9] [a-zA-Z0-9 '-]{1,48} \"\\n\""
+        "line ::= [a-zA-Z] [a-zA-Z0-9 '-]{1,48} \"\\n\""
 
     const val JUDGE_GRAMMAR = "root ::= \"SUPPORTS\" | \"CONTRADICTS\" | \"UNRELATED\""
 
