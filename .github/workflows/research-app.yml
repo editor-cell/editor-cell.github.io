@@ -1,0 +1,76 @@
+name: Research app (APK)
+
+# Builds the Orbis Araştırma Android app and puts the APK on a release page the owner can open
+# from the phone. It never touches the site: the site is published only by "Publish site".
+on:
+  push:
+    branches: [main, ccr-b3ffb058-472a31]
+    paths:
+      - research-app/**
+      - .github/workflows/research-app.yml
+  workflow_dispatch:
+
+concurrency:
+  group: research-app-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: research-app
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+
+      # Every model the app offers must still be downloadable where the app looks for it.
+      - name: Check the model addresses
+        run: |
+          grep -oE 'https://huggingface.co/[^"]+\.gguf' app/src/main/java/com/orbis/research/Models.kt | while read -r url; do
+            code=$(curl -s -o /dev/null -I -L -w '%{http_code}' "$url")
+            echo "$code $url"
+            [ "$code" = "200" ] || exit 1
+          done
+
+      - name: Test the reading logic
+        run: ./gradlew -p logic-test test --no-daemon
+
+      - name: Install the Android build tools
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "ndk;29.0.13113456" "cmake;3.31.6" "platforms;android-36" > /dev/null
+
+      - name: Fetch the language model engine (llama.cpp)
+        run: ./fetch-llama.sh
+
+      - name: Build the APK
+        env:
+          BUILD_NUMBER: ${{ github.run_number }}
+        run: |
+          ./gradlew assembleRelease --no-daemon
+          cp app/build/outputs/apk/release/app-release.apk orbis-arastirma.apk
+          ls -la orbis-arastirma.apk
+          unzip -l orbis-arastirma.apk | grep -E '\.so$'
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: orbis-arastirma-apk
+          path: research-app/orbis-arastirma.apk
+
+      - name: Put the APK on the release page
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="arastirma-v0.1.${{ github.run_number }}"
+          gh release create "$tag" orbis-arastirma.apk \
+            --target "${{ github.sha }}" \
+            --title "Orbis Araştırma 0.1.${{ github.run_number }}" \
+            --notes "Telefona kurmak için aşağıdaki orbis-arastirma.apk dosyasına dokunun."
