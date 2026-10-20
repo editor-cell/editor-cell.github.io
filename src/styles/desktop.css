@@ -737,3 +737,15 @@
     min-height: calc(3 * 1.4 * 0.92rem + 0.375rem);
   }
 }
+
+/* A reading on a wide screen: the text a size larger, so a line holds about 70 letters (a
+   comfortable measure; at the phone's size it held 85), and the standfirst above it grows
+   with it so it stays the larger of the two. On screen only: print keeps its own sizes. */
+@media screen and (--orbis-desktop) {
+  .reading-text {
+    font-size: 1.25rem;
+  }
+  .reading-dek {
+    font-size: 1.45rem;
+  }
+}

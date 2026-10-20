@@ -321,19 +321,23 @@ function Reading({ story }: { story: Story | null }) {
                     upLabel={copy.typeUp}
                   />
                 </div>
-                <div style={{ fontSize: `${TYPE_STEPS[typeStep]}em` }}>
-                  {twin && twinBody ? (
-                    <TwinProse
-                      main={body}
-                      twin={twinBody}
-                      mainLang={lang}
-                      twinLang={twin}
-                      sourceNums={sourceNums}
-                      sourceWord={copy.sourceWord}
-                    />
-                  ) : (
-                    <Prose body={body} sourceNums={sourceNums} sourceWord={copy.sourceWord} />
-                  )}
+                {/* The text's own size (larger on a wide screen, styles: .reading-text), times
+                    the reader's step. */}
+                <div className="reading-text">
+                  <div style={{ fontSize: `${TYPE_STEPS[typeStep]}em` }}>
+                    {twin && twinBody ? (
+                      <TwinProse
+                        main={body}
+                        twin={twinBody}
+                        mainLang={lang}
+                        twinLang={twin}
+                        sourceNums={sourceNums}
+                        sourceWord={copy.sourceWord}
+                      />
+                    ) : (
+                      <Prose body={body} sourceNums={sourceNums} sourceWord={copy.sourceWord} />
+                    )}
+                  </div>
                 </div>
               </div>
               {membersOnly && fullText === null ? <LockNote lang={lang} /> : null}
