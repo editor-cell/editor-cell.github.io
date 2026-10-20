@@ -1129,6 +1129,61 @@ a.group:not(.atlas-own):has(.paper-title) > div.flex.flex-col > p.tabular-nums {
   color: #fff;
   background: rgb(0 0 0 / 0.35);
   padding-inline-start: 2px;
+  transition:
+    background-color 300ms ease,
+    transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* A soft shadow keeps the triangle readable on a bright still. */
+.media-play > svg {
+  filter: drop-shadow(0 1px 3px rgb(0 0 0 / 0.35));
+}
+
+.media-still img {
+  transition: transform 450ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Pointing at a video (strip, list of videos): the still leans in a little, the ring warms
+   to the burgundy and grows, the title takes the accent colour. Nothing moves outside its
+   box, so the strip and the list keep their layout; a phone, which has no pointer, sees
+   none of it. */
+@media (hover: hover) {
+  a:hover > .media-still img {
+    transform: scale(1.04);
+  }
+  a:hover > .media-still .media-play {
+    background: rgb(110 36 50 / 0.75);
+    transform: scale(1.12);
+  }
+  a:has(> .media-still) .paper-title {
+    transition: color 200ms ease;
+  }
+  a:has(> .media-still):hover .paper-title {
+    color: var(--color-pine);
+  }
+}
+
+/* The film on its own page sits on a faint shadow; the keyboard ring is the burgundy. */
+main video {
+  box-shadow: 0 8px 32px rgb(12 12 12 / 0.08);
+}
+
+main video:focus-visible {
+  outline: 2px solid var(--color-pine);
+  outline-offset: 2px;
+}
+
+/* The search field's hint is set in italic so it reads as a hint, not as typed text. */
+.search-field::placeholder {
+  font-style: italic;
+}
+
+form[role="search"] {
+  transition: box-shadow 250ms ease;
+}
+
+form[role="search"]:focus-within {
+  box-shadow: 0 4px 24px rgb(12 12 12 / 0.06);
 }
 
 /* ---------- Twin reading (October 2026) ----------
