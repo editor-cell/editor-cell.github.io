@@ -1,6 +1,7 @@
 import { Pause, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Pick } from "@/components/pick";
+import * as bar from "@/lib/listen";
 import {
   AUDIO_EVENT,
   RATES,
@@ -8,6 +9,7 @@ import {
   announceStart,
   fmt,
   readRate,
+  useListen,
   writeRate,
 } from "@/lib/listen";
 import type { AudioClip } from "@/lib/types";
@@ -74,6 +76,16 @@ export function SkipButton({
 }
 
 const PLAYER = "reading";
+
+/** The same recording, whichever way its address is written. */
+function sameRecording(a: string, b: string) {
+  if (typeof window === "undefined") return a === b;
+  try {
+    return new URL(a, window.location.href).href === new URL(b, window.location.href).href;
+  } catch {
+    return a === b;
+  }
+}
 
 export function ReadingPlayer({
   clip,
@@ -208,7 +220,27 @@ export function ReadingPlayer({
     if (audio) audio.playbackRate = value;
   }
 
-  const span = duration > 0 ? Math.min(progress, duration) / duration : 0;
+  // This reading's recording already playing in the bar at the foot of the screen (started
+  // from a card): the player here shows where it is and steers it, instead of offering to
+  // start it again from the top.
+  const now = useListen();
+  const shared = now.clip !== null && sameRecording(now.clip.src, clip.dataUrl);
+  const view = shared
+    ? {
+        playing: now.playing,
+        progress: now.time,
+        duration: now.duration,
+        rate: now.rate,
+        error: now.error,
+        toggle: async () => bar.toggle(),
+        seek: bar.seek,
+        skip: bar.skip,
+        changeRate: bar.setRate,
+        tryAgain: bar.retry,
+      }
+    : { playing, progress, duration, rate, error, toggle, seek, skip, changeRate, tryAgain };
+
+  const span = view.duration > 0 ? Math.min(view.progress, view.duration) / view.duration : 0;
   const pct = `${span * 100}%`;
 
   return (
@@ -218,15 +250,15 @@ export function ReadingPlayer({
         {/* Back · play · ahead as one group, as on the listening apps: the play button, filled
             in the accent and a size larger, between the two turning arrows. */}
         <div className="flex shrink-0 items-center gap-x-0.5 sm:gap-x-1">
-          <SkipButton direction="back" label={back} onClick={() => skip(-SKIP_SECONDS)} />
+          <SkipButton direction="back" label={back} onClick={() => view.skip(-SKIP_SECONDS)} />
           <button
             type="button"
-            onClick={() => void toggle()}
-            aria-label={playing ? pause : listen}
+            onClick={() => void view.toggle()}
+            aria-label={view.playing ? pause : listen}
             className="play-disc size-9"
           >
             {/* The triangle sits a hair right of centre to look centred. */}
-            {playing ? (
+            {view.playing ? (
               <Pause className="size-4" fill="currentColor" strokeWidth={0} aria-hidden="true" />
             ) : (
               <Play
@@ -237,16 +269,16 @@ export function ReadingPlayer({
               />
             )}
           </button>
-          <SkipButton direction="ahead" label={ahead} onClick={() => skip(SKIP_SECONDS)} />
+          <SkipButton direction="ahead" label={ahead} onClick={() => view.skip(SKIP_SECONDS)} />
         </div>
         {/* The word, beside the group on a wide screen; on a phone it gives its room to the
             PDF and share marks on the same line. The button above already carries it. */}
         <span
           aria-hidden="true"
-          onClick={() => void toggle()}
+          onClick={() => void view.toggle()}
           className="hidden shrink-0 cursor-pointer text-[11px] uppercase tracking-[0.18em] text-ink sm:inline"
         >
-          {playing ? pause : listen}
+          {view.playing ? pause : listen}
         </span>
         <div className="seek-line">
           <div className="seek-rule" aria-hidden="true">
@@ -257,33 +289,33 @@ export function ReadingPlayer({
             className="seek"
             type="range"
             min={0}
-            max={duration || 0}
+            max={view.duration || 0}
             step={0.1}
-            value={Math.min(progress, duration || 0)}
+            value={Math.min(view.progress, view.duration || 0)}
             aria-label={listen}
-            aria-valuetext={`${fmt(progress)} / ${fmt(duration)}`}
-            onChange={(event) => seek(Number(event.target.value))}
+            aria-valuetext={`${fmt(view.progress)} / ${fmt(view.duration)}`}
+            onChange={(event) => view.seek(Number(event.target.value))}
           />
         </div>
         <span dir="ltr" className="shrink-0 text-[11px] tabular-nums tracking-wide text-muted">
-          {fmt(progress)}
+          {fmt(view.progress)}
           <span className="px-1 text-rule" aria-hidden="true">
             —
           </span>
-          {fmt(duration)}
+          {fmt(view.duration)}
         </span>
         <span className="inline-flex shrink-0">
           <Pick
             tone="page"
             align="end"
             label={speed}
-            value={String(rate)}
-            onChange={(value) => changeRate(Number(value))}
+            value={String(view.rate)}
+            onChange={(value) => view.changeRate(Number(value))}
             options={RATES.map((value) => ({ value: String(value), label: `${value}x` }))}
             buttonClassName="gap-1 py-0 text-[11px] tracking-widest text-muted"
           >
             <span dir="ltr" className="tabular-nums text-ink">
-              {rate}×
+              {view.rate}×
             </span>
             <span aria-hidden="true" className="text-[9px] leading-none">
               ▾
@@ -291,12 +323,12 @@ export function ReadingPlayer({
           </Pick>
         </span>
       </div>
-      {error ? (
+      {view.error ? (
         <p role="alert" className="flex flex-wrap items-center gap-x-3 text-sm text-muted">
           {failed}
           <button
             type="button"
-            onClick={tryAgain}
+            onClick={() => void view.tryAgain()}
             className="inline-flex min-h-11 items-center text-pine underline underline-offset-4"
           >
             {retry}
