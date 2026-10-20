@@ -47,10 +47,10 @@ export function visualCases() {
   return cases;
 }
 
-/** Faces every page uses: the text (Tinos). Since 15 Oct 2026 the name in the band is the
- * owner's drawn logo, not lettering, so Playfair Display is required only where a page asks
- * for it (a failed download still stops the check below). */
-export const REQUIRED_FACES = ["Tinos"];
+/** Faces every page uses: the text (Source Serif 4, since 20 Oct 2026; Tinos before). The
+ * name in the band is the owner's drawn logo, not lettering, so the title face (Bodoni Moda)
+ * is required only where a page asks for it (a failed download still stops the check below). */
+export const REQUIRED_FACES = ["Source Serif 4"];
 
 /**
  * Stops the check unless the site's real faces are on the page: every face the page asked

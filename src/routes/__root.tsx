@@ -19,7 +19,7 @@ import appCss from "../styles.css?url";
 // Only the families the stylesheet uses. Google serves Arabic in its own file, which a
 // browser fetches only when Arabic text is on screen.
 const FONTS =
-  "https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,600;6..96,700&family=Playfair+Display:wght@700;800&family=Source+Serif+4:opsz,wght@8..60,400..600&family=Tinos:ital,wght@0,400;0,700;1,400&family=Noto+Naskh+Arabic:wght@500;600&display=swap";
+  "https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&family=Noto+Naskh+Arabic:wght@500;600&display=swap";
 
 const FONT_BOOT = `(function(){var l=document.createElement("link");l.rel="stylesheet";l.href=${JSON.stringify(FONTS)};document.head.appendChild(l)})();`;
 

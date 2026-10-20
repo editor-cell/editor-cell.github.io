@@ -36,7 +36,7 @@ export async function fontRouter(cacheDir) {
   mkdirSync(cacheDir, { recursive: true });
   let online = false;
   try {
-    const res = await fetch("https://fonts.googleapis.com/css2?family=Tinos&display=swap", {
+    const res = await fetch("https://fonts.googleapis.com/css2?family=Source+Serif+4&display=swap", {
       signal: AbortSignal.timeout(8000),
     });
     online = res.ok;
