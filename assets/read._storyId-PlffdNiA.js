@@ -1,1 +1,0 @@
-import{sn as e}from"./shell-DcrXj52r.js";import{r as t}from"./index-S9fBTnmi.js";import{t as n}from"./reading-i2_AeJdb.js";var r=e();function i(){return(0,r.jsx)(n,{story:t.useLoaderData()})}export{i as component};
