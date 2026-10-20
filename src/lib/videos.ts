@@ -73,12 +73,11 @@ export type VideoWords = {
   failed: string;
   /** After the number of a jump made by double taps: "10 seconds". */
   seconds: string;
-  /** The panel at the foot of the page (the film's, and the listening bar's). */
+  /** The listening panel at the foot of the page. */
   foldPanel: string;
   openPanel: string;
+  /** The cross on the cinema screen. */
   closeFilm: string;
-  /** On a video's still while the film plays in the panel. */
-  inPanel: string;
 };
 
 const WORDS: Record<Lang, VideoWords> = {
@@ -104,7 +103,6 @@ const WORDS: Record<Lang, VideoWords> = {
     foldPanel: "Paneli küçült",
     openPanel: "Paneli aç",
     closeFilm: "Videoyu kapat",
-    inPanel: "Aşağıdaki panelde oynuyor",
   },
   en: {
     videos: "Videos",
@@ -128,7 +126,6 @@ const WORDS: Record<Lang, VideoWords> = {
     foldPanel: "Fold the panel",
     openPanel: "Open the panel",
     closeFilm: "Close the video",
-    inPanel: "Playing in the panel below",
   },
   ar: {
     videos: "الفيديوهات",
@@ -152,7 +149,6 @@ const WORDS: Record<Lang, VideoWords> = {
     foldPanel: "تصغير اللوحة",
     openPanel: "فتح اللوحة",
     closeFilm: "إغلاق الفيديو",
-    inPanel: "يُعرض في اللوحة أدناه",
   },
   fr: {
     videos: "Vidéos",
@@ -176,7 +172,6 @@ const WORDS: Record<Lang, VideoWords> = {
     foldPanel: "Réduire le panneau",
     openPanel: "Ouvrir le panneau",
     closeFilm: "Fermer la vidéo",
-    inPanel: "En lecture dans le panneau ci-dessous",
   },
   es: {
     videos: "Vídeos",
@@ -200,7 +195,6 @@ const WORDS: Record<Lang, VideoWords> = {
     foldPanel: "Plegar el panel",
     openPanel: "Abrir el panel",
     closeFilm: "Cerrar el vídeo",
-    inPanel: "Se reproduce en el panel de abajo",
   },
 };
 

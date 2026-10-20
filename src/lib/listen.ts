@@ -92,11 +92,8 @@ function element(): HTMLAudioElement {
   el.addEventListener("error", () => {
     if (el.getAttribute("src")) set({ playing: false, error: true });
   });
-  // A film starting takes the bar away (one panel at a time); any other player pauses it.
   window.addEventListener(AUDIO_EVENT, (event) => {
-    const who = (event as CustomEvent<string>).detail;
-    if (who === "film") close();
-    else if (who !== BAR) el.pause();
+    if ((event as CustomEvent<string>).detail !== BAR) el.pause();
   });
   audio = el;
   return el;

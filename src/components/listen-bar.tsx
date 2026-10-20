@@ -24,7 +24,7 @@ import { videoWords } from "@/lib/videos";
 /**
  * The listening panel at the foot of the screen, for a recording started from a card or a
  * reading's Listen button. It keeps playing while the reader moves between pages. A black
- * band like the masthead (the same panel the films play in): the reading's picture and its
+ * band like the masthead: the reading's picture and its
  * title, which opens the reading; a seek line in the accent with the times under its ends;
  * back 15 · play · ahead 15 in the middle and the speed at the start. Folded, it is one
  * strip (picture, title, play, open, close) with the part heard drawn along its top edge,

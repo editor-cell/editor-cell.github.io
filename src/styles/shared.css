@@ -1455,10 +1455,9 @@ button.play-disc:active {
   cursor: pointer;
 }
 
-/* ---------- The panel at the foot of the screen (October 2026) ----------
-   Listening and films play in one kind of panel: a black band like the masthead, in every
-   scheme, cream type, the accent burgundy for the play button and a lighter rose for the
-   part already heard or seen, so it reads on black. One at a time. */
+/* ---------- The listening panel at the foot of the screen (October 2026) ----------
+   A black band like the masthead, in every scheme: cream type, the accent burgundy for the
+   play button and a lighter rose for the part already heard, so it reads on black. */
 .dock {
   --color-ink: #f4efe6;
   --color-paper: #0c0c0c;
@@ -1471,9 +1470,6 @@ button.play-disc:active {
   border-top: 1px solid #262626;
   background: #0c0c0c;
   color: #f4efe6;
-  transition:
-    transform 350ms cubic-bezier(0.22, 0.7, 0.2, 1),
-    visibility 0s;
 }
 
 .dock .play-disc {
@@ -1490,14 +1486,7 @@ button.play-disc:active {
   box-shadow: 0 0 0 2px #0c0c0c;
 }
 
-/* The film's panel waits off screen, empty, until a film is started. */
-.dock.is-idle {
-  visibility: hidden;
-  transform: translateY(100%);
-  pointer-events: none;
-}
-
-/* Folded: the part heard or seen runs along the top edge of the strip. */
+/* Folded: the part heard runs along the top edge of the strip. */
 .dock-progress {
   position: absolute;
   top: -1px;
@@ -1521,7 +1510,7 @@ button.play-disc:active {
   color: var(--color-ink);
 }
 
-/* The reading's picture (or the film's still), small, at the start of the strip. */
+/* The reading's picture, small, at the start of the strip. */
 .dock-thumb {
   flex-shrink: 0;
   overflow: hidden;
@@ -1534,15 +1523,9 @@ button.play-disc:active {
   height: 3rem;
 }
 
-.video-dock .dock-thumb {
-  width: 4.5rem;
-  aspect-ratio: 16 / 9;
-}
-
-/* Open, the big play button in the middle (listening) or the film's own bar (films) does
-   the playing; the strip keeps its play button and the film its still for when folded. */
-.dock.is-open .dock-play,
-.video-dock.is-open .dock-thumb {
+/* Open, the big play button in the middle does the playing; the strip keeps its own for
+   when folded. */
+.dock.is-open .dock-play {
   display: none;
 }
 
@@ -1562,59 +1545,6 @@ button.play-disc:active {
   overflow: hidden;
 }
 
-/* The film's screen unrolls from the top of the band like a projection screen pulled down
-   from its roller: the band rises as the picture comes down into view, top first. */
-.dock-screen {
-  position: relative;
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 650ms cubic-bezier(0.22, 0.7, 0.2, 1);
-}
-
-.video-dock.is-open .dock-screen {
-  grid-template-rows: 1fr;
-}
-
-.dock-roll {
-  min-height: 0;
-  overflow: hidden;
-}
-
-.dock-roll > .film {
-  box-shadow: none;
-}
-
-/* The roller: a dark rod along the top of the screen. */
-.dock-screen::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  inset-inline: 0;
-  z-index: 1;
-  height: 4px;
-  border-radius: 2px;
-  background: linear-gradient(to bottom, #4a4a4a, #1a1a1a);
-  opacity: 0;
-  transition: opacity 300ms ease;
-  pointer-events: none;
-}
-
-.video-dock.is-open .dock-screen::before {
-  opacity: 1;
-}
-
-/* The still on a video's page while its film plays in the panel. */
-.film-here {
-  position: absolute;
-  inset-inline: 0;
-  bottom: 0;
-  padding: 0.6rem 0.75rem;
-  background: rgb(0 0 0 / 0.6);
-  font-size: 0.8rem;
-  letter-spacing: 0.04em;
-  text-align: center;
-}
-
 .film-still {
   cursor: pointer;
 }
@@ -1623,6 +1553,110 @@ button.play-disc:active {
 .film-still:focus-visible .film-start-ring {
   transform: scale(1.08);
   background: rgb(110 36 50);
+}
+
+/* ---------- The cinema (October 2026) ----------
+   A film plays on a screen in the middle of a darkened page (after the New York Times'
+   video page). The lights go down first, then the screen comes down from its roller, top
+   first; closing, the screen rolls up first, then the lights come back. */
+.theater {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f4efe6;
+  background: rgb(5 5 5 / 0);
+  visibility: hidden;
+  transition:
+    background-color 350ms ease 350ms,
+    visibility 0s 700ms;
+}
+
+.theater.is-on {
+  background: rgb(5 5 5 / 0.97);
+  visibility: visible;
+  transition:
+    background-color 400ms ease,
+    visibility 0s;
+}
+
+.theater-frame {
+  width: min(100vw, calc((100dvh - 9rem) * 16 / 9));
+}
+
+.theater-head {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  padding: 0 1.25rem 0.75rem;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.theater.is-on .theater-head {
+  opacity: 1;
+  transition: opacity 300ms ease 600ms;
+}
+
+.theater-close {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-inline-end: -0.5rem;
+  color: #a8a39a;
+  transition: color 150ms ease;
+}
+
+.theater-close:hover {
+  color: #f4efe6;
+}
+
+.theater-close:focus-visible {
+  outline: 2px solid #f4efe6;
+  outline-offset: -2px;
+}
+
+/* The roller the screen hangs from: a dark rod a little wider than the screen. */
+.theater-roller {
+  height: 6px;
+  margin-inline: -0.5%;
+  border-radius: 3px;
+  background: linear-gradient(to bottom, #5a5a5a, #1f1f1f);
+  opacity: 0;
+  transition: opacity 250ms ease 300ms;
+}
+
+.theater.is-on .theater-roller {
+  opacity: 1;
+  transition: opacity 250ms ease 250ms;
+}
+
+.theater-screen {
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 400ms cubic-bezier(0.4, 0, 1, 1);
+}
+
+.theater.is-on .theater-screen {
+  clip-path: inset(0);
+  transition: clip-path 800ms cubic-bezier(0.22, 0.7, 0.2, 1) 350ms;
+}
+
+.theater-screen > .film {
+  box-shadow: 0 24px 80px rgb(0 0 0 / 0.6);
+}
+
+@media (--orbis-desktop) {
+  .theater-frame {
+    width: min(calc(100vw - 4rem), 64rem, calc((100dvh - 9rem) * 16 / 9));
+  }
+  .theater-head {
+    padding-inline: 0;
+  }
 }
 
 /* The search field's hint is set in italic so it reads as a hint, not as typed text. */

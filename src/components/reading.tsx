@@ -1,7 +1,7 @@
 import { imageSizes } from "@/lib/breakpoints";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { VideoStart } from "@/components/video-dock";
+import { VideoStart } from "@/components/theater";
 import { ListenButton } from "@/components/player";
 import { DocumentChain } from "@/components/atlas";
 import { Prose } from "@/components/prose";
@@ -275,11 +275,9 @@ function Reading({ story }: { story: Story | null }) {
           <figure className="flex max-w-full flex-col gap-2">
             <VideoStart
               clip={{
-                id: story.id,
                 lang,
                 title: videoCaption || locale.title || story.locales.en.title,
                 src: story.video.src,
-                reading: true,
               }}
               className="w-full max-w-full"
             />

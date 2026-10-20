@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { VideoStart } from "@/components/video-dock";
+import { VideoStart } from "@/components/theater";
 import { Shell } from "@/components/shell";
 import { Trail } from "@/components/trail";
 import { imageSet } from "@/lib/image-set";
@@ -233,7 +233,6 @@ export function VideoPage({ video }: { video: Video | null }) {
               </div>
               <VideoStart
                 clip={{
-                  id: video.id,
                   lang,
                   title: copy.title,
                   src: video.src,
