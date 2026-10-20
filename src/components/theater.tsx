@@ -18,8 +18,9 @@ export type FilmClip = {
 
 /**
  * A video's still on its page, with the large burgundy play button and the length. A tap
- * turns the lights down, as in a cinema (after the New York Times' video page): the page
- * darkens, a screen comes down from its roller in the middle and the film plays on it with
+ * turns the lights down, as in a cinema (a projection screen, not a panel sliding up from
+ * the foot as on some news sites): the page darkens, a screen comes down from its roller in
+ * the middle and the film plays on it with
  * the site's own controls (play, time, seek line, sound, full screen; taps and double taps
  * as on YouTube). The cross, a tap on the dark around the screen or Escape rolls the screen
  * up and brings the page back; the film waits where it was stopped.

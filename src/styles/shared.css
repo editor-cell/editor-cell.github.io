@@ -1556,9 +1556,9 @@ button.play-disc:active {
 }
 
 /* ---------- The cinema (October 2026) ----------
-   A film plays on a screen in the middle of a darkened page (after the New York Times'
-   video page). The lights go down first, then the screen comes down from its roller, top
-   first; closing, the screen rolls up first, then the lights come back. */
+   A film plays on a projection screen in the middle of a darkened page. The lights go down
+   first, then the screen comes down from its roller, top first; closing, the screen rolls
+   up first, then the lights come back. */
 .theater {
   position: fixed;
   inset: 0;
