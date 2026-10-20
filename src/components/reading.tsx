@@ -2,7 +2,7 @@ import { imageSizes } from "@/lib/breakpoints";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Film } from "@/components/film";
-import { ReadingPlayer } from "@/components/player";
+import { ListenButton } from "@/components/player";
 import { DocumentChain } from "@/components/atlas";
 import { Prose } from "@/components/prose";
 import { Comments } from "@/components/members/comments";
@@ -234,8 +234,8 @@ function Reading({ story }: { story: Story | null }) {
               ) : null}
             </div>
           </div>
-          {/* Phone: one thin line of PDF, share and the player. Wide screen, one line:
-              share, player, PDF. The text size sits right above the text on every screen. */}
+          {/* One thin line: listen, PDF, share on a phone; share, listen, PDF on a wide
+              screen. Listening plays in the bar at the foot of the screen. */}
           <div className="reading-tools no-print flex flex-wrap items-center gap-x-2 gap-y-2 py-1 sm:gap-x-3 md:py-2.5">
             <div className="order-2 flex md:order-3 md:ms-auto">
               <PdfButton lang={lang} />
@@ -252,16 +252,16 @@ function Reading({ story }: { story: Story | null }) {
               ) : null}
             </div>
             {locale.audio ? (
-              <div className="order-4 min-w-[12rem] flex-1 md:order-2">
-                <ReadingPlayer
-                  clip={locale.audio}
+              <div className="order-1 flex md:order-2">
+                <ListenButton
+                  clip={{
+                    id: story.id,
+                    lang,
+                    title: locale.title || story.locales.en.title,
+                    src: locale.audio.dataUrl,
+                  }}
                   listen={copy.listen}
                   pause={copy.pause}
-                  speed={copy.speed}
-                  failed={copy.audioError}
-                  retry={copy.retry}
-                  back={copy.skipBack}
-                  ahead={copy.skipAhead}
                 />
               </div>
             ) : null}

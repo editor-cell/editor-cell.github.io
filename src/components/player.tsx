@@ -8,9 +8,11 @@ import {
   SKIP_SECONDS,
   announceStart,
   fmt,
+  listenTo,
   readRate,
   useListen,
   writeRate,
+  type ListenClip,
 } from "@/lib/listen";
 import type { AudioClip } from "@/lib/types";
 
@@ -350,5 +352,45 @@ export function ReadingPlayer({
         </p>
       ) : null}
     </div>
+  );
+}
+
+/**
+ * The one listening control at the top of a reading, after the "Listen" button of the
+ * newspapers: a pill like the twin-reading one, a filled accent disc at its start. Pressing
+ * it brings up the bar at the foot of the screen, which plays the recording and keeps
+ * playing while the reader moves on; pressed again it pauses and resumes the same one.
+ */
+export function ListenButton({
+  clip,
+  listen,
+  pause,
+}: {
+  clip: ListenClip;
+  listen: string;
+  pause: string;
+}) {
+  const now = useListen();
+  const mine = now.clip !== null && sameRecording(now.clip.src, clip.src);
+  const playing = mine && now.playing;
+  return (
+    <button
+      type="button"
+      onClick={() => (mine ? bar.toggle() : listenTo(clip))}
+      aria-label={`${playing ? pause : listen}: ${clip.title}`}
+      aria-pressed={playing}
+      className={`inline-flex h-7 shrink-0 items-center gap-1.5 rounded-full border ps-0.5 pe-3 text-xs text-ink md:h-8 ${
+        mine ? "border-pine" : "border-line"
+      }`}
+    >
+      <span aria-hidden="true" className="play-disc size-6 md:size-7">
+        {playing ? (
+          <Pause className="size-3" fill="currentColor" strokeWidth={0} />
+        ) : (
+          <Play className="ms-px size-3 rtl:-scale-x-100" fill="currentColor" strokeWidth={0} />
+        )}
+      </span>
+      {playing ? pause : listen}
+    </button>
   );
 }
