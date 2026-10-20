@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { Film } from "@/components/film";
 import { Shell } from "@/components/shell";
 import { Trail } from "@/components/trail";
 import { imageSet } from "@/lib/image-set";
@@ -230,16 +231,13 @@ export function VideoPage({ video }: { video: Video | null }) {
                 ) : null}
                 <p className="text-sm text-muted">{formatDate(video.date, lang)}</p>
               </div>
-              <video
-                controls
-                preload="metadata"
-                playsInline
-                controlsList="nodownload noplaybackrate noremoteplayback"
-                disablePictureInPicture
+              <Film
                 src={video.src}
                 poster={video.poster}
-                aria-label={copy.title}
-                className="-mx-5 block aspect-video h-auto w-[calc(100%+2.5rem)] max-w-none bg-ink md:mx-0 md:w-full md:max-w-full"
+                length={video.duration}
+                label={copy.title}
+                lang={lang}
+                className="-mx-5 w-[calc(100%+2.5rem)] max-w-none md:mx-0 md:w-full md:max-w-full"
               />
               {transcript.length ? (
                 <section className="-mt-2 md:mt-0 md:border-t md:border-rule md:pt-4">

@@ -219,15 +219,21 @@ export function ReadingPlayer({
           type="button"
           onClick={() => void toggle()}
           aria-label={playing ? pause : listen}
-          className="inline-flex h-7 min-w-6 shrink-0 items-center justify-center gap-x-3 text-ink sm:justify-start"
+          className="inline-flex h-8 shrink-0 items-center justify-center gap-x-2.5 text-ink sm:justify-start"
         >
-          {/* The icon's drawing starts a little inside its box; pull it back so the
-              triangle lines up with the text column above (the region and date line). */}
-          {playing ? (
-            <Pause className="play-icon size-3" strokeWidth={1.25} aria-hidden="true" />
-          ) : (
-            <Play className="play-icon size-3" strokeWidth={1.25} aria-hidden="true" />
-          )}
+          {/* A filled round button in the accent, as on the listening apps: the one control
+              the eye finds first. The triangle sits a hair right of centre to look centred. */}
+          <span aria-hidden="true" className="play-disc size-8">
+            {playing ? (
+              <Pause className="size-3.5" fill="currentColor" strokeWidth={0} />
+            ) : (
+              <Play
+                className="ms-0.5 size-3.5 rtl:-scale-x-100"
+                fill="currentColor"
+                strokeWidth={0}
+              />
+            )}
+          </span>
           {/* On a phone the word gives its room to the PDF and share marks on the same line. */}
           <span className="hidden text-[11px] uppercase tracking-[0.18em] sm:inline">
             {playing ? pause : listen}

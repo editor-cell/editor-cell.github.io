@@ -40,7 +40,7 @@ export function ListenBar() {
 
   return (
     <>
-      <div aria-hidden="true" className="listen-bar-space no-print h-28" />
+      <div aria-hidden="true" className="listen-bar-space no-print h-[7.75rem]" />
       <section
         aria-label={copy.listen}
         className="listen-bar no-print fixed inset-x-0 bottom-0 z-40 border-t border-ink bg-sheet text-ink"
@@ -110,7 +110,7 @@ export function ListenBar() {
                 </span>
               </Pick>
             </span>
-            <div className="flex items-center gap-x-3">
+            <div className="flex items-center gap-x-5">
               <SkipButton
                 direction="back"
                 label={copy.skipBack}
@@ -120,18 +120,18 @@ export function ListenBar() {
                 type="button"
                 onClick={toggle}
                 aria-label={now.playing ? copy.pause : copy.listen}
-                className="inline-flex size-8 shrink-0 items-center justify-center text-ink"
+                className="play-disc size-11"
               >
                 {now.playing ? (
                   <Pause
-                    className="size-4"
+                    className="size-[18px]"
                     fill="currentColor"
                     strokeWidth={0}
                     aria-hidden="true"
                   />
                 ) : (
                   <Play
-                    className="ms-0.5 size-4 rtl:-scale-x-100"
+                    className="ms-0.5 size-[18px] rtl:-scale-x-100"
                     fill="currentColor"
                     strokeWidth={0}
                     aria-hidden="true"

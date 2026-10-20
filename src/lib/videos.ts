@@ -62,6 +62,15 @@ export type VideoWords = {
   /** The list page while there is no video yet. */
   empty: string;
   back: string;
+  /** The player's own buttons (read out by screen readers) and its one message. */
+  play: string;
+  pause: string;
+  seek: string;
+  mute: string;
+  unmute: string;
+  fullscreen: string;
+  exitFullscreen: string;
+  failed: string;
 };
 
 const WORDS: Record<Lang, VideoWords> = {
@@ -75,6 +84,14 @@ const WORDS: Record<Lang, VideoWords> = {
     missing: "Bu video bulunamadı.",
     empty: "Henüz video yok.",
     back: "Bütün videolar",
+    play: "Oynat",
+    pause: "Duraklat",
+    seek: "Videoda ilerle",
+    mute: "Sesi kapat",
+    unmute: "Sesi aç",
+    fullscreen: "Tam ekran",
+    exitFullscreen: "Tam ekrandan çık",
+    failed: "Video oynatılamadı. Bağlantınızı kontrol edip yeniden deneyin.",
   },
   en: {
     videos: "Videos",
@@ -86,6 +103,14 @@ const WORDS: Record<Lang, VideoWords> = {
     missing: "This video could not be found.",
     empty: "No videos yet.",
     back: "All videos",
+    play: "Play",
+    pause: "Pause",
+    seek: "Seek in the video",
+    mute: "Mute",
+    unmute: "Unmute",
+    fullscreen: "Full screen",
+    exitFullscreen: "Exit full screen",
+    failed: "The video could not be played. Check your connection and try again.",
   },
   ar: {
     videos: "الفيديوهات",
@@ -97,6 +122,14 @@ const WORDS: Record<Lang, VideoWords> = {
     missing: "تعذّر العثور على هذا الفيديو.",
     empty: "لا توجد فيديوهات بعد.",
     back: "كل الفيديوهات",
+    play: "تشغيل",
+    pause: "إيقاف مؤقت",
+    seek: "التنقل في الفيديو",
+    mute: "كتم الصوت",
+    unmute: "تشغيل الصوت",
+    fullscreen: "ملء الشاشة",
+    exitFullscreen: "الخروج من ملء الشاشة",
+    failed: "تعذّر تشغيل الفيديو. تحقّق من الاتصال وحاول مرة أخرى.",
   },
   fr: {
     videos: "Vidéos",
@@ -108,6 +141,14 @@ const WORDS: Record<Lang, VideoWords> = {
     missing: "Cette vidéo est introuvable.",
     empty: "Pas encore de vidéo.",
     back: "Toutes les vidéos",
+    play: "Lire",
+    pause: "Pause",
+    seek: "Avancer dans la vidéo",
+    mute: "Couper le son",
+    unmute: "Activer le son",
+    fullscreen: "Plein écran",
+    exitFullscreen: "Quitter le plein écran",
+    failed: "La vidéo n’a pas pu être lue. Vérifiez votre connexion et réessayez.",
   },
   es: {
     videos: "Vídeos",
@@ -119,6 +160,14 @@ const WORDS: Record<Lang, VideoWords> = {
     missing: "No se encontró este vídeo.",
     empty: "Todavía no hay vídeos.",
     back: "Todos los vídeos",
+    play: "Reproducir",
+    pause: "Pausa",
+    seek: "Avanzar en el vídeo",
+    mute: "Silenciar",
+    unmute: "Activar sonido",
+    fullscreen: "Pantalla completa",
+    exitFullscreen: "Salir de pantalla completa",
+    failed: "No se pudo reproducir el vídeo. Compruebe su conexión e inténtelo de nuevo.",
   },
 };
 

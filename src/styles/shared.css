@@ -668,8 +668,9 @@ body {
     display: none;
   }
 
-  /* The listen control is a hairline, like a bow tie: the bar is one pixel,
-     the knob a small knot. The invisible range sits over it so it can still be dragged. */
+  /* The listen control: a thin rule with the part already heard in the accent, and a
+     round knob that grows under the finger or pointer. The invisible range sits over it so
+     it can still be dragged. */
   .reading-player .seek-line {
     position: relative;
     display: flex;
@@ -688,38 +689,47 @@ body {
     text-wrap: pretty;
   }
 
-  .reading-player .play-icon {
-    flex-shrink: 0;
-    margin-inline-start: -3px;
-  }
-
-  [dir="rtl"] .reading-player .play-icon {
-    margin-inline-start: -2px;
-  }
-
   .reading-player .seek-rule {
     position: relative;
     width: 100%;
-    height: 1px;
-    background: var(--color-rule);
+    height: 3px;
+    border-radius: 999px;
+    background: var(--color-mist);
   }
 
   .reading-player .seek-fill {
     position: absolute;
     inset-inline-start: 0;
     top: 0;
-    height: 1px;
-    background: var(--color-ink);
+    height: 100%;
+    border-radius: 999px;
+    background: var(--color-pine);
   }
 
   .reading-player .seek-knob {
     position: absolute;
     top: 50%;
-    width: 5px;
-    height: 5px;
+    width: 11px;
+    height: 11px;
     border-radius: 999px;
-    background: var(--color-ink);
+    background: var(--color-pine);
+    box-shadow: 0 0 0 2px var(--color-sheet);
     transform: translate(-50%, -50%);
+    transition:
+      width 150ms ease,
+      height 150ms ease;
+  }
+
+  .reading-player .seek-line:hover .seek-knob,
+  .reading-player .seek-line:active .seek-knob,
+  .reading-player .seek-line:has(.seek:focus-visible) .seek-knob {
+    width: 15px;
+    height: 15px;
+  }
+
+  .reading-player .seek-line:has(.seek:focus-visible) .seek-rule {
+    outline: 2px solid var(--color-pine);
+    outline-offset: 5px;
   }
 
   [dir="rtl"] .reading-player .seek-knob {
@@ -825,7 +835,8 @@ a.group:not(.atlas-own):has(.paper-title) > div.flex.flex-col > p.tabular-nums {
   .menu-scrim,
   .search-scrim,
   #site-menu,
-  video {
+  video,
+  .film {
     display: none !important;
   }
   .print-only {
@@ -1163,14 +1174,190 @@ a.group:not(.atlas-own):has(.paper-title) > div.flex.flex-col > p.tabular-nums {
   }
 }
 
-/* The film on its own page sits on a faint shadow; the keyboard ring is the burgundy. */
-main video {
-  box-shadow: 0 8px 32px rgb(12 12 12 / 0.08);
+/* ---------- Players (October 2026) ----------
+   The round play button of both listening players: filled with the accent, the triangle in
+   the paper's colour, so it reads in the classic and the night scheme alike. */
+.play-disc {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--color-pine);
+  color: var(--color-paper);
+  transition:
+    transform 150ms ease,
+    filter 150ms ease;
 }
 
-main video:focus-visible {
-  outline: 2px solid var(--color-pine);
-  outline-offset: 2px;
+button:hover > .play-disc,
+button.play-disc:hover {
+  filter: brightness(1.12);
+}
+
+button:active > .play-disc,
+button.play-disc:active {
+  transform: scale(0.94);
+}
+
+/* The video player. A still is dark in every scheme, so its colours are fixed: white
+   controls on a soft shade rising from the foot of the picture, the accent burgundy for the
+   start button and the part already seen. */
+.film {
+  box-shadow: 0 8px 32px rgb(12 12 12 / 0.08);
+  color: #fff;
+}
+
+.film.is-full {
+  box-shadow: none;
+}
+
+.film.is-quiet {
+  cursor: none;
+}
+
+.film-start {
+  cursor: pointer;
+  background: linear-gradient(to bottom, rgb(12 12 12 / 0) 55%, rgb(12 12 12 / 0.45));
+}
+
+.film-start-ring {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(3.5rem, 14%, 5.25rem);
+  aspect-ratio: 1;
+  border: 2px solid rgb(255 255 255 / 0.92);
+  border-radius: 999px;
+  background: rgb(110 36 50 / 0.9);
+  box-shadow: 0 6px 24px rgb(0 0 0 / 0.35);
+  transition:
+    transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 300ms ease;
+}
+
+.film-start:hover .film-start-ring,
+.film-start:focus-visible .film-start-ring {
+  transform: scale(1.08);
+  background: rgb(110 36 50);
+}
+
+.film-start:focus-visible {
+  outline: none;
+}
+
+.film-start:focus-visible .film-start-ring {
+  outline: 2px solid #fff;
+  outline-offset: 4px;
+}
+
+/* The length, in the start corner of the still, as on the cards of the video sites. */
+.film-length {
+  position: absolute;
+  inset-inline-start: 0.75rem;
+  bottom: 0.75rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 2px;
+  background: rgb(0 0 0 / 0.65);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.film-failed {
+  background: rgb(0 0 0 / 0.75);
+}
+
+.film-bar {
+  padding-top: 2.5rem;
+  background: linear-gradient(to bottom, rgb(0 0 0 / 0), rgb(0 0 0 / 0.62));
+  transition: opacity 300ms ease;
+}
+
+.film.is-quiet .film-bar {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.film-button {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  color: #fff;
+  opacity: 0.92;
+  transition: opacity 150ms ease;
+}
+
+.film-button:hover {
+  opacity: 1;
+}
+
+.film-button:focus-visible,
+.film-seek:has(input:focus-visible) {
+  outline: 2px solid #fff;
+  outline-offset: -2px;
+}
+
+.film-time {
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.film-seek {
+  display: flex;
+  align-items: center;
+  height: 1.25rem;
+}
+
+.film-rule {
+  position: relative;
+  width: 100%;
+  height: 3px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.32);
+  transition: height 150ms ease;
+}
+
+.film-seek:hover .film-rule {
+  height: 5px;
+}
+
+.film-fill {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0;
+  height: 100%;
+  border-radius: 999px;
+  background: #b0485b;
+}
+
+.film-knob {
+  position: absolute;
+  top: 50%;
+  width: 13px;
+  height: 13px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.4);
+  transform: translate(-50%, -50%);
+}
+
+[dir="rtl"] .film-knob {
+  transform: translate(50%, -50%);
+}
+
+.film-seek input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
 }
 
 /* The search field's hint is set in italic so it reads as a hint, not as typed text. */
