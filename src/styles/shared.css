@@ -1174,9 +1174,40 @@ a.group:not(.atlas-own):has(.paper-title) > div.flex.flex-col > p.tabular-nums {
   }
 }
 
-/* The phone's times of the reading player; on a wide screen the times sit on the line. */
-.listen-ends {
-  display: none;
+/* The reading player (the panel's preview of a recording), laid out like the bar at the
+   foot of the screen on every width: the seek line across the whole width, the times under
+   its two ends, then the speed at the start and back · play · ahead in the middle. */
+.reading-player .listen-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-areas:
+    "seek seek seek"
+    "ends ends ends"
+    "speed keys .";
+  align-items: center;
+}
+
+.reading-player .listen-row > .seek-line {
+  grid-area: seek;
+}
+
+.reading-player .listen-ends {
+  grid-area: ends;
+  display: flex;
+  justify-content: space-between;
+  margin-top: -0.25rem;
+}
+
+.reading-player .listen-keys {
+  grid-area: keys;
+  column-gap: 1.25rem;
+  margin-top: 0.25rem;
+}
+
+.reading-player .listen-speed {
+  grid-area: speed;
+  justify-self: start;
+  margin-top: 0.25rem;
 }
 
 /* ---------- Players (October 2026) ----------

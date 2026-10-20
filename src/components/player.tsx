@@ -247,13 +247,12 @@ export function ReadingPlayer({
 
   return (
     <div className="reading-player w-full min-w-0">
-      {/* Wide screen: one line, the seek line giving up width before anything moves down.
-          Phone (mobile.css): stacked as in the bar at the foot of the screen, the seek line
-          the full width, the times under its ends, then the speed and the group of keys. */}
-      <div className="listen-row flex w-full min-w-0 flex-nowrap items-center gap-x-1.5 sm:gap-x-3">
+      {/* Stacked as in the bar at the foot of the screen, on a phone and a wide screen alike
+          (styles: .listen-row). */}
+      <div className="listen-row w-full min-w-0">
         {/* Back · play · ahead as one group, as on the listening apps: the play button, filled
             in the accent and a size larger, between the two turning arrows. */}
-        <div className="listen-keys flex shrink-0 items-center gap-x-0.5 sm:gap-x-1">
+        <div className="listen-keys flex shrink-0 items-center">
           <SkipButton direction="back" label={back} onClick={() => view.skip(-SKIP_SECONDS)} />
           <button
             type="button"
@@ -275,15 +274,6 @@ export function ReadingPlayer({
           </button>
           <SkipButton direction="ahead" label={ahead} onClick={() => view.skip(SKIP_SECONDS)} />
         </div>
-        {/* The word, beside the group on a wide screen; on a phone it gives its room to the
-            PDF and share marks on the same line. The button above already carries it. */}
-        <span
-          aria-hidden="true"
-          onClick={() => void view.toggle()}
-          className="listen-word hidden shrink-0 cursor-pointer text-[11px] uppercase tracking-[0.18em] text-ink sm:inline"
-        >
-          {view.playing ? pause : listen}
-        </span>
         <div className="seek-line">
           <div className="seek-rule" aria-hidden="true">
             <span className="seek-fill" style={{ width: pct }} />
@@ -301,17 +291,7 @@ export function ReadingPlayer({
             onChange={(event) => view.seek(Number(event.target.value))}
           />
         </div>
-        <span
-          dir="ltr"
-          className="listen-time shrink-0 text-[11px] tabular-nums tracking-wide text-muted"
-        >
-          {fmt(view.progress)}
-          <span className="px-1 text-rule" aria-hidden="true">
-            —
-          </span>
-          {fmt(view.duration)}
-        </span>
-        {/* The phone's times, under the two ends of the seek line: heard, and still to go. */}
+        {/* The times, under the two ends of the seek line: heard, and still to go. */}
         <span
           dir="ltr"
           aria-hidden="true"
@@ -323,7 +303,7 @@ export function ReadingPlayer({
         <span className="listen-speed inline-flex shrink-0">
           <Pick
             tone="page"
-            align="end"
+            align="start"
             label={speed}
             value={String(view.rate)}
             onChange={(value) => view.changeRate(Number(value))}

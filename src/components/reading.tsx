@@ -234,37 +234,34 @@ function Reading({ story }: { story: Story | null }) {
               ) : null}
             </div>
           </div>
-          {/* One thin line: listen, PDF, share on a phone; share, listen, PDF on a wide
-              screen. Listening plays in the bar at the foot of the screen. */}
+          {/* One thin line, the same on a phone and a wide screen: listen, share, twin
+              reading, and PDF at the end. Listening plays in the bar at the foot of the
+              screen. */}
           <div className="reading-tools no-print flex flex-wrap items-center gap-x-2 gap-y-2 py-1 sm:gap-x-3 md:py-2.5">
-            <div className="order-2 flex md:order-3 md:ms-auto">
+            {locale.audio ? (
+              <ListenButton
+                clip={{
+                  id: story.id,
+                  lang,
+                  title: locale.title || story.locales.en.title,
+                  src: locale.audio.dataUrl,
+                }}
+                listen={copy.listen}
+                pause={copy.pause}
+              />
+            ) : null}
+            <ShareButton lang={lang} title={locale.title || story.locales.en.title} />
+            {canTwin ? (
+              <TwinButton
+                lang={lang}
+                on={twin !== null}
+                open={twinOpen}
+                onToggle={() => setTwinOpen((value) => !value)}
+              />
+            ) : null}
+            <div className="ms-auto flex">
               <PdfButton lang={lang} />
             </div>
-            <div className="order-3 flex gap-2 md:order-1">
-              <ShareButton lang={lang} title={locale.title || story.locales.en.title} />
-              {canTwin ? (
-                <TwinButton
-                  lang={lang}
-                  on={twin !== null}
-                  open={twinOpen}
-                  onToggle={() => setTwinOpen((value) => !value)}
-                />
-              ) : null}
-            </div>
-            {locale.audio ? (
-              <div className="order-1 flex md:order-2">
-                <ListenButton
-                  clip={{
-                    id: story.id,
-                    lang,
-                    title: locale.title || story.locales.en.title,
-                    src: locale.audio.dataUrl,
-                  }}
-                  listen={copy.listen}
-                  pause={copy.pause}
-                />
-              </div>
-            ) : null}
           </div>
           {canTwin && twinOpen ? (
             <TwinPanel story={story} lang={lang} twin={twin} choose={chooseTwin} />
