@@ -1,1 +1,0 @@
-import{sn as e}from"./shell-DcrXj52r.js";import{r as t}from"./videos-CmbPpVuC.js";import{n}from"./index-CIn_db2O.js";var r=e();function i(){return(0,r.jsx)(t,{video:n.useLoaderData()})}export{i as component};
