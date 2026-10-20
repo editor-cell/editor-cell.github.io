@@ -1,4 +1,13 @@
-import { Maximize, Minimize, Pause, Play, Volume2, VolumeX } from "lucide-react";
+import {
+  ChevronsLeft,
+  ChevronsRight,
+  Maximize,
+  Minimize,
+  Pause,
+  Play,
+  Volume2,
+  VolumeX,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { AUDIO_EVENT, announceStart, fmt } from "@/lib/listen";
 import type { Lang } from "@/lib/types";
@@ -7,6 +16,14 @@ import { videoWords } from "@/lib/videos";
 const PLAYER = "film";
 /** How long the controls stay after the last touch or pointer move while the film plays. */
 const HIDE_AFTER = 2500;
+/** A second tap on the same side within this time is a double tap; after one, each further
+ * tap within SEEK_RUN on that side jumps again. */
+const DOUBLE_TAP = 300;
+const SEEK_RUN = 700;
+/** Seconds one tap of a double tap jumps, as on YouTube. */
+const TAP_STEP = 10;
+
+type Side = "back" | "ahead";
 
 /**
  * The site's own video player, after the clean players of Vimeo and Plyr: before the first
@@ -16,6 +33,11 @@ const HIDE_AFTER = 2500;
  * browser's own controls are not drawn, so they never sit over the words of a still. On an
  * iPhone, full screen hands over to the phone's own player. Starting the film pauses any
  * recording, and a recording started elsewhere pauses the film.
+ *
+ * Touch, as on YouTube: with the bar hidden, a tap anywhere brings it back; with the bar
+ * shown, a tap in the middle plays or pauses and a tap at the left or right puts the bar
+ * away. Two or more quick taps at the left go back, at the right go ahead, ten seconds a
+ * tap. A mouse click plays or pauses, the bar following the pointer.
  */
 export function Film({
   src,
@@ -48,6 +70,14 @@ export function Film({
   const [full, setFull] = useState(false);
   const [shown, setShown] = useState(true);
   const [failed, setFailed] = useState(false);
+  // The jump just made by taps, shown at its side for a moment: "10 seconds", "20 seconds"...
+  const [jump, setJump] = useState<{ side: Side; seconds: number } | null>(null);
+  const pointer = useRef("mouse");
+  const tap = useRef<{ side: Side; at: number } | null>(null);
+  const tapTimer = useRef<number | undefined>(undefined);
+  const run = useRef<{ side: Side; until: number } | null>(null);
+  const jumpTimer = useRef<number | undefined>(undefined);
+  const barShown = useRef(false);
 
   useEffect(() => {
     const onStart = (event: Event) => {
@@ -60,6 +90,8 @@ export function Film({
       window.removeEventListener(AUDIO_EVENT, onStart);
       document.removeEventListener("fullscreenchange", onFull);
       window.clearTimeout(timer.current);
+      window.clearTimeout(tapTimer.current);
+      window.clearTimeout(jumpTimer.current);
     };
   }, []);
 
@@ -91,6 +123,63 @@ export function Film({
     if (!el) return;
     el.currentTime = value;
     setTime(value);
+  }
+
+  /** Back or ahead TAP_STEP seconds from a tap, and show the sum at that side. */
+  function jumpBy(side: Side) {
+    const el = film.current;
+    if (!el) return;
+    const end = duration || el.currentTime + TAP_STEP;
+    seek(Math.max(0, Math.min(el.currentTime + (side === "back" ? -TAP_STEP : TAP_STEP), end)));
+    run.current = { side, until: performance.now() + SEEK_RUN };
+    setJump((last) => ({
+      side,
+      seconds: last?.side === side ? last.seconds + TAP_STEP : TAP_STEP,
+    }));
+    window.clearTimeout(jumpTimer.current);
+    jumpTimer.current = window.setTimeout(() => setJump(null), SEEK_RUN);
+  }
+
+  function hide() {
+    window.clearTimeout(timer.current);
+    setShown(false);
+  }
+
+  function onSurface(event: React.MouseEvent<HTMLVideoElement>) {
+    if (pointer.current === "mouse") {
+      void toggle();
+      return;
+    }
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width;
+    const side: Side | null = x < 0.35 ? "back" : x > 0.65 ? "ahead" : null;
+    const now = performance.now();
+    if (!side) {
+      window.clearTimeout(tapTimer.current);
+      tap.current = null;
+      if (barShown.current) void toggle();
+      else wake();
+      return;
+    }
+    // Going on with a run of jumps, or the second tap of a double tap.
+    if (run.current?.side === side && now < run.current.until) {
+      jumpBy(side);
+      return;
+    }
+    if (tap.current?.side === side && now - tap.current.at < DOUBLE_TAP) {
+      window.clearTimeout(tapTimer.current);
+      tap.current = null;
+      jumpBy(side);
+      return;
+    }
+    // A single tap at a side: wait a moment to see whether a second follows.
+    window.clearTimeout(tapTimer.current);
+    tap.current = { side, at: now };
+    tapTimer.current = window.setTimeout(() => {
+      tap.current = null;
+      if (barShown.current) hide();
+      else wake();
+    }, DOUBLE_TAP);
   }
 
   function toggleSound() {
@@ -134,7 +223,8 @@ export function Film({
 
   const span = duration > 0 ? Math.min(time, duration) / duration : 0;
   const pct = `${span * 100}%`;
-  const bar = started && (shown || !playing);
+  const bar = started && shown;
+  barShown.current = bar;
 
   return (
     <div
@@ -142,6 +232,9 @@ export function Film({
       className={`film relative aspect-video overflow-hidden bg-ink ${full ? "is-full" : ""} ${bar ? "" : "is-quiet"} ${className}`}
       onPointerMove={(event) => {
         if (event.pointerType === "mouse") wake();
+      }}
+      onPointerDown={(event) => {
+        pointer.current = event.pointerType;
       }}
       onMouseLeave={() => {
         if (playing) setShown(false);
@@ -160,11 +253,7 @@ export function Film({
         controlsList="nodownload noplaybackrate noremoteplayback"
         aria-label={label}
         className="block h-full w-full object-contain"
-        onClick={() => {
-          // A touch first brings the hidden bar back; a click with a mouse plays or pauses.
-          if (started && !bar) wake();
-          else void toggle();
-        }}
+        onClick={onSurface}
         onPlay={() => {
           setStarted(true);
           setPlaying(true);
@@ -210,6 +299,24 @@ export function Film({
             </span>
           ) : null}
         </button>
+      ) : null}
+
+      {jump ? (
+        <div
+          key={jump.side}
+          aria-hidden="true"
+          className={`film-jump absolute inset-y-0 ${jump.side === "back" ? "start-0 rounded-e-[50%]" : "end-0 rounded-s-[50%]"}`}
+          dir="ltr"
+        >
+          {jump.side === "back" ? (
+            <ChevronsLeft className="size-7" strokeWidth={1.75} />
+          ) : (
+            <ChevronsRight className="size-7" strokeWidth={1.75} />
+          )}
+          <span className="film-jump-words">
+            {jump.seconds} {words.seconds}
+          </span>
+        </div>
       ) : null}
 
       {failed ? (

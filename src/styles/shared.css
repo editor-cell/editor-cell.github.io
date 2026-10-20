@@ -1216,6 +1216,40 @@ button.play-disc:active {
   cursor: none;
 }
 
+/* Quick taps on the picture are the player's own (double taps jump), not the browser's
+   zoom. */
+.film video {
+  touch-action: manipulation;
+}
+
+/* The jump made by double taps, at its side: a pale half-round behind the arrows and the
+   seconds, as on YouTube. */
+.film-jump {
+  display: flex;
+  width: 38%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  background: rgb(255 255 255 / 0.12);
+  pointer-events: none;
+  animation: film-jump-in 150ms ease-out;
+}
+
+.film-jump-words {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.5);
+}
+
+@keyframes film-jump-in {
+  from {
+    opacity: 0;
+  }
+}
+
 .film-start {
   cursor: pointer;
   background: linear-gradient(to bottom, rgb(12 12 12 / 0) 55%, rgb(12 12 12 / 0.45));
@@ -1268,14 +1302,25 @@ button.play-disc:active {
   background: rgb(0 0 0 / 0.75);
 }
 
+/* The shade of the bar lets taps through to the picture; only its controls take them. */
 .film-bar {
   padding-top: 2.5rem;
   background: linear-gradient(to bottom, rgb(0 0 0 / 0), rgb(0 0 0 / 0.62));
   transition: opacity 300ms ease;
+  pointer-events: none;
+}
+
+.film-bar .film-seek,
+.film-bar .film-button {
+  pointer-events: auto;
 }
 
 .film.is-quiet .film-bar {
   opacity: 0;
+}
+
+.film.is-quiet .film-bar .film-seek,
+.film.is-quiet .film-bar .film-button {
   pointer-events: none;
 }
 

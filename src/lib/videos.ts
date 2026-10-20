@@ -71,6 +71,8 @@ export type VideoWords = {
   fullscreen: string;
   exitFullscreen: string;
   failed: string;
+  /** After the number of a jump made by double taps: "10 seconds". */
+  seconds: string;
 };
 
 const WORDS: Record<Lang, VideoWords> = {
@@ -92,6 +94,7 @@ const WORDS: Record<Lang, VideoWords> = {
     fullscreen: "Tam ekran",
     exitFullscreen: "Tam ekrandan çık",
     failed: "Video oynatılamadı. Bağlantınızı kontrol edip yeniden deneyin.",
+    seconds: "saniye",
   },
   en: {
     videos: "Videos",
@@ -111,6 +114,7 @@ const WORDS: Record<Lang, VideoWords> = {
     fullscreen: "Full screen",
     exitFullscreen: "Exit full screen",
     failed: "The video could not be played. Check your connection and try again.",
+    seconds: "seconds",
   },
   ar: {
     videos: "الفيديوهات",
@@ -130,6 +134,7 @@ const WORDS: Record<Lang, VideoWords> = {
     fullscreen: "ملء الشاشة",
     exitFullscreen: "الخروج من ملء الشاشة",
     failed: "تعذّر تشغيل الفيديو. تحقّق من الاتصال وحاول مرة أخرى.",
+    seconds: "ثانية",
   },
   fr: {
     videos: "Vidéos",
@@ -149,6 +154,7 @@ const WORDS: Record<Lang, VideoWords> = {
     fullscreen: "Plein écran",
     exitFullscreen: "Quitter le plein écran",
     failed: "La vidéo n’a pas pu être lue. Vérifiez votre connexion et réessayez.",
+    seconds: "secondes",
   },
   es: {
     videos: "Vídeos",
@@ -168,6 +174,7 @@ const WORDS: Record<Lang, VideoWords> = {
     fullscreen: "Pantalla completa",
     exitFullscreen: "Salir de pantalla completa",
     failed: "No se pudo reproducir el vídeo. Compruebe su conexión e inténtelo de nuevo.",
+    seconds: "segundos",
   },
 };
 
