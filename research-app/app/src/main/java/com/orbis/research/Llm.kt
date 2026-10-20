@@ -11,15 +11,10 @@ object Llm {
     private var loadedPath: String? = null
     private var ready = false
 
-    private external fun nativeInit(libDir: String)
-    private external fun nativeLoad(path: String, nCtx: Int): Long
-    private external fun nativeFree(handle: Long)
-    private external fun nativeGenerate(handle: Long, system: String, user: String, grammar: String, maxTokens: Int): String?
-
     private fun init(ctx: Context) {
         if (ready) return
         System.loadLibrary("orbisllm")
-        nativeInit(ctx.applicationInfo.nativeLibraryDir)
+        LlmNative.nativeInit(ctx.applicationInfo.nativeLibraryDir)
         ready = true
     }
 
@@ -27,14 +22,14 @@ object Llm {
     suspend fun ensure(ctx: Context, path: String): Boolean = lock.withLock {
         init(ctx)
         if (loadedPath == path && handle != 0L) return@withLock true
-        if (handle != 0L) { nativeFree(handle); handle = 0L; loadedPath = null }
-        handle = nativeLoad(path, 4096)
+        if (handle != 0L) { LlmNative.nativeFree(handle); handle = 0L; loadedPath = null }
+        handle = LlmNative.nativeLoad(path, 4096)
         if (handle != 0L) loadedPath = path
         handle != 0L
     }
 
     suspend fun release() = lock.withLock {
-        if (handle != 0L) nativeFree(handle)
+        if (handle != 0L) LlmNative.nativeFree(handle)
         handle = 0L; loadedPath = null
     }
 
@@ -42,8 +37,8 @@ object Llm {
     suspend fun generate(system: String, user: String, grammar: String = "", maxTokens: Int = 64): String? = lock.withLock {
         if (handle == 0L) return@withLock null
         val thinks = loadedPath?.contains("qwen3", ignoreCase = true) == true
-        val u = if (thinks) "$user /no_think" else user
-        nativeGenerate(handle, system, u, grammar, maxTokens)
+        val u = if (thinks) "$user ${Prompts.NO_THINK}" else user
+        LlmNative.nativeGenerate(handle, system, u, grammar, maxTokens)
             ?.replace(Regex("(?s)<think>.*?</think>"), "")?.trim()
     }
 }

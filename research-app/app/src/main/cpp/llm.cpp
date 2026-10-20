@@ -2,7 +2,15 @@
 // Every call starts from an empty context, so no answer leaks into the next.
 
 #include <jni.h>
+#ifdef __ANDROID__
 #include <android/log.h>
+#else
+#include <cstdio>
+#define ANDROID_LOG_INFO 4
+#define ANDROID_LOG_WARN 5
+#define ANDROID_LOG_ERROR 6
+#define __android_log_print(level, tag, ...) (fprintf(stderr, __VA_ARGS__), fputc('\n', stderr))
+#endif
 #include <unistd.h>
 
 #include <algorithm>
@@ -51,7 +59,7 @@ static jstring to_jstring(JNIEnv * env, const std::string & s) {
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_orbis_research_Llm_nativeInit(JNIEnv * env, jobject, jstring libDir) {
+Java_com_orbis_research_LlmNative_nativeInit(JNIEnv * env, jobject, jstring libDir) {
     llama_log_set(log_cb, nullptr);
     std::string dir = jstr(env, libDir);
     ggml_backend_load_all_from_path(dir.c_str());
@@ -59,7 +67,7 @@ Java_com_orbis_research_Llm_nativeInit(JNIEnv * env, jobject, jstring libDir) {
 }
 
 extern "C" JNIEXPORT jlong JNICALL
-Java_com_orbis_research_Llm_nativeLoad(JNIEnv * env, jobject, jstring path, jint nCtx) {
+Java_com_orbis_research_LlmNative_nativeLoad(JNIEnv * env, jobject, jstring path, jint nCtx) {
     std::string p = jstr(env, path);
     llama_model_params mp = llama_model_default_params();
     llama_model * model = llama_model_load_from_file(p.c_str(), mp);
@@ -87,7 +95,7 @@ Java_com_orbis_research_Llm_nativeLoad(JNIEnv * env, jobject, jstring path, jint
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_orbis_research_Llm_nativeFree(JNIEnv *, jobject, jlong handle) {
+Java_com_orbis_research_LlmNative_nativeFree(JNIEnv *, jobject, jlong handle) {
     auto * e = (Engine *) handle;
     if (!e) return;
     llama_free(e->ctx);
@@ -98,7 +106,7 @@ Java_com_orbis_research_Llm_nativeFree(JNIEnv *, jobject, jlong handle) {
 // Runs system + user messages through the model's chat template and generates at most
 // maxTokens tokens, greedily. A non-empty grammar (GBNF) restricts what can be produced.
 extern "C" JNIEXPORT jstring JNICALL
-Java_com_orbis_research_Llm_nativeGenerate(JNIEnv * env, jobject, jlong handle, jstring jsys,
+Java_com_orbis_research_LlmNative_nativeGenerate(JNIEnv * env, jobject, jlong handle, jstring jsys,
                                            jstring juser, jstring jgrammar, jint maxTokens) {
     auto * e = (Engine *) handle;
     if (!e) return nullptr;

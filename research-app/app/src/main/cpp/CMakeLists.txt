@@ -21,4 +21,11 @@ add_subdirectory(${LLAMA_SRC} build-llama)
 
 add_library(orbisllm SHARED llm.cpp)
 target_include_directories(orbisllm PRIVATE ${LLAMA_SRC}/include ${LLAMA_SRC}/ggml/include)
-target_link_libraries(orbisllm llama ggml android log)
+target_link_libraries(orbisllm llama ggml)
+if(ANDROID)
+    target_link_libraries(orbisllm android log)
+else()
+    # The same bridge built for a computer, so the tests can run the real model with the app's prompts.
+    find_package(JNI REQUIRED)
+    target_include_directories(orbisllm PRIVATE ${JNI_INCLUDE_DIRS})
+endif()

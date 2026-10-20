@@ -4,4 +4,5 @@ local.properties
 .cxx/
 app/build/
 app/.cxx/
-app/src/main/cpp/llama.cpp/
+app/src/main/cpp/llama.cpp
+build-host/
