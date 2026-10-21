@@ -55,6 +55,8 @@ import androidx.work.WorkManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
 
 /**
  * What the owner is typing and choosing, and live word from the background search. The search
@@ -76,9 +78,11 @@ object SearchState {
     fun say(text: String) { status.value = text }
     fun changed() { version.update { it + 1 } }
 
-    fun start(ctx: Context) {
+    /** [web]: also visit the listed sources' sites now for documents not yet on the phone. */
+    fun start(ctx: Context, web: Boolean) {
         val c = claim.trim()
         if (c.isEmpty()) return
+        Settings.setLive(ctx, web)
         val db = Db.get(ctx)
         db.newRun(c, range, sourceIds(db))
         SearchWorker.enqueue(ctx, ExistingWorkPolicy.REPLACE)
@@ -107,6 +111,7 @@ object SearchState {
     fun sourceIds(db: Db): Set<Long>? = if (searchesAll()) null else db.sourcesIn(pickedGroups) + pickedSources
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SearchScreen(goTo: (Int) -> Unit) {
     val ctx = LocalContext.current
@@ -119,6 +124,8 @@ fun SearchScreen(goTo: (Int) -> Unit) {
     val status by s.status.collectAsState()
     var run by remember { mutableStateOf<SearchRun?>(null) }
     var findings by remember { mutableStateOf(emptyList<Finding>()) }
+    var making by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(version) {
         val (r, f) = withContext(Dispatchers.IO) { db.run() to Search(ctx).findings() }
@@ -133,9 +140,10 @@ fun SearchScreen(goTo: (Int) -> Unit) {
         item {
             Text("Yargıyı yazın", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.padding(top = 16.dp))
             Text(
-                "Araç, telefondaki ${totals.first} belgede yargınıza anlamca en yakın paragrafları bulur, okur ve destekleyen " +
-                    "ya da çürüten paragrafı belgeden aynen getirir. Türkçe yazabilirsiniz; başka kelimelerle ya da İngilizce " +
-                    "yazılmış paragrafları da bulur.",
+                "Araç, yargınıza anlamca en yakın paragrafları bulur, okur ve destekleyen ya da çürüten paragrafı belgeden " +
+                    "aynen getirir. Türkçe yazabilirsiniz; başka kelimelerle ya da İngilizce yazılmış paragrafları da bulur.\n" +
+                    "Telefonda arat: telefona toplanmış ${totals.first} belgede arar, internete çıkmaz.\n" +
+                    "Webde arat: ayrıca kaynak listenizdeki sitelere o an girip henüz toplanmamış yeni belgeleri de okur.",
                 style = MaterialTheme.typography.bodySmall,
             )
         }
@@ -146,13 +154,41 @@ fun SearchScreen(goTo: (Int) -> Unit) {
             )
             WhereRow(db, enabled = !going)
             DateRangeRow(db, s.range, s.sourceIds(db), enabled = !going) { s.range = it }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
                 if (going) OutlinedButton(onClick = { s.stop(ctx.applicationContext) }) { Text("Durdur") }
-                else Button(onClick = { s.start(ctx.applicationContext) }, enabled = s.claim.isNotBlank() && hasEmbedder) { Text("Ara") }
+                else {
+                    val can = s.claim.isNotBlank() && hasEmbedder
+                    Button(onClick = { s.start(ctx.applicationContext, web = false) }, enabled = can) { Text("Telefonda arat") }
+                    Button(onClick = { s.start(ctx.applicationContext, web = true) }, enabled = can) { Text("Webde arat") }
+                }
                 if (run?.state == Db.RUN_STOPPED && (run?.done ?: 0) < (run?.total ?: 0) && run?.claim == s.claim.trim()) {
                     OutlinedButton(onClick = { s.resume(ctx.applicationContext) }) { Text("Kaldığı yerden devam et") }
                 }
                 if (findings.isNotEmpty()) OutlinedButton(onClick = { copyAll(ctx, run?.claim ?: s.claim, findings) }) { Text("Tümünü kopyala") }
+                val supporting = findings.filter { it.judgement.verdict == Verdict.SUPPORTS && it.judgement.analogy == null }
+                if (supporting.isNotEmpty()) OutlinedButton(enabled = !making, onClick = {
+                    making = true
+                    scope.launch {
+                        val claim = run?.claim ?: s.claim.trim()
+                        val result = withContext(Dispatchers.IO) {
+                            try {
+                                val order = HashMap<String, List<Long>>()
+                                val found = supporting.map { f ->
+                                    val ids = order.getOrPut(f.paragraph.docUrl) { db.paragraphsOfDoc(f.paragraph.docUrl).map { it.first } }
+                                    f.paragraph to ids.indexOf(f.paragraph.id)
+                                }
+                                val file = EvrakPdf.write(ctx, claim, Evrak.group(found))
+                                file to EvrakPdf.saveToDownloads(ctx, file)
+                            } catch (e: Exception) { null }
+                        }
+                        making = false
+                        if (result == null) Toast.makeText(ctx, "Evrak hazırlanamadı.", Toast.LENGTH_SHORT).show()
+                        else {
+                            if (result.second) Toast.makeText(ctx, "Evrak İndirilenler klasörüne kaydedildi.", Toast.LENGTH_SHORT).show()
+                            EvrakPdf.share(ctx, result.first)
+                        }
+                    }
+                }) { Text(if (making) "Evrak hazırlanıyor…" else "Evrak oluştur") }
             }
         }
         if (!hasEmbedder) item { Notice(Search.NO_EMBEDDER, "Model sekmesine git") { goTo(3) } }

@@ -111,6 +111,15 @@ class Search(private val ctx: Context) {
         val p = db.paragraph(paraId) ?: return "UNRELATED"
         val v = Llm.generate(Prompts.JUDGE_SYSTEM, Prompts.judge(claim, english, p), Prompts.JUDGE_GRAMMAR, maxTokens = 8)?.trim() ?: return null
         val verdict = when (v) { "SUPPORTS" -> Verdict.SUPPORTS; "CONTRADICTS" -> Verdict.CONTRADICTS; else -> return v }
+        if (verdict == Verdict.SUPPORTS) {
+            // The paragraph alone may be a view its document goes on to refute; read it with its neighbours.
+            val doc = db.paragraphsOfDoc(p.docUrl)
+            val i = doc.indexOfFirst { it.first == p.id }
+            val before = if (i > 0) doc[i - 1].second else null
+            val after = if (i >= 0 && i < doc.size - 1) doc[i + 1].second else null
+            val stance = Llm.generate(Prompts.JUDGE_SYSTEM, Prompts.stance(p, before, after), Prompts.STANCE_GRAMMAR, maxTokens = 8)?.trim() ?: return null
+            if (stance == "REFUTED") return Prompts.REFUTED
+        }
         val how = Llm.generate(Prompts.JUDGE_SYSTEM, Prompts.how(claim, english, p, verdict), Prompts.HOW_GRAMMAR, maxTokens = 100)?.trim() ?: return null
         return "$v\n$how"
     }

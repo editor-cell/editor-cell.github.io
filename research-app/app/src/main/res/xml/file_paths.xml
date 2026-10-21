@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The evrak PDFs the app shares (EvrakPdf). -->
+<paths>
+    <cache-path name="evrak" path="evrak/" />
+</paths>

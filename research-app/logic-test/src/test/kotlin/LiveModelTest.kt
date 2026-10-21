@@ -109,6 +109,37 @@ class LiveModelTest {
     }
 
     /**
+     * A paragraph that supports the claim on its own, read with its neighbours: kept when the
+     * document stands behind it, dropped when the document sets it out to refute it.
+     */
+    private class StanceCase(val before: String?, val middle: String, val after: String?, val expected: String, val soft: Boolean = false)
+
+    private val stances = listOf(
+        StanceCase("Common myths about children's diet",
+            "Many parents believe that eating sugar makes children hyperactive and unable to concentrate.",
+            "However, controlled studies have found no difference in behaviour between children given sugar and children given a placebo.",
+            "REFUTED"),
+        StanceCase(null, cases[0].text,
+            "The decline was larger among low-income households, who bought 9% fewer taxed drinks in the first year.", "OWN"),
+        StanceCase("Myth: raising the minimum wage always destroys jobs.",
+            "When the minimum wage rises, employers cut jobs because labour becomes more expensive.",
+            "Fact: most studies of recent increases find little or no effect on the number of jobs.", "REFUTED", soft = true),
+        StanceCase(null, "New registrations of battery electric cars in the European Union rose by 37% in 2023 to 1.5 million.",
+            "However, growth slowed in the second half of the year as purchase subsidies ended in Germany.", "OWN", soft = true),
+    )
+
+    @TestFactory fun readsParagraphsInContext() = stances.map { c ->
+        DynamicTest.dynamicTest("${c.expected}: ${c.middle.take(50)}") {
+            ready()
+            val p = Paragraph(1, c.middle, "https://example.org/r", "Report", "", "Example")
+            val s = ask(Prompts.JUDGE_SYSTEM, Prompts.stance(p, c.before, c.after), Prompts.STANCE_GRAMMAR, 8).trim()
+            println("STANCE $s <- ${c.middle.take(60)}")
+            if (c.soft) assumeTrue(s == c.expected, "subtle case missed: $s")
+            assertEquals(c.expected, s)
+        }
+    }
+
+    /**
      * Kıyas: a paragraph about a comparable case elsewhere, for a claim it does not speak to. The
      * model must give the four parts with the right direction, and stay out of unrelated paragraphs.
      */

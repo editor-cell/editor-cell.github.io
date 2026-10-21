@@ -83,6 +83,25 @@ object Prompts {
     const val HOW_GRAMMAR = "root ::= \"DIRECT\" | \"INDIRECT: \" reason\nreason ::= [^\\n<>]+"
 
     /**
+     * Asked of a paragraph found to support the claim, with the paragraphs before and after it in
+     * its document: does the document stand behind it, or set it out only to refute it ("Some say
+     * …" followed by "This is not the case")? A refuted paragraph is not a finding.
+     */
+    fun stance(p: Paragraph, before: String?, after: String?): String =
+        "Consecutive paragraphs from the document \"${p.docTitle.take(200)}\". Judge only the paragraph marked MIDDLE.\n\n" +
+            (before?.let { "BEFORE:\n<<<\n${it.take(1200)}\n>>>\n\n" } ?: "") +
+            "MIDDLE:\n<<<\n${p.text.take(2000)}\n>>>\n\n" +
+            (after?.let { "AFTER:\n<<<\n${it.take(1200)}\n>>>\n\n" } ?: "") +
+            "Does the document present what the MIDDLE paragraph says as true (OWN)? Or does it set it out as a myth, " +
+            "a mistaken belief or a claim that the document itself, in the MIDDLE paragraph or the paragraphs around it, " +
+            "rejects, refutes or corrects (REFUTED)? Answer with one word."
+
+    const val STANCE_GRAMMAR = "root ::= \"OWN\" | \"REFUTED\""
+
+    /** Saved in place of a verdict when the document refutes the paragraph; never a finding. */
+    const val REFUTED = "REFUTED"
+
+    /**
      * The model's answers (step one, then step two on the next line) as a judgement; null when the
      * paragraph does not bear on the claim.
      */

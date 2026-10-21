@@ -222,6 +222,8 @@ class JudgementTest {
         assertFalse(j.indirect)
         assertEquals(null, com.orbis.research.Prompts.parseJudgement("UNRELATED", para))
         assertEquals(null, com.orbis.research.Prompts.parseJudgement(null, para))
+        // A paragraph its own document refutes is never a finding.
+        assertEquals(null, com.orbis.research.Prompts.parseJudgement(com.orbis.research.Prompts.REFUTED, para))
     }
 
     @Test fun indirectReasonKeptOnlyWithTheParagraphsFigures() {
