@@ -105,6 +105,15 @@ def dev_key(rows):
     return ok - wrong, ok, wrong
 
 
+model.train()
+with torch.no_grad():
+    p0, h0, w0 = pairs(train[:1], ("en",))[0]
+    e0 = tok(p0, h0, truncation="only_first", max_length=384, return_tensors="pt").to(DEVICE)
+    l_train = model(**e0, labels=torch.tensor([name_to_id[TO_NLI[w0]]]).to(DEVICE)).loss.item()
+    model.eval()
+    l_eval = model(**e0, labels=torch.tensor([name_to_id[TO_NLI[w0]]]).to(DEVICE)).loss.item()
+print(f"::notice title=First pair::loss in training mode {l_train:.3f}, in reading mode {l_eval:.3f}", flush=True)
+
 # The model as it came is a candidate too: training is kept only if it does better on the held-out claims.
 dev_rows = pairs(dev, ("en",))
 best_key, ok0, wrong0 = dev_key(dev_rows)
@@ -114,26 +123,38 @@ for epoch in range(EPOCHS):
     random.shuffle(data)
     model.train()
     losses, skipped = [], 0
+    # One pair at a time, eight pairs per update: no padding inside a batch, which is where the
+    # first runs went to NaN (the untrained model, read one pair at a time, was fine).
     for i in range(0, len(data), 8):
         batch = data[i:i + 8]
-        enc = tok([p for p, _, _ in batch], [h for _, h, _ in batch], truncation="only_first",
-                  max_length=384, padding=True, return_tensors="pt").to(DEVICE)
-        y = torch.tensor([name_to_id[TO_NLI[w]] for _, _, w in batch]).to(DEVICE)
-        loss = model(**enc, labels=y).loss
-        if not torch.isfinite(loss):
-            # A broken step must not spoil the weights: skip it and say so.
+        total, good = 0.0, 0
+        for p, h, w in batch:
+            enc = tok(p, h, truncation="only_first", max_length=384, return_tensors="pt").to(DEVICE)
+            y = torch.tensor([name_to_id[TO_NLI[w]]]).to(DEVICE)
+            loss = model(**enc, labels=y).loss
+            if not torch.isfinite(loss):
+                skipped += 1
+                continue
+            (loss / len(batch)).backward()
+            total += loss.item()
+            good += 1
+        if good == 0:
+            opt.zero_grad()
+            continue
+        grads_ok = all(torch.isfinite(q.grad).all() for q in model.parameters() if q.grad is not None)
+        if not grads_ok:
+            # A broken gradient must not reach the weights.
             opt.zero_grad()
             skipped += 1
             continue
-        loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
         opt.step()
         sched.step()
         opt.zero_grad()
-        losses.append(loss.item())
+        losses.append(total / good)
         step += 1
         if step % 25 == 0:
-            print(f"epoch {epoch + 1} step {step}/{steps} loss {loss.item():.3f} {time.time() - t0:.0f}s", flush=True)
+            print(f"epoch {epoch + 1} step {step}/{steps} loss {losses[-1]:.3f} {time.time() - t0:.0f}s", flush=True)
     key, ok, wrong = dev_key(dev_rows)
     mean = sum(losses) / len(losses) if losses else float("nan")
     print(f"::notice title=Epoch {epoch + 1}::mean loss {mean:.3f}, {skipped} broken steps skipped; held-out {ok}/{len(dev_rows)} right, {wrong} wrong findings", flush=True)
