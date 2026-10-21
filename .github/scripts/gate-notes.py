@@ -16,6 +16,6 @@ for path in glob.glob(f"{directory}/TEST-*ConceptGateTest*.xml"):
             print(f"::error title={label}::{case.get('name')[:60]}: {msg}")
     for line in (root.findtext("system-out") or "").splitlines():
         if line.strip().startswith(("CONCEPTS", "GATE")):
-            lines.append(line.strip()[:400])
+            lines.append(line.strip()[:1500])
 if lines:
-    print(f"::notice title={label}::" + "%0A".join(lines)[:12000])
+    print(f"::notice title={label}::" + "%0A".join(lines)[:30000])

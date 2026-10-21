@@ -28,15 +28,16 @@ object Concepts {
         val c = if (english.isNullOrBlank() || english.equals(claim, ignoreCase = true)) claim else "$claim\n(English: $english)"
         return "List the 2 or 3 key ideas this claim joins, for example a measure or cause, what it aims at, and what " +
             "is said to follow. A short claim, question or topic may have just one. Name only things and events the " +
-            "claim is about, never directions or changes (rise, fall, more, less, effect). For each idea write a short " +
-            "English name, a colon, and 8 to 10 words or phrases a report would use for it, in lowercase, separated by " +
-            "commas: first English ones, then Turkish ones. Give different ways of saying the same thing, close " +
-            "synonyms and other word forms, not one phrase repeated. One idea per line, each starting with \"- \".\n\n" +
+            "claim is about. Never use words that only say a direction or a change (rise, fall, higher, lower, reduce, " +
+            "increase, effect) in a name or in the words. For each idea write a short English name, a colon, and 8 to 10 " +
+            "words or phrases a report would use for it, mostly one or two words, in lowercase, separated by commas: first " +
+            "English ones, then Turkish ones. Give different ways of saying the same thing: synonyms and related words, " +
+            "not one phrase repeated. One idea per line, each starting with \"- \".\n\n" +
             "Example claim: Okullarda cep telefonu yasağı koyan ülkelerde öğrenci başarısı arttı.\n" +
-            "- school phone ban: phone ban, ban on phones, mobile phone ban, smartphone ban, restrict phones, phones banned, " +
+            "- school phone ban: phone ban, smartphone ban, phones banned, restrict phones, mobile phone restrictions, " +
             "telefon yasağı, cep telefonu yasağı, telefonların yasaklanması\n" +
-            "- student achievement: achievement, test scores, exam results, academic performance, learning outcomes, " +
-            "student attainment, öğrenci başarısı, sınav sonuçları, akademik başarı\n\n" +
+            "- student achievement: achievement, attainment, test scores, exam results, academic performance, learning outcomes, " +
+            "öğrenci başarısı, sınav sonuçları, akademik başarı\n\n" +
             "Claim: $c"
     }
 
@@ -95,10 +96,35 @@ object Concepts {
         return p >= maxOf(4, short - 2)
     }
 
-    /** A term is in the text when each of its words, small words aside, is there in some form. */
+    /** Words that say only which way a thing goes, not what it is: "reduce inflation" is about inflation. */
+    private val DIRECTION = setOf(
+        "increase", "increased", "increases", "increasing", "rise", "rises", "rising", "rose", "risen", "raise", "raised", "raises",
+        "raising", "higher", "high", "hike", "hikes", "hiked", "growth", "grow", "grows", "growing", "grew", "boost", "boosted", "surge",
+        "jump", "elevation", "elevated", "upward", "lower", "lowered", "lowering", "reduce", "reduced", "reduces", "reducing",
+        "reduction", "decrease", "decreased", "decreases", "decreasing", "decline", "declined", "declines", "declining", "fall",
+        "falling", "falls", "fell", "drop", "dropped", "drops", "dropping", "cut", "cuts", "cutting", "downward", "less", "more",
+        "fewer", "effect", "effects", "impact", "impacts", "change", "changes", "changing", "control", "combat", "fight", "curb",
+        "tackle", "artis", "artisi", "artmasi", "yukselis", "yukselme", "yukseltilmesi", "dusus", "dususu", "dusme", "azalma",
+        "azalis", "azalmasi", "azaltilmasi",
+    )
+
+    /** How many of [ws] must be in the text: all, but of a term of three or more words one may be missing. */
+    private fun enough(found: Int, n: Int) = found >= if (n >= 3) n - 1 else n
+
+    /**
+     * A term is in the text when each of its words, small words aside, is there in some form (one may be
+     * missing from a term of three or more). If not, the term is tried without the words that only say
+     * direction, when what is left still names something: two words, or one of six letters or more.
+     */
     private fun has(term: String, tokens: List<String>): Boolean {
-        val ws = words(term).filter { it !in STOP }
-        return ws.isNotEmpty() && ws.all { w -> tokens.any { sameWord(it, w) } }
+        val all = words(term).filter { it !in STOP }
+        if (all.isEmpty()) return false
+        fun count(ws: List<String>) = ws.count { w -> tokens.any { sameWord(it, w) } }
+        if (enough(count(all), all.size)) return true
+        val core = all.filter { it !in DIRECTION }
+        if (core.isEmpty() || core.size == all.size) return false
+        if (core.size == 1 && core[0].length < 6) return false
+        return enough(count(core), core.size)
     }
 
     /** How many of the concepts the text speaks of. */
@@ -110,6 +136,16 @@ object Concepts {
     /** How many of [n] concepts a paragraph must speak of: two thirds, rounded up; one concept, that one. */
     fun needed(n: Int) = (2 * n + 2) / 3
 
-    /** Whether the paragraph may go to the model; with no concepts (none could be found) every one may. */
-    fun passes(text: String, concepts: List<Concept>) = concepts.isEmpty() || covered(text, concepts) >= needed(concepts.size)
+    /**
+     * Whether the paragraph may go to the model; with no concepts (none could be found) every one may.
+     * A paragraph that speaks of one of the ideas also passes when its neighbours in the document
+     * ([near], the paragraph before and after) speak of enough of the others together with it.
+     */
+    fun passes(text: String, concepts: List<Concept>, near: String = ""): Boolean {
+        if (concepts.isEmpty()) return true
+        val need = needed(concepts.size)
+        val own = covered(text, concepts)
+        if (own >= need) return true
+        return near.isNotBlank() && own >= 1 && covered("$text $near", concepts) >= need
+    }
 }

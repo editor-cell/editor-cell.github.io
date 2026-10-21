@@ -103,6 +103,38 @@ class ConceptsTest {
         assertTrue(Concepts.passes("Isitma sistemleri değişti; telefon yasağı", c))
     }
 
+    /** "Reduce inflation" is about inflation: what the paragraph says of its direction is for the model to read. */
+    @Test fun wordsThatOnlySayDirectionAreLeftOut() {
+        val c = Concepts.parse(
+            "- inflation fall: reduce inflation, lower inflation, inflation control\n" +
+                "- interest rates up: higher interest rates, rate hikes\n" +
+                "- minimum wage: minimum wage rise, higher minimum wage",
+        )
+        assertTrue(Concepts.passes("Inflation eased after the minimum wage was frozen, while interest rates were left alone.", c))
+        // One word of a term that says only direction is not enough to name a thing: "rate" alone is every kind of rate.
+        assertFalse(Concepts.passes("The exchange rate fell.", c))
+        assertFalse(Concepts.passes("Prices rose last year in the shops.", c))
+    }
+
+    @Test fun aLongTermMayMissOneWord() {
+        val c = Concepts.parse("- drinks: sugary beverage consumption, tax levy")
+        assertTrue(Concepts.passes("Sales of sugary beverages fell in the first year.", c))
+        assertFalse(Concepts.passes("The tax was paid in March.", c))
+        assertFalse(Concepts.passes("Beverages are sold in cans.", c))
+    }
+
+    /** A paragraph that speaks of one idea may have the other beside it, in the paragraph before or after. */
+    @Test fun neighboursCanSupplyTheOtherIdeas() {
+        val c = Concepts.parse("- sugar tax: sugar tax, sugar levy\n- soft drinks: soft drinks, fizzy drinks")
+        val own = "Sales of soft drinks did not fall after the rise, because buyers crossed the border."
+        assertFalse(Concepts.passes(own, c))
+        assertTrue(Concepts.passes(own, c, near = "Denmark introduced a sugar tax in 2011. It was repealed two years later."))
+        // A paragraph that speaks of none of the ideas is not rescued by what is beside it.
+        assertFalse(Concepts.passes("The weather was cold in March.", c, near = "A sugar tax on soft drinks was introduced."))
+        // Neighbours that speak of neither idea do not help.
+        assertFalse(Concepts.passes(own, c, near = "The border crossing opens at six."))
+    }
+
     @Test fun withNoConceptsEveryParagraphGoes() {
         assertTrue(Concepts.passes("Any paragraph at all.", emptyList()))
     }

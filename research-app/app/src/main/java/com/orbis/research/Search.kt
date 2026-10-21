@@ -148,15 +148,24 @@ class Search(private val ctx: Context) {
 
     /**
      * Step 1b: of the paragraphs closest in meaning, keeps those that speak of the claim's concepts
-     * (most of them, in any form of the words) and hands the closest of these to the model; the
-     * rest are never read. With none left, the search ends in "Bulamadım". With no concepts, the
-     * closest ones are kept as they are. Saved together with the concepts.
+     * (most of them, in any form of the words, or with the paragraph before or after to make up the
+     * rest) and hands the closest of these to the model; the rest are never read. With none left,
+     * the search ends in "Bulamadım". With no concepts, the closest ones are kept as they are.
+     * Saved together with the concepts.
      */
     fun gate(conceptsText: String) {
         val concepts = Concepts.parse(conceptsText)
         val pool = db.pendingItems().map { it.second }
-        val kept = if (concepts.isEmpty()) pool
-        else pool.filter { id -> db.paragraph(id)?.let { Concepts.passes(it.text, concepts) } == true }
+        val docs = HashMap<String, List<Pair<Long, String>>>()
+        val kept = if (concepts.isEmpty()) pool else pool.filter { id ->
+            val p = db.paragraph(id) ?: return@filter false
+            Concepts.passes(p.text, concepts) || run {
+                val doc = docs.getOrPut(p.docUrl) { db.paragraphsOfDoc(p.docUrl) }
+                val i = doc.indexOfFirst { it.first == p.id }
+                val near = if (i < 0) "" else listOfNotNull(doc.getOrNull(i - 1)?.second, doc.getOrNull(i + 1)?.second).joinToString(" ")
+                Concepts.passes(p.text, concepts, near)
+            }
+        }
         db.setItemsAndConcepts(kept.take(Settings.candidates(ctx)), conceptsText)
     }
 
