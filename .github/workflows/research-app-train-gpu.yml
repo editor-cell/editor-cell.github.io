@@ -15,7 +15,7 @@ on:
       epochs:
         default: "3"
       lr:
-        default: "2e-5"
+        default: "1e-5"
 
 permissions:
   contents: read
@@ -33,4 +33,4 @@ jobs:
       - name: Train on the graphics card
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: python .github/scripts/hf-train.py "${{ inputs.flavor || 'a10g-small,t4-small,l4x1,t4-medium' }}" "${{ inputs.epochs || '3' }}" "${{ inputs.lr || '2e-5' }}"
+        run: python .github/scripts/hf-train.py "${{ inputs.flavor || 'a10g-small,t4-small,l4x1,t4-medium' }}" "${{ inputs.epochs || '3' }}" "${{ inputs.lr || '1e-5' }}"

@@ -95,23 +95,53 @@ steps = EPOCHS * ((len(data) + 7) // 8)
 sched = torch.optim.lr_scheduler.LambdaLR(opt, lambda s: min(1.0, (s + 1) / (0.1 * steps)) * max(0.0, 1 - s / steps))
 t0 = time.time()
 step = 0
+
+
+def dev_key(rows):
+    got = predict([(p, h) for p, h, _ in rows])
+    want = [w for _, _, w in rows]
+    ok = sum(g == w for g, w in zip(got, want))
+    wrong = sum(g != "UNRELATED" and g != w for g, w in zip(got, want))
+    return ok - wrong, ok, wrong
+
+
+# The model as it came is a candidate too: training is kept only if it does better on the held-out claims.
+dev_rows = pairs(dev, ("en",))
+best_key, ok0, wrong0 = dev_key(dev_rows)
+best_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
+best_epoch = 0
 for epoch in range(EPOCHS):
     random.shuffle(data)
     model.train()
+    losses, skipped = [], 0
     for i in range(0, len(data), 8):
         batch = data[i:i + 8]
         enc = tok([p for p, _, _ in batch], [h for _, h, _ in batch], truncation="only_first",
                   max_length=384, padding=True, return_tensors="pt").to(DEVICE)
         y = torch.tensor([name_to_id[TO_NLI[w]] for _, _, w in batch]).to(DEVICE)
         loss = model(**enc, labels=y).loss
+        if not torch.isfinite(loss):
+            # A broken step must not spoil the weights: skip it and say so.
+            opt.zero_grad()
+            skipped += 1
+            continue
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
         opt.step()
         sched.step()
         opt.zero_grad()
+        losses.append(loss.item())
         step += 1
         if step % 25 == 0:
             print(f"epoch {epoch + 1} step {step}/{steps} loss {loss.item():.3f} {time.time() - t0:.0f}s", flush=True)
+    key, ok, wrong = dev_key(dev_rows)
+    mean = sum(losses) / len(losses) if losses else float("nan")
+    print(f"::notice title=Epoch {epoch + 1}::mean loss {mean:.3f}, {skipped} broken steps skipped; held-out {ok}/{len(dev_rows)} right, {wrong} wrong findings", flush=True)
+    if key > best_key:
+        best_key, best_epoch = key, epoch + 1
+        best_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
+model.load_state_dict(best_state)
+notes.append(f"kept the model after epoch {best_epoch} (0 = as it came, untrained)")
 
 after_dev, _ = score(pairs(dev, ("en",)), "held-out, after")
 after_dev_tr, _ = score(pairs(dev, ("tr",)), "held-out with the Turkish claim, after")
@@ -124,7 +154,7 @@ print("::notice title=Training::" + "%0A".join(notes))
 os.makedirs(OUT, exist_ok=True)
 model.save_pretrained(OUT)
 tok.save_pretrained(OUT)
-if os.environ.get("HUB_REPO") and os.environ.get("HF_TOKEN"):
+if os.environ.get("HUB_REPO") and os.environ.get("HF_TOKEN") and best_epoch > 0:
     # Kept in a private model repository on the owner's Hugging Face account, for the phone to fetch later.
     model.push_to_hub(os.environ["HUB_REPO"], private=True, commit_message=notes[-len(trial_rows) - 2])
     tok.push_to_hub(os.environ["HUB_REPO"], private=True)
