@@ -1,0 +1,43 @@
+name: Research app (training paragraphs)
+
+# Collects paragraphs from public institutions' news, speeches and press releases for training
+# examples, and saves them on this branch. Also says whether the Hugging Face key is in place.
+on:
+  push:
+    branches: [anlam-okuma]
+    paths:
+      - .github/workflows/research-app-corpus.yml
+      - research-app/train/collect.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  collect:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install --quiet requests trafilatura beautifulsoup4 huggingface_hub
+      - name: Is the Hugging Face key in place
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          if [ -z "$HF_TOKEN" ]; then echo "::notice title=Hugging Face key::not added yet"; else
+            who=$(python -c "from huggingface_hub import whoami; print(whoami()['name'])" 2>&1 | tail -1)
+            echo "::notice title=Hugging Face key::in place, account: $who"; fi
+      - name: Collect paragraphs
+        run: python research-app/train/collect.py | tee notes.txt
+      - name: Leave the counts as notes
+        if: always()
+        run: echo "::notice title=Paragraphs::$(sed ':a;N;$!ba;s/\n/%0A/g' notes.txt)"
+      - name: Save them on the branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add research-app/train/corpus.jsonl
+          git commit -m "Research app trial: training paragraphs collected [skip ci]" || exit 0
+          git pull --rebase -q origin anlam-okuma && git push -q origin HEAD:anlam-okuma
