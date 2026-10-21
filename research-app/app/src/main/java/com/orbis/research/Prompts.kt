@@ -110,9 +110,10 @@ object Prompts {
     /**
      * The owner's second idea (21 Oct 2026), the hafız's way: a hafız learns a page by heart from its
      * last line. The paragraph is given in its own order, its sentences numbered, and the model goes
-     * from the last sentence back to the first, writing what each one says; the grammar holds it to
-     * every sentence, so none can be skipped. Only then does it say whether the paragraph matches the
-     * claim. Tried beside [read].
+     * from the last sentence back to the first, giving each one a fixed mark and no words of its own
+     * (the owner: a summary in a few words would only be its own inference again); the grammar holds
+     * it to every sentence, so none can be skipped. Only then does it say whether the paragraph matches
+     * the claim. Tried beside [read].
      */
     fun readBackwards(claim: String, english: String?, p: Paragraph): String {
         val c = if (english.isNullOrBlank() || english.equals(claim, ignoreCase = true)) claim else "$claim\n(English: $english)"
@@ -121,26 +122,31 @@ object Prompts {
         return "Claim: $c\n\nParagraph from \"${p.docTitle.take(200)}\", its sentences numbered in order:\n<<<\n$numbered\n>>>\n\n" +
             "The claim's words, or words that mean the same, appear in this paragraph. That alone proves nothing. " +
             "Read the paragraph the way a hafız learns a page by heart: start from the last sentence and go back to the " +
-            "first, one sentence at a time. First write the claim in a few words (what the claim says happened: the measure " +
-            "or cause, and what followed it; or what a question or topic asks about). Then, from sentence $n down to " +
-            "sentence 1, write in a few words of your own what that sentence says. Then write Match: same (the paragraph " +
-            "reports both parts of the claim, linked, as the claim says), opposite (it reports both, but no effect or the " +
-            "opposite followed), answers (the claim is a question or topic and the paragraph answers it or gives concrete " +
-            "information on it), or no (anything else, including a paragraph on the same subject that does not report " +
-            "what the claim says)."
+            "first, one sentence at a time, from sentence $n down to sentence 1. Do not summarise any sentence. Give each " +
+            "one only a mark, for what that sentence itself states:\n" +
+            "cause: it states that the claim's measure or cause was taken or happened.\n" +
+            "outcome: it states that what the claim says followed did happen.\n" +
+            "both: it states both, linked.\n" +
+            "opposite: it states that after the claim's measure or cause, no such effect or the opposite followed.\n" +
+            "answers: the claim is a question or topic and this sentence answers it or gives concrete information on it.\n" +
+            "rejects: it rejects, refutes or corrects what the sentences before it said.\n" +
+            "none: anything else, including a sentence that only shares the subject, names a plan, a target or a view.\n" +
+            "Then write Match: same (the paragraph states both parts of the claim, linked, as the claim says, and does " +
+            "not reject them), opposite (it states the claim's measure or cause, but no effect or the opposite), answers " +
+            "(it answers the question or informs on the topic), or no (anything else)."
     }
 
-    /** Holds the model to every sentence, from the last to the first. */
+    /** Holds the model to every sentence, from the last to the first, with a mark and nothing else. */
     fun readBackwardsGrammar(text: String): String {
         val n = sentences(text.take(2000)).size.coerceAtLeast(1)
-        val steps = (n downTo 1).joinToString(" ") { "\"\\nS$it: \" line" }
-        return "root ::= \"Claim: \" line $steps \"\\nMatch: \" match\n" +
-            "line ::= [^\\n]{1,160}\n" +
+        val steps = (n downTo 1).joinToString(" ") { "\"S$it: \" mark \"\\n\"" }
+        return "root ::= $steps \"Match: \" match\n" +
+            "mark ::= \"cause\" | \"outcome\" | \"both\" | \"opposite\" | \"answers\" | \"rejects\" | \"none\"\n" +
             "match ::= \"same\" | \"opposite\" | \"answers\" | \"no\""
     }
 
-    /** Room for a note on every sentence and the match. */
-    fun readBackwardsMax(text: String) = (40 + 30 * sentences(text.take(2000)).size).coerceAtMost(360)
+    /** Room for a mark on every sentence and the match. */
+    fun readBackwardsMax(text: String) = (12 + 6 * sentences(text.take(2000)).size).coerceAtMost(200)
 
     /** Room for the short lines and the match. */
     const val READ_MAX = 160
