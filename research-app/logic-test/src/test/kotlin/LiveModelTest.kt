@@ -39,6 +39,9 @@ class LiveModelTest {
         private const val EV = "Elektrikli otomobil satışları Avrupa'da 2023'te arttı."
         // Typed on the phone on 21 Oct 2026 as a phrase, not a sentence.
         private const val RATES = "enflasyon düşürmek için faiz yükselten ülkelerde ekonomik durgunluk"
+        // A question and a topic: a paragraph that answers or informs on them counts as supporting.
+        private const val WHAT = "Ekonomik durgunluk nedir?"
+        private const val TOPIC = "şeker vergisi"
     }
 
     /**
@@ -72,6 +75,12 @@ class LiveModelTest {
             "or translated provided the source is stated."),
         Case(RATES, "UNRELATED", "Rising unemployment and falling house prices are two of the scenarios banks must model in the " +
             "stress test; if financial institutions fail a test, they must adjust their capital plans."),
+        Case(WHAT, "SUPPORTS", "A recession is a significant decline in economic activity spread across the economy, lasting more " +
+            "than a few months; it is often identified by two consecutive quarters of falling real GDP."),
+        Case(WHAT, "UNRELATED", "The ministry will publish its annual report on road safety in March, covering traffic accidents, " +
+            "speeding fines and the use of seat belts in rural areas."),
+        Case(TOPIC, "SUPPORTS", "In Mexico, purchases of taxed sugar-sweetened beverages declined by 6% in the first year after the " +
+            "excise tax was introduced in 2014.", soft = true),
         Case(EV, "SUPPORTS", "New registrations of battery electric cars in the European Union rose by 37% in 2023 to 1.5 million, " +
             "reaching a market share of 14.6%."),
     )

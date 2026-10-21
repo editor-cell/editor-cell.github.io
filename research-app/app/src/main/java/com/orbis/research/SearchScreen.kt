@@ -138,10 +138,12 @@ fun SearchScreen(goTo: (Int) -> Unit) {
 
     LazyColumn(Modifier.fillMaxSize().padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         item {
-            Text("Yargıyı yazın", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.padding(top = 16.dp))
+            Text("Yargı, soru ya da kavram yazın", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.padding(top = 16.dp))
             Text(
-                "Araç, yargınıza anlamca en yakın paragrafları bulur, okur ve destekleyen ya da çürüten paragrafı belgeden " +
-                    "aynen getirir. Türkçe yazabilirsiniz; başka kelimelerle ya da İngilizce yazılmış paragrafları da bulur.\n" +
+                "Araç, yazdığınıza anlamca en yakın paragrafları bulur, okur ve destekleyen ya da çürüten paragrafı belgeden " +
+                    "aynen getirir. Bir yargı, bir soru ya da bir kavram yazabilirsiniz: soruyu cevaplayan ya da kavram hakkında " +
+                    "somut bilgi veren paragraflar da DESTEKLİYOR diye gelir. Türkçe yazabilirsiniz; başka kelimelerle ya da " +
+                    "İngilizce yazılmış paragrafları da bulur.\n" +
                     "Telefonda arat: telefona toplanmış ${totals.first} belgede arar, internete çıkmaz.\n" +
                     "Webde arat: ayrıca kaynak listenizdeki sitelere o an girip henüz toplanmamış yeni belgeleri de okur.",
                 style = MaterialTheme.typography.bodySmall,

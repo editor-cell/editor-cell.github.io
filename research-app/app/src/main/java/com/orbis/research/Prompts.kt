@@ -42,7 +42,7 @@ object Prompts {
 
     /** The claim in English as well: the small model judges English paragraphs better with it. */
     fun translate(claim: String) = "Translate into English. If it is already English, repeat it unchanged. " +
-        "If it is a phrase rather than a full sentence, write it as the full statement it means.\n\n" +
+        "Keep its form: a statement stays a statement, a question stays a question, a topic stays a topic.\n\n" +
         "Example: Tütün vergisini artıran ülkelerde sigara içme oranı azaldı.\n" +
         "Translation: In countries that raised tobacco taxes, smoking rates fell.\n\n" +
         "$claim\nTranslation:"
@@ -58,7 +58,10 @@ object Prompts {
         "UNRELATED: anything else, including paragraphs that only mention the topic, describe plans or " +
         "methods, or give no finding about the claim. A title, a reference to another publication, a copyright " +
         "or legal notice, a sentence cut off in the middle, or a paragraph that only shares some words or the " +
-        "general subject with the claim is always UNRELATED. When in doubt, answer UNRELATED."
+        "general subject with the claim is always UNRELATED. When in doubt, answer UNRELATED.\n" +
+        "The claim may also be a question or a topic instead of a statement. Then SUPPORTS means the paragraph " +
+        "answers the question or gives concrete information on the topic (a definition, a finding, a figure, what " +
+        "a country did and what followed); CONTRADICTS is not used, and anything else is UNRELATED."
 
     private fun claimAndParagraph(claim: String, english: String?, p: Paragraph): String {
         val c = if (english.isNullOrBlank() || english.equals(claim, ignoreCase = true)) claim else "$claim\n(English: $english)"
@@ -68,7 +71,9 @@ object Prompts {
     /** Step one: does the paragraph bear on the claim? One word. */
     fun judge(claim: String, english: String?, p: Paragraph): String = claimAndParagraph(claim, english, p) +
         "Does this paragraph show the claim is true (SUPPORTS), show it is false, for example no effect, " +
-        "no change or the opposite (CONTRADICTS), or neither (UNRELATED)? Answer with one word."
+        "no change or the opposite (CONTRADICTS), or neither (UNRELATED)? If the claim is a question or a topic: " +
+        "does the paragraph answer it or give concrete information on it (SUPPORTS), or not (UNRELATED)? " +
+        "Answer with one word."
 
     const val JUDGE_GRAMMAR = "root ::= \"SUPPORTS\" | \"CONTRADICTS\" | \"UNRELATED\""
 
