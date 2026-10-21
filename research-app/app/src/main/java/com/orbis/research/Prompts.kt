@@ -25,6 +25,18 @@ object Prompts {
     /** Drops the thinking block Qwen3 may write before its answer. */
     fun clean(raw: String) = raw.replace(Regex("(?s)<think>.*?</think>"), "").trim()
 
+    const val TRANSLATE_SYSTEM = "You are a professional Turkish-English translator. You translate a statement into " +
+        "accurate English, keeping every term's exact meaning. Output only the translation."
+
+    /** The claim in English as well: the small model judges English paragraphs better with it. */
+    fun translate(claim: String) = "Translate into English. If it is already English, repeat it unchanged.\n\n" +
+        "Example: Tütün vergisini artıran ülkelerde sigara içme oranı azaldı.\n" +
+        "Translation: In countries that raised tobacco taxes, smoking rates fell.\n\n" +
+        "$claim\nTranslation:"
+
+    fun firstLine(raw: String?) = raw?.lines()?.firstOrNull { it.isNotBlank() }?.trim()
+        ?.removePrefix("Translation:")?.trim()?.trim('"')
+
     const val JUDGE_SYSTEM = "You are a careful fact-checker. You read one paragraph taken from a document and " +
         "decide how it bears on a claim. Use only what the paragraph itself says.\n" +
         "SUPPORTS: the paragraph reports a finding, figure or evidence showing the claim is true.\n" +
@@ -33,11 +45,13 @@ object Prompts {
         "UNRELATED: anything else, including paragraphs that only mention the topic, describe plans or " +
         "methods, or give no finding about the claim."
 
-    private fun claimAndParagraph(claim: String, p: Paragraph) =
-        "Claim: $claim\n\nParagraph from \"${p.docTitle.take(200)}\":\n<<<\n${p.text.take(2000)}\n>>>\n\n"
+    private fun claimAndParagraph(claim: String, english: String?, p: Paragraph): String {
+        val c = if (english.isNullOrBlank() || english.equals(claim, ignoreCase = true)) claim else "$claim\n(English: $english)"
+        return "Claim: $c\n\nParagraph from \"${p.docTitle.take(200)}\":\n<<<\n${p.text.take(2000)}\n>>>\n\n"
+    }
 
     /** Step one: does the paragraph bear on the claim? One word. */
-    fun judge(claim: String, p: Paragraph): String = claimAndParagraph(claim, p) +
+    fun judge(claim: String, english: String?, p: Paragraph): String = claimAndParagraph(claim, english, p) +
         "Does this paragraph show the claim is true (SUPPORTS), show it is false, for example no effect, " +
         "no change or the opposite (CONTRADICTS), or neither (UNRELATED)? Answer with one word."
 
@@ -48,7 +62,7 @@ object Prompts {
      * claim follow from it in one step, and which step. It starts as step one did, so the model
      * reads only the new question. Asked together, the two questions confused the small model.
      */
-    fun how(claim: String, p: Paragraph, verdict: Verdict): String = claimAndParagraph(claim, p) +
+    fun how(claim: String, english: String?, p: Paragraph, verdict: Verdict): String = claimAndParagraph(claim, english, p) +
         "This paragraph shows the claim is ${if (verdict == Verdict.SUPPORTS) "true" else "false"}. Does it say so " +
         "outright (DIRECT), or does it follow in one clear step from facts or figures in the paragraph (INDIRECT)? " +
         "If INDIRECT, write a colon and one short sentence in Turkish naming that step, using only facts and " +

@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper
  * Everything the app keeps: the sources and their headings, the queue of addresses to read,
  * documents, their paragraphs and the meaning vector of each, and the search under way.
  */
-class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", null, 3) {
+class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", null, 4) {
 
     override fun onConfigure(db: SQLiteDatabase) {
         db.setForeignKeyConstraintsEnabled(true)
@@ -37,6 +37,8 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
             db.execSQL("DROP TRIGGER IF EXISTS paras_del")
             db.execSQL("DROP TABLE IF EXISTS paras_fts")
             createMeaning(db)
+        } else if (oldVersion < 4) {
+            db.execSQL("ALTER TABLE search_run ADD COLUMN english TEXT")
         }
     }
 
@@ -48,7 +50,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
         db.execSQL("CREATE TABLE para_vec(para_id INTEGER PRIMARY KEY REFERENCES paras(id) ON DELETE CASCADE, vec BLOB NOT NULL)")
         db.execSQL("""CREATE TABLE search_run(id INTEGER PRIMARY KEY CHECK (id = 1), claim TEXT NOT NULL, date_from TEXT,
             date_to TEXT, undated INTEGER NOT NULL, sources TEXT, state INTEGER NOT NULL, prepared INTEGER NOT NULL DEFAULT 0,
-            suggestion TEXT, message TEXT, started_at INTEGER NOT NULL)""")
+            suggestion TEXT, message TEXT, started_at INTEGER NOT NULL, english TEXT)""")
         db.execSQL("CREATE TABLE search_items(idx INTEGER PRIMARY KEY, para_id INTEGER NOT NULL, answer TEXT, judged INTEGER NOT NULL DEFAULT 0)")
     }
 
@@ -304,19 +306,21 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
 
     fun run(): SearchRun? = readableDatabase.rawQuery(
         """SELECT claim, date_from, date_to, undated, sources, state, prepared, suggestion, message, started_at,
-                  (SELECT COUNT(*) FROM search_items), (SELECT COUNT(*) FROM search_items WHERE judged = 1) FROM search_run WHERE id = 1""", null,
+                  (SELECT COUNT(*) FROM search_items), (SELECT COUNT(*) FROM search_items WHERE judged = 1), english
+           FROM search_run WHERE id = 1""", null,
     ).use { c ->
         if (!c.moveToFirst()) null else SearchRun(
             claim = c.getString(0),
             range = DateRange(c.getString(1), c.getString(2), c.getInt(3) == 1),
             sourceIds = c.getString(4)?.split(',')?.filter { it.isNotEmpty() }?.map { it.toLong() }?.toSet(),
             state = c.getInt(5), prepared = c.getInt(6) == 1, suggestion = c.getString(7), message = c.getString(8),
-            startedAt = c.getLong(9), total = c.getInt(10), done = c.getInt(11),
+            startedAt = c.getLong(9), total = c.getInt(10), done = c.getInt(11), english = c.getString(12),
         )
     }
 
-    fun setRun(state: Int? = null, prepared: Boolean? = null, suggestion: String? = null, message: String? = null) {
+    fun setRun(state: Int? = null, prepared: Boolean? = null, suggestion: String? = null, message: String? = null, english: String? = null) {
         val v = ContentValues()
+        english?.let { v.put("english", it) }
         state?.let { v.put("state", it) }
         prepared?.let { v.put("prepared", if (it) 1 else 0) }
         suggestion?.let { v.put("suggestion", it) }
@@ -367,4 +371,6 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
 data class SearchRun(
     val claim: String, val range: DateRange, val sourceIds: Set<Long>?, val state: Int, val prepared: Boolean,
     val suggestion: String?, val message: String?, val startedAt: Long, val total: Int, val done: Int,
+    /** The claim in English, once the search has made it. */
+    val english: String? = null,
 )

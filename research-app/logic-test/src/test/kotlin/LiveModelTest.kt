@@ -28,6 +28,12 @@ class LiveModelTest {
             return out
         }
 
+        private val englishCache = HashMap<String, String>()
+        /** The app's translation step, once per claim. */
+        fun english(claim: String) = englishCache.getOrPut(claim) {
+            Prompts.firstLine(ask(Prompts.TRANSLATE_SYSTEM, Prompts.translate(claim), "", 60)) ?: ""
+        }
+
         private const val SUGAR = "Şeker vergisi koyan ülkelerde gazlı içecek tüketimi düştü."
         private const val WAGE = "Asgari ücret artışı istihdamı azaltmadı."
         private const val AIR = "Kentlerde hava kirliliği astım vakalarını artırıyor."
@@ -63,15 +69,34 @@ class LiveModelTest {
             "reaching a market share of 14.6%."),
     )
 
+    /** Turkish claims and the English words a correct translation must contain (one of each group). */
+    private val translations = listOf(
+        SUGAR to listOf("sugar", "tax", "drink|soda|beverage"),
+        WAGE to listOf("minimum wage", "employment|jobs"),
+        AIR to listOf("air pollution", "asthma"),
+        "Okul öncesi eğitim çocukların ileriki okul başarısını yükseltiyor." to listOf("preschool|pre-school|early childhood|kindergarten", "school"),
+        EV to listOf("electric", "car|vehicle|automobile", "europe", "2023"),
+    )
+
+    @TestFactory fun translatesTurkishClaims() = translations.map { (claim, groups) ->
+        DynamicTest.dynamicTest(claim) {
+            ready()
+            val en = english(claim)
+            println("TRANSLATION: $claim -> $en")
+            for (g in groups) assertTrue(Regex(g, RegexOption.IGNORE_CASE).containsMatchIn(en), "missing '$g' in: $en")
+        }
+    }
+
     @TestFactory fun judgesParagraphs() = cases.map { c ->
         DynamicTest.dynamicTest("${c.expected}${if (c.indirect) " (indirect)" else ""}: ${c.text.take(46)}") {
             ready()
             val p = Paragraph(1, c.text, "https://example.org/r", "Report", "", "Example")
             // The app's two steps: the verdict, then for a paragraph that bears on the claim, how.
-            val v = ask(Prompts.JUDGE_SYSTEM, Prompts.judge(c.claim, p), Prompts.JUDGE_GRAMMAR, 8)
+            val en = english(c.claim)
+            val v = ask(Prompts.JUDGE_SYSTEM, Prompts.judge(c.claim, en, p), Prompts.JUDGE_GRAMMAR, 8)
             val a = when (v) {
-                "SUPPORTS" -> v + "\n" + ask(Prompts.JUDGE_SYSTEM, Prompts.how(c.claim, p, Verdict.SUPPORTS), Prompts.HOW_GRAMMAR, 50)
-                "CONTRADICTS" -> v + "\n" + ask(Prompts.JUDGE_SYSTEM, Prompts.how(c.claim, p, Verdict.CONTRADICTS), Prompts.HOW_GRAMMAR, 50)
+                "SUPPORTS" -> v + "\n" + ask(Prompts.JUDGE_SYSTEM, Prompts.how(c.claim, en, p, Verdict.SUPPORTS), Prompts.HOW_GRAMMAR, 50)
+                "CONTRADICTS" -> v + "\n" + ask(Prompts.JUDGE_SYSTEM, Prompts.how(c.claim, en, p, Verdict.CONTRADICTS), Prompts.HOW_GRAMMAR, 50)
                 else -> v
             }
             println("JUDGE ${a.replace("\n", " | ")} <- ${c.text.take(60)}")
@@ -112,7 +137,7 @@ class LiveModelTest {
             assertEquals(null, out)
             // The engine still answers correctly after a stop.
             val p = Paragraph(1, cases[0].text, "https://example.org/r", "Report", "", "Example")
-            val again = ask(Prompts.JUDGE_SYSTEM, Prompts.judge(SUGAR, p), Prompts.JUDGE_GRAMMAR, 8)
+            val again = ask(Prompts.JUDGE_SYSTEM, Prompts.judge(SUGAR, english(SUGAR), p), Prompts.JUDGE_GRAMMAR, 8)
             assertEquals(Verdict.SUPPORTS, Prompts.parseJudgement(again, p.text)?.verdict, "after stop: $again")
         }
     }

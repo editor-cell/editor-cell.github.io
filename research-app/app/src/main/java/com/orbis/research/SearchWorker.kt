@@ -49,6 +49,12 @@ class SearchWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
                     db.setRun(state = Db.RUN_FAILED, message = "Model açılamadı; dosya bozuk olabilir. Model sekmesinden yeniden indirin.")
                     return Result.success()
                 }
+                var english = db.run()?.english
+                if (english == null) {
+                    say("Yargı İngilizceye çevriliyor…")
+                    english = search.translate(run.claim) ?: return Result.success()
+                    db.setRun(english = english)
+                }
                 val total = db.run()?.total ?: pending.size
                 val started = System.currentTimeMillis()
                 for ((n, item) in pending.withIndex()) {
@@ -56,7 +62,7 @@ class SearchWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
                     // After the first few paragraphs the phone's own pace gives an honest estimate.
                     val left = if (n >= 2) ((System.currentTimeMillis() - started) / n * (pending.size - n) / 1000).toInt() else -1
                     say("Paragraf ${total - pending.size + n + 1}/$total okunuyor…" + if (left >= 0) " (yaklaşık ${duration(left)} kaldı)" else "")
-                    val answer = search.judge(run.claim, item.second)
+                    val answer = search.judge(run.claim, english, item.second)
                     if (answer == null && (isStopped || !current())) break
                     db.saveAnswer(item.first, answer, run.startedAt)
                     SearchState.changed()

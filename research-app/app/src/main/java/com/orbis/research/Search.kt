@@ -8,8 +8,9 @@ class Finding(val paragraph: Paragraph, val judgement: Judgement)
  * One search, step by step, each step saved so an interrupted search goes on where it stopped:
  * 1. the meaning model picks the paragraphs closest in meaning to the claim (in any wording or
  *    language) within the chosen dates and sources;
- * 2. the language model reads them one by one and labels each; the words shown are always the
- *    paragraph as it was read from the document;
+ * 2. the language model puts the claim into English once (it judges English paragraphs better
+ *    with it), then reads the paragraphs one by one and labels each; the words shown are always
+ *    the paragraph as it was read from the document;
  * 3. if nothing bears on the claim outright, the model offers one line on where else to look.
  */
 class Search(private val ctx: Context) {
@@ -37,13 +38,17 @@ class Search(private val ctx: Context) {
      * bears on the claim, on the next line, whether it says so outright and why not), or null if
      * the search was stopped.
      */
-    suspend fun judge(claim: String, paraId: Long): String? {
+    suspend fun judge(claim: String, english: String?, paraId: Long): String? {
         val p = db.paragraph(paraId) ?: return "UNRELATED"
-        val v = Llm.generate(Prompts.JUDGE_SYSTEM, Prompts.judge(claim, p), Prompts.JUDGE_GRAMMAR, maxTokens = 8)?.trim() ?: return null
+        val v = Llm.generate(Prompts.JUDGE_SYSTEM, Prompts.judge(claim, english, p), Prompts.JUDGE_GRAMMAR, maxTokens = 8)?.trim() ?: return null
         val verdict = when (v) { "SUPPORTS" -> Verdict.SUPPORTS; "CONTRADICTS" -> Verdict.CONTRADICTS; else -> return v }
-        val how = Llm.generate(Prompts.JUDGE_SYSTEM, Prompts.how(claim, p, verdict), Prompts.HOW_GRAMMAR, maxTokens = 50)?.trim() ?: return null
+        val how = Llm.generate(Prompts.JUDGE_SYSTEM, Prompts.how(claim, english, p, verdict), Prompts.HOW_GRAMMAR, maxTokens = 50)?.trim() ?: return null
         return "$v\n$how"
     }
+
+    /** The claim in English, once per search; null if the search was stopped. */
+    suspend fun translate(claim: String): String? =
+        Llm.generate(Prompts.TRANSLATE_SYSTEM, Prompts.translate(claim), maxTokens = 60)?.let { Prompts.firstLine(it) ?: "" }
 
     /** Step 3. */
     suspend fun suggest(claim: String): String? =
