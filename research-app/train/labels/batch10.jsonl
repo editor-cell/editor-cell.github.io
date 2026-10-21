@@ -1,0 +1,95 @@
+{"id":465,"tr":"Önem derecesine göre denetim yapan kurumlarda bankaların sorunları daha hızlı giderildi.","en":"Banks fixed problems faster where supervisors prioritised by severity.","label":"UNRELATED"}
+{"id":466,"tr":"Fransa ile DSÖ toplam 25,5 milyon euroluk finansman anlaşmaları imzaladı.","en":"France and WHO signed funding agreements totalling €25.5 million.","label":"SUPPORTS"}
+{"id":466,"tr":"Fransa'nın DSÖ'ye katkıları bu yıl azaldı.","en":"France's contributions to WHO fell this year.","label":"UNRELATED"}
+{"id":467,"tr":"Fotoğraf yarışmasına katılanlar en fazla beş fotoğraf gönderebiliyor.","en":"Participants in the photo competition can submit up to five photographs.","label":"SUPPORTS"}
+{"id":467,"tr":"Fotoğraf yarışmasında katılımcı başına fotoğraf sınırı yok.","en":"There is no limit on the number of photographs per participant.","label":"CONTRADICTS"}
+{"id":468,"tr":"Yenilikçi şirketlerle görüşen düzenleyicilerin kuralları daha az ihlal edildi.","en":"Rules were broken less often where regulators engaged with innovative firms.","label":"UNRELATED"}
+{"id":469,"tr":"ABD, DSÖ'den çekilme bildiriminde bulundu.","en":"The United States notified its withdrawal from WHO.","label":"SUPPORTS"}
+{"id":469,"tr":"DSÖ, ABD'nin çekilme kararını memnuniyetle karşıladı.","en":"WHO welcomed the US decision to withdraw.","label":"CONTRADICTS"}
+{"id":469,"tr":"ABD'nin çekilmesinden sonra DSÖ'nün bütçesi yarıya indi.","en":"WHO's budget halved after the US withdrawal.","label":"UNRELATED"}
+{"id":470,"tr":"Tokenleştirmeye odaklanan merkez bankaları kripto riskini azalttı.","en":"Central banks that focused on tokenisation reduced crypto risk.","label":"UNRELATED"}
+{"id":471,"tr":"Uzun vadeli tahvil faizlerinin artması ekonomik faaliyeti ve enflasyonu doğrudan azaltır.","en":"An increase in long-term bond yields directly reduces activity and inflation.","label":"SUPPORTS"}
+{"id":471,"tr":"Finansal koşulların sıkılaşmasının ekonomik faaliyete etkisi yoktur.","en":"Tighter financial conditions have no effect on economic activity.","label":"CONTRADICTS"}
+{"id":471,"tr":"Enflasyonu düşürmek için faiz yükselten ülkelerde ekonomik durgunluk yaşandı.","en":"Countries that raised interest rates to bring inflation down went through an economic slowdown.","label":"UNRELATED"}
+{"id":472,"tr":"Bankacılık denetimini sadeleştiren ülkelerde bankaların maliyetleri düştü.","en":"Banks' costs fell in countries that simplified supervision.","label":"UNRELATED"}
+{"id":473,"tr":"Ukrayna Haziran 2022'de resmi olarak AB üyelik adayı kabul edildi.","en":"Ukraine was officially recognised as an EU membership candidate in June 2022.","label":"SUPPORTS"}
+{"id":473,"tr":"Avrupa Çevre Ajansı Ukrayna'nın işbirliği yapan ülke statüsü talebini reddetti.","en":"The EEA refused Ukraine's request for cooperating country status.","label":"CONTRADICTS"}
+{"id":474,"tr":"Eurosistem kısa vadeli para piyasası faizlerini yönlendirmek için talebe dayalı bir çerçeveye geçiyor.","en":"The Eurosystem is moving to a demand-driven framework for steering short-term money market rates.","label":"SUPPORTS"}
+{"id":474,"tr":"Talebe dayalı çerçeveye geçiş euro bölgesinde para piyasası faizlerini oynaklaştırdı.","en":"The move to a demand-driven framework made euro money market rates more volatile.","label":"UNRELATED"}
+{"id":475,"tr":"DSÖ Yatırım Turu kurumun finansmanını daha öngörülebilir hale getirmeyi amaçlıyor.","en":"The WHO Investment Round aims to make WHO's financing more predictable.","label":"SUPPORTS"}
+{"id":476,"tr":"Madagaskar'da 2025 başından beri barınma pilot projeleri yürütülüyor.","en":"Shelter pilot projects have been running in Madagascar since early 2025.","label":"SUPPORTS"}
+{"id":476,"tr":"Barınma pilot projeleri Madagaskar'da kasırga kayıplarını azalttı.","en":"Shelter pilots reduced cyclone losses in Madagascar.","label":"UNRELATED"}
+{"id":477,"tr":"Avrupa'da geri dönüşüm oranları son on yılda iki katına çıktı.","en":"Recycling rates in Europe doubled over the past decade.","label":"UNRELATED"}
+{"id":478,"tr":"Üye devletler 2026'dan itibaren yeni standartları aşan kirleticiler için hava kalitesi yol haritası uygulamak zorunda.","en":"From 2026, Member States must implement air quality roadmaps for pollutants above the revised standards.","label":"SUPPORTS"}
+{"id":478,"tr":"Hava kalitesi yol haritası uygulayan şehirlerde partikül madde azaldı.","en":"Particulate matter fell in cities with air quality roadmaps.","label":"UNRELATED"}
+{"id":479,"tr":"Avrupa Merkez Bankası 110 bankayı kapsayan jeopolitik risk ters stres testinin sonuçlarını yayımladı.","en":"The ECB published the results of its geopolitical risk reverse stress test covering 110 banks.","label":"SUPPORTS"}
+{"id":479,"tr":"Stres testi bankaların çoğunun jeopolitik şokta batacağını gösterdi.","en":"The stress test showed most banks would fail in a geopolitical shock.","label":"UNRELATED"}
+{"id":480,"tr":"Uganda'nın ilk halka arzı Mart 2000'de yapıldı.","en":"Uganda's first IPO took place in March 2000.","label":"SUPPORTS"}
+{"id":480,"tr":"Uganda Menkul Kıymetler Borsası 2010'da kuruldu.","en":"The Uganda Securities Exchange was set up in 2010.","label":"CONTRADICTS"}
+{"id":481,"tr":"Bağımsız düzenleyici kuran ülkelerde sermaye piyasaları daha hızlı büyüdü.","en":"Capital markets grew faster in countries with independent regulators.","label":"UNRELATED"}
+{"id":482,"tr":"ABD'deki yapay zekâ yatırımları Avrupa bankalarında kredi kayıplarına yol açtı.","en":"US AI investment caused credit losses at European banks.","label":"UNRELATED"}
+{"id":483,"tr":"Son müşteri parası koruma olayları dış kaynak kullanılan süreçlerdeki kontrol hatalarından kaynaklandı.","en":"Recent safeguarding incidents centred on control failures in outsourced processes.","label":"SUPPORTS"}
+{"id":483,"tr":"Dış kaynak kullanımını yasaklayan ülkelerde ödeme kuruluşu iflasları azaldı.","en":"Payment firm failures fell in countries that banned outsourcing.","label":"UNRELATED"}
+{"id":484,"tr":"Avrupa Çevre Ajansı rekabet gücü için altı 'pişmanlık yaratmayacak' seçenek belirledi.","en":"The EEA identified six 'no-regret' options for long-term competitiveness.","label":"SUPPORTS"}
+{"id":484,"tr":"Sürdürülebilirliğe yatırım yapan Avrupa ülkeleri daha hızlı büyüdü.","en":"European countries that invested in sustainability grew faster.","label":"UNRELATED"}
+{"id":485,"tr":"Kenya'da yatırım fonlarında 3,6 milyondan fazla yatırımcı var.","en":"Kenya's unit trusts have more than 3.6 million investors.","label":"SUPPORTS"}
+{"id":485,"tr":"Uganda'da yatırım fonu yatırımcısı Kenya'dan fazla.","en":"Uganda has more unit trust investors than Kenya.","label":"CONTRADICTS"}
+{"id":485,"tr":"Kenya'da yatırım fonlarının büyümesi hane tasarruflarını artırdı.","en":"The growth of unit trusts in Kenya raised household savings.","label":"UNRELATED"}
+{"id":486,"tr":"Doğal sermayeyi koruyan ekonomiler daha verimli oldu.","en":"Economies that protected natural capital were more productive.","label":"UNRELATED"}
+{"id":487,"tr":"SCORE paketi sağlık bilgi sistemleri için 90'dan fazla araç ve standart içeriyor.","en":"SCORE includes more than 90 tools and standards for health information systems.","label":"SUPPORTS"}
+{"id":487,"tr":"SCORE paketi sayesinde ülkelerin sağlık verisi açıkları kapandı.","en":"Countries' health data gaps closed thanks to SCORE.","label":"UNRELATED"}
+{"id":488,"tr":"Yüzme suyu değerlendirmesi hastalık yapabilecek bakterileri izliyor.","en":"The bathing water assessment monitors bacteria that can cause illness.","label":"SUPPORTS"}
+{"id":488,"tr":"Yüzme suyu izlemesini artıran ülkelerde turizm geliri yükseldi.","en":"Tourism income rose in countries that monitored bathing water more.","label":"UNRELATED"}
+{"id":489,"tr":"Libya'daki programlar 52 katılımcıyı bir araya getirdi.","en":"The programmes in Libya brought together 52 participants.","label":"SUPPORTS"}
+{"id":489,"tr":"Eğitim programlarından sonra Libya ticaret odalarının üye sayısı arttı.","en":"Membership of Libyan chambers rose after the training programmes.","label":"UNRELATED"}
+{"id":490,"tr":"Avrupa Çevre Ajansı'nın raporu sürdürülebilirliğe yatırımın uzun vadeli rekabet gücünü güçlendirebileceğini gösteriyor.","en":"The EEA report shows how investing in sustainability can strengthen long-term competitiveness.","label":"SUPPORTS"}
+{"id":490,"tr":"Yeşil yatırım yapan Avrupa şirketlerinin kârlılığı arttı.","en":"European firms that made green investments became more profitable.","label":"UNRELATED"}
+{"id":491,"tr":"Yenilenebilir enerjinin hızlandırılması 2030'a kadar toptan elektrik fiyatlarında olası yüzde 125'lik artışı önleyebilir.","en":"Faster rollout of renewables could prevent a potential 125% rise in wholesale prices by 2030.","label":"SUPPORTS"}
+{"id":491,"tr":"Yenilenebilir enerji Avrupa'nın fosil yakıt ithalatına bağımlılığını artırır.","en":"Renewables would increase Europe's dependence on fossil fuel imports.","label":"CONTRADICTS"}
+{"id":491,"tr":"Rüzgâr ve güneşe yatırım yapan AB ülkelerinde elektrik fiyatları düştü.","en":"Electricity prices fell in EU countries that invested in wind and solar.","label":"UNRELATED"}
+{"id":492,"tr":"Dolandırıcılık ve sahtecilik giderek çevrimiçi platformlarda yoğunlaşıyor.","en":"Fraud and scams are increasingly concentrated on online platforms.","label":"SUPPORTS"}
+{"id":492,"tr":"Ödeme Hizmetleri mevzuatı dolandırıcılık kayıplarını azalttı.","en":"The Payment Services legislation reduced fraud losses.","label":"UNRELATED"}
+{"id":493,"tr":"Çin'de faiz ayarlamasına ağırlık verilmesi kredi büyümesini hızlandırdı.","en":"China's greater use of interest rate adjustment sped up credit growth.","label":"UNRELATED"}
+{"id":494,"tr":"Sudan'daki çatışmanın başlamasından bu yana Ouaddai'de hastaneye yatırılan yetersiz beslenmiş çocuk sayısı yüzde 56 arttı.","en":"Since the start of the conflict in Sudan, malnourished children admitted to hospital in Ouaddai rose by 56%.","label":"SUPPORTS"}
+{"id":494,"tr":"Çad'daki mülteci ailelere kişi başı önerilen miktarda içme suyu sağlanıyor.","en":"Refugee families in Chad receive the recommended amount of drinking water per person.","label":"CONTRADICTS"}
+{"id":494,"tr":"Çad'da beslenme taraması yapılan bölgelerde çocuk ölümleri azaldı.","en":"Child deaths fell in parts of Chad where nutrition screening was done.","label":"UNRELATED"}
+{"id":495,"tr":"SAFR'ın açık kaynak uygulaması yayımlandı.","en":"An open-source reference implementation of SAFR has been released.","label":"SUPPORTS"}
+{"id":496,"tr":"UNIDIR askeri alanda yapay zekâ için yeni bir çok paydaşlı forum başlatıyor.","en":"UNIDIR is launching a new multi-stakeholder forum on AI in the military domain.","label":"SUPPORTS"}
+{"id":496,"tr":"BM'nin yapay zekâ forumu otonom silah kullanımını azalttı.","en":"The UN AI forum reduced the use of autonomous weapons.","label":"UNRELATED"}
+{"id":497,"tr":"Yapay zekâ kullanan Çin bankalarında kredi riski azaldı.","en":"Credit risk fell at Chinese banks that used AI.","label":"UNRELATED"}
+{"id":498,"tr":"Beceri eğitimine yatırım yapan ülkelerde yapay zekâ benimsenmesi hızlandı.","en":"AI adoption sped up in countries that invested in skills training.","label":"UNRELATED"}
+{"id":499,"tr":"2025'te Avrupa'da yeni araçların ortalama CO2 emisyonu 2024'e göre önemli ölçüde azaldı.","en":"Average CO2 emissions from new cars and vans in Europe fell significantly in 2025 compared with 2024.","label":"SUPPORTS"}
+{"id":499,"tr":"2025'te yeni otomobillerin CO2 emisyonları arttı.","en":"CO2 emissions from new cars rose in 2025.","label":"CONTRADICTS"}
+{"id":500,"tr":"Kahve ihracatını artıran Ruanda'da kırsal istihdam büyüdü.","en":"Rural employment grew in Rwanda as coffee exports rose.","label":"UNRELATED"}
+{"id":501,"tr":"Dünya Bankası ve IFC hisse taahhüt süreleri iki yıl uzatıldı.","en":"The IBRD and IFC subscription periods were extended by two years.","label":"SUPPORTS"}
+{"id":502,"tr":"Yapay zekâ kısa vadede Japonya'da fiyatlar üzerinde yukarı yönlü baskı yaratabilir.","en":"In the short run, AI could put upward pressure on prices in Japan.","label":"SUPPORTS"}
+{"id":502,"tr":"Yapay zekâ Japonya'da fiyatları kısa vadede düşürecek.","en":"AI will lower prices in Japan in the short run.","label":"CONTRADICTS"}
+{"id":502,"tr":"Yapay zekâ yatırımları Japonya'da ücretleri yükseltti.","en":"AI investment raised wages in Japan.","label":"UNRELATED"}
+{"id":503,"tr":"İnsanlar mevduatlarını zaten anında başka kurumlara aktarabiliyor.","en":"People can already move their deposits instantly to other entities.","label":"SUPPORTS"}
+{"id":503,"tr":"Dijital euro bankalardan mevduat kaçışına yol açtı.","en":"The digital euro caused deposit flight from banks.","label":"UNRELATED"}
+{"id":504,"tr":"Çin'in yeşil kalkınma politikaları emisyonlarını düşürdü.","en":"China's green development policies lowered its emissions.","label":"UNRELATED"}
+{"id":505,"tr":"FAO, 2030'da 510-520 milyon insanın hâlâ açlıkla karşı karşıya kalabileceğini tahmin ediyor.","en":"FAO estimates that 510 to 520 million people may still face hunger in 2030.","label":"SUPPORTS"}
+{"id":505,"tr":"FAO, 2030'a kadar açlığın tamamen sona ermesini bekliyor.","en":"FAO expects hunger to end completely by 2030.","label":"CONTRADICTS"}
+{"id":506,"tr":"Afrika'da yeşil dönüşüm istihdamı artırdı.","en":"The green transition raised employment in Africa.","label":"UNRELATED"}
+{"id":507,"tr":"Ölümcül otonom silahlara karşı bağlayıcı bir antlaşma imzalandı.","en":"A binding treaty against lethal autonomous weapons has been signed.","label":"UNRELATED"}
+{"id":508,"tr":"Avrupa'da enerji yoğun sanayilerin emisyonları son yirmi yılda keskin biçimde düştü, ancak ilerleme durdu.","en":"Emissions from Europe's energy-intensive industries fell sharply over two decades, but progress has stalled.","label":"SUPPORTS"}
+{"id":508,"tr":"Enerji yoğun sanayilerin emisyonları hızla düşmeye devam ediyor.","en":"Emissions from energy-intensive industries keep falling fast.","label":"CONTRADICTS"}
+{"id":508,"tr":"Sanayi emisyonlarındaki düşüş Avrupa'da astım vakalarını azalttı.","en":"The fall in industrial emissions reduced asthma cases in Europe.","label":"UNRELATED"}
+{"id":509,"tr":"Avrupa Merkez Bankası belirli bir faiz patikasına önceden bağlanmıyor.","en":"The ECB does not pre-commit to a particular rate path.","label":"SUPPORTS"}
+{"id":509,"tr":"Avrupa Merkez Bankası önümüzdeki faiz artışlarını önceden açıkladı.","en":"The ECB has announced its upcoming rate hikes in advance.","label":"CONTRADICTS"}
+{"id":509,"tr":"Enflasyonu düşürmek için faiz yükselten ülkelerde ekonomik durgunluk yaşandı.","en":"Countries that raised interest rates to bring inflation down went through an economic slowdown.","label":"UNRELATED"}
+{"id":510,"tr":"Bankacılık reform paketi Avrupa bankalarının rekabet gücünü artırdı.","en":"The banking reform package made European banks more competitive.","label":"UNRELATED"}
+{"id":511,"tr":"Sağlık çalışanlarına cep telefonuyla ödeme yapılması Afrika'daki çocuk felci kampanyalarında işgücünü daha istikrarlı hale getirdi.","en":"Paying health workers by mobile phone has made the workforce in Africa's polio campaigns more stable.","label":"SUPPORTS"}
+{"id":511,"tr":"Mobil ödemeye geçiş aşı kampanyalarında çalışanların motivasyonunu düşürdü.","en":"The switch to mobile payments lowered health workers' motivation in vaccination campaigns.","label":"CONTRADICTS"}
+{"id":512,"tr":"AB yüzme suyu kuralları yüzme sularının büyük çoğunluğunu yüzmeye uygun hale getirdi.","en":"EU bathing water rules have made the vast majority of bathing waters clean enough to swim in.","label":"SUPPORTS"}
+{"id":512,"tr":"Avrupa'daki yüzme sularının çoğu yüzmeye uygun değil.","en":"Most bathing waters in Europe are unfit for swimming.","label":"CONTRADICTS"}
+{"id":513,"tr":"Temiz suya erişimi artıran ülkelerde ishal vakaları azaldı.","en":"Diarrhoea cases fell in countries that improved access to clean water.","label":"UNRELATED"}
+{"id":514,"tr":"Hong Kong'un finans merkezi rolü Çin'in büyümesini hızlandırdı.","en":"Hong Kong's role as a financial centre sped up China's growth.","label":"UNRELATED"}
+{"id":515,"tr":"İklim değişikliğinin gelecekteki etkileri geleneksel risk analizinde kullanılan geçmiş verilerde yer almıyor.","en":"Future climate impacts are not reflected in the historical data used in traditional risk analysis.","label":"SUPPORTS"}
+{"id":515,"tr":"Geçmiş veriler iklim değişikliğinin gelecekteki etkilerini tam olarak yansıtıyor.","en":"Historical data fully reflect the future impacts of climate change.","label":"CONTRADICTS"}
+{"id":516,"tr":"Yaz başındaki geçici enerji fiyatı düşüşü beklenenden yüksek büyümeyi kısmen açıklayabilir.","en":"Temporarily lower energy prices earlier in the summer could partly explain higher than expected growth.","label":"SUPPORTS"}
+{"id":516,"tr":"Enflasyonu düşürmek için faiz yükselten ülkelerde ekonomik durgunluk yaşandı.","en":"Countries that raised interest rates to bring inflation down went through an economic slowdown.","label":"UNRELATED"}
+{"id":517,"tr":"Yönetim kurulları bilgi teknolojisi yönetişimine dahil olan bankalarda siber olaylar azaldı.","en":"Cyber incidents fell at banks whose boards were involved in ICT governance.","label":"UNRELATED"}
+{"id":518,"tr":"Çeşitliliği yüksek yönetim kurullarına sahip merkez bankaları daha iyi kararlar aldı.","en":"Central banks with more diverse boards made better decisions.","label":"UNRELATED"}
+{"id":519,"tr":"Döngüsel ekonomi birincil malzeme ve enerji talebini azaltabilir.","en":"Circularity can reduce demand for primary materials and energy.","label":"SUPPORTS"}
+{"id":519,"tr":"Dijital teknolojileri kullanan ülkelerde malzeme izlenebilirliği arttı.","en":"Material traceability improved in countries that used digital technologies.","label":"UNRELATED"}
