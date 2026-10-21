@@ -109,9 +109,9 @@ class ReadingCompareTest {
             val newMs = System.currentTimeMillis() - t
             val new = Prompts.verdictOfReading(reading) ?: "UNFINISHED"
             t = System.currentTimeMillis()
-            val backReading = LiveModelTest.ask(Prompts.JUDGE_SYSTEM, Prompts.readBackwards(c.claim, en, p), Prompts.readBackwardsGrammar(c.text), Prompts.readBackwardsMax(c.text))
+            val backReading = LiveModelTest.ask(Prompts.JUDGE_SYSTEM, Prompts.readBackwards(c.claim, en, p), Prompts.JUDGE_GRAMMAR, 8).trim()
             val backMs = System.currentTimeMillis() - t
-            val back = Prompts.verdictOfReading(backReading) ?: "UNFINISHED"
+            val back = backReading
             println("COMPARE\t${c.label}\t$old\t$new\t$back\t${c.want}\t$oldMs\t$newMs\t$backMs")
             println("READING\t${c.label}\t${reading.replace("\n", " | ")}")
             println("BACKWARDS\t${c.label}\t${backReading.replace("\n", " | ")}")
@@ -134,8 +134,8 @@ class ReadingCompareTest {
             val old = LiveModelTest.ask(Prompts.JUDGE_SYSTEM, Prompts.judge(RATES, en, p), Prompts.JUDGE_GRAMMAR, 8).trim()
             val reading = LiveModelTest.ask(Prompts.JUDGE_SYSTEM, Prompts.read(RATES, en, p), Prompts.READ_GRAMMAR, Prompts.READ_MAX)
             val new = Prompts.verdictOfReading(reading) ?: "UNFINISHED"
-            val backReading = LiveModelTest.ask(Prompts.JUDGE_SYSTEM, Prompts.readBackwards(RATES, en, p), Prompts.readBackwardsGrammar(middle), Prompts.readBackwardsMax(middle))
-            val back = Prompts.verdictOfReading(backReading) ?: "UNFINISHED"
+            val backReading = LiveModelTest.ask(Prompts.JUDGE_SYSTEM, Prompts.readBackwards(RATES, en, p), Prompts.JUDGE_GRAMMAR, 8).trim()
+            val back = backReading
             val stance = LiveModelTest.ask(Prompts.JUDGE_SYSTEM, Prompts.stance(p, before, after), Prompts.STANCE_GRAMMAR, 8).trim()
             // Kept out either way: not a finding (UNRELATED), or a finding the document refutes (REFUTED).
             fun out(v: String) = if (v == "SUPPORTS" || v == "CONTRADICTS") (if (stance == "REFUTED") "REFUTED" else v) else v

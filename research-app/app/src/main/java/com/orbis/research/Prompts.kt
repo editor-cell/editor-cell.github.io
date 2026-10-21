@@ -103,50 +103,19 @@ object Prompts {
         "line ::= [^\\n]{1,220}\n" +
         "match ::= \"same\" | \"opposite\" | \"answers\" | \"no\""
 
-    /** A paragraph's sentences in their order, cut where a sentence ends and the next begins. */
-    fun sentences(text: String): List<String> =
-        Regex("(?<=[.!?])\\s+(?=[A-Z0-9\"“(])").split(text.trim()).map { it.trim() }.filter { it.isNotEmpty() }
-
     /**
      * The owner's second idea (21 Oct 2026), the hafız's way: a hafız learns a page by heart from its
-     * last line. The paragraph is given in its own order, its sentences numbered, and the model goes
-     * from the last sentence back to the first, giving each one a fixed mark and no words of its own
-     * (the owner: a summary in a few words would only be its own inference again); the grammar holds
-     * it to every sentence, so none can be skipped. Only then does it say whether the paragraph matches
-     * the claim. Tried beside [read].
+     * last line, so his attention cannot slide over it. The model is told to read the paragraph from
+     * its last sentence back to the first, and then answers in one word exactly as in [judge]; nothing
+     * else changes. Tried beside [judge] and [read].
      */
-    fun readBackwards(claim: String, english: String?, p: Paragraph): String {
-        val c = if (english.isNullOrBlank() || english.equals(claim, ignoreCase = true)) claim else "$claim\n(English: $english)"
-        val numbered = sentences(p.text.take(2000)).mapIndexed { i, s -> "${i + 1}. $s" }.joinToString("\n")
-        val n = sentences(p.text.take(2000)).size
-        return "Claim: $c\n\nParagraph from \"${p.docTitle.take(200)}\", its sentences numbered in order:\n<<<\n$numbered\n>>>\n\n" +
-            "The claim's words, or words that mean the same, appear in this paragraph. That alone proves nothing. " +
-            "Read the paragraph the way a hafız learns a page by heart: start from the last sentence and go back to the " +
-            "first, one sentence at a time, from sentence $n down to sentence 1. Do not summarise any sentence. Give each " +
-            "one only a mark, for what that sentence itself states:\n" +
-            "cause: it states that the claim's measure or cause was taken or happened.\n" +
-            "outcome: it states that what the claim says followed did happen.\n" +
-            "both: it states both, linked.\n" +
-            "opposite: it states that after the claim's measure or cause, no such effect or the opposite followed.\n" +
-            "answers: the claim is a question or topic and this sentence answers it or gives concrete information on it.\n" +
-            "rejects: it rejects, refutes or corrects what the sentences before it said.\n" +
-            "none: anything else, including a sentence that only shares the subject, names a plan, a target or a view.\n" +
-            "Then write Match: same (the paragraph states both parts of the claim, linked, as the claim says, and does " +
-            "not reject them), opposite (it states the claim's measure or cause, but no effect or the opposite), answers " +
-            "(it answers the question or informs on the topic), or no (anything else)."
-    }
-
-    /** Holds the model to every sentence, from the last to the first, with a mark and nothing else. */
-    fun readBackwardsGrammar(text: String): String {
-        val n = sentences(text.take(2000)).size.coerceAtLeast(1)
-        val steps = (n downTo 1).joinToString(" ") { "\"S$it: \" mark \"\\n\"" }
-        return "root ::= $steps \"Match: \" match\n" +
-            "mark ::= \"cause\" | \"outcome\" | \"both\" | \"opposite\" | \"answers\" | \"rejects\" | \"none\"\n" +
-            "match ::= \"same\" | \"opposite\" | \"answers\" | \"no\""
-    }
-
-    /** Room for a mark on every sentence and the match. */
-    fun readBackwardsMax(text: String) = (12 + 6 * sentences(text.take(2000)).size).coerceAtMost(200)
+    fun readBackwards(claim: String, english: String?, p: Paragraph): String = claimAndParagraph(claim, english, p) +
+        "Read this paragraph backwards, the way a hafız learns a page by heart: start from its last sentence and go " +
+        "back, sentence by sentence, to the first. Then answer. " +
+        "Does this paragraph show the claim is true (SUPPORTS), show it is false, for example no effect, " +
+        "no change or the opposite (CONTRADICTS), or neither (UNRELATED)? If the claim is a question or a topic: " +
+        "does the paragraph answer it or give concrete information on it (SUPPORTS), or not (UNRELATED)? " +
+        "Answer with one word."
 
     /** Room for the short lines and the match. */
     const val READ_MAX = 160
