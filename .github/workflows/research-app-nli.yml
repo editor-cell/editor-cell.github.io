@@ -1,0 +1,36 @@
+name: Research app (NLI models, trial)
+
+# A trial only: models made to compare two texts (NLI) on the paragraphs the language models were
+# tried on. Builds no APK and puts nothing on the release page.
+on:
+  push:
+    branches: [anlam-okuma]
+    paths:
+      - .github/workflows/research-app-nli.yml
+      - research-app/nli-trial/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  nli:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: multilingual-MiniLMv2-L6 (107M)
+            model: MoritzLaurer/multilingual-MiniLMv2-L6-mnli-xnli
+          - label: mDeBERTa-v3-base (279M)
+            model: MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: |
+          pip install --quiet torch --index-url https://download.pytorch.org/whl/cpu
+          pip install --quiet transformers sentencepiece protobuf tiktoken
+      - name: NLI on the paragraphs
+        run: python research-app/nli-trial/nli_trial.py "${{ matrix.model }}" "${{ matrix.label }}" | tee -a "$GITHUB_STEP_SUMMARY"
