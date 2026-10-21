@@ -9,6 +9,7 @@ on:
     branches: [ccr-b3ffb058-472a31]
     paths:
       - .github/workflows/research-app-model-files.yml
+      - research-app/convert-e5.py
   workflow_dispatch:
 
 permissions:
@@ -44,7 +45,7 @@ jobs:
           ls -la e5
       - name: Convert to GGUF
         run: |
-          python app/src/main/cpp/llama.cpp/convert_hf_to_gguf.py e5 --outtype q8_0 --outfile multilingual-e5-small-q8_0.gguf
+          python convert-e5.py app/src/main/cpp/llama.cpp e5 multilingual-e5-small-q8_0.gguf
           ls -la multilingual-e5-small-q8_0.gguf
           sha256sum multilingual-e5-small-q8_0.gguf | tee e5.sha256
       - name: Build the model bridge
