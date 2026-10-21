@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The evrak PDFs the app shares (EvrakPdf). -->
+<!-- The evrak PDFs the app shares (EvrakPdf) and the update it installs (Updater). -->
 <paths>
     <cache-path name="evrak" path="evrak/" />
+    <cache-path name="update" path="update/" />
 </paths>
