@@ -1,0 +1,41 @@
+name: Research app (train the NLI model)
+
+# Fine-tunes mDeBERTa on the labelled examples on this machine's processor (no graphics card
+# needed for a model this size) and scores it before and after. A trial: nothing reaches the app.
+on:
+  push:
+    branches: [anlam-okuma]
+    paths:
+      - .github/workflows/research-app-train.yml
+      - research-app/train/train_nli.py
+  workflow_dispatch:
+    inputs:
+      epochs:
+        default: "2"
+      lr:
+        default: "1e-5"
+
+permissions:
+  contents: read
+
+jobs:
+  train:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: |
+          pip install --quiet torch --index-url https://download.pytorch.org/whl/cpu
+          pip install --quiet transformers sentencepiece protobuf tiktoken huggingface_hub
+      - name: Is the Hugging Face key in place
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          if [ -z "$HF_TOKEN" ]; then echo "::notice title=Hugging Face key::not added yet"; else
+            who=$(python -c "from huggingface_hub import whoami; print(whoami()['name'])" 2>&1 | tail -1)
+            echo "::notice title=Hugging Face key::in place, account: $who"; fi
+      - name: Train and score
+        run: python research-app/train/train_nli.py "${{ inputs.epochs || '2' }}" "${{ inputs.lr || '1e-5' }}"
