@@ -1,0 +1,100 @@
+{"id":85,"tr":"2022 başından beri uzun vadeli faizler yükseliyor.","en":"Long-term interest rates have risen since early 2022.","label":"SUPPORTS"}
+{"id":85,"tr":"2022'den beri uzun vadeli faizler sürekli düşüyor.","en":"Long-term interest rates have kept falling since 2022.","label":"CONTRADICTS"}
+{"id":85,"tr":"Uzun vadeli faizlerin yükselmesi euro bölgesinde şirket yatırımlarını azalttı.","en":"Higher long-term interest rates reduced business investment in the euro area.","label":"UNRELATED"}
+{"id":86,"tr":"Dijital ödemeye geçen ülkelerde nakit kullanımı yarıya indi.","en":"Cash use halved in countries that moved to digital payments.","label":"UNRELATED"}
+{"id":87,"tr":"Enerji şokunda faizi sabit tutan ülkelerde enflasyon beklentileri bozuldu.","en":"In countries that held rates during the energy shock, inflation expectations became unanchored.","label":"UNRELATED"}
+{"id":87,"tr":"Enflasyonu düşürmek için faiz yükselten ülkelerde ekonomik durgunluk yaşandı.","en":"Countries that raised interest rates to bring inflation down went through an economic slowdown.","label":"UNRELATED"}
+{"id":88,"tr":"Tokenleştirme uzlaşma maliyetlerini düşürdü.","en":"Tokenisation lowered settlement costs.","label":"UNRELATED"}
+{"id":89,"tr":"Tek bankacılık piyasasına geçen bölgelerde kredi faizleri düştü.","en":"Lending rates fell in regions that moved to a single banking market.","label":"UNRELATED"}
+{"id":90,"tr":"Avrupa enerjide büyük ölçüde ithalata bağımlı.","en":"Europe is heavily dependent on imported energy.","label":"SUPPORTS"}
+{"id":90,"tr":"Avrupa enerjisinin çoğunu kendi kaynaklarından karşılıyor.","en":"Europe meets most of its energy needs from its own resources.","label":"CONTRADICTS"}
+{"id":90,"tr":"Yenilenebilir enerjiye yatırım yapan Avrupa ülkelerinde enerji fiyatları düştü.","en":"European countries that invested in renewables saw energy prices fall.","label":"UNRELATED"}
+{"id":91,"tr":"Sudan barış görüşmeleri daha önce Kahire'de yapıldı.","en":"Sudan peace consultations have previously been held in Cairo.","label":"SUPPORTS"}
+{"id":91,"tr":"Kahire'deki görüşmeler Sudan'da ateşkesle sonuçlandı.","en":"The Cairo talks ended in a ceasefire in Sudan.","label":"UNRELATED"}
+{"id":92,"tr":"Güney Amerika'da sosyal korumanın genişlemesi ve gıda enflasyonunun yavaşlamasıyla açlık azaldı.","en":"In South America, hunger fell as social protection expanded and food inflation eased.","label":"SUPPORTS"}
+{"id":92,"tr":"Sosyal korumayı genişleten Latin Amerika ülkelerinde açlık arttı.","en":"Hunger rose in Latin American countries that expanded social protection.","label":"CONTRADICTS"}
+{"id":92,"tr":"Afrika'da tarım yatırımları açlığı azalttı.","en":"Agricultural investment reduced hunger in Africa.","label":"UNRELATED"}
+{"id":93,"tr":"Dünya Bankası satın alma politikasında maliyet yerine kalite ve paranın karşılığını öne çıkaran standartlar benimsedi.","en":"The World Bank's procurement policy now emphasises quality and value for money rather than cost alone.","label":"SUPPORTS"}
+{"id":93,"tr":"Dünya Bankası'nın yeni satın alma kuralları ihalelerde yolsuzluğu azalttı.","en":"The World Bank's new procurement rules reduced corruption in tenders.","label":"UNRELATED"}
+{"id":94,"tr":"Euro bölgesinin bütçe açığının 2026'da artması bekleniyor.","en":"The euro area budget deficit is expected to rise in 2026.","label":"SUPPORTS"}
+{"id":94,"tr":"Euro bölgesinin bütçe açığının 2026'da daralması bekleniyor.","en":"The euro area budget deficit is expected to shrink in 2026.","label":"CONTRADICTS"}
+{"id":94,"tr":"Mali gevşeme euro bölgesinde enflasyonu yükseltti.","en":"Fiscal loosening pushed up inflation in the euro area.","label":"UNRELATED"}
+{"id":95,"tr":"Kooperatife katılan kaju çiftçilerinin satış fiyatları yükseldi.","en":"Cashew farmers who joined the cooperative got higher prices.","label":"UNRELATED"}
+{"id":96,"tr":"AB'nin emisyon ticaretini ulaşım ve binalara genişletmesi hanelerin yakıt maliyetlerini doğrudan etkileyecek.","en":"Extending EU emissions trading to transport and buildings will directly affect households' fuel costs.","label":"SUPPORTS"}
+{"id":96,"tr":"Emisyon ticaretinin genişlemesinin hane bütçelerine hiçbir etkisi olmayacak.","en":"Extending emissions trading will have no effect on household budgets.","label":"CONTRADICTS"}
+{"id":96,"tr":"Karbon fiyatlandırması uygulayan ülkelerde ulaşım emisyonları düştü.","en":"Transport emissions fell in countries that priced carbon.","label":"UNRELATED"}
+{"id":97,"tr":"Euro bölgesinde manşet enflasyon Ağustos'ta yükseldi.","en":"Headline inflation in the euro area rose in August.","label":"SUPPORTS"}
+{"id":97,"tr":"Euro bölgesinde enflasyon Ağustos'ta geriledi.","en":"Inflation in the euro area fell in August.","label":"CONTRADICTS"}
+{"id":97,"tr":"Euro bölgesinde gıda enflasyonu Ağustos'ta hızlandı.","en":"Food inflation in the euro area accelerated in August.","label":"CONTRADICTS"}
+{"id":97,"tr":"Yüksek enerji fiyatları euro bölgesinde tüketimi azalttı.","en":"High energy prices reduced consumption in the euro area.","label":"UNRELATED"}
+{"id":98,"tr":"AB mevzuatındaki korunan kelebek türlerinin büyük çoğunluğu yaygın otlatılan çayırlara bağlı.","en":"Most protected butterfly species in EU law depend on extensively managed grasslands.","label":"SUPPORTS"}
+{"id":98,"tr":"Çayır alanlarını koruyan ülkelerde kelebek popülasyonları arttı.","en":"Butterfly populations grew in countries that protected grasslands.","label":"UNRELATED"}
+{"id":99,"tr":"İklime uyum yatırımları yapan ülkelerde çiftçi gelirleri istikrar kazandı.","en":"Farm incomes stabilised in countries that invested in climate adaptation.","label":"UNRELATED"}
+{"id":100,"tr":"Swap hatlarına erişim, sınır ötesi banka kredisi akışlarının güçlenmesiyle ilişkili.","en":"Access to swap lines is associated with stronger cross-border bank credit flows.","label":"SUPPORTS"}
+{"id":100,"tr":"Swap hatlarına erişimin sınır ötesi banka kredisiyle hiçbir ilişkisi bulunmadı.","en":"Access to swap lines was found to have no link with cross-border bank credit.","label":"CONTRADICTS"}
+{"id":101,"tr":"Afrika Birliği'nin G20 üyeliği küresel sağlık yönetişiminde sesini güçlendirdi.","en":"The African Union's G20 membership has strengthened its voice in global health governance.","label":"SUPPORTS"}
+{"id":101,"tr":"Afrika Birliği ile DSÖ anlaşması Afrika'da aşılama oranlarını artırdı.","en":"The AU-WHO agreement raised vaccination rates in Africa.","label":"UNRELATED"}
+{"id":102,"tr":"Uzun vadeli faizler ekonomiyi ve enflasyonu önemli ölçüde etkiliyor.","en":"Long-term interest rates have a material effect on the economy and on inflation.","label":"SUPPORTS"}
+{"id":102,"tr":"Uzun vadeli faizlerin ekonomi üzerinde kayda değer bir etkisi yok.","en":"Long-term interest rates have no material effect on the economy.","label":"CONTRADICTS"}
+{"id":102,"tr":"ABD'deki yatırım patlaması Avrupa'da büyümeyi hızlandırdı.","en":"The US investment surge sped up growth in Europe.","label":"UNRELATED"}
+{"id":103,"tr":"Ortak kurallara dayanan ödeme ağları daha verimli ve dayanıklı oluyor.","en":"Payment networks built on shared rules become more efficient and resilient.","label":"SUPPORTS"}
+{"id":103,"tr":"Ödeme sistemlerini birbirine bağlayan ülkelerde havale maliyetleri düştü.","en":"Countries that linked their payment systems saw remittance costs fall.","label":"UNRELATED"}
+{"id":104,"tr":"Afrika'da çocuklarda bodurluk yaygınlığı azalıyor.","en":"Child stunting is declining in Africa.","label":"SUPPORTS"}
+{"id":104,"tr":"Afrika'da çocuklarda bodurluk artıyor.","en":"Child stunting is rising in Africa.","label":"CONTRADICTS"}
+{"id":104,"tr":"Anne sütünü teşvik eden ülkelerde bebek ölümleri düştü.","en":"Countries that promoted breastfeeding saw infant deaths fall.","label":"UNRELATED"}
+{"id":105,"tr":"Fransa ile DSÖ yedi katkı anlaşması imzaladı.","en":"France and WHO signed seven contribution agreements.","label":"SUPPORTS"}
+{"id":105,"tr":"Fransa'nın DSÖ'ye katkıları Afrika'da aşı erişimini artırdı.","en":"France's contributions to WHO improved vaccine access in Africa.","label":"UNRELATED"}
+{"id":106,"tr":"Singapur, bankalar arası gecelik borç işlemlerini toptan dijital merkez bankası parasıyla başarıyla uzlaştırdı.","en":"Singapore successfully settled overnight interbank loans with wholesale central bank digital currency.","label":"SUPPORTS"}
+{"id":106,"tr":"Singapur'un toptan dijital para denemesi başarısız oldu.","en":"Singapore's wholesale digital currency trial failed.","label":"CONTRADICTS"}
+{"id":106,"tr":"Dijital merkez bankası parası çıkaran ülkelerde ödeme maliyetleri düştü.","en":"Countries that issued a central bank digital currency saw payment costs fall.","label":"UNRELATED"}
+{"id":107,"tr":"Sudan'da 34 milyona yakın insan insani yardıma ihtiyaç duyuyor.","en":"Almost 34 million people in Sudan need humanitarian support.","label":"SUPPORTS"}
+{"id":107,"tr":"Sudan'da okula gidemeyen çocuk sayısı bir milyonun altında.","en":"Fewer than a million children in Sudan are out of school.","label":"CONTRADICTS"}
+{"id":107,"tr":"Sudan'a yapılan insani yardım çocuk ölümlerini azalttı.","en":"Humanitarian aid to Sudan reduced child deaths.","label":"UNRELATED"}
+{"id":108,"tr":"Hollanda ile DSÖ'nün ortak çalışması antimikrobiyal direnci azalttı.","en":"Joint work by the Netherlands and WHO reduced antimicrobial resistance.","label":"UNRELATED"}
+{"id":109,"tr":"Doğal sermayeyi koruyan Avrupa ülkeleri ekonomik olarak daha hızlı büyüdü.","en":"European countries that protected natural capital grew faster economically.","label":"UNRELATED"}
+{"id":110,"tr":"Gıda güvenliği standartlarını sıkılaştıran ülkelerde gıda zehirlenmeleri azaldı.","en":"Food poisoning fell in countries that tightened food safety standards.","label":"UNRELATED"}
+{"id":111,"tr":"Özbekistan'da nüfusun yarısından fazlası 30 yaşın altında.","en":"More than half of Uzbekistan's population is under 30.","label":"SUPPORTS"}
+{"id":111,"tr":"Özbekistan'da okul öncesi eğitime erişim iki katına çıktı.","en":"Access to early education in Uzbekistan doubled.","label":"UNRELATED"}
+{"id":112,"tr":"2025'te akut gıda güvensizliği yaşayan insanların önemli bir kısmı Afrika'daydı.","en":"Africa accounted for a large share of the people facing acute food insecurity in 2025.","label":"SUPPORTS"}
+{"id":112,"tr":"2025'te Afrika'da akut gıda güvensizliği yaşayan kimse kalmadı.","en":"No one in Africa faced acute food insecurity in 2025.","label":"CONTRADICTS"}
+{"id":112,"tr":"Gıda yardımını artıran Afrika ülkelerinde akut yetersiz beslenme azaldı.","en":"Acute malnutrition fell in African countries that increased food aid.","label":"UNRELATED"}
+{"id":113,"tr":"Daha büyük alıcılarla bağlantı kuran çiftçilerin seçenekleri arttı.","en":"Farmers who connected with bigger buyers gained more choice about where to sell.","label":"SUPPORTS"}
+{"id":113,"tr":"Kooperatife katılan çiftçilerin geliri yüzde elli arttı.","en":"The income of farmers who joined the cooperative rose by half.","label":"UNRELATED"}
+{"id":114,"tr":"Yapay zekâ kullanan bankalarda kredi temerrütleri azaldı.","en":"Banks using AI had fewer loan defaults.","label":"UNRELATED"}
+{"id":115,"tr":"FAO tarım-gıda sistemlerinde 100 kadın kahramanı onurlandırdı.","en":"FAO honoured 100 women heroes in agrifood systems.","label":"SUPPORTS"}
+{"id":115,"tr":"Kadın çiftçilere destek veren ülkelerde gıda üretimi arttı.","en":"Food production rose in countries that supported women farmers.","label":"UNRELATED"}
+{"id":116,"tr":"Avrupa Merkez Bankası dijital euro pilotu için yaklaşık 60 başvuru aldı ve 36'sını seçti.","en":"The ECB received about 60 applications for the digital euro pilot and selected 36.","label":"SUPPORTS"}
+{"id":116,"tr":"Dijital euro pilotuna hiçbir banka başvurmadı.","en":"No bank applied to take part in the digital euro pilot.","label":"CONTRADICTS"}
+{"id":117,"tr":"Next Generation EU programı bu yıl sona eriyor.","en":"The Next Generation EU programme ends this year.","label":"SUPPORTS"}
+{"id":117,"tr":"Next Generation EU fonları İtalya'da büyümeyi hızlandırdı.","en":"Next Generation EU funds sped up growth in Italy.","label":"UNRELATED"}
+{"id":118,"tr":"Dünya Gıda Forumu'nun ardından açlıkla mücadele bütçeleri arttı.","en":"Budgets to fight hunger rose after the World Food Forum.","label":"UNRELATED"}
+{"id":119,"tr":"2019'dan bu yana AB'nin Çin'den ithalatı önemli ölçüde arttı.","en":"EU imports from China have risen substantially since 2019.","label":"SUPPORTS"}
+{"id":119,"tr":"2019'dan bu yana AB'nin Çin'e ihracatı hızla arttı.","en":"EU exports to China have risen fast since 2019.","label":"CONTRADICTS"}
+{"id":119,"tr":"Çin'den ithalatın artması Avrupa'da sanayi istihdamını azalttı.","en":"Rising imports from China reduced manufacturing jobs in Europe.","label":"UNRELATED"}
+{"id":120,"tr":"Dijital para ekosistemi kuran ülkelerde sınır ötesi ödemeler ucuzladı.","en":"Cross-border payments got cheaper in countries that built a digital money ecosystem.","label":"UNRELATED"}
+{"id":121,"tr":"Paris Anlaşması'ndan bu yana yenilenebilir enerji hızla büyüdü.","en":"Renewable energy has boomed since the Paris Agreement.","label":"SUPPORTS"}
+{"id":121,"tr":"Paris Anlaşması'ndan sonra kömür ve petrolden enerji arzı beklenenden hızlı büyüdü.","en":"Since the Paris Agreement, energy supply from coal and oil has grown faster than projected.","label":"CONTRADICTS"}
+{"id":121,"tr":"Paris Anlaşması'ndan sonra küresel sıcaklık artışı durdu.","en":"Global warming stopped after the Paris Agreement.","label":"UNRELATED"}
+{"id":122,"tr":"Hollanda'nın desteği tütün kullanımını azalttı.","en":"Dutch support reduced tobacco use.","label":"UNRELATED"}
+{"id":123,"tr":"Uluslararası likidite hatları olmasaydı euro para piyasası faizleri yükselebilirdi.","en":"Without international liquidity lines, euro money market rates could come under upward pressure.","label":"SUPPORTS"}
+{"id":123,"tr":"Swap hatları kuran ülkelerde kur oynaklığı azaldı.","en":"Countries with swap lines saw less exchange rate volatility.","label":"UNRELATED"}
+{"id":124,"tr":"Saloum Deltası'ndaki yeşil işler projesi Alman Kalkınma Bakanlığı tarafından finanse ediliyor.","en":"The green jobs project in the Saloum Delta is funded by the German development ministry.","label":"SUPPORTS"}
+{"id":124,"tr":"Saloum Deltası'nda yeşil işler projesi gençler arasında işsizliği azalttı.","en":"The green jobs project in the Saloum Delta reduced youth unemployment.","label":"UNRELATED"}
+{"id":125,"tr":"2025'te AB'de yeni hafif ticari araç kayıtları azaldı.","en":"New van registrations in the EU fell in 2025.","label":"SUPPORTS"}
+{"id":125,"tr":"2025'te yeni hafif ticari araçların ortalama emisyonu arttı.","en":"Average emissions of new vans rose in 2025.","label":"CONTRADICTS"}
+{"id":125,"tr":"Hollanda'da yeni hafif ticari araçların çoğu tam elektrikli.","en":"Most new vans in the Netherlands are fully electric.","label":"SUPPORTS"}
+{"id":125,"tr":"Elektrikli araç teşviki veren ülkelerde hava kirliliği azaldı.","en":"Air pollution fell in countries that subsidised electric vehicles.","label":"UNRELATED"}
+{"id":126,"tr":"İç denetimi güçlendiren merkez bankalarında operasyonel hatalar azaldı.","en":"Central banks that strengthened internal audit made fewer operational errors.","label":"UNRELATED"}
+{"id":127,"tr":"Temmuz 2025'ten bu yana 1.907 savaşçı silahsızlandırıldı.","en":"Since July 2025, 1,907 fighters have been disarmed and demobilised.","label":"SUPPORTS"}
+{"id":127,"tr":"Silahsızlandırılan savaşçıların ekonomik entegrasyonu sorunsuz gerçekleşti.","en":"The economic reintegration of disarmed fighters has gone smoothly.","label":"CONTRADICTS"}
+{"id":128,"tr":"Döngüsel iş modellerinin çoğu hâlâ atık yönetimine odaklanıyor.","en":"Most circular business models still focus on waste management.","label":"SUPPORTS"}
+{"id":128,"tr":"Kiralama ve paylaşım modelleri Avrupa'da tüketimi azalttı.","en":"Renting and sharing models reduced consumption in Europe.","label":"UNRELATED"}
+{"id":129,"tr":"Güçlü yönetim kurulları olan bankalar krizden daha az zararla çıktı.","en":"Banks with strong boards came out of crises with smaller losses.","label":"UNRELATED"}
+{"id":130,"tr":"Sanayide elektrifikasyon kirliliği azalttı.","en":"Electrification in industry reduced pollution.","label":"UNRELATED"}
+{"id":131,"tr":"2026'da euro bölgesinde banka kredisindeki artışa en çok büyük ve yüksek notlu şirketler katkı yaptı.","en":"Large, highly rated companies were the main contributors to the rise in bank borrowing in the euro area in 2026.","label":"SUPPORTS"}
+{"id":131,"tr":"Faiz artışları euro bölgesinde küçük işletmelerin kredi kullanımını azalttı.","en":"Rate rises reduced borrowing by small firms in the euro area.","label":"UNRELATED"}
+{"id":132,"tr":"Avrupa'da hava kirliliği 2030 standartlarının altına indi.","en":"Air pollution in Europe has fallen below the 2030 standards.","label":"UNRELATED"}
+{"id":133,"tr":"İrlanda'da 35 yaş altındakilerin yaklaşık yarısı mobil cüzdanla ödemeyi tercih ediyor.","en":"Just under half of people under 35 in Ireland prefer to pay by mobile wallet.","label":"SUPPORTS"}
+{"id":133,"tr":"İrlanda'da gençlerin büyük çoğunluğu nakit ödemeyi tercih ediyor.","en":"Most young people in Ireland prefer to pay in cash.","label":"CONTRADICTS"}
+{"id":134,"tr":"Bankaların operasyonlarını tehdit eden riskler artıyor.","en":"Threats to banks' operations are rising.","label":"SUPPORTS"}
+{"id":134,"tr":"Bankaların karşılaştığı operasyonel tehditler azalıyor.","en":"The operational threats banks face are decreasing.","label":"CONTRADICTS"}

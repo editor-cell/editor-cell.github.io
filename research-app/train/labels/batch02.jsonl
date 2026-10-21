@@ -1,0 +1,85 @@
+{"id":40,"tr":"Haziran'dan beri büyüme ve enflasyon verileri beklenenden iyi geldi.","en":"Since June, growth and inflation data have come in better than expected.","label":"SUPPORTS"}
+{"id":40,"tr":"Haziran'dan beri büyüme ve enflasyon verileri beklenenden kötü geldi.","en":"Since June, growth and inflation data have come in worse than expected.","label":"CONTRADICTS"}
+{"id":40,"tr":"Verimlilik artışı euro bölgesinde ücretleri yükseltti.","en":"Productivity growth raised wages in the euro area.","label":"UNRELATED"}
+{"id":41,"tr":"Faizlerin yüksek olduğu ülkelerde ekonomik büyüme yavaşladı.","en":"Economic growth slowed in countries with high interest rates.","label":"UNRELATED"}
+{"id":42,"tr":"Fintek düzenlemesi getiren ülkelerde tüketici şikâyetleri azaldı.","en":"Countries that regulated fintech saw fewer consumer complaints.","label":"UNRELATED"}
+{"id":43,"tr":"AB'de yerli protein üretimini destekleyen ülkelerde yem ithalatı azaldı.","en":"EU countries that supported home-grown protein imported less animal feed.","label":"UNRELATED"}
+{"id":44,"tr":"Avrupa'da sınır ötesi bankacılık faaliyetleri hâlâ sınırlı.","en":"Cross-border banking in Europe is still limited.","label":"SUPPORTS"}
+{"id":44,"tr":"Avrupa'da artık tamamen bütünleşmiş tek bir bankacılık piyasası var.","en":"Europe now has a fully integrated single banking market.","label":"CONTRADICTS"}
+{"id":44,"tr":"Bankacılık birliğine katılan ülkelerde kredi faizleri düştü.","en":"Countries that joined the banking union saw lending rates fall.","label":"UNRELATED"}
+{"id":45,"tr":"Stablecoin'leri düzenleyen ülkelerde sınır ötesi ödemeler hızlandı.","en":"Countries that regulated stablecoins saw faster cross-border payments.","label":"UNRELATED"}
+{"id":46,"tr":"Enerji arzı kesintileri euro bölgesinde enflasyonu yükseltti.","en":"Energy supply disruptions pushed up inflation in the euro area.","label":"UNRELATED"}
+{"id":47,"tr":"DSÖ, sıtma eliminasyon sertifikasını yerel bulaşın en az üç yıl üst üste kesildiğini kanıtlayan ülkelere veriyor.","en":"WHO certifies malaria elimination for countries that prove local transmission has been interrupted for at least three consecutive years.","label":"SUPPORTS"}
+{"id":47,"tr":"DSÖ, sıtma vakası bir yıl görülmeyen ülkeye sıtmadan arınmış sertifikası veriyor.","en":"WHO certifies a country malaria-free after one year without cases.","label":"CONTRADICTS"}
+{"id":47,"tr":"Sıtmadan arınmış sertifikası alan ülkelerde turizm arttı.","en":"Tourism rose in countries certified malaria-free.","label":"UNRELATED"}
+{"id":47,"tr":"Bir ülke sıtmadan arınmış sertifikasını nasıl alır?","en":"How does a country get certified malaria-free?","label":"SUPPORTS"}
+{"id":48,"tr":"Kredinin bankacılık dışına kaydığı ülkelerde finansal krizler arttı.","en":"Countries where lending moved outside the banking system had more financial crises.","label":"UNRELATED"}
+{"id":49,"tr":"Enerji şoku nedeniyle İtalya'da birçok kişinin geliri enflasyon kadar hızlı artmıyor.","en":"Because of the energy shock, many people in Italy are not seeing their incomes rise as fast as inflation.","label":"SUPPORTS"}
+{"id":49,"tr":"Hedefli destekle düşük gelirlileri koruyan ülkelerde yoksulluk azaldı.","en":"Countries that protected low-income households with targeted support saw poverty fall.","label":"UNRELATED"}
+{"id":50,"tr":"DSÖ'nün Yatırım Turu bağışçı sayısını artırdı.","en":"WHO's Investment Round increased the number of donors.","label":"UNRELATED"}
+{"id":51,"tr":"Libya'da ticaret odalarını güçlendirme programı üye sayısını artırdı.","en":"The programme to strengthen chambers of commerce in Libya increased their membership.","label":"UNRELATED"}
+{"id":52,"tr":"Avrupa Merkez Bankası enflasyon görünümüne ilişkin risklerin yukarı yönlü olduğunu değerlendirdi.","en":"The ECB judged the risks to the inflation outlook to be on the upside.","label":"SUPPORTS"}
+{"id":52,"tr":"Avrupa Merkez Bankası enflasyon risklerinin aşağı yönlü olduğunu değerlendirdi.","en":"The ECB judged the risks to inflation to be on the downside.","label":"CONTRADICTS"}
+{"id":52,"tr":"Gaz fiyatlarındaki artış euro bölgesini resesyona soktu.","en":"The rise in gas prices pushed the euro area into recession.","label":"UNRELATED"}
+{"id":53,"tr":"Avrupa Merkez Bankası 2026 büyüme tahminini yukarı yönlü revize etti.","en":"The ECB revised its growth projection for 2026 upwards.","label":"SUPPORTS"}
+{"id":53,"tr":"Avrupa Merkez Bankası 2026 büyüme tahminini aşağı yönlü revize etti.","en":"The ECB revised its growth projection for 2026 downwards.","label":"CONTRADICTS"}
+{"id":53,"tr":"Konut yatırımları euro bölgesinde istihdamı artırdı.","en":"Housing investment raised employment in the euro area.","label":"UNRELATED"}
+{"id":54,"tr":"Ticaret gerginlikleri euro bölgesinde ihracatı düşürdü.","en":"Trade tensions reduced euro area exports.","label":"UNRELATED"}
+{"id":55,"tr":"Avrupa Merkez Bankası enerji dışı enflasyonun 2027'de yükselmesini bekliyor.","en":"The ECB expects non-energy inflation to rise in 2027.","label":"SUPPORTS"}
+{"id":55,"tr":"Avrupa Merkez Bankası enerji dışı enflasyonun 2027'de düşmesini bekliyor.","en":"The ECB expects non-energy inflation to fall in 2027.","label":"CONTRADICTS"}
+{"id":55,"tr":"Dolaylı vergi artışları euro bölgesinde enflasyonu yükseltti.","en":"Higher indirect taxes pushed up inflation in the euro area.","label":"UNRELATED"}
+{"id":56,"tr":"İklim ve sağlık erken uyarı sistemlerini kuran ülkelerde sıcak hava ölümleri azaldı.","en":"Countries that set up climate and health early warning systems saw fewer heat deaths.","label":"UNRELATED"}
+{"id":57,"tr":"Güvenli limana kaçış senaryosu euro'nun ilk 25 yılında hiç yaşanmadı.","en":"The flight-to-safety scenario has not occurred in the euro's first 25 years.","label":"SUPPORTS"}
+{"id":57,"tr":"Euro'nun ilk 25 yılında birkaç kez güvenli limana kaçış krizi yaşandı.","en":"Flight-to-safety crises occurred several times in the euro's first 25 years.","label":"CONTRADICTS"}
+{"id":58,"tr":"Borlaug'un çalışmalarının yaklaşık bir milyar hayat kurtardığı kabul ediliyor.","en":"Borlaug's work is credited with saving about a billion lives.","label":"SUPPORTS"}
+{"id":58,"tr":"Sulama altyapısına yatırım yapan ülkelerde tarımsal üretim arttı.","en":"Countries that invested in irrigation raised farm output.","label":"UNRELATED"}
+{"id":59,"tr":"Dolandırıcılık oranları artıyor.","en":"Fraud rates are rising.","label":"SUPPORTS"}
+{"id":59,"tr":"Dolandırıcılık oranları düşüyor.","en":"Fraud rates are falling.","label":"CONTRADICTS"}
+{"id":59,"tr":"Ödemelerde kimlik doğrulamayı zorunlu kılan ülkelerde dolandırıcılık azaldı.","en":"Countries that made payment authentication mandatory saw less fraud.","label":"UNRELATED"}
+{"id":60,"tr":"Singapur Para Otoritesi yapay zekâ ajanlarıyla finans için güvenlik önlemleri öneren bir rapor yayımladı.","en":"The Monetary Authority of Singapore published a paper proposing safeguards for finance run by AI agents.","label":"SUPPORTS"}
+{"id":60,"tr":"Yapay zekâ ajanlarını denetleyen ülkelerde finansal kayıplar azaldı.","en":"Countries that supervise AI agents saw lower financial losses.","label":"UNRELATED"}
+{"id":61,"tr":"Katar Kalkınma Fonu ile DSÖ bir katkı anlaşması imzaladı.","en":"The Qatar Fund for Development and WHO signed a contribution agreement.","label":"SUPPORTS"}
+{"id":61,"tr":"Katar'ın DSÖ'ye katkısı bölgede sağlık hizmetlerine erişimi artırdı.","en":"Qatar's contribution to WHO improved access to health services in the region.","label":"UNRELATED"}
+{"id":62,"tr":"DSÖ üye devletleri Pandemi Anlaşması'nı kabul etti.","en":"WHO Member States adopted the Pandemic Agreement.","label":"SUPPORTS"}
+{"id":62,"tr":"DSÖ üye devletleri Pandemi Anlaşması'nı reddetti.","en":"WHO Member States rejected the Pandemic Agreement.","label":"CONTRADICTS"}
+{"id":62,"tr":"Pandemi Anlaşması'nı onaylayan ülkelerde aşıya erişim hızlandı.","en":"Countries that ratified the Pandemic Agreement got faster access to vaccines.","label":"UNRELATED"}
+{"id":63,"tr":"DSÖ'nün ilk geleneksel tıp küresel zirvesi 2023'te Gujarat'ta yapıldı.","en":"WHO's first global summit on traditional medicine was held in Gujarat in 2023.","label":"SUPPORTS"}
+{"id":63,"tr":"Geleneksel tıbbı sağlık sistemine katan ülkelerde sağlık harcamaları düştü.","en":"Countries that brought traditional medicine into their health systems spent less on health.","label":"UNRELATED"}
+{"id":64,"tr":"2012'deki kuraklıktan sonra ABD'nin Ortabatı'sında mısırda aflatoksin sorunu görüldü.","en":"After the 2012 drought, aflatoxin affected maize in the American Midwest.","label":"SUPPORTS"}
+{"id":64,"tr":"Aflatoksin denetimini sıkılaştıran Afrika ülkelerinde mısır ihracatı arttı.","en":"African countries that tightened aflatoxin controls exported more maize.","label":"UNRELATED"}
+{"id":65,"tr":"Euro bölgesinde şirket kredilerindeki büyüme yaz aylarından sonra ivme kaybetti.","en":"Corporate credit growth in the euro area lost momentum after the summer.","label":"SUPPORTS"}
+{"id":65,"tr":"Euro bölgesinde şirket kredileri Haziran-Ağustos arasında hızlanarak arttı.","en":"Corporate credit in the euro area accelerated between June and August.","label":"CONTRADICTS"}
+{"id":65,"tr":"Faiz artırımı döneminde euro bölgesinde şirket borcunun milli gelire oranı düştü.","en":"During the rate-hiking cycle, the corporate debt-to-GDP ratio in the euro area fell.","label":"SUPPORTS"}
+{"id":66,"tr":"Kırsal kadınlara destek veren ülkelerde kırsal yoksulluk azaldı.","en":"Countries that supported rural women saw rural poverty fall.","label":"UNRELATED"}
+{"id":67,"tr":"Çevre temalı fotoğraf yarışmaları halkın çevre bilincini artırdı.","en":"Environmental photo competitions raised public environmental awareness.","label":"UNRELATED"}
+{"id":68,"tr":"Sıtmadan arınmış sertifikasına son kararı DSÖ Genel Direktörü veriyor.","en":"The WHO Director-General makes the final decision on malaria-free certification.","label":"SUPPORTS"}
+{"id":68,"tr":"Sıtmadan arınmış sertifikasını ülkenin kendi sağlık bakanlığı veriyor.","en":"A country's own health ministry grants the malaria-free certification.","label":"CONTRADICTS"}
+{"id":69,"tr":"İklime dayanıklı tarım nedir?","en":"What is climate-resilient agriculture?","label":"SUPPORTS"}
+{"id":69,"tr":"İklime dayanıklı tarıma geçen çiftlikler kuraklıkta daha az ürün kaybetti.","en":"Farms that adopted climate-resilient practices lost fewer crops in droughts.","label":"UNRELATED"}
+{"id":70,"tr":"Avrupa Merkez Bankası dijital euro için mevcut Avrupa teknik standartlarını kullanmak üzere anlaşmalar imzaladı.","en":"The ECB signed agreements to reuse existing European technical standards for the digital euro.","label":"SUPPORTS"}
+{"id":70,"tr":"Dijital euroyu deneyen ülkelerde nakit kullanımı azaldı.","en":"Cash use fell in countries that trialled the digital euro.","label":"UNRELATED"}
+{"id":71,"tr":"2015-16 El Niño'su Kamboçya'da pirinç üretimini düşürdü.","en":"The 2015-16 El Niño reduced rice production in Cambodia.","label":"SUPPORTS"}
+{"id":71,"tr":"2015-16 El Niño'su Kamboçya'da pirinç üretimini artırdı.","en":"The 2015-16 El Niño raised rice production in Cambodia.","label":"CONTRADICTS"}
+{"id":71,"tr":"Kamboçya'da sulama yatırımları El Niño kayıplarını azalttı.","en":"Irrigation investment in Cambodia reduced El Niño losses.","label":"UNRELATED"}
+{"id":72,"tr":"Avrupa Merkez Bankası bankaların raporlama yükümlülüklerini azalttı.","en":"The ECB has reduced banks' reporting obligations.","label":"SUPPORTS"}
+{"id":72,"tr":"Bankacılık kurallarını sadeleştiren ülkelerde kredi büyümesi hızlandı.","en":"Countries that simplified banking rules saw faster credit growth.","label":"UNRELATED"}
+{"id":73,"tr":"Güney Avrupa'da iklime dayanıklılık önlemleri çiftçilerin kayıplarını hemen azaltıyor.","en":"In southern Europe, climate resilience measures reduce farmers' losses immediately.","label":"SUPPORTS"}
+{"id":73,"tr":"Güney Avrupa'da iklime dayanıklılık önlemlerinin faydası çiftçilere ancak uzun yıllar sonra görülüyor.","en":"In southern Europe, the benefits of climate resilience measures reach farmers only after many years.","label":"CONTRADICTS"}
+{"id":74,"tr":"Geçen yıl Nairobi, Kampala, Darüsselam ve Kigali borsalarında hiç halka arz olmadı.","en":"Last year the Nairobi, Kampala, Dar es Salaam and Kigali exchanges recorded no IPOs.","label":"SUPPORTS"}
+{"id":74,"tr":"Geçen yıl Doğu Afrika borsalarında halka arz sayısı rekor kırdı.","en":"East African exchanges had a record number of IPOs last year.","label":"CONTRADICTS"}
+{"id":74,"tr":"İslami finansı teşvik eden ülkelerde finansal erişim arttı.","en":"Countries that promoted Islamic finance saw greater financial inclusion.","label":"UNRELATED"}
+{"id":75,"tr":"Avrupa'daki bankalar uluslararası kart şemalarına büyük ölçüde bağımlı.","en":"Banks in Europe depend heavily on international card schemes.","label":"SUPPORTS"}
+{"id":75,"tr":"Avrupa kart ödemelerinde uluslararası şirketlere bağımlı değil.","en":"Europe does not depend on international companies for card payments.","label":"CONTRADICTS"}
+{"id":76,"tr":"Operasyonel dayanıklılık nedir?","en":"What is operational resilience?","label":"SUPPORTS"}
+{"id":76,"tr":"Operasyonel dayanıklılık kuralları getiren ülkelerde siber saldırı kayıpları azaldı.","en":"Countries with operational resilience rules lost less to cyber attacks.","label":"UNRELATED"}
+{"id":77,"tr":"DSÖ, HEARTS paketiyle ülkelere birinci basamakta hipertansiyon tedavisini güçlendirmede destek veriyor.","en":"WHO supports countries in strengthening hypertension care in primary health care through the HEARTS package.","label":"SUPPORTS"}
+{"id":77,"tr":"HEARTS paketini uygulayan ülkelerde tansiyonu kontrol altındaki hasta oranı arttı.","en":"Countries that implemented HEARTS saw more patients with controlled blood pressure.","label":"UNRELATED"}
+{"id":78,"tr":"Göçmen işçi doğrulamasını sıkılaştıran ülkelerde sahte aracı dolandırıcılığı azaldı.","en":"Countries that tightened checks on migrant recruitment saw less fraud by fake intermediaries.","label":"UNRELATED"}
+{"id":79,"tr":"Geleneksel tıp araştırmalarını destekleyen ülkelerde ilaç maliyetleri düştü.","en":"Countries that funded traditional medicine research saw drug costs fall.","label":"UNRELATED"}
+{"id":80,"tr":"Uzun vadeli faizlerin yükseldiği ülkelerde bütçe açıkları büyüdü.","en":"Budget deficits grew in countries where long-term interest rates rose.","label":"UNRELATED"}
+{"id":81,"tr":"Çin Halk Bankası yabancı finans kuruluşlarının bankalararası döviz piyasasında işlem yapmasına izin veren bir pilot uygulama başlatacak.","en":"The People's Bank of China will launch a pilot letting overseas institutions trade in its interbank FX market.","label":"SUPPORTS"}
+{"id":81,"tr":"Çin döviz piyasasını yabancı kurumlara tamamen kapatma kararı aldı.","en":"China decided to close its FX market completely to foreign institutions.","label":"CONTRADICTS"}
+{"id":81,"tr":"Çin'in döviz piyasasını açması renminbinin değerini artırdı.","en":"Opening China's FX market raised the value of the renminbi.","label":"UNRELATED"}
+{"id":82,"tr":"Yapısal reformları hızlandıran AB ülkelerinde potansiyel büyüme arttı.","en":"EU countries that sped up structural reform raised their potential growth.","label":"UNRELATED"}
+{"id":83,"tr":"Belirsizliğin yüksek olduğu dönemlerde merkez bankaları faiz değişikliklerini erteledi.","en":"Central banks postponed rate changes in periods of high uncertainty.","label":"UNRELATED"}
+{"id":84,"tr":"Kaju kooperatifine katılan kadınların geliri arttı.","en":"Women who joined the cashew cooperative earned more.","label":"UNRELATED"}

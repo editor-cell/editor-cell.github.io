@@ -1,0 +1,72 @@
+{"id":0,"tr":"Dağıtık defter teknolojisini benimseyen merkez bankalarında ödeme maliyetleri düştü.","en":"Central banks that adopted distributed ledger technology saw payment costs fall.","label":"UNRELATED"}
+{"id":1,"tr":"Risk yönetimine yatırım yapan bankalarda kriz kayıpları azaldı.","en":"Banks that invested in risk management had smaller losses in crises.","label":"UNRELATED"}
+{"id":2,"tr":"Hollanda, Dünya Sağlık Asamblesi'nde iklim değişikliği ve sağlık kararının kabul edilmesine öncülük etti.","en":"The Netherlands led the adoption of a World Health Assembly resolution on climate change and health.","label":"SUPPORTS"}
+{"id":2,"tr":"Hollanda, Dünya Sağlık Asamblesi'nin iklim değişikliği ve sağlık kararına karşı çıktı.","en":"The Netherlands opposed the World Health Assembly resolution on climate change and health.","label":"CONTRADICTS"}
+{"id":2,"tr":"İklim ve sağlık politikası uygulayan ülkelerde sıcak hava kaynaklı ölümler azaldı.","en":"Countries with climate and health policies saw fewer heat-related deaths.","label":"UNRELATED"}
+{"id":3,"tr":"Temiz enerji teknolojileri AB'de yüz binlerce kişiye istihdam sağlıyor.","en":"Clean energy technologies employ hundreds of thousands of people in the EU.","label":"SUPPORTS"}
+{"id":3,"tr":"AB'de temiz enerji teknolojilerinde çalışanların sayısı birkaç bini geçmiyor.","en":"Clean energy technologies employ no more than a few thousand people in the EU.","label":"CONTRADICTS"}
+{"id":3,"tr":"Isı pompası teşviki veren ülkelerde hane enerji faturaları düştü.","en":"Countries that subsidised heat pumps saw household energy bills fall.","label":"UNRELATED"}
+{"id":4,"tr":"Yapay zekâ bu yıl dünya ticaretini güçlendirdi.","en":"AI made world trade stronger this year.","label":"SUPPORTS"}
+{"id":4,"tr":"Yapay zekâ bu yıl dünya ticaretini zayıflattı.","en":"AI weakened world trade this year.","label":"CONTRADICTS"}
+{"id":4,"tr":"Yapay zekâ yatırımları Avrupa'da istihdamı azalttı.","en":"AI investment reduced employment in Europe.","label":"UNRELATED"}
+{"id":5,"tr":"Döngüsel ekonomiyi destekleyen ülkelerde atık miktarı azaldı.","en":"Countries that supported the circular economy produced less waste.","label":"UNRELATED"}
+{"id":6,"tr":"Yapay zekâ ajanlarını kullanan bankalarda dolandırıcılık vakaları arttı.","en":"Banks that used AI agents saw more fraud cases.","label":"UNRELATED"}
+{"id":7,"tr":"Tuzlu beslenme yüksek tansiyon riskini artırır.","en":"A high-salt diet raises the risk of high blood pressure.","label":"SUPPORTS"}
+{"id":7,"tr":"Alkol tüketiminin yüksek tansiyon riski üzerinde hiçbir etkisi yoktur.","en":"Drinking alcohol has no effect on the risk of high blood pressure.","label":"CONTRADICTS"}
+{"id":7,"tr":"Tuz tüketimini sınırlayan ülkelerde felç ölümleri azaldı.","en":"Countries that limited salt intake saw fewer stroke deaths.","label":"UNRELATED"}
+{"id":7,"tr":"Yüksek tansiyonun risk faktörleri nelerdir?","en":"What are the risk factors for high blood pressure?","label":"SUPPORTS"}
+{"id":8,"tr":"Güney Sudan'da kızamık vakalarından etkilenen çocukların yarısı aşısızdı.","en":"Half of the children affected by measles in South Sudan were unvaccinated.","label":"SUPPORTS"}
+{"id":8,"tr":"Güney Sudan'da çatışmadan sonra yetersiz beslenme nedeniyle hastaneye yatırılan çocuk sayısı azaldı.","en":"After the conflict, fewer children were admitted to health facilities in South Sudan for malnutrition.","label":"CONTRADICTS"}
+{"id":8,"tr":"Güney Sudan'daki aşı kampanyası kızamık vakalarını düşürdü.","en":"A vaccination campaign in South Sudan brought measles cases down.","label":"UNRELATED"}
+{"id":9,"tr":"Ekonomik suçlarla mücadelede uluslararası iş birliği yapan ülkelerde dolandırıcılık azaldı.","en":"Countries that cooperated internationally against economic crime saw less fraud.","label":"UNRELATED"}
+{"id":10,"tr":"Sanayisini karbonsuzlaştıran Avrupa ülkelerinde rekabet gücü arttı.","en":"European countries that decarbonised their industry became more competitive.","label":"UNRELATED"}
+{"id":11,"tr":"Çin Halk Bankası 2017'den beri döviz piyasasına düzenli müdahaleyi bırakmış durumda.","en":"The People's Bank of China has stopped regular intervention in the foreign exchange market since 2017.","label":"SUPPORTS"}
+{"id":11,"tr":"Çin Halk Bankası döviz piyasasına her gün düzenli olarak müdahale ediyor.","en":"The People's Bank of China intervenes in the foreign exchange market regularly every day.","label":"CONTRADICTS"}
+{"id":11,"tr":"Çin'in kur rejimini esnetmesi ihracatını artırdı.","en":"China's more flexible exchange rate raised its exports.","label":"UNRELATED"}
+{"id":12,"tr":"Avrupa'da genç işsizliği son yıllarda azaldı.","en":"Youth unemployment in Europe has fallen in recent years.","label":"UNRELATED"}
+{"id":13,"tr":"Türkiye Cumhurbaşkanı Dünya Gıda Forumu'nun açılışında konuşma yaptı.","en":"The President of Türkiye gave an address at the opening of the World Food Forum.","label":"SUPPORTS"}
+{"id":13,"tr":"Dünya Gıda Forumu'na katılan ülkelerde açlık azaldı.","en":"Hunger fell in the countries that took part in the World Food Forum.","label":"UNRELATED"}
+{"id":14,"tr":"MINUSCA istikrarlı bölgelerdeki bazı üslerini kapattı.","en":"MINUSCA closed several of its bases in stable regions.","label":"SUPPORTS"}
+{"id":14,"tr":"MINUSCA istikrarlı bölgelerde yeni üsler açtı.","en":"MINUSCA opened new bases in stable regions.","label":"CONTRADICTS"}
+{"id":14,"tr":"BM barış gücünün çekildiği bölgelerde şiddet arttı.","en":"Violence rose in the regions UN peacekeepers withdrew from.","label":"UNRELATED"}
+{"id":15,"tr":"Kirliliğe maruz kalma ile ruh sağlığı sorunları arasında bir ilişki görülüyor.","en":"Exposure to pollution is associated with mental health problems.","label":"SUPPORTS"}
+{"id":15,"tr":"Kirliliğin ruh sağlığı sorunlarına yol açtığı kesin olarak kanıtlandı.","en":"It has been firmly proven that pollution causes mental health disorders.","label":"CONTRADICTS"}
+{"id":15,"tr":"Gürültü kirliliğini azaltan şehirlerde depresyon vakaları düştü.","en":"Cities that cut noise pollution saw fewer cases of depression.","label":"UNRELATED"}
+{"id":16,"tr":"Pandemiden sonra Avrupa'da turizm istihdamı eski seviyesine döndü.","en":"Tourism employment in Europe returned to its pre-pandemic level.","label":"UNRELATED"}
+{"id":17,"tr":"Fransa'nın kanser araştırmalarına yaptığı yatırım kanser ölümlerini azalttı.","en":"France's investment in cancer research reduced cancer deaths.","label":"UNRELATED"}
+{"id":18,"tr":"Dört binden fazla çiftçi bu iklim tavsiyelerinden yararlanıyor.","en":"More than 4,000 farmers benefit from these climate advisories.","label":"SUPPORTS"}
+{"id":18,"tr":"İklim tavsiyesi alan çiftçilerin pirinç verimi arttı.","en":"Rice yields rose for farmers who received climate advisories.","label":"UNRELATED"}
+{"id":19,"tr":"Quad ülkelerinin arabuluculuğu Sudan'da ateşkes sağladı.","en":"Mediation by the Quad countries brought a ceasefire in Sudan.","label":"UNRELATED"}
+{"id":20,"tr":"El Niño Güney ve Güneydoğu Asya'da yağmur mevsimini geciktiriyor.","en":"El Niño delays the rainy season in South and Southeast Asia.","label":"SUPPORTS"}
+{"id":20,"tr":"El Niño Güneydoğu Asya'da kuraklığı hafifletiyor.","en":"El Niño eases drought in Southeast Asia.","label":"CONTRADICTS"}
+{"id":20,"tr":"El Niño yıllarında Asya'da pirinç fiyatları yükseldi.","en":"Rice prices rose in Asia in El Niño years.","label":"UNRELATED"}
+{"id":20,"tr":"El Niño nedir?","en":"What is El Niño?","label":"SUPPORTS"}
+{"id":21,"tr":"Otonom silahları yasaklayan ülkelerde sivil kayıplar azaldı.","en":"Countries that banned autonomous weapons saw fewer civilian casualties.","label":"UNRELATED"}
+{"id":22,"tr":"SCORE paketini kullanan ülkelerde sağlık verilerinin kalitesi arttı.","en":"Countries using the SCORE package improved the quality of their health data.","label":"UNRELATED"}
+{"id":23,"tr":"Tokenleştirilmiş piyasaları birbirine bağlayan ülkelerde işlem maliyetleri düştü.","en":"Countries that connected their tokenised markets saw transaction costs fall.","label":"UNRELATED"}
+{"id":24,"tr":"Son arz şoklarına rağmen dünya ekonomisi dayanıklı kaldı.","en":"The world economy stayed resilient despite the recent supply shocks.","label":"SUPPORTS"}
+{"id":24,"tr":"Son arz şokları dünya ekonomisini resesyona soktu.","en":"The recent supply shocks pushed the world economy into recession.","label":"CONTRADICTS"}
+{"id":25,"tr":"Projede 530 kadın ve genç modern istiridye yetiştiriciliği eğitimi aldı.","en":"In the project, 530 women and young people were trained in modern oyster farming.","label":"SUPPORTS"}
+{"id":25,"tr":"Projede arıcılık eğitimi verilmedi.","en":"No beekeeping training was given in the project.","label":"CONTRADICTS"}
+{"id":25,"tr":"Eğitim alan kadınların geliri iki katına çıktı.","en":"The income of the women who were trained doubled.","label":"UNRELATED"}
+{"id":26,"tr":"AB, batarya üretim kapasitesinin büyümesini destekleyen bir strateji benimsedi.","en":"The EU has adopted a strategy that supports scaling up battery manufacturing.","label":"SUPPORTS"}
+{"id":26,"tr":"Net Sıfır Sanayi Yasası'ndan sonra AB'de batarya üretimi arttı.","en":"Battery production in the EU rose after the Net-Zero Industry Act.","label":"UNRELATED"}
+{"id":27,"tr":"Enerji fiyatlarındaki artış Avrupa'da gıda fiyatlarını yükseltti.","en":"The rise in energy prices pushed up food prices in Europe.","label":"UNRELATED"}
+{"id":28,"tr":"Enerji şokuna rağmen euro bölgesi ekonomisi 2026'nın ilk yarısında büyüdü.","en":"Despite the energy shock, the euro area economy grew in the first half of 2026.","label":"SUPPORTS"}
+{"id":28,"tr":"Euro bölgesi ekonomisi 2026'nın ilk yarısında enerji şoku nedeniyle daraldı.","en":"The euro area economy shrank in the first half of 2026 because of the energy shock.","label":"CONTRADICTS"}
+{"id":28,"tr":"Faiz artışlarına rağmen euro bölgesinde işsizlik düştü.","en":"Unemployment in the euro area fell despite interest rate rises.","label":"UNRELATED"}
+{"id":29,"tr":"En az 140 ülke anayasasında sağlık hakkını tanıyor.","en":"At least 140 countries recognise the right to health in their constitutions.","label":"SUPPORTS"}
+{"id":29,"tr":"Sağlık hakkını anayasasında tanıyan ülkelerin sayısı 50'nin altında.","en":"Fewer than 50 countries recognise the right to health in their constitutions.","label":"CONTRADICTS"}
+{"id":29,"tr":"Sağlık hakkını anayasasına koyan ülkelerde bebek ölümleri azaldı.","en":"Countries that put the right to health in their constitutions saw infant deaths fall.","label":"UNRELATED"}
+{"id":30,"tr":"Kimlik kartı sistemi kuran ülkelerde bankacılığa erişim arttı.","en":"Countries that set up national identity cards saw access to banking rise.","label":"UNRELATED"}
+{"id":31,"tr":"Risk odaklı denetime geçen ülkelerde banka iflasları azaldı.","en":"Countries that moved to risk-based supervision had fewer bank failures.","label":"UNRELATED"}
+{"id":32,"tr":"Cox's Bazar kampında çocukların okullaşma oranı arttı.","en":"School enrolment among children in the Cox's Bazar camps rose.","label":"UNRELATED"}
+{"id":33,"tr":"Hükümet ve merkez bankasının ortak önlemlerinden sonra enflasyon düşmeye başladı.","en":"Inflation began to fall after the joint measures of the government and the central bank.","label":"SUPPORTS"}
+{"id":33,"tr":"Ortak enflasyonla mücadele önlemlerine rağmen enflasyon yükselmeye devam etti.","en":"Inflation kept rising despite the joint anti-inflation measures.","label":"CONTRADICTS"}
+{"id":33,"tr":"Enflasyonu düşürmek için faiz yükselten ülkelerde ekonomik durgunluk yaşandı.","en":"Countries that raised interest rates to bring inflation down went through an economic slowdown.","label":"UNRELATED"}
+{"id":34,"tr":"Kadın çiftçilere eğitim veren programlarda tarımsal verim arttı.","en":"Programmes that trained women farmers raised farm yields.","label":"UNRELATED"}
+{"id":35,"tr":"ASEAN Göçmen İşçi Forumu işe alım süreçlerini güçlendirecek önlemler üzerinde anlaştı.","en":"The ASEAN Forum on Migrant Labour agreed on measures to strengthen recruitment.","label":"SUPPORTS"}
+{"id":35,"tr":"ASEAN'ın göç düzenlemeleri göçmen işçilere yönelik dolandırıcılığı azalttı.","en":"ASEAN's migration rules reduced fraud against migrant workers.","label":"UNRELATED"}
+{"id":36,"tr":"Küresel finans krizinden sonra sermaye tamponlarını artıran ülkelerde banka krizleri azaldı.","en":"Countries that raised bank capital buffers after the global financial crisis had fewer banking crises.","label":"UNRELATED"}
+{"id":37,"tr":"Çin'in swap anlaşmaları yurt dışı piyasada renminbi kullanımını artırdı.","en":"China's swap arrangements increased the use of the renminbi offshore.","label":"UNRELATED"}
+{"id":38,"tr":"Halka arzların arttığı ülkelerde borsa endeksleri yükseldi.","en":"Stock indices rose in countries with more initial public offerings.","label":"UNRELATED"}
