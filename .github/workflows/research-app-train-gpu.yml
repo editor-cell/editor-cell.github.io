@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
     inputs:
       flavor:
-        default: "l4x1"
+        default: "a10g-small,t4-small,l4x1,t4-medium"
       epochs:
         default: "3"
       lr:
@@ -33,4 +33,4 @@ jobs:
       - name: Train on the graphics card
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: python .github/scripts/hf-train.py "${{ inputs.flavor || 'l4x1' }}" "${{ inputs.epochs || '3' }}" "${{ inputs.lr || '2e-5' }}"
+        run: python .github/scripts/hf-train.py "${{ inputs.flavor || 'a10g-small,t4-small,l4x1,t4-medium' }}" "${{ inputs.epochs || '3' }}" "${{ inputs.lr || '2e-5' }}"
