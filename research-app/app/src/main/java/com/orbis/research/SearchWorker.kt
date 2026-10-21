@@ -37,18 +37,20 @@ class SearchWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
                 if (!search.prepare(run)) return Result.success()
                 SearchState.changed()
             }
+            // The language model reads the paragraphs, and writes the suggestion when none bears on
+            // the claim, so it is loaded even when there is nothing left to read.
+            val path = Settings.modelPath(ctx)
+            if (path == null || !File(path).exists()) {
+                db.setRun(state = Db.RUN_FAILED, message = "Önce Model sekmesinden bir dil modeli indirin.")
+                return Result.success()
+            }
+            say("Model yükleniyor…")
+            if (!Llm.ensure(ctx, path)) {
+                db.setRun(state = Db.RUN_FAILED, message = "Model açılamadı; dosya bozuk olabilir. Model sekmesinden yeniden indirin.")
+                return Result.success()
+            }
             val pending = db.pendingItems()
             if (pending.isNotEmpty()) {
-                val path = Settings.modelPath(ctx)
-                if (path == null || !File(path).exists()) {
-                    db.setRun(state = Db.RUN_FAILED, message = "Önce Model sekmesinden bir dil modeli indirin.")
-                    return Result.success()
-                }
-                say("Model yükleniyor…")
-                if (!Llm.ensure(ctx, path)) {
-                    db.setRun(state = Db.RUN_FAILED, message = "Model açılamadı; dosya bozuk olabilir. Model sekmesinden yeniden indirin.")
-                    return Result.success()
-                }
                 var english = db.run()?.english
                 if (english == null) {
                     say("Yargı İngilizceye çevriliyor…")
