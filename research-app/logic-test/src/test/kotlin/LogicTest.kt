@@ -219,6 +219,8 @@ class JudgementTest {
         val twoSteps = com.orbis.research.Prompts.parseJudgement("SUPPORTS\nINDIRECT: 2017'de 120, 2020'de 95.", para)!!
         assertTrue(twoSteps.indirect); assertEquals("2017'de 120, 2020'de 95.", twoSteps.reason)
         assertFalse(com.orbis.research.Prompts.parseJudgement("CONTRADICTS\nDIRECT", para)!!.indirect)
+        val words = com.orbis.research.Prompts.parseJudgement("SUPPORTS\nINDIRECT: 5 yıl sonra iş sayısı değişmedi.", "Jobs were unchanged five years later.")!!
+        assertFalse(words.reasonDropped)
         val made = com.orbis.research.Prompts.parseJudgement("SUPPORTS INDIRECT: Tüketim yüzde 21 azaldı.", para)!!
         assertTrue(made.reasonDropped); assertEquals(null, made.reason); assertTrue(made.indirect)
     }

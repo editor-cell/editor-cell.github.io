@@ -39,7 +39,8 @@ object Prompts {
     /** Step one: does the paragraph bear on the claim? One word. */
     fun judge(claim: String, p: Paragraph): String = claimAndParagraph(claim, p) +
         "Does this paragraph show the claim is true (SUPPORTS), show it is false, for example no effect, " +
-        "no change or the opposite (CONTRADICTS), or neither (UNRELATED)? Answer with one word."
+        "no change or the opposite (CONTRADICTS), or neither (UNRELATED)? Figures before and after that show " +
+        "the change count as showing it. Answer with one word."
 
     const val JUDGE_GRAMMAR = "root ::= \"SUPPORTS\" | \"CONTRADICTS\" | \"UNRELATED\""
 
@@ -74,9 +75,21 @@ object Prompts {
         return Judgement(verdict, true, if (ok) reason else null, reasonDropped = reason != null && !ok)
     }
 
-    /** Figures in a text, compared by their digits only: "9,7", "9.7" and "97" are one figure. */
-    fun numbersIn(text: String): Set<String> =
-        Regex("\\d+(?:[.,]\\d+)*").findAll(text).map { it.value.filter(Char::isDigit) }.toSet()
+    /**
+     * Figures in a text, compared by their digits only: "9,7", "9.7" and "97" are one figure. Small
+     * numbers written as English words count too, since a reason may write "five years" as "5 yıl".
+     */
+    fun numbersIn(text: String): Set<String> {
+        val digits = Regex("\\d+(?:[.,]\\d+)*").findAll(text).map { it.value.filter(Char::isDigit) }
+        val words = Regex("[A-Za-z]+").findAll(text).mapNotNull { numberWords[it.value.lowercase()]?.toString() }
+        return (digits + words).toSet()
+    }
+
+    private val numberWords = listOf(
+        "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve",
+        "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen", "twenty",
+    ).withIndex().associate { (i, w) -> w to i } +
+        mapOf("thirty" to 30, "forty" to 40, "fifty" to 50, "sixty" to 60, "seventy" to 70, "eighty" to 80, "ninety" to 90, "hundred" to 100)
 
     const val SUGGEST_SYSTEM = "You help a researcher who searched a library of official reports and studies " +
         "for evidence about a claim."
