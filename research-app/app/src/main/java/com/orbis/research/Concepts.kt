@@ -28,8 +28,8 @@ object Concepts {
         val c = if (english.isNullOrBlank() || english.equals(claim, ignoreCase = true)) claim else "$claim\n(English: $english)"
         return "List the 2 or 3 key ideas this claim joins, for example a measure or cause, what it aims at, and what " +
             "is said to follow. A short claim, question or topic may have just one. Name only things and events the " +
-            "claim is about. Never use words that only say a direction or a change (rise, fall, higher, lower, reduce, " +
-            "increase, effect) in a name or in the words. For each idea write a short English name, a colon, and 8 to 10 " +
+            "claim is about, not years or numbers. Never use words that only say a direction or a change (rise, fall, higher, " +
+            "lower, reduce, increase, effect) in a name or in the words. For each idea write a short English name, a colon, and 8 to 10 " +
             "words or phrases a report would use for it, mostly one or two words, in lowercase, separated by commas: first " +
             "English ones, then Turkish ones. Give different ways of saying the same thing: synonyms and related words, " +
             "not one phrase repeated. One idea per line, each starting with \"- \".\n\n" +
@@ -59,7 +59,7 @@ object Concepts {
             val t = line.trim().removePrefix("-").removePrefix("•").trim()
             if (!t.contains(':')) continue
             val name = tidy(t.substringBefore(':'))
-            if (name.length < 3) continue
+            if (name.length < 3 || !namesSomething(name)) continue
             val terms = (listOf(name) + t.substringAfter(':').split(',').map { tidy(it) })
                 .filter { it.length >= 3 }.distinct().take(MAX_TERMS)
             out += Concept(name.take(60), terms)
@@ -107,6 +107,16 @@ object Concepts {
         "tackle", "artis", "artisi", "artmasi", "yukselis", "yukselme", "yukseltilmesi", "dusus", "dususu", "dusme", "azalma",
         "azalis", "azalmasi", "azaltilmasi",
     )
+
+    /** Words that make a name no idea: negations and years ("did not reduce", "twenty twenty three"). */
+    private val FILLER = setOf(
+        "did", "do", "does", "not", "no", "never", "without", "year", "years", "zero", "one", "two", "three", "four", "five", "six",
+        "seven", "eight", "nine", "ten", "twenty", "thirty", "forty", "fifty", "hundred", "thousand",
+    )
+
+    /** Whether a concept's name holds a word that names a thing, not only a direction, a negation or a number. */
+    private fun namesSomething(name: String) =
+        words(name).any { it !in STOP && it !in DIRECTION && it !in FILLER && !it.all(Char::isDigit) }
 
     /** How many of [ws] must be in the text: all, but of a term of three or more words one may be missing. */
     private fun enough(found: Int, n: Int) = found >= if (n >= 3) n - 1 else n

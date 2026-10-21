@@ -116,6 +116,18 @@ class ConceptsTest {
         assertFalse(Concepts.passes("Prices rose last year in the shops.", c))
     }
 
+    /** A model sometimes lists "increase", "did not reduce" or the year as an idea of its own: none of these is a thing to look for. */
+    @Test fun ideasThatAreOnlyADirectionANegationOrAYearAreDropped() {
+        val c = Concepts.parse(
+            "- electric vehicle sales: electric vehicle sales, electric car sales\n" +
+                "- twenty twenty three: twenty twenty three, twenty third year\n" +
+                "- increase: increase, rise, growth, upturn\n" +
+                "- did not reduce: did not fall, did not drop\n" +
+                "- europe: european union, eu member states",
+        )
+        assertEquals(listOf("electric vehicle sales", "europe"), c.map { it.name })
+    }
+
     @Test fun aLongTermMayMissOneWord() {
         val c = Concepts.parse("- drinks: sugary beverage consumption, tax levy")
         assertTrue(Concepts.passes("Sales of sugary beverages fell in the first year.", c))
