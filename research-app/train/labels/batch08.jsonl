@@ -1,0 +1,98 @@
+{"id":355,"tr":"FAO, Çinli Yin Yuzhen'i 100. kadın kahraman olarak açıkladı.","en":"FAO revealed Yin Yuzhen of China as the 100th Woman Hero.","label":"SUPPORTS"}
+{"id":356,"tr":"Adil döngüsel ekonomi raporları AB'de yeşil istihdamı artırdı.","en":"The just circular economy reports increased green employment in the EU.","label":"UNRELATED"}
+{"id":357,"tr":"Hükümetlerarası Müzakere Organı iki yılı aşkın süre önce kuruldu.","en":"The Intergovernmental Negotiating Body was established over two years ago.","label":"SUPPORTS"}
+{"id":357,"tr":"Pandemi müzakereleri Dünya Sağlık Asamblesi'nde başarısız oldu.","en":"The pandemic negotiations failed at the World Health Assembly.","label":"UNRELATED"}
+{"id":358,"tr":"Dünya Bankası nükleer enerjiye seçici olarak yeniden destek verme kararı aldı.","en":"The World Bank decided to selectively re-engage in nuclear energy.","label":"SUPPORTS"}
+{"id":358,"tr":"Nükleer enerjiye yatırım yapan gelişmekte olan ülkelerde emisyonlar düştü.","en":"Emissions fell in developing countries that invested in nuclear power.","label":"UNRELATED"}
+{"id":359,"tr":"Avrupa Merkez Bankası'nın Haziran'daki faiz artışından sonra şirketlere verilen banka kredilerinin faizi yükseldi.","en":"After the ECB's rate rise in June, bank lending rates for firms went up.","label":"SUPPORTS"}
+{"id":359,"tr":"Avrupa Merkez Bankası'nın Haziran'daki faiz artışından sonra şirket kredilerinin büyümesi yavaşladı.","en":"After the ECB's June rate rise, growth in lending to firms slowed.","label":"CONTRADICTS"}
+{"id":359,"tr":"Faiz artışından sonra euro bölgesinde konut kredisi faizleri yükseldi.","en":"Mortgage rates in the euro area rose after the rate rise.","label":"CONTRADICTS"}
+{"id":359,"tr":"Faiz artışları euro bölgesinde işsizliği artırdı.","en":"Rate rises increased unemployment in the euro area.","label":"UNRELATED"}
+{"id":360,"tr":"İkinci çeyrekte euro bölgesindeki güçlü büyümeyi özel tüketim sürükledi.","en":"Private consumption drove the stronger than expected growth in the euro area in the second quarter.","label":"SUPPORTS"}
+{"id":360,"tr":"İkinci çeyrekte euro bölgesinde büyümenin ana kaynağı yapay zekâ yatırımlarıydı.","en":"AI investment was the main source of euro area growth in the second quarter.","label":"CONTRADICTS"}
+{"id":360,"tr":"Enflasyonu düşürmek için faiz yükselten ülkelerde ekonomik durgunluk yaşandı.","en":"Countries that raised interest rates to bring inflation down went through an economic slowdown.","label":"UNRELATED"}
+{"id":361,"tr":"Hollanda'nın DSÖ ile işbirliği Hollanda'da sağlık hizmetlerine erişimi artırdı.","en":"The Netherlands' cooperation with WHO improved access to health services in the Netherlands.","label":"UNRELATED"}
+{"id":362,"tr":"Yapay zekâ euro bölgesinde verimliliği şimdiden yükseltti.","en":"AI has already raised productivity in the euro area.","label":"UNRELATED"}
+{"id":363,"tr":"DSÖ şimdiye kadar 47 ülke ve 1 bölgeyi sıtmadan arınmış olarak onayladı.","en":"WHO has certified 47 countries and 1 territory as malaria-free.","label":"SUPPORTS"}
+{"id":363,"tr":"Sri Lanka henüz sıtmadan arınmış sertifikası almadı.","en":"Sri Lanka has not yet been certified malaria-free.","label":"CONTRADICTS"}
+{"id":363,"tr":"Sıtmadan arınmış sertifikası alan ülkelerde çocuk ölümleri azaldı.","en":"Child deaths fell in countries certified malaria-free.","label":"UNRELATED"}
+{"id":364,"tr":"Daha yüksek faizlerin, enflasyonun 2027 sonuna doğru hedefe dönmesine destek olması bekleniyor.","en":"Higher interest rates are expected to help bring inflation back to target towards the end of 2027.","label":"SUPPORTS"}
+{"id":364,"tr":"Avrupa Merkez Bankası 2027 enflasyon tahminini düşürdü.","en":"The ECB lowered its inflation projection for 2027.","label":"CONTRADICTS"}
+{"id":364,"tr":"Enflasyonu düşürmek için faiz yükselten ülkelerde ekonomik durgunluk yaşandı.","en":"Countries that raised interest rates to bring inflation down went through an economic slowdown.","label":"UNRELATED"}
+{"id":365,"tr":"İstatistik yarışmalarına katılan gençlerin eleştirel düşünme becerileri gelişti.","en":"Young people who took part in statistics competitions improved their critical thinking.","label":"UNRELATED"}
+{"id":366,"tr":"AB hayvancılıkta kullanılan yüksek proteinli yemin yaklaşık üçte ikisini ithal ediyor.","en":"The EU imports nearly two-thirds of the high-protein feed used in livestock production.","label":"SUPPORTS"}
+{"id":366,"tr":"AB hayvan yeminin neredeyse tamamını kendi üretiyor.","en":"The EU produces almost all of its animal feed itself.","label":"CONTRADICTS"}
+{"id":366,"tr":"Soya ithalatını azaltan AB ülkelerinde hayvancılık maliyetleri arttı.","en":"Livestock costs rose in EU countries that cut soy imports.","label":"UNRELATED"}
+{"id":367,"tr":"Euro göstergeleri önceden belirlenmiş bir takvime göre yayımlanıyor.","en":"Euro indicators are released according to a calendar set a year in advance.","label":"SUPPORTS"}
+{"id":368,"tr":"Tokenleştirilmiş varlıklar geleneksel piyasalara göre hâlâ küçük bir yer tutuyor.","en":"Tokenised activity remains small relative to conventional markets.","label":"SUPPORTS"}
+{"id":368,"tr":"Tokenleştirilmiş tahviller geleneksel tahvil piyasasını geride bıraktı.","en":"Tokenised bonds have overtaken the conventional bond market.","label":"CONTRADICTS"}
+{"id":369,"tr":"Avrupa Parlamentosu dijital euro konusundaki tutumunu Temmuz 2026'da kabul etti.","en":"The European Parliament adopted its position on the digital euro in July 2026.","label":"SUPPORTS"}
+{"id":369,"tr":"AB Konseyi dijital euro konusunda henüz bir tutum belirlemedi.","en":"The Council of the EU has not yet agreed a position on the digital euro.","label":"CONTRADICTS"}
+{"id":370,"tr":"Yağış tahmini alan Kamboçyalı çiftçi kuraklığa on gün önceden hazırlandı.","en":"A Cambodian farmer who received rainfall forecasts prepared for the dry spell ten days in advance.","label":"SUPPORTS"}
+{"id":370,"tr":"Tarımsal meteoroloji bültenleri Kamboçya'da pirinç verimini yüzde 20 artırdı.","en":"Agrometeorological bulletins raised rice yields in Cambodia by 20%.","label":"UNRELATED"}
+{"id":371,"tr":"Enerji şoku geçtikçe reel gelirlerin toparlanmasının iç talebi desteklemesi bekleniyor.","en":"As the energy shock fades, recovering real incomes are expected to support domestic demand.","label":"SUPPORTS"}
+{"id":371,"tr":"Savunma harcamalarını artıran ülkelerde büyüme hızlandı.","en":"Growth sped up in countries that raised defence spending.","label":"UNRELATED"}
+{"id":372,"tr":"Senaryo analizi kullanan merkez bankaları enflasyonu daha iyi tahmin etti.","en":"Central banks that used scenario analysis forecast inflation better.","label":"UNRELATED"}
+{"id":373,"tr":"Online iş ilanı verisi kullanan ülkelerde beceri açıkları daha hızlı kapandı.","en":"Skills gaps closed faster in countries that used online job ad data.","label":"UNRELATED"}
+{"id":374,"tr":"Euro bölgesi finans piyasaları enerji fiyatlarındaki gelişmelere göre hareket etti.","en":"Euro area financial markets were driven by energy price developments.","label":"SUPPORTS"}
+{"id":374,"tr":"Uzun vadeli faizlerin küresel artışı euro bölgesini durgunluğa soktu.","en":"The global rise in long-term yields pushed the euro area into stagnation.","label":"CONTRADICTS"}
+{"id":375,"tr":"Yüzme Suyu Direktifi'ni uygulayan ülkelerde su kaynaklı hastalıklar azaldı.","en":"Waterborne illnesses fell in countries applying the Bathing Water Directive.","label":"UNRELATED"}
+{"id":376,"tr":"Çin Halk Bankası 7 günlük ters repo faizini politika faizi olarak belirledi.","en":"The PBOC set the 7-day reverse repo rate as its policy rate.","label":"SUPPORTS"}
+{"id":376,"tr":"Çin Halk Bankası açık piyasada devlet tahvili işlemlerini durdurdu.","en":"The PBOC stopped trading government bonds in open market operations.","label":"CONTRADICTS"}
+{"id":376,"tr":"Çin'de politika faizinin netleşmesi kredi büyümesini hızlandırdı.","en":"Clarifying the policy rate in China sped up credit growth.","label":"UNRELATED"}
+{"id":377,"tr":"Sahra altı Afrika'da küçük çiftçiler kıtanın gıda arzının yaklaşık yüzde 70'ini üretiyor.","en":"In sub-Saharan Africa, smallholders produce around 70 per cent of the food supply.","label":"SUPPORTS"}
+{"id":377,"tr":"Sahra altı Afrika'da gıdanın çoğunu büyük ticari çiftlikler üretiyor.","en":"Most food in sub-Saharan Africa is produced by large commercial farms.","label":"CONTRADICTS"}
+{"id":377,"tr":"Patates üretimini teşvik eden Afrika ülkelerinde yetersiz beslenme azaldı.","en":"Malnutrition fell in African countries that promoted potato farming.","label":"UNRELATED"}
+{"id":378,"tr":"Filipinler'de yapay zekâ eğitimi alanların işsizlik oranı düştü.","en":"Unemployment fell among people trained in AI in the Philippines.","label":"UNRELATED"}
+{"id":379,"tr":"Kovid, Ukrayna'nın işgali ve Orta Doğu'daki çatışma ekonomilerin arz kapasitesini bozdu.","en":"Covid, the invasion of Ukraine and the Middle East conflict each disrupted economies' supply capacity.","label":"SUPPORTS"}
+{"id":379,"tr":"Son yıllarda büyük arz şokları seyrek ve uzun aralıklarla yaşandı.","en":"Large supply shocks have been rare and far apart in recent years.","label":"CONTRADICTS"}
+{"id":380,"tr":"Fransa 2020-2021'de DSÖ'ye 143 milyon dolardan fazla katkı yaptı.","en":"France contributed over US$143 million to WHO in 2020-2021.","label":"SUPPORTS"}
+{"id":380,"tr":"Fransa'nın DSÖ'ye katkılarının çoğu esnek olmayan, belirli projelere bağlı fonlardı.","en":"Most of France's contributions to WHO were inflexible, project-bound funds.","label":"CONTRADICTS"}
+{"id":381,"tr":"Temiz ve kaynak verimli sanayiye geçiş kısa ve orta vadede sanayi için yüksek maliyetler getirecek.","en":"The shift to clean, resource-efficient industry will bring high up-front costs in the short to medium term.","label":"SUPPORTS"}
+{"id":381,"tr":"Sanayinin temiz üretime geçişi kısa vadede hiçbir maliyet getirmez.","en":"Industry's shift to clean production has no short-term costs.","label":"CONTRADICTS"}
+{"id":381,"tr":"Karbon fiyatı yüksek olan ülkelerde sanayi rekabet gücünü kaybetti.","en":"Industry lost competitiveness in countries with a high carbon price.","label":"UNRELATED"}
+{"id":382,"tr":"Dünya Gıda Günü kampanyaları gıda israfını azalttı.","en":"World Food Day campaigns reduced food waste.","label":"UNRELATED"}
+{"id":383,"tr":"Tarım istatistiklerini uyumlaştıran ülkelerde tarım politikaları daha etkili oldu.","en":"Farm policy worked better in countries that harmonised agricultural statistics.","label":"UNRELATED"}
+{"id":384,"tr":"Ülkeler farklı teknolojiler kullandıkça sınır ötesi ödemeler pahalılaştı.","en":"Cross-border payments got more expensive as countries used different technologies.","label":"UNRELATED"}
+{"id":385,"tr":"Daha önce ağır kirli olan birçok kentsel su alanında artık yüzülebiliyor.","en":"People can now swim in many formerly heavily polluted urban waters.","label":"SUPPORTS"}
+{"id":385,"tr":"Avrupa'da kimyasal su kirliliği sorunu tamamen çözüldü.","en":"Chemical water pollution has been fully solved in Europe.","label":"CONTRADICTS"}
+{"id":386,"tr":"Saloum Deltası projesi sona erdikten sonra kadınların gelirleri kalıcı olarak arttı.","en":"Women's incomes rose permanently after the Saloum Delta project ended.","label":"UNRELATED"}
+{"id":387,"tr":"Devlet tahvili piyasalarında kaldıraçlı yatırımcıların rolü büyüdü.","en":"Leveraged investors play a much larger role in government bond markets.","label":"SUPPORTS"}
+{"id":387,"tr":"Uzun vadeli borçlanma araçlarına geleneksel talep arttı.","en":"Traditional demand for long-duration debt has increased.","label":"CONTRADICTS"}
+{"id":387,"tr":"Kaldıraçlı yatırımcıların artması tahvil faizlerini yükseltti.","en":"The rise of leveraged investors pushed bond yields up.","label":"UNRELATED"}
+{"id":388,"tr":"Papa yeni bir küresel gıda düzeni çağrısında bulundu.","en":"The Pope called for a new global food order.","label":"SUPPORTS"}
+{"id":389,"tr":"SCORE paketini kullanan ülkeler COVID-19 ölümlerini daha doğru kaydetti.","en":"Countries using SCORE recorded COVID-19 deaths more accurately.","label":"UNRELATED"}
+{"id":390,"tr":"Avrupa'da gaz fiyatları Temmuz toplantısından bu yana yükseldi.","en":"Gas prices in Europe have risen since the July meeting.","label":"SUPPORTS"}
+{"id":390,"tr":"Avrupa'da dizel rafineri marjları savaş öncesi seviyesine geriledi.","en":"European diesel refining margins have fallen back to their pre-war level.","label":"CONTRADICTS"}
+{"id":390,"tr":"Yüksek petrol fiyatları euro bölgesinde büyümeyi düşürdü.","en":"High oil prices lowered growth in the euro area.","label":"UNRELATED"}
+{"id":391,"tr":"Mart'ta petrol fiyatı yükselirken dolar da güçlendi.","en":"In March the dollar strengthened as the oil price rose.","label":"SUPPORTS"}
+{"id":391,"tr":"Mart'ta petrol fiyatları yükselince dolar zayıfladı.","en":"In March the dollar weakened as oil prices rose.","label":"CONTRADICTS"}
+{"id":392,"tr":"İklim riskleri konferansları bankaların iklim risk yönetimini iyileştirdi.","en":"Climate risk conferences improved banks' climate risk management.","label":"UNRELATED"}
+{"id":393,"tr":"MINUSCA 2014'te konuşlandırıldı.","en":"MINUSCA was deployed in 2014.","label":"SUPPORTS"}
+{"id":393,"tr":"MINUSCA'nın konuşlanmasından sonra Orta Afrika'da sivil ölümleri azaldı.","en":"Civilian deaths in the Central African Republic fell after MINUSCA was deployed.","label":"UNRELATED"}
+{"id":394,"tr":"Swap hatları yurt dışındaki güven şoklarının kendi kendini besleyen krizlere dönüşme riskini azaltabilir.","en":"Swap lines can reduce the risk that confidence shocks abroad become self-fulfilling.","label":"SUPPORTS"}
+{"id":394,"tr":"Swap hatları euro cinsinden teminat olmadan kullanılamaz.","en":"Swap lines cannot be used without euro-denominated collateral.","label":"CONTRADICTS"}
+{"id":395,"tr":"ASML ile TSMC uzun yıllardır birlikte çalışıyor.","en":"ASML and TSMC have been working together for many years.","label":"SUPPORTS"}
+{"id":395,"tr":"Asya ile işbirliği yapan Avrupalı çip şirketlerinin kârı arttı.","en":"European chip firms that worked with Asia became more profitable.","label":"UNRELATED"}
+{"id":396,"tr":"FAO ile Sırbistan arasındaki işbirliği Sırbistan'ın tarım ihracatını artırdı.","en":"Cooperation between FAO and Serbia raised Serbia's farm exports.","label":"UNRELATED"}
+{"id":397,"tr":"Afganistan'da kadınların ekonomiye katılımı arttı.","en":"Women's participation in Afghanistan's economy has increased.","label":"UNRELATED"}
+{"id":398,"tr":"Eurostat podcast'i dinleyici sayısını iki katına çıkardı.","en":"Eurostat's podcast doubled its audience.","label":"UNRELATED"}
+{"id":399,"tr":"1990-2024 arasında termik santrallerin katı yakıt kullanımı yüzde 68 azaldı.","en":"Between 1990 and 2024, thermal power stations' use of solid fuels fell by 68%.","label":"SUPPORTS"}
+{"id":399,"tr":"1990'dan bu yana santrallerde doğal gaz kullanımı azaldı.","en":"Power stations' use of natural gas has fallen since 1990.","label":"CONTRADICTS"}
+{"id":399,"tr":"Kömürden çıkış yapan ülkelerde elektrik fiyatları yükseldi.","en":"Electricity prices rose in countries that phased out coal.","label":"UNRELATED"}
+{"id":400,"tr":"Çok kutuplu bir dünya daha sık ekonomik kesintilere yol açabilir.","en":"A more multipolar world may produce more frequent economic disruptions.","label":"SUPPORTS"}
+{"id":400,"tr":"Jeopolitik rekabetin arttığı dönemlerde enflasyon yükseldi.","en":"Inflation rose in periods of greater geopolitical competition.","label":"UNRELATED"}
+{"id":401,"tr":"FAO, Lesotho ile Peru arasında patates sektörü için işbirliğini kolaylaştırıyor.","en":"FAO facilitates cooperation between Lesotho and Peru on the potato sector.","label":"SUPPORTS"}
+{"id":401,"tr":"Peru ile işbirliğinden sonra Lesotho'da patates üretimi iki katına çıktı.","en":"Potato production in Lesotho doubled after cooperation with Peru.","label":"UNRELATED"}
+{"id":402,"tr":"Avrupa'da yerel gıdaya ilgi azalıyor.","en":"Interest in local food is falling in Europe.","label":"CONTRADICTS"}
+{"id":403,"tr":"Hong Kong'un offshore renminbi işleri planın ardından iki katına çıktı.","en":"Hong Kong's offshore renminbi business doubled after the plan.","label":"UNRELATED"}
+{"id":404,"tr":"Sermaye piyasalarını derinleştiren Avrupa ülkelerinde verimlilik daha hızlı arttı.","en":"Productivity grew faster in European countries with deeper capital markets.","label":"UNRELATED"}
+{"id":405,"tr":"İslami finans ekosistemi kuran ülkelerde sosyal etki yatırımları arttı.","en":"Impact investment rose in countries that built an Islamic finance ecosystem.","label":"UNRELATED"}
+{"id":406,"tr":"Küresel açlık 2025'te üst üste üçüncü yıl azaldı.","en":"Global hunger declined for a third consecutive year in 2025.","label":"SUPPORTS"}
+{"id":406,"tr":"Küresel açlık 2025'te arttı.","en":"Global hunger rose in 2025.","label":"CONTRADICTS"}
+{"id":406,"tr":"Dünya 2030 açlık hedeflerine ulaşma yolunda.","en":"The world is on track to meet the 2030 hunger goals.","label":"CONTRADICTS"}
+{"id":407,"tr":"İrlanda Merkez Bankası'nın denetimleri finansal suçları azalttı.","en":"The Central Bank of Ireland's supervision reduced financial crime.","label":"UNRELATED"}
+{"id":408,"tr":"Kaju çiftçisinin 40 kilo için aldığı fiyat eskisine göre arttı.","en":"The price the cashew farmer received for 40 kilograms rose compared with before.","label":"SUPPORTS"}
+{"id":408,"tr":"Kaju çiftçisi 40 kilo için eskisinden daha düşük fiyat aldı.","en":"The cashew farmer got a lower price for 40 kilograms than before.","label":"CONTRADICTS"}
+{"id":409,"tr":"Avrupa'da bölgeler ve şehirler iklim dayanıklılığına yatırım yapıyor.","en":"Regions and cities across Europe are already investing in climate resilience.","label":"SUPPORTS"}
+{"id":409,"tr":"Kuraklığa hazırlık yatırımı yapan Avrupa şehirlerinde su kıtlığı azaldı.","en":"Water shortages fell in European cities that invested in drought preparedness.","label":"UNRELATED"}
