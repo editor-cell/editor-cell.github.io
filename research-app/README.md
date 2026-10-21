@@ -22,6 +22,16 @@ numbers of its own; when nothing fits it says "Bulamadım".
   once. So documents not yet collected are found too. Only listed sources are visited (`Net.kt`);
   the sources' own search pages were measured (`research-app-probe.yml`) and read reliably on only a
   few sites, so they are not used.
+- **Concept check**: at the start of a search the language model lists the claim's two or three key
+  ideas (things and events, not directions) with many English and Turkish words and synonyms for
+  each (`Concepts.kt`). Of the paragraphs closest in meaning (ten times as many as will be read), only
+  those that use words of most of the ideas, in any word form, go on; the rest are never read, and with
+  none left the answer is "Bulamadım". Only then does the model judge, by meaning, what the paragraph
+  says of the claim. `ConceptGateTest` runs the whole path on the phone's small model (Qwen3 1.7B) as
+  well as the big one: paragraphs that have nothing to do with the claim (thanks to the authors, a
+  figure note, a speech on bank competitiveness, a page on the Basel Process) must not become
+  findings, and clear findings must reach the model, or the build stops and no release goes out.
+  Close cases, synonyms and Turkish sources are only reported on the run.
 - **Searching** runs as a background job with a notification (`SearchWorker`), saving each answer,
   so it survives leaving the app and resumes if the phone stops it. The paragraphs closest in
   meaning, within the chosen headings, sources and dates, are read by an open language model

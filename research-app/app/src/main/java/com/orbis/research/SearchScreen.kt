@@ -217,7 +217,9 @@ fun SearchScreen(goTo: (Int) -> Unit) {
                 Column(Modifier.padding(16.dp)) {
                     Text("Bulamadım.", style = MaterialTheme.typography.titleLarge)
                     Text(
-                        if (r.total == 0) "Seçilen kaynaklarda ve tarihlerde anlam dizininde paragraf yok."
+                        if (r.total == 0 && !r.concepts.isNullOrBlank()) "Yargının kavramlarını (${Concepts.names(Concepts.parse(r.concepts))}) " +
+                            "birlikte anlatan paragraf, seçilen kaynaklarda ve tarihlerde bulunan belgelerde yok."
+                        else if (r.total == 0) "Seçilen kaynaklarda ve tarihlerde anlam dizininde paragraf yok."
                         else "Yargıya anlamca en yakın ${r.total} paragraf okundu; hiçbiri bu yargıyı desteklemiyor ya da çürütmüyor.",
                         style = MaterialTheme.typography.bodySmall,
                     )
@@ -233,6 +235,9 @@ fun SearchScreen(goTo: (Int) -> Unit) {
         }
         if (r != null && r.state == Db.RUN_DONE && findings.isNotEmpty()) item {
             Text("${r.total} paragraf okundu, ${findings.size} tanesi yargıyla ilgili.", style = MaterialTheme.typography.bodySmall)
+        }
+        if (r != null && r.state == Db.RUN_DONE && !r.concepts.isNullOrBlank()) item {
+            Text("Aranan kavramlar: ${Concepts.names(Concepts.parse(r.concepts))}", style = MaterialTheme.typography.bodySmall)
         }
         items(findings, key = { it.paragraph.id }) { f -> FindingCard(f) }
         if (r?.suggestion != null) item { SuggestionCard(r.suggestion) }

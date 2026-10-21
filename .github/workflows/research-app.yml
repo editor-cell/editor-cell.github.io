@@ -8,6 +8,7 @@ on:
     paths:
       - research-app/**
       - .github/workflows/research-app.yml
+      - .github/scripts/**
   workflow_dispatch:
 
 concurrency:
@@ -62,6 +63,12 @@ jobs:
           path: ~/test-model
           key: test-models-qwen3-4b-q4_k_m-e5-small-q8_0
 
+      # The small model the phone runs on 4 GB of memory, kept apart so the big one's cache stays valid.
+      - uses: actions/cache@v4
+        with:
+          path: ~/test-model-small
+          key: test-model-qwen3-1.7b-q4_k_m
+
       - name: Fetch the models for the tests
         run: |
           mkdir -p ~/test-model
@@ -70,6 +77,10 @@ jobs:
           e=~/test-model/multilingual-e5-small-q8_0.gguf
           [ -s "$e" ] || curl -fsSL -o "$e" https://github.com/editor-cell/editor-cell.github.io/releases/download/models-1/multilingual-e5-small-q8_0.gguf
           ls -la ~/test-model
+          mkdir -p ~/test-model-small
+          f=~/test-model-small/Qwen3-1.7B-Q4_K_M.gguf
+          [ -s "$f" ] || curl -fsSL -o "$f" https://huggingface.co/unsloth/Qwen3-1.7B-GGUF/resolve/main/Qwen3-1.7B-Q4_K_M.gguf
+          ls -la ~/test-model-small
 
       # Source lists, robots.txt, reading pages and PDFs; then the app's prompts on the big model
       # (paragraphs labelled right, a stop within a second, a digit-free direction) and the meaning
@@ -92,6 +103,23 @@ jobs:
                       msg = (f.get("message") or "").replace("\n", " ")[:300]
                       print(f"::error::{c.get('classname')} {c.get('name')[:80]}: {msg}")
           PY
+          python3 ../.github/scripts/gate-notes.py logic-test/build/test-results/test "Concept gate, Qwen3 4B" || true
+          exit $status
+
+      # The phone's own model. Paragraphs that have nothing to do with the claim (thanks to the authors,
+      # a figure note, a bank speech, a page about the Basel Process) must not become findings on it,
+      # and clear findings must still reach it. A failure here stops the build, so no release goes out;
+      # close and subtle cases, synonyms and Turkish sources are only reported.
+      - name: Test the concept gate on the small model
+        if: always()
+        run: |
+          export ORBIS_LIB="$PWD/build-host/liborbisllm.so" ORBIS_MODEL=~/test-model-small/Qwen3-1.7B-Q4_K_M.gguf
+          export ORBIS_EMBED=~/test-model/multilingual-e5-small-q8_0.gguf
+          status=0
+          ./gradlew -p logic-test cleanTest test --tests ConceptGateTest --no-daemon || status=$?
+          python3 ../.github/scripts/model-score.py logic-test/build/test-results/test | tee score-small.txt || true
+          grep -E '^(FAIL|SCORE)' score-small.txt | head -20 | while IFS= read -r line; do echo "::warning title=Qwen3 1.7B::$line"; done || true
+          python3 ../.github/scripts/gate-notes.py logic-test/build/test-results/test "Concept gate, Qwen3 1.7B" || true
           exit $status
 
       - name: Build the APK

@@ -48,13 +48,22 @@ class SearchWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
                 db.setRun(state = Db.RUN_FAILED, message = "Model açılamadı; dosya bozuk olabilir. Model sekmesinden yeniden indirin.")
                 return Result.success()
             }
-            val pending = db.pendingItems()
+            var pending = db.pendingItems()
             if (pending.isNotEmpty()) {
                 var english = db.run()?.english
                 if (english == null) {
                     say("Yargı İngilizceye çevriliyor…")
                     english = search.translate(run.claim) ?: return Result.success()
                     db.setRun(english = english)
+                }
+                // The claim's key concepts: of the paragraphs closest in meaning, the model reads only
+                // those that speak of them (a search under way before this existed is left as it is).
+                if (db.run()?.concepts == null && (db.run()?.done ?: 0) == 0) {
+                    say("Yargının ana kavramları çıkarılıyor…")
+                    val found = search.concepts(run.claim, english) ?: return Result.success()
+                    search.gate(found)
+                    SearchState.changed()
+                    pending = db.pendingItems()
                 }
                 val total = db.run()?.total ?: pending.size
                 val started = System.currentTimeMillis()

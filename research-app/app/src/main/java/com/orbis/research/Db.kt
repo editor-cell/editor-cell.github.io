@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper
  * Everything the app keeps: the sources and their headings, the queue of addresses to read,
  * documents, their paragraphs and the meaning vector of each, and the search under way.
  */
-class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", null, 5) {
+class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", null, 6) {
 
     override fun onConfigure(db: SQLiteDatabase) {
         db.setForeignKeyConstraintsEnabled(true)
@@ -38,8 +38,9 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
             db.execSQL("DROP TRIGGER IF EXISTS paras_del")
             db.execSQL("DROP TABLE IF EXISTS paras_fts")
             createMeaning(db)
-        } else if (oldVersion < 4) {
-            db.execSQL("ALTER TABLE search_run ADD COLUMN english TEXT")
+        } else {
+            if (oldVersion < 4) db.execSQL("ALTER TABLE search_run ADD COLUMN english TEXT")
+            if (oldVersion < 6) db.execSQL("ALTER TABLE search_run ADD COLUMN concepts TEXT")
         }
         if (oldVersion < 5) db.execSQL("ALTER TABLE queue ADD COLUMN title TEXT NOT NULL DEFAULT ''")
     }
@@ -52,7 +53,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
         db.execSQL("CREATE TABLE para_vec(para_id INTEGER PRIMARY KEY REFERENCES paras(id) ON DELETE CASCADE, vec BLOB NOT NULL)")
         db.execSQL("""CREATE TABLE search_run(id INTEGER PRIMARY KEY CHECK (id = 1), claim TEXT NOT NULL, date_from TEXT,
             date_to TEXT, undated INTEGER NOT NULL, sources TEXT, state INTEGER NOT NULL, prepared INTEGER NOT NULL DEFAULT 0,
-            suggestion TEXT, message TEXT, started_at INTEGER NOT NULL, english TEXT)""")
+            suggestion TEXT, message TEXT, started_at INTEGER NOT NULL, english TEXT, concepts TEXT)""")
         db.execSQL("CREATE TABLE search_items(idx INTEGER PRIMARY KEY, para_id INTEGER NOT NULL, answer TEXT, judged INTEGER NOT NULL DEFAULT 0)")
     }
 
@@ -329,7 +330,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
 
     fun run(): SearchRun? = readableDatabase.rawQuery(
         """SELECT claim, date_from, date_to, undated, sources, state, prepared, suggestion, message, started_at,
-                  (SELECT COUNT(*) FROM search_items), (SELECT COUNT(*) FROM search_items WHERE judged = 1), english
+                  (SELECT COUNT(*) FROM search_items), (SELECT COUNT(*) FROM search_items WHERE judged = 1), english, concepts
            FROM search_run WHERE id = 1""", null,
     ).use { c ->
         if (!c.moveToFirst()) null else SearchRun(
@@ -338,6 +339,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
             sourceIds = c.getString(4)?.split(',')?.filter { it.isNotEmpty() }?.map { it.toLong() }?.toSet(),
             state = c.getInt(5), prepared = c.getInt(6) == 1, suggestion = c.getString(7), message = c.getString(8),
             startedAt = c.getLong(9), total = c.getInt(10), done = c.getInt(11), english = c.getString(12),
+            concepts = c.getString(13),
         )
     }
 
@@ -354,6 +356,17 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
     fun setItems(paraIds: List<Long>) = tx { db ->
         db.delete("search_items", null, null)
         paraIds.forEachIndexed { i, id -> db.insert("search_items", null, ContentValues().apply { put("idx", i); put("para_id", id) }) }
+    }
+
+    /**
+     * Keeps [paraIds] as the paragraphs of the search and saves the concepts they were chosen by (empty
+     * when none could be found), in one step: a search that goes on after an interruption never has the
+     * concepts without their paragraphs, or the other way round.
+     */
+    fun setItemsAndConcepts(paraIds: List<Long>, concepts: String) = tx { db ->
+        db.delete("search_items", null, null)
+        paraIds.forEachIndexed { i, id -> db.insert("search_items", null, ContentValues().apply { put("idx", i); put("para_id", id) }) }
+        db.update("search_run", ContentValues().apply { put("concepts", concepts) }, "id = 1", null)
     }
 
     /** Paragraphs of the search not yet read by the model, in order. */
@@ -401,4 +414,6 @@ data class SearchRun(
     val suggestion: String?, val message: String?, val startedAt: Long, val total: Int, val done: Int,
     /** The claim in English, once the search has made it. */
     val english: String? = null,
+    /** The claim's key concepts (see [Concepts]), once found; empty when none could be; null before. */
+    val concepts: String? = null,
 )

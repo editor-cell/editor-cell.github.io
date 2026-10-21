@@ -7,7 +7,7 @@ repositories { mavenCentral() }
 
 val app = "../app/src/main/java/com/orbis/research"
 sourceSets {
-    main { kotlin.srcDir(app); kotlin.include("Sources.kt", "Robots.kt", "Extract.kt", "Prompts.kt", "LlmNative.kt", "DateRange.kt", "Vectors.kt", "Evrak.kt") }
+    main { kotlin.srcDir(app); kotlin.include("Sources.kt", "Robots.kt", "Extract.kt", "Prompts.kt", "LlmNative.kt", "DateRange.kt", "Vectors.kt", "Evrak.kt", "Concepts.kt") }
 }
 
 dependencies {

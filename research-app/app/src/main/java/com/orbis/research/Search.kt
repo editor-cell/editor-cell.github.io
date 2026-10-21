@@ -43,7 +43,9 @@ class Search(private val ctx: Context) {
             }
             if (stopped()) return false
             say("Yargıya anlamca en yakın paragraflar bulunuyor…")
-            db.setItems(db.closest(q, Settings.candidates(ctx), run.range, run.sourceIds))
+            // A wide pool: the language model reads only those of them that speak of the claim's concepts
+            // (see [gate]), so the closest few alone could all be turned away.
+            db.setItems(db.closest(q, Settings.candidates(ctx) * POOL, run.range, run.sourceIds))
             db.setRun(prepared = true)
         } finally {
             Embedder.release()
@@ -135,6 +137,29 @@ class Search(private val ctx: Context) {
         return Prompts.withAnalogy(a)
     }
 
+    /**
+     * The claim's key concepts with their English words, once per search, as saved text (see
+     * [Concepts.format]); empty when the model gave none that fit; null if the search was stopped.
+     */
+    suspend fun concepts(claim: String, english: String?): String? {
+        val raw = Llm.generate(Concepts.SYSTEM, Concepts.prompt(claim, english), Concepts.GRAMMAR, maxTokens = 300) ?: return null
+        return Concepts.format(Concepts.parse(raw))
+    }
+
+    /**
+     * Step 1b: of the paragraphs closest in meaning, keeps those that speak of the claim's concepts
+     * (most of them, in any form of the words) and hands the closest of these to the model; the
+     * rest are never read. With none left, the search ends in "Bulamadım". With no concepts, the
+     * closest ones are kept as they are. Saved together with the concepts.
+     */
+    fun gate(conceptsText: String) {
+        val concepts = Concepts.parse(conceptsText)
+        val pool = db.pendingItems().map { it.second }
+        val kept = if (concepts.isEmpty()) pool
+        else pool.filter { id -> db.paragraph(id)?.let { Concepts.passes(it.text, concepts) } == true }
+        db.setItemsAndConcepts(kept.take(Settings.candidates(ctx)), conceptsText)
+    }
+
     /** The claim in English, once per search; null if the search was stopped. */
     suspend fun translate(claim: String): String? =
         Llm.generate(Prompts.TRANSLATE_SYSTEM, Prompts.translate(claim), maxTokens = 60)?.let { Prompts.firstLine(it) ?: "" }
@@ -156,6 +181,8 @@ class Search(private val ctx: Context) {
     }
 
     companion object {
+        /** How many times the number of paragraphs to read is taken into the pool the concepts are checked on. */
+        const val POOL = 10
         /** A source's document list is fetched live again after this long. */
         const val REFRESH_MS = 6L * 60 * 60 * 1000
         /** At most this many of a source's newest unread addresses are compared with the claim. */
