@@ -107,7 +107,7 @@ export function VideoStart({
         ref={still}
         type="button"
         onClick={() => start()}
-        aria-label={`${words.play}: ${clip.title}`}
+        aria-label={`${words.play}: ${clip.title}${clip.duration ? `, ${fmt(clip.duration)}` : ""}`}
         aria-haspopup="dialog"
         className={`film film-still relative block aspect-video overflow-hidden bg-ink ${className}`}
       >

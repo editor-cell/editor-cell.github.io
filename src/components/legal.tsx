@@ -59,7 +59,7 @@ export function LegalPageView({ page }: { page: LegalPage }) {
               </section>
             ))}
           </div>
-          <nav aria-label={all.footer} className="flex flex-wrap gap-x-6 gap-y-1 text-sm">
+          <nav aria-label={all.related} className="flex flex-wrap gap-x-6 gap-y-1 text-sm">
             {LEGAL_PAGES.filter((other) => other !== page).map((other) => (
               <Link
                 key={other}

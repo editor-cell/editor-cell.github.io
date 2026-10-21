@@ -386,10 +386,11 @@ function Brief({ story, lang, className = "" }: { story: Story; lang: Lang; clas
         </h3>
         {/* These follow the depth control like every other reading. On a wide screen
             the summary shows only where the column is wide enough (see .atlas-brief-dek
-            in styles.css), held to three lines, and the opening lines stay out, so the
-            column does not outgrow the two cards beside it and leave a gap under them. */}
+            in styles.css), always whole (a summary cut mid-word was a fault, 21 Oct 2026),
+            and the opening lines stay out, so the column does not outgrow the two cards
+            beside it and leave a gap under them. */}
         <Fold layer={2} className="atlas-card-summary atlas-brief-dek">
-          <p className="atlas-dek font-body mt-2 text-pretty text-base leading-[1.32] text-ink md:line-clamp-3 md:text-[0.92rem]">
+          <p className="atlas-dek font-body mt-2 text-pretty text-base leading-[1.32] text-ink md:text-[0.92rem]">
             {cellSummary(story, lang)}
           </p>
         </Fold>
@@ -855,18 +856,43 @@ export function DocumentChain({
  * itself taken from those lines, the sentence already shown is not repeated.
  */
 function openingLines(story: Story, lang: Lang, summary: string): string {
-  const lead = story.locales[lang].lead.replace(/\s+/g, " ").trim();
-  if (!lead) return "";
-  const rest = summary && lead.startsWith(summary) ? lead.slice(summary.length).trim() : lead;
-  return rest === summary ? "" : rest;
+  return withoutSummary(story.locales[lang].lead, summary, lang);
 }
 
 /** The opening text without the summary, long enough to fill a desktop column. */
 function fillText(story: Story, lang: Lang, summary: string): string {
-  const text = (story.locales[lang].opening || story.locales[lang].lead).replace(/\s+/g, " ").trim();
+  return withoutSummary(story.locales[lang].opening || story.locales[lang].lead, summary, lang);
+}
+
+/**
+ * The opening text with its first sentence left out when that sentence says again what the
+ * summary above it already says: word for word, or in nearly the same words (a summary
+ * written from the first sentence: "What the grain has kept matters more…" over "When it
+ * comes to bread on the table, what the grain has kept matters more…").
+ */
+function withoutSummary(raw: string, summary: string, lang: Lang): string {
+  const text = raw.replace(/\s+/g, " ").trim();
   if (!text) return "";
-  const rest = summary && text.startsWith(summary) ? text.slice(summary.length).trim() : text;
-  return rest === summary ? "" : rest;
+  if (summary && text.startsWith(summary)) {
+    const rest = text.slice(summary.length).trim();
+    return rest === summary ? "" : rest;
+  }
+  const first = oneSentence(text);
+  if (summary && first.length < text.length && repeats(first, summary, lang)) {
+    return text.slice(first.length).trim();
+  }
+  return text === summary ? "" : text;
+}
+
+/** True when most of the summary's words (three letters or more) recur in the sentence. */
+function repeats(sentence: string, summary: string, lang: Lang): boolean {
+  const words = (value: string) =>
+    (value.toLocaleLowerCase(lang).match(/[\p{L}\p{N}'’]+/gu) ?? []).filter((w) => w.length >= 3);
+  const said = words(summary);
+  if (said.length < 3) return false;
+  const here = new Set(words(sentence));
+  const shared = said.filter((w) => here.has(w)).length;
+  return shared / said.length >= 0.6;
 }
 
 /**

@@ -17,9 +17,15 @@ type Doc = { title: string; lead: string; sections: Section[] };
 
 export const LEGAL_UPDATED = "2026-10-09";
 
-const EN: Record<LegalPage, Doc> & { updated: string; footer: string; agree: string[] } = {
+const EN: Record<LegalPage, Doc> & {
+  updated: string;
+  footer: string;
+  related: string;
+  agree: string[];
+} = {
   updated: "Last updated",
   footer: "Legal",
+  related: "Other legal pages",
   agree: ["Supporting membership is subject to the", "."],
   terms: {
     title: "Terms of use",
@@ -121,6 +127,7 @@ const EN: Record<LegalPage, Doc> & { updated: string; footer: string; agree: str
 const TR: typeof EN = {
   updated: "Son güncelleme",
   footer: "Yasal",
+  related: "Diğer yasal sayfalar",
   agree: ["Destekçi üyeliğe", "uygulanır."],
   terms: {
     title: "Kullanım şartları",
