@@ -103,8 +103,29 @@ object Prompts {
         "line ::= [^\\n]{1,220}\n" +
         "match ::= \"same\" | \"opposite\" | \"answers\" | \"no\""
 
-    /** Room for the two short lines and the match. */
-    const val READ_MAX = 160
+    /**
+     * The owner's second idea (21 Oct 2026), reading backwards: start from the end, what the paragraph
+     * says happened in the end, then go back to what led to it. A paragraph with no outcome cannot
+     * show what followed a measure, however close its subject. Tried beside [read].
+     */
+    fun readBackwards(claim: String, english: String?, p: Paragraph): String = claimAndParagraph(claim, english, p) +
+        "The claim's words, or words that mean the same, appear in this paragraph. That alone proves nothing. Read it " +
+        "backwards: first find what the paragraph says happened in the end, then go back to what led to it. Write four lines.\n" +
+        "Claim: in a few words, what the claim says happened (the measure or cause, and what followed it). " +
+        "If the claim is a question or a topic, what it asks about.\n" +
+        "Outcome: in one short sentence, the result the paragraph itself reports, what happened in the end; " +
+        "write none if it reports no result (only a subject, a plan, a target or a view).\n" +
+        "Cause: in one short sentence, what the paragraph says led to that outcome; write none if it says nothing.\n" +
+        "Match: same (the paragraph's cause and outcome are the claim's, linked, as the claim says), opposite (the " +
+        "claim's cause, but no effect or the opposite followed), answers (the claim is a question or topic and the " +
+        "paragraph answers it or gives concrete information on it), or no (anything else, including no outcome)."
+
+    const val READ_BACK_GRAMMAR = "root ::= \"Claim: \" line \"\\nOutcome: \" line \"\\nCause: \" line \"\\nMatch: \" match\n" +
+        "line ::= [^\\n]{1,220}\n" +
+        "match ::= \"same\" | \"opposite\" | \"answers\" | \"no\""
+
+    /** Room for the short lines and the match. */
+    const val READ_MAX = 200
 
     /** The verdict a reading arrives at, in step one's words; null when the reading did not finish. */
     fun verdictOfReading(raw: String?): String? =

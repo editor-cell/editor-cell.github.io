@@ -5,7 +5,8 @@ import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.TestFactory
 
 /**
- * The one-word verdict ([Prompts.judge]) against reading for meaning first ([Prompts.read]), on the
+ * The one-word verdict ([Prompts.judge]) against reading for meaning first ([Prompts.read]) and reading
+ * backwards from the outcome ([Prompts.readBackwards]), on the
  * same paragraphs, on the real model (ORBIS_MODEL). Nothing here fails the build: every case prints a
  * COMPARE line (old answer, new answer, the right answer) and the reading itself, and the workflow
  * turns them into a score card. The paragraphs are the ones the phone returned for RATES on
@@ -107,8 +108,13 @@ class ReadingCompareTest {
             val reading = LiveModelTest.ask(Prompts.JUDGE_SYSTEM, Prompts.read(c.claim, en, p), Prompts.READ_GRAMMAR, Prompts.READ_MAX)
             val newMs = System.currentTimeMillis() - t
             val new = Prompts.verdictOfReading(reading) ?: "UNFINISHED"
-            println("COMPARE\t${c.label}\t$old\t$new\t${c.want}\t$oldMs\t$newMs")
+            t = System.currentTimeMillis()
+            val backReading = LiveModelTest.ask(Prompts.JUDGE_SYSTEM, Prompts.readBackwards(c.claim, en, p), Prompts.READ_BACK_GRAMMAR, Prompts.READ_MAX)
+            val backMs = System.currentTimeMillis() - t
+            val back = Prompts.verdictOfReading(backReading) ?: "UNFINISHED"
+            println("COMPARE\t${c.label}\t$old\t$new\t$back\t${c.want}\t$oldMs\t$newMs\t$backMs")
             println("READING\t${c.label}\t${reading.replace("\n", " | ")}")
+            println("BACKWARDS\t${c.label}\t${backReading.replace("\n", " | ")}")
         }
     }
 
@@ -128,11 +134,14 @@ class ReadingCompareTest {
             val old = LiveModelTest.ask(Prompts.JUDGE_SYSTEM, Prompts.judge(RATES, en, p), Prompts.JUDGE_GRAMMAR, 8).trim()
             val reading = LiveModelTest.ask(Prompts.JUDGE_SYSTEM, Prompts.read(RATES, en, p), Prompts.READ_GRAMMAR, Prompts.READ_MAX)
             val new = Prompts.verdictOfReading(reading) ?: "UNFINISHED"
+            val backReading = LiveModelTest.ask(Prompts.JUDGE_SYSTEM, Prompts.readBackwards(RATES, en, p), Prompts.READ_BACK_GRAMMAR, Prompts.READ_MAX)
+            val back = Prompts.verdictOfReading(backReading) ?: "UNFINISHED"
             val stance = LiveModelTest.ask(Prompts.JUDGE_SYSTEM, Prompts.stance(p, before, after), Prompts.STANCE_GRAMMAR, 8).trim()
             // Kept out either way: not a finding (UNRELATED), or a finding the document refutes (REFUTED).
             fun out(v: String) = if (v == "SUPPORTS" || v == "CONTRADICTS") (if (stance == "REFUTED") "REFUTED" else v) else v
-            println("COMPARE\tECB 1 view it rejects\t${out(old)}\t${out(new)}\tKEPT OUT\t0\t0")
+            println("COMPARE\tECB 1 view it rejects\t${out(old)}\t${out(new)}\t${out(back)}\tKEPT OUT\t0\t0\t0")
             println("READING\tECB 1 view it rejects\t${reading.replace("\n", " | ")} | stance: $stance")
+            println("BACKWARDS\tECB 1 view it rejects\t${backReading.replace("\n", " | ")}")
         }
     }
 }
