@@ -165,19 +165,22 @@ fun SearchScreen(goTo: (Int) -> Unit) {
                     OutlinedButton(onClick = { s.resume(ctx.applicationContext) }) { Text("Kaldığı yerden devam et") }
                 }
                 if (findings.isNotEmpty()) OutlinedButton(onClick = { copyAll(ctx, run?.claim ?: s.claim, findings) }) { Text("Tümünü kopyala") }
-                val supporting = findings.filter { it.judgement.verdict == Verdict.SUPPORTS && it.judgement.analogy == null }
-                if (supporting.isNotEmpty()) OutlinedButton(enabled = !making, onClick = {
+                val evidence = findings.filter { it.judgement.analogy == null }
+                if (evidence.isNotEmpty()) OutlinedButton(enabled = !making, onClick = {
                     making = true
                     scope.launch {
                         val claim = run?.claim ?: s.claim.trim()
                         val result = withContext(Dispatchers.IO) {
                             try {
                                 val order = HashMap<String, List<Long>>()
-                                val found = supporting.map { f ->
+                                fun placed(v: Verdict) = evidence.filter { it.judgement.verdict == v }.map { f ->
                                     val ids = order.getOrPut(f.paragraph.docUrl) { db.paragraphsOfDoc(f.paragraph.docUrl).map { it.first } }
                                     f.paragraph to ids.indexOf(f.paragraph.id)
                                 }
-                                val file = EvrakPdf.write(ctx, claim, Evrak.group(found))
+                                val file = EvrakPdf.write(ctx, claim, listOf(
+                                    "Destekleyenler" to Evrak.group(placed(Verdict.SUPPORTS)),
+                                    "Karşı çıkanlar" to Evrak.group(placed(Verdict.CONTRADICTS)),
+                                ))
                                 file to EvrakPdf.saveToDownloads(ctx, file)
                             } catch (e: Exception) { null }
                         }

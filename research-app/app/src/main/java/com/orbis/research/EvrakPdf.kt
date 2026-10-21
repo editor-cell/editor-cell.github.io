@@ -31,8 +31,11 @@ object EvrakPdf {
 
     private class Link(val page: Int, val rect: RectF, val url: String)
 
-    /** Makes the PDF in the app's own folder and returns it. */
-    fun write(ctx: Context, claim: String, docs: List<EvrakDoc>): File {
+    /**
+     * Makes the PDF in the app's own folder and returns it. [sections]: a heading and its documents,
+     * the supporting ones first and then those that go against the claim; an empty one says so.
+     */
+    fun write(ctx: Context, claim: String, sections: List<Pair<String, List<EvrakDoc>>>): File {
         val day = LocalDate.now()
         val dir = File(ctx.cacheDir, "evrak").apply { mkdirs(); listFiles()?.forEach { it.delete() } }
         val file = File(dir, Evrak.fileName(claim, day.toString()))
@@ -80,7 +83,10 @@ object EvrakPdf {
         block(claim, paint(16f, bold), 4f)
         block(day.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), paint(9f, Typeface.DEFAULT, gray), 18f)
 
-        for ((n, d) in docs.withIndex()) {
+        for ((heading, docs) in sections) {
+          block(heading.uppercase(java.util.Locale.forLanguageTag("tr")), paint(13f, Typeface.DEFAULT_BOLD), 10f)
+          if (docs.isEmpty()) block("Bu aramada bulunamadı.", paint(10f, Typeface.DEFAULT, gray), 18f)
+          for ((n, d) in docs.withIndex()) {
             block("${n + 1}. ${d.title}", paint(12f, bold), 2f)
             val meta = listOf(d.source, d.date).filter { it.isNotBlank() }.joinToString(" · ")
             if (meta.isNotEmpty()) block(meta, paint(9f, Typeface.DEFAULT, gray), 1f)
@@ -90,6 +96,8 @@ object EvrakPdf {
                 block(part.text, paint(11f, serif), 8f, extraSpacing = 1.15f)
             }
             y += 12f
+          }
+          y += 10f
         }
         pdf.finishPage(page)
         file.outputStream().use { pdf.writeTo(it) }

@@ -9,7 +9,8 @@ data class EvrakDoc(val title: String, val source: String, val date: String, val
 }
 
 /**
- * The evrak: the paragraphs that support the claim, joined into one document, word for word, each
+ * The evrak: the paragraphs that support the claim, then those that go against it, joined into one
+ * document, word for word, each
  * under its document's title, source, date and address. No labels, reasons or analogies: only the
  * documents' own words.
  */
