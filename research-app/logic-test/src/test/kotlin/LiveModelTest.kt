@@ -37,6 +37,8 @@ class LiveModelTest {
         private const val WAGE = "Asgari ücret artışı istihdamı azaltmadı."
         private const val AIR = "Kentlerde hava kirliliği astım vakalarını artırıyor."
         private const val EV = "Elektrikli otomobil satışları Avrupa'da 2023'te arttı."
+        // Typed on the phone on 21 Oct 2026 as a phrase, not a sentence.
+        private const val RATES = "enflasyon düşürmek için faiz yükselten ülkelerde ekonomik durgunluk"
     }
 
     /**
@@ -64,6 +66,12 @@ class LiveModelTest {
             "and 2.14 million people twelve months later.", indirect = true, soft = true),
         Case(AIR, "SUPPORTS", "Children living near roads with heavy traffic had higher rates of new asthma diagnoses; each 10 µg/m³ " +
             "increase in nitrogen dioxide was associated with a 5% rise in asthma incidence."),
+        Case(RATES, "SUPPORTS", "After the central bank raised its policy rate from 0.25% to 5.25% to bring inflation down, output " +
+            "contracted for two consecutive quarters and the economy entered a recession."),
+        Case(RATES, "UNRELATED", "© Bank for International Settlements 2026. All rights reserved. Brief excerpts may be reproduced " +
+            "or translated provided the source is stated."),
+        Case(RATES, "UNRELATED", "Rising unemployment and falling house prices are two of the scenarios banks must model in the " +
+            "stress test; if financial institutions fail a test, they must adjust their capital plans."),
         Case(EV, "SUPPORTS", "New registrations of battery electric cars in the European Union rose by 37% in 2023 to 1.5 million, " +
             "reaching a market share of 14.6%."),
     )

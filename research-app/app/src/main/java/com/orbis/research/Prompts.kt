@@ -41,7 +41,8 @@ object Prompts {
         "accurate English, keeping every term's exact meaning. Output only the translation."
 
     /** The claim in English as well: the small model judges English paragraphs better with it. */
-    fun translate(claim: String) = "Translate into English. If it is already English, repeat it unchanged.\n\n" +
+    fun translate(claim: String) = "Translate into English. If it is already English, repeat it unchanged. " +
+        "If it is a phrase rather than a full sentence, write it as the full statement it means.\n\n" +
         "Example: Tütün vergisini artıran ülkelerde sigara içme oranı azaldı.\n" +
         "Translation: In countries that raised tobacco taxes, smoking rates fell.\n\n" +
         "$claim\nTranslation:"
@@ -55,7 +56,9 @@ object Prompts {
         "CONTRADICTS: the paragraph reports a finding, figure or evidence showing the claim is false, " +
         "or that the effect was absent or the opposite.\n" +
         "UNRELATED: anything else, including paragraphs that only mention the topic, describe plans or " +
-        "methods, or give no finding about the claim."
+        "methods, or give no finding about the claim. A title, a reference to another publication, a copyright " +
+        "or legal notice, a sentence cut off in the middle, or a paragraph that only shares some words or the " +
+        "general subject with the claim is always UNRELATED. When in doubt, answer UNRELATED."
 
     private fun claimAndParagraph(claim: String, english: String?, p: Paragraph): String {
         val c = if (english.isNullOrBlank() || english.equals(claim, ignoreCase = true)) claim else "$claim\n(English: $english)"

@@ -32,7 +32,7 @@ object Extract {
         val out = ArrayList<String>()
         fun take(t: String) {
             val text = t.trim()
-            if (text.length >= MIN_CHARS && text.count { it == ' ' } >= 7 && seen.add(text)) out += splitLong(text)
+            if (isProse(text) && seen.add(text)) out += splitLong(text)
         }
         for (el in main.select("p, li, blockquote, dd")) {
             // A list item or quote that holds paragraphs is read through those paragraphs.
@@ -63,9 +63,30 @@ object Extract {
                 else sb.append(' ').append(l)
             }
             val p = sb.toString().replace(Regex("\\s+"), " ").trim()
-            if (p.length >= MIN_CHARS && p.count { it == ' ' } >= 7 && seen.add(p)) out += splitLong(p)
+            if (isProse(p) && seen.add(p)) out += splitLong(p)
         }
         return out
+    }
+
+    private val NOTICE = Regex("©|(?i)all rights reserved|brief excerpts may be|\\bISBN\\b|\\bISSN\\b")
+    private val SENTENCE_END = Regex("[.!?…][\"”’')\\]]*\\d{0,3}$")
+    private val REFERENCE = Regex("^\\p{Lu}[\\p{L}'’-]+,\\s+(\\p{Lu}\\.\\s*)+")
+    // "Board of Governors (2023): “Financial Stability”" — a source named with its year, then its title.
+    private val CITED_YEAR = Regex("^[^.!?]{0,80}\\((19|20)\\d\\d[a-z]?\\)\\s*[:.]\\s*[\"“\\p{Lu}]")
+
+    /**
+     * A paragraph worth reading: running text of at least one finished sentence. Titles, captions,
+     * reference entries, copyright notices and pieces cut from the middle of a sentence (a PDF's
+     * columns and page breaks) are not. Nothing is changed; such parts are only left out.
+     */
+    fun isProse(text: String): Boolean {
+        val t = text.trim()
+        if (t.length < MIN_CHARS || t.count { it == ' ' } < 9) return false
+        if (t.first().isLowerCase()) return false
+        if (!SENTENCE_END.containsMatchIn(t)) return false
+        if (NOTICE.containsMatchIn(t)) return false
+        if (REFERENCE.containsMatchIn(t) || CITED_YEAR.containsMatchIn(t)) return false
+        return true
     }
 
     const val PARA = " "

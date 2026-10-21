@@ -143,6 +143,30 @@ class ExtractTest {
         assertEquals(listOf("Taxes on sugar-sweetened beverages were followed by a 21% fall in purchases of taxed drinks, according to the house-hold survey of 2018."), p)
     }
 
+    /** What the phone showed as "supporting" on 21 Oct 2026: none of it is a paragraph. */
+    @Test fun onlyRunningTextIsKept() {
+        val junk = listOf(
+            "© Bank for International Settlements 2026. All rights reserved. Brief excerpts may be",
+            "the level of consumption expenditure (level of affluence in EU societies);",
+            "Leveraging trade in environmental goods and services to tackle climate change - Policy brief 7",
+            "requires hard assets as collateral; and distressed-debt investing, which focuses on",
+            "Presentation by World Bank on Global Fuel Subsidies-Price Control Measures Platform",
+            "Board of Governors of the Federal Reserve System (2023): “Financial Stability Report”, October, Washington.",
+            "Rajan, R. G. and L. Zingales (1998): “Financial Dependence and Growth,” American Economic Review, 88(3), 559–86.",
+            "withstand the downturn. If financial institutions fail a test, they must adjust their",
+            "ment that partly overlaps the likely target borrowers of private credit funds (Ivashina",
+            "rising unemployment and falling house prices. For each scenario, an internal model",
+        )
+        for (j in junk) assertFalse(Extract.isProse(j), j)
+        val prose = listOf(
+            long1, long2,
+            "This makes it more difficult to allocate capital efficiently and to reap economies of scale. The diverse and complex regulatory requirements across European countries add to these structural inefficiencies.9",
+            "As Card and Krueger (1994) showed, employment in fast-food restaurants did not fall after New Jersey raised its minimum wage.",
+            "Türkiye'de enflasyon 2022'de yüzde 85'i aştı; Merkez Bankası faizi 2023 ortasından itibaren hızla yükseltti.",
+        )
+        for (p in prose) assertTrue(Extract.isProse(p), p)
+    }
+
     @Test fun longParagraphSplitBetweenSentences() {
         val s = (1..40).joinToString(" ") { "Sentence number $it says something about beverage taxes." }
         val parts = Extract.splitLong(s)
