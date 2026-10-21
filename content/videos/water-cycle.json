@@ -4,6 +4,10 @@
   "src": "videos/water-cycle.mp4",
   "poster": "images/water-cycle-video.jpg",
   "duration": 56,
+  "captions": {
+    "en": "videos/water-cycle-en.vtt",
+    "tr": "videos/water-cycle-tr.vtt"
+  },
   "locales": {
     "en": {
       "title": "The water cycle",
