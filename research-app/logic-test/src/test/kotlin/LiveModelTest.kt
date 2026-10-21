@@ -40,7 +40,9 @@ class LiveModelTest {
         // Typed on the phone on 21 Oct 2026 as a phrase, not a sentence.
         private const val RATES = "enflasyon düşürmek için faiz yükselten ülkelerde ekonomik durgunluk"
         // A question and a topic: a paragraph that answers or informs on them counts as supporting.
-        private const val WHAT = "Ekonomik durgunluk nedir?"
+        // The question names the term the paragraph defines: asked about "durgunluk" (stagnation), the model
+        // rightly called a definition of a recession unrelated.
+        private const val WHAT = "Resesyon nedir?"
         private const val TOPIC = "şeker vergisi"
     }
 
