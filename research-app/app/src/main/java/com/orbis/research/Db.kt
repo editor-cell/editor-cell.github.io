@@ -5,8 +5,11 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-/** Everything the app keeps: the sources, the queue of addresses to read, documents and their paragraphs. */
-class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", null, 2) {
+/**
+ * Everything the app keeps: the sources and their headings, the queue of addresses to read,
+ * documents, their paragraphs and the meaning vector of each, and the search under way.
+ */
+class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", null, 3) {
 
     override fun onConfigure(db: SQLiteDatabase) {
         db.setForeignKeyConstraintsEnabled(true)
@@ -23,14 +26,30 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
         db.execSQL("""CREATE TABLE paras(id INTEGER PRIMARY KEY, doc_id INTEGER NOT NULL REFERENCES docs(id) ON DELETE CASCADE,
             idx INTEGER NOT NULL, text TEXT NOT NULL)""")
         db.execSQL("CREATE INDEX paras_doc ON paras(doc_id)")
-        // Word index over the paragraphs; English word endings are folded (taxes -> tax).
-        db.execSQL("CREATE VIRTUAL TABLE paras_fts USING fts4(text, tokenize=porter)")
-        db.execSQL("CREATE TRIGGER paras_del AFTER DELETE ON paras BEGIN DELETE FROM paras_fts WHERE docid = old.id; END")
         createGroups(db)
+        createMeaning(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         if (oldVersion < 2) createGroups(db)
+        if (oldVersion < 3) {
+            // Version 1 and 2 searched by words; meaning vectors replace the word index.
+            db.execSQL("DROP TRIGGER IF EXISTS paras_del")
+            db.execSQL("DROP TABLE IF EXISTS paras_fts")
+            createMeaning(db)
+        }
+    }
+
+    /**
+     * Version 3: a meaning vector per paragraph, and the search under way, kept so a search the
+     * phone interrupts goes on from the paragraph it had reached.
+     */
+    private fun createMeaning(db: SQLiteDatabase) {
+        db.execSQL("CREATE TABLE para_vec(para_id INTEGER PRIMARY KEY REFERENCES paras(id) ON DELETE CASCADE, vec BLOB NOT NULL)")
+        db.execSQL("""CREATE TABLE search_run(id INTEGER PRIMARY KEY CHECK (id = 1), claim TEXT NOT NULL, date_from TEXT,
+            date_to TEXT, undated INTEGER NOT NULL, sources TEXT, state INTEGER NOT NULL, prepared INTEGER NOT NULL DEFAULT 0,
+            suggestion TEXT, message TEXT, started_at INTEGER NOT NULL)""")
+        db.execSQL("CREATE TABLE search_items(idx INTEGER PRIMARY KEY, para_id INTEGER NOT NULL, answer TEXT, judged INTEGER NOT NULL DEFAULT 0)")
     }
 
     /** Headings (version 2): removing a heading leaves its sources; removing a source leaves the heading. */
@@ -202,10 +221,9 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
             }, SQLiteDatabase.CONFLICT_IGNORE)
             if (docId > 0) {
                 paragraphs.forEachIndexed { i, p ->
-                    val pid = db.insert("paras", null, ContentValues().apply {
+                    db.insert("paras", null, ContentValues().apply {
                         put("doc_id", docId); put("idx", i); put("text", p)
                     })
-                    db.insert("paras_fts", null, ContentValues().apply { put("docid", pid); put("text", p) })
                 }
             }
             db.setTransactionSuccessful()
@@ -218,19 +236,46 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
 
     // ---- search ----
 
+    // ---- meaning ----
+
+    /** Paragraphs that have no meaning vector yet, oldest first. */
+    fun unindexed(limit: Int): List<Pair<Long, String>> = readableDatabase.rawQuery(
+        "SELECT p.id, p.text FROM paras p LEFT JOIN para_vec v ON v.para_id = p.id WHERE v.para_id IS NULL ORDER BY p.id LIMIT ?",
+        arrayOf(limit.toString()),
+    ).use { c -> buildList { while (c.moveToNext()) add(c.getLong(0) to c.getString(1)) } }
+
+    fun saveVectors(vectors: List<Pair<Long, ByteArray>>) = tx { db ->
+        for ((id, v) in vectors) db.insertWithOnConflict("para_vec", null, ContentValues().apply {
+            put("para_id", id); put("vec", v)
+        }, SQLiteDatabase.CONFLICT_REPLACE)
+    }
+
+    fun clearVectors() { writableDatabase.delete("para_vec", null, null) }
+
+    /** (paragraphs with a vector, paragraphs without one). */
+    fun vectorCounts(): Pair<Int, Int> = readableDatabase.rawQuery(
+        "SELECT (SELECT COUNT(*) FROM para_vec), (SELECT COUNT(*) FROM paras p WHERE NOT EXISTS (SELECT 1 FROM para_vec v WHERE v.para_id = p.id))", null,
+    ).use { c -> c.moveToFirst(); c.getInt(0) to c.getInt(1) }
+
     /**
-     * Paragraph ids matching an FTS query (all its words) in documents dated within [range], from the
-     * given sources (null: all), at most [limit].
+     * The [k] paragraphs closest in meaning to [query], among documents dated within [range] from the
+     * given sources (null: all), closest first.
      */
-    fun match(query: String, limit: Int, range: DateRange = DateRange(), sourceIds: Set<Long>? = null): List<Long> = try {
+    fun closest(query: FloatArray, k: Int, range: DateRange, sourceIds: Set<Long>?): List<Long> {
         if (sourceIds != null && sourceIds.isEmpty()) return emptyList()
         val (cond, args) = range.sqlCondition("d.date")
+        val best = java.util.PriorityQueue<Pair<Float, Long>>(k + 1, compareBy { it.first })
         readableDatabase.rawQuery(
-            """SELECT paras_fts.docid FROM paras_fts JOIN paras p ON p.id = paras_fts.docid JOIN docs d ON d.id = p.doc_id
-               WHERE paras_fts MATCH ? AND $cond ${inSources(sourceIds)} LIMIT ?""",
-            (listOf(query) + args + limit.toString()).toTypedArray(),
-        ).use { c -> buildList { while (c.moveToNext()) add(c.getLong(0)) } }
-    } catch (e: Exception) { emptyList() }
+            """SELECT v.para_id, v.vec FROM para_vec v JOIN paras p ON p.id = v.para_id JOIN docs d ON d.id = p.doc_id
+               WHERE $cond ${inSources(sourceIds)}""", args.toTypedArray(),
+        ).use { c ->
+            while (c.moveToNext()) {
+                best.add(Vectors.score(c.getBlob(1), query) to c.getLong(0))
+                if (best.size > k) best.poll()
+            }
+        }
+        return best.sortedByDescending { it.first }.map { it.second }
+    }
 
     /** (documents in [range], of which undated) — undated ones are counted only when the range takes them. */
     fun docsIn(range: DateRange, sourceIds: Set<Long>? = null): Pair<Int, Int> {
@@ -244,6 +289,64 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
     // Source ids are numbers the app made itself, so they go into the query as they are.
     private fun inSources(ids: Set<Long>?) = if (ids == null) "" else "AND d.source_id IN (${ids.joinToString(",")})"
 
+    // ---- the search under way ----
+
+    /** Starts a new search, replacing the last one. */
+    fun newRun(claim: String, range: DateRange, sourceIds: Set<Long>?) = tx { db ->
+        db.delete("search_items", null, null)
+        db.delete("search_run", null, null)
+        db.insert("search_run", null, ContentValues().apply {
+            put("id", 1); put("claim", claim); put("date_from", range.from); put("date_to", range.to)
+            put("undated", if (range.includeUndated) 1 else 0); put("sources", sourceIds?.joinToString(","))
+            put("state", RUN_GOING); put("started_at", System.currentTimeMillis())
+        })
+    }
+
+    fun run(): SearchRun? = readableDatabase.rawQuery(
+        """SELECT claim, date_from, date_to, undated, sources, state, prepared, suggestion, message, started_at,
+                  (SELECT COUNT(*) FROM search_items), (SELECT COUNT(*) FROM search_items WHERE judged = 1) FROM search_run WHERE id = 1""", null,
+    ).use { c ->
+        if (!c.moveToFirst()) null else SearchRun(
+            claim = c.getString(0),
+            range = DateRange(c.getString(1), c.getString(2), c.getInt(3) == 1),
+            sourceIds = c.getString(4)?.split(',')?.filter { it.isNotEmpty() }?.map { it.toLong() }?.toSet(),
+            state = c.getInt(5), prepared = c.getInt(6) == 1, suggestion = c.getString(7), message = c.getString(8),
+            startedAt = c.getLong(9), total = c.getInt(10), done = c.getInt(11),
+        )
+    }
+
+    fun setRun(state: Int? = null, prepared: Boolean? = null, suggestion: String? = null, message: String? = null) {
+        val v = ContentValues()
+        state?.let { v.put("state", it) }
+        prepared?.let { v.put("prepared", if (it) 1 else 0) }
+        suggestion?.let { v.put("suggestion", it) }
+        message?.let { v.put("message", it) }
+        if (v.size() > 0) writableDatabase.update("search_run", v, "id = 1", null)
+    }
+
+    fun setItems(paraIds: List<Long>) = tx { db ->
+        db.delete("search_items", null, null)
+        paraIds.forEachIndexed { i, id -> db.insert("search_items", null, ContentValues().apply { put("idx", i); put("para_id", id) }) }
+    }
+
+    /** Paragraphs of the search not yet read by the model, in order. */
+    fun pendingItems(): List<Pair<Int, Long>> = readableDatabase.rawQuery(
+        "SELECT idx, para_id FROM search_items WHERE judged = 0 ORDER BY idx", null,
+    ).use { c -> buildList { while (c.moveToNext()) add(c.getInt(0) to c.getLong(1)) } }
+
+    /** Saves an answer, but only into the search it belongs to (a new search may have replaced it). */
+    fun saveAnswer(idx: Int, answer: String?, runStartedAt: Long) {
+        writableDatabase.update(
+            "search_items", ContentValues().apply { put("answer", answer); put("judged", 1) },
+            "idx = ? AND (SELECT started_at FROM search_run WHERE id = 1) = ?", arrayOf(idx.toString(), runStartedAt.toString()),
+        )
+    }
+
+    /** What the model said about each paragraph read so far, in order. */
+    fun answers(): List<Pair<Long, String?>> = readableDatabase.rawQuery(
+        "SELECT para_id, answer FROM search_items WHERE judged = 1 ORDER BY idx", null,
+    ).use { c -> buildList { while (c.moveToNext()) add(c.getLong(0) to c.getString(1)) } }
+
     fun paragraph(id: Long): Paragraph? = readableDatabase.rawQuery(
         """SELECT p.id, p.text, d.url, d.title, d.date, s.name FROM paras p
            JOIN docs d ON d.id = p.doc_id JOIN sources s ON s.id = d.source_id WHERE p.id = ?""",
@@ -251,7 +354,17 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
     ).use { c -> if (c.moveToFirst()) Paragraph(c.getLong(0), c.getString(1), c.getString(2), c.getString(3), c.getString(4), c.getString(5)) else null }
 
     companion object {
+        const val RUN_GOING = 0
+        const val RUN_DONE = 1
+        const val RUN_STOPPED = 2
+        const val RUN_FAILED = 3
+
         @Volatile private var instance: Db? = null
         fun get(ctx: Context): Db = instance ?: synchronized(this) { instance ?: Db(ctx.applicationContext).also { instance = it } }
     }
 }
+
+data class SearchRun(
+    val claim: String, val range: DateRange, val sourceIds: Set<Long>?, val state: Int, val prepared: Boolean,
+    val suggestion: String?, val message: String?, val startedAt: Long, val total: Int, val done: Int,
+)

@@ -39,7 +39,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -48,55 +47,59 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.text.font.FontStyle
+import androidx.work.ExistingWorkPolicy
+import androidx.work.WorkManager
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.withContext
 
-/** The current search lives here, outside the screen, so it keeps going when the tab changes. */
+/**
+ * What the owner is typing and choosing, and live word from the background search. The search
+ * itself, its paragraphs and answers, lives in the database (see [SearchWorker]).
+ */
 object SearchState {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     var claim by mutableStateOf("")
-    var status by mutableStateOf("")
-    var running by mutableStateOf(false)
-    var finished by mutableStateOf(false)
-    var read by mutableStateOf(0)
     var range by mutableStateOf(DateRange())
     // Where to search: the sources under the chosen headings plus the sources picked one by one.
     // Nothing chosen means every source.
     var pickedGroups by mutableStateOf(emptySet<Long>())
     var pickedSources by mutableStateOf(emptySet<Long>())
-    val findings = mutableStateListOf<Finding>()
-    private var job: Job? = null
+
+    val status = MutableStateFlow("")
+    val working = MutableStateFlow(false)
+    /** Goes up whenever the saved search changes, so the screen reads it again. */
+    val version = MutableStateFlow(0)
+
+    fun say(text: String) { status.value = text }
+    fun changed() { version.update { it + 1 } }
 
     fun start(ctx: Context) {
         val c = claim.trim()
-        if (c.isEmpty() || running) return
-        findings.clear(); finished = false; read = 0; running = true
-        job = scope.launch {
-            try {
-                val path = Settings.modelPath(ctx)
-                if (path == null || !java.io.File(path).exists()) { status = "Önce Model sekmesinden bir model indirin."; return@launch }
-                status = "Model yükleniyor…"
-                if (!Llm.ensure(ctx, path)) { status = "Model açılamadı. Dosya bozuk olabilir; Model sekmesinden yeniden indirin."; return@launch }
-                read = Search(ctx).run(c, range, sourceIds(Db.get(ctx)), { s -> status = s }) { f ->
-                    scope.launch(Dispatchers.Main) { findings.add(f) }
-                }
-                status = ""
-                finished = true
-            } catch (e: CancellationException) {
-                status = "Durduruldu."
-            } catch (e: Throwable) {
-                status = "Bir hata oldu: ${e.message}"
-            } finally {
-                running = false
-            }
-        }
+        if (c.isEmpty()) return
+        val db = Db.get(ctx)
+        db.newRun(c, range, sourceIds(db))
+        SearchWorker.enqueue(ctx, ExistingWorkPolicy.REPLACE)
+        changed()
     }
 
-    fun stop() { job?.cancel() }
+    /** Stops at once: the model's current answer is cut off, and nothing more is read. */
+    fun stop(ctx: Context) {
+        Db.get(ctx).setRun(state = Db.RUN_STOPPED, message = "Durduruldu.")
+        WorkManager.getInstance(ctx).cancelUniqueWork(SearchWorker.NAME)
+        Llm.abortNow()
+        say("")
+        changed()
+    }
+
+    /** Goes on with a stopped or interrupted search from the first paragraph not yet read. */
+    fun resume(ctx: Context) {
+        Db.get(ctx).setRun(state = Db.RUN_GOING)
+        SearchWorker.enqueue(ctx, ExistingWorkPolicy.KEEP)
+        changed()
+    }
 
     fun searchesAll() = pickedGroups.isEmpty() && pickedSources.isEmpty()
 
@@ -109,14 +112,30 @@ fun SearchScreen(goTo: (Int) -> Unit) {
     val ctx = LocalContext.current
     val db = remember { Db.get(ctx) }
     val totals = remember { db.totals() }
+    val vectors = remember { db.vectorCounts() }
+    val hasEmbedder = remember { Models.embedderPath(ctx) != null }
     val s = SearchState
+    val version by s.version.collectAsState()
+    val status by s.status.collectAsState()
+    var run by remember { mutableStateOf<SearchRun?>(null) }
+    var findings by remember { mutableStateOf(emptyList<Finding>()) }
+
+    LaunchedEffect(version) {
+        val (r, f) = withContext(Dispatchers.IO) { db.run() to Search(ctx).findings() }
+        run = r; findings = f
+        if (s.claim.isEmpty() && r != null) s.claim = r.claim
+        // A search the phone interrupted (the app was closed) goes on by itself.
+        if (r?.state == Db.RUN_GOING && !s.working.value) SearchWorker.enqueue(ctx.applicationContext, ExistingWorkPolicy.KEEP)
+    }
+    val going = run?.state == Db.RUN_GOING
 
     LazyColumn(Modifier.fillMaxSize().padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         item {
             Text("Yargıyı yazın", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.padding(top = 16.dp))
             Text(
-                "Araç, telefondaki ${totals.first} belgenin paragraflarında yargıyı destekleyen ya da çürüten yeri arar ve " +
-                    "paragrafı belgeden aynen getirir. Türkçe yazabilirsiniz.",
+                "Araç, telefondaki ${totals.first} belgede yargınıza anlamca en yakın paragrafları bulur, okur ve destekleyen " +
+                    "ya da çürüten paragrafı belgeden aynen getirir. Türkçe yazabilirsiniz; başka kelimelerle ya da İngilizce " +
+                    "yazılmış paragrafları da bulur.",
                 style = MaterialTheme.typography.bodySmall,
             )
         }
@@ -125,46 +144,72 @@ fun SearchScreen(goTo: (Int) -> Unit) {
                 s.claim, { s.claim = it }, modifier = Modifier.fillMaxWidth(), minLines = 3,
                 placeholder = { Text("ör. Şeker vergisi koyan ülkelerde gazlı içecek tüketimi düştü.") },
             )
-            WhereRow(db, enabled = !s.running)
-            DateRangeRow(db, s.range, s.sourceIds(db), enabled = !s.running) { s.range = it }
+            WhereRow(db, enabled = !going)
+            DateRangeRow(db, s.range, s.sourceIds(db), enabled = !going) { s.range = it }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
-                if (s.running) OutlinedButton(onClick = { s.stop() }) { Text("Durdur") }
-                else Button(onClick = { s.start(ctx.applicationContext) }, enabled = s.claim.isNotBlank()) { Text("Ara") }
-                if (s.findings.isNotEmpty()) OutlinedButton(onClick = { copyAll(ctx, s.claim, s.findings) }) { Text("Tümünü kopyala") }
-            }
-        }
-        if (totals.first == 0) item {
-            Card {
-                Column(Modifier.padding(12.dp)) {
-                    Text("Telefonda henüz belge yok. Önce kaynak ekleyip belge toplayın.")
-                    TextButton(onClick = { goTo(1) }) { Text("Kaynaklara git") }
+                if (going) OutlinedButton(onClick = { s.stop(ctx.applicationContext) }) { Text("Durdur") }
+                else Button(onClick = { s.start(ctx.applicationContext) }, enabled = s.claim.isNotBlank() && hasEmbedder) { Text("Ara") }
+                if (run?.state == Db.RUN_STOPPED && (run?.done ?: 0) < (run?.total ?: 0) && run?.claim == s.claim.trim()) {
+                    OutlinedButton(onClick = { s.resume(ctx.applicationContext) }) { Text("Kaldığı yerden devam et") }
                 }
+                if (findings.isNotEmpty()) OutlinedButton(onClick = { copyAll(ctx, run?.claim ?: s.claim, findings) }) { Text("Tümünü kopyala") }
             }
         }
-        if (s.running || s.status.isNotEmpty()) item {
+        if (!hasEmbedder) item { Notice(Search.NO_EMBEDDER, "Model sekmesine git") { goTo(3) } }
+        else if (totals.first == 0) item { Notice("Telefonda henüz belge yok. Önce kaynak ekleyip belge toplayın.", "Kaynaklara git") { goTo(1) } }
+        else if (vectors.second > 0) item {
+            Notice("${vectors.second} paragraf henüz anlam dizininde değil; aramada çıkmazlar. Topla sekmesinden dizini tamamlayın.", "Topla sekmesine git") { goTo(2) }
+        }
+        val r = run
+        if (r != null && r.state == Db.RUN_GOING) item {
             Column {
-                if (s.running) LinearProgressIndicator(Modifier.fillMaxWidth())
-                Text(s.status, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 4.dp))
-                if (s.status.startsWith("Önce Model")) TextButton(onClick = { goTo(3) }) { Text("Model sekmesine git") }
+                LinearProgressIndicator(Modifier.fillMaxWidth())
+                Text(status.ifEmpty { "Sırada; birazdan başlıyor…" }, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 4.dp))
+                Text("Uygulamadan çıkabilirsiniz; arama bildirimle sürer.", style = MaterialTheme.typography.bodySmall)
             }
         }
-        if (s.finished && s.findings.isEmpty()) item {
+        if (r != null && (r.state == Db.RUN_FAILED || r.state == Db.RUN_STOPPED) && r.message != null) item {
+            Text(r.message + if (r.state == Db.RUN_STOPPED) " ${r.done}/${r.total} paragraf okunmuştu." else "", style = MaterialTheme.typography.bodyMedium)
+        }
+        if (r != null && r.state == Db.RUN_DONE && findings.isEmpty()) item {
             Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
                 Column(Modifier.padding(16.dp)) {
                     Text("Bulamadım.", style = MaterialTheme.typography.titleLarge)
                     Text(
-                        if (s.read == 0) "${whereLabel(db)}, ${s.range.label().lowercase()}: yargıyla ilgili sözcükleri taşıyan bir paragraf yok."
-                        else "En yakın ${s.read} paragraf okundu (${whereLabel(db)}, ${s.range.label().lowercase()}); hiçbiri bu yargıyı açıkça desteklemiyor ya da çürütmüyor.",
+                        if (r.total == 0) "Seçilen kaynaklarda ve tarihlerde anlam dizininde paragraf yok."
+                        else "Yargıya anlamca en yakın ${r.total} paragraf okundu; hiçbiri bu yargıyı desteklemiyor ya da çürütmüyor.",
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }
             }
         }
-        if (s.finished && s.findings.isNotEmpty()) item {
-            Text("${s.read} paragraf okundu, ${s.findings.size} tanesi yargıyla ilgili.", style = MaterialTheme.typography.bodySmall)
+        if (r != null && r.state == Db.RUN_DONE && findings.isNotEmpty()) item {
+            Text("${r.total} paragraf okundu, ${findings.size} tanesi yargıyla ilgili.", style = MaterialTheme.typography.bodySmall)
         }
-        items(s.findings.sortedBy { it.verdict.ordinal }, key = { it.paragraph.id }) { f -> FindingCard(f) }
+        items(findings, key = { it.paragraph.id }) { f -> FindingCard(f) }
+        if (r?.suggestion != null) item { SuggestionCard(r.suggestion) }
         item { Text("", Modifier.padding(bottom = 24.dp)) }
+    }
+}
+
+@Composable
+private fun Notice(text: String, action: String, onAction: () -> Unit) {
+    Card {
+        Column(Modifier.padding(12.dp)) {
+            Text(text)
+            TextButton(onClick = onAction) { Text(action) }
+        }
+    }
+}
+
+/** A direction for the research, written by the model: shown apart, and never as a finding. */
+@Composable
+private fun SuggestionCard(text: String) {
+    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)) {
+        Column(Modifier.padding(14.dp)) {
+            Text("ÖNERİ (motorun önerisi; belge bilgisi değil)", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
+            Text(text, fontStyle = FontStyle.Italic, modifier = Modifier.padding(top = 6.dp))
+        }
     }
 }
 
@@ -172,15 +217,25 @@ fun SearchScreen(goTo: (Int) -> Unit) {
 private fun FindingCard(f: Finding) {
     val ctx = LocalContext.current
     val p = f.paragraph
-    val supports = f.verdict == Verdict.SUPPORTS
+    val j = f.judgement
+    val supports = j.verdict == Verdict.SUPPORTS
     Card(
         colors = CardDefaults.cardColors(
             containerColor = if (supports) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.errorContainer,
         ),
     ) {
         Column(Modifier.padding(14.dp)) {
-            Text(if (supports) "DESTEKLİYOR" else "ÇÜRÜTÜYOR", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
+            Text(label(j), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
             SelectionContainer { Text("“${p.text}”", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(vertical = 8.dp)) }
+            if (j.indirect) {
+                // The model's own words, set apart from the quote and never mistaken for it.
+                Text(
+                    if (j.reason != null) "Gerekçe (motorun): ${j.reason}"
+                    else if (j.reasonDropped) "Motorun gerekçesi, paragrafta olmayan bir rakam içerdiği için gösterilmiyor; paragrafı dikkatle okuyun."
+                    else "Motor bir gerekçe yazmadı; paragrafı dikkatle okuyun.",
+                    fontStyle = FontStyle.Italic, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(bottom = 6.dp),
+                )
+            }
             Text(p.docTitle, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyMedium)
             Text(listOf(p.sourceName, p.docDate).filter { it.isNotEmpty() }.joinToString(" · "), style = MaterialTheme.typography.bodySmall)
             SelectionContainer {
@@ -196,12 +251,16 @@ private fun FindingCard(f: Finding) {
 
 private fun quote(p: Paragraph) = "“${p.text}”\n— ${p.docTitle}${if (p.docDate.isNotEmpty()) " (${p.docDate})" else ""}\n${p.docUrl}"
 
+private fun label(j: Judgement) = (if (j.verdict == Verdict.SUPPORTS) "DESTEKLİYOR" else "ÇÜRÜTÜYOR") + if (j.indirect) " · DOLAYLI" else ""
+
 private fun copyAll(ctx: Context, claim: String, list: List<Finding>) {
     val text = buildString {
         appendLine("Yargı: $claim").appendLine()
-        for (f in list.sortedBy { it.verdict.ordinal }) {
-            appendLine(if (f.verdict == Verdict.SUPPORTS) "[Destekliyor]" else "[Çürütüyor]")
-            appendLine(quote(f.paragraph)).appendLine()
+        for (f in list) {
+            appendLine("[${label(f.judgement)}]")
+            appendLine(quote(f.paragraph))
+            f.judgement.reason?.let { appendLine("Gerekçe (motorun): $it") }
+            appendLine()
         }
     }
     copy(ctx, text)

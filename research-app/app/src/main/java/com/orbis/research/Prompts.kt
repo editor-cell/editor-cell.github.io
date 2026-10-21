@@ -27,25 +27,39 @@ object Prompts {
 
     const val JUDGE_SYSTEM = "You are a careful fact-checker. You read one paragraph taken from a document and " +
         "decide how it bears on a claim. Use only what the paragraph itself says.\n" +
-        "SUPPORTS: the paragraph shows the claim is true.\n" +
-        "CONTRADICTS: the paragraph shows the claim is false, for example no effect, no change or the opposite.\n" +
+        "SUPPORTS: the paragraph reports a finding, figure or evidence showing the claim is true.\n" +
+        "CONTRADICTS: the paragraph reports a finding, figure or evidence showing the claim is false, " +
+        "or that the effect was absent or the opposite.\n" +
         "UNRELATED: anything else, including paragraphs that only mention the topic, describe plans or " +
-        "methods, or give no finding about the claim.\n" +
-        "After SUPPORTS or CONTRADICTS write DIRECT if the paragraph says so outright, or INDIRECT if it " +
-        "follows in one clear step from what the paragraph states, for example figures for two years that " +
-        "show the change, or the same thing under another name. After INDIRECT write a colon and one short " +
-        "sentence in Turkish naming that step, using only facts and figures that are in the paragraph."
+        "methods, or give no finding about the claim."
 
-    fun judge(claim: String, p: Paragraph): String =
-        "Claim: $claim\n\nParagraph from \"${p.docTitle.take(200)}\":\n<<<\n${p.text.take(2000)}\n>>>\n\n" +
-            "Answer with SUPPORTS DIRECT, SUPPORTS INDIRECT: <reason>, CONTRADICTS DIRECT, " +
-            "CONTRADICTS INDIRECT: <reason>, or UNRELATED."
+    private fun claimAndParagraph(claim: String, p: Paragraph) =
+        "Claim: $claim\n\nParagraph from \"${p.docTitle.take(200)}\":\n<<<\n${p.text.take(2000)}\n>>>\n\n"
 
-    const val JUDGE_GRAMMAR = "root ::= \"UNRELATED\" | verdict \" DIRECT\" | verdict \" INDIRECT: \" reason\n" +
-        "verdict ::= \"SUPPORTS\" | \"CONTRADICTS\"\n" +
-        "reason ::= [^\\n]+"
+    /** Step one: does the paragraph bear on the claim? One word. */
+    fun judge(claim: String, p: Paragraph): String = claimAndParagraph(claim, p) +
+        "Does this paragraph show the claim is true (SUPPORTS), show it is false, for example no effect, " +
+        "no change or the opposite (CONTRADICTS), or neither (UNRELATED)? Answer with one word."
 
-    /** The model's answer as a judgement; null when the paragraph does not bear on the claim. */
+    const val JUDGE_GRAMMAR = "root ::= \"SUPPORTS\" | \"CONTRADICTS\" | \"UNRELATED\""
+
+    /**
+     * Step two, only for a paragraph that bears on the claim: does it say so outright, or does the
+     * claim follow from it in one step, and which step. It starts as step one did, so the model
+     * reads only the new question. Asked together, the two questions confused the small model.
+     */
+    fun how(claim: String, p: Paragraph, verdict: Verdict): String = claimAndParagraph(claim, p) +
+        "This paragraph shows the claim is ${if (verdict == Verdict.SUPPORTS) "true" else "false"}. Does it say so " +
+        "outright (DIRECT), or does it follow in one clear step from facts or figures in the paragraph (INDIRECT)? " +
+        "If INDIRECT, write a colon and one short sentence in Turkish naming that step, using only facts and " +
+        "figures from the paragraph. Example: INDIRECT: Kişi başı satış 2017'de 120 litreyken 2020'de 95 litreye inmiş."
+
+    const val HOW_GRAMMAR = "root ::= \"DIRECT\" | \"INDIRECT: \" reason\nreason ::= [^\\n<>]+"
+
+    /**
+     * The model's answers (step one, then step two on the next line) as a judgement; null when the
+     * paragraph does not bear on the claim.
+     */
     fun parseJudgement(answer: String?, paragraph: String): Judgement? {
         val a = answer?.trim() ?: return null
         val verdict = when {
@@ -53,7 +67,7 @@ object Prompts {
             a.startsWith("CONTRADICTS") -> Verdict.CONTRADICTS
             else -> return null
         }
-        val indirect = a.contains(" INDIRECT")
+        val indirect = Regex("\\bINDIRECT\\b").containsMatchIn(a)
         if (!indirect) return Judgement(verdict, false, null)
         val reason = a.substringAfter("INDIRECT:", "").trim().ifEmpty { null }
         val ok = reason != null && numbersIn(reason).all { it in numbersIn(paragraph) }

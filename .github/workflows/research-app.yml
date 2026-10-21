@@ -34,7 +34,7 @@ jobs:
       # Every model the app offers must still be downloadable where the app looks for it.
       - name: Check the model addresses
         run: |
-          grep -oE 'https://huggingface.co/[^"]+\.gguf' app/src/main/java/com/orbis/research/Models.kt | while read -r url; do
+          grep -oE 'https://(huggingface\.co|github\.com)/[^"]+\.gguf' app/src/main/java/com/orbis/research/Models.kt | while read -r url; do
             code=$(curl -s -o /dev/null -I -L -w '%{http_code}' "$url")
             echo "$code $url"
             [ "$code" = "200" ] || exit 1
@@ -60,21 +60,26 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ~/test-model
-          key: test-model-qwen3-4b-q4_k_m
+          key: test-models-qwen3-4b-q4_k_m-e5-small-q8_0
 
-      - name: Fetch the recommended model for the tests
+      - name: Fetch the models for the tests
         run: |
           mkdir -p ~/test-model
           f=~/test-model/Qwen3-4B-Q4_K_M.gguf
           [ -s "$f" ] || curl -fsSL -o "$f" https://huggingface.co/Qwen/Qwen3-4B-GGUF/resolve/main/Qwen3-4B-Q4_K_M.gguf
-          ls -la "$f"
+          e=~/test-model/multilingual-e5-small-q8_0.gguf
+          [ -s "$e" ] || curl -fsSL -o "$e" https://github.com/editor-cell/editor-cell.github.io/releases/download/models-1/multilingual-e5-small-q8_0.gguf
+          ls -la ~/test-model
 
-      # Source lists, robots.txt, reading pages and PDFs; then the app's prompts on the recommended
-      # model: five Turkish claims translated, search phrases, and eight paragraphs labelled right.
-      - name: Test the reading logic and the model's judgements
+      # Source lists, robots.txt, reading pages and PDFs; then the app's prompts on the big model
+      # (paragraphs labelled right, a stop within a second, a digit-free direction) and the meaning
+      # model (English paragraphs that say what a Turkish claim says, in other words, rank first).
+      - name: Test the reading logic and the models
         run: |
           export ORBIS_LIB="$PWD/build-host/liborbisllm.so" ORBIS_MODEL=~/test-model/Qwen3-4B-Q4_K_M.gguf
+          export ORBIS_EMBED=~/test-model/multilingual-e5-small-q8_0.gguf
           ./gradlew -p logic-test test --no-daemon
+          python3 ../.github/scripts/model-score.py logic-test/build/test-results/test
 
       - name: Build the APK
         env:

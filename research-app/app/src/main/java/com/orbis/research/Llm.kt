@@ -7,11 +7,12 @@ import kotlinx.coroutines.sync.withLock
 /** The language model running inside the phone (llama.cpp). One model loaded at a time. */
 object Llm {
     private val lock = Mutex()
-    private var handle = 0L
+    @Volatile private var handle = 0L
     private var loadedPath: String? = null
     private var ready = false
 
-    private fun init(ctx: Context) {
+    /** Loads the engine library once; shared with the meaning model. */
+    @Synchronized fun init(ctx: Context) {
         if (ready) return
         System.loadLibrary("orbisllm")
         LlmNative.nativeInit(ctx.applicationInfo.nativeLibraryDir)
@@ -30,14 +31,28 @@ object Llm {
         handle != 0L
     }
 
+    // Set by a stop and kept until the next search starts, so a stop that lands between two
+    // paragraphs also holds; the engine's own flag is cleared at the start of each answer.
+    @Volatile private var stopped = false
+
+    /** Ends the answer being written now, from any thread, within one small step. */
+    fun abortNow() {
+        stopped = true
+        val h = handle
+        if (h != 0L) LlmNative.nativeAbort(h)
+    }
+
+    /** Lets answers be written again after a stop. */
+    fun allow() { stopped = false }
+
     suspend fun release() = lock.withLock {
         if (handle != 0L) LlmNative.nativeFree(handle)
         handle = 0L; loadedPath = null
     }
 
     suspend fun generate(system: String, user: String, grammar: String = "", maxTokens: Int = 64): String? = lock.withLock {
-        if (handle == 0L) return@withLock null
-        LlmNative.nativeGenerate(handle, system, user, grammar, Prompts.answerPrefix(loadedPath ?: ""), maxTokens)
-            ?.let(Prompts::clean)
+        if (handle == 0L || stopped) return@withLock null
+        val out = LlmNative.nativeGenerate(handle, system, user, grammar, Prompts.answerPrefix(loadedPath ?: ""), maxTokens)
+        if (stopped) null else out?.let(Prompts::clean)
     }
 }

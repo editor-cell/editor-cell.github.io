@@ -18,4 +18,11 @@ object Settings {
 
     fun modelPath(ctx: Context): String? = prefs(ctx).getString("model", null)
     fun setModelPath(ctx: Context, v: String?) = prefs(ctx).edit().putString("model", v).apply()
+
+    /** The meaning model the stored paragraph vectors were made with. */
+    fun vectorModel(ctx: Context): String? = prefs(ctx).getString("vectorModel", null)
+    fun setVectorModel(ctx: Context, v: String) = prefs(ctx).edit().putString("vectorModel", v).apply()
+
+    fun embedderId(ctx: Context): String? = prefs(ctx).getString("embedder", null)
+    fun setEmbedderId(ctx: Context, v: String) = prefs(ctx).edit().putString("embedder", v).apply()
 }

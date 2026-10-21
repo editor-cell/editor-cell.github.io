@@ -49,13 +49,15 @@ fun CollectScreen() {
     val text by Progress.text.collectAsState()
     val running by Progress.running.collectAsState()
     var totals by remember { mutableStateOf(0 to 0) }
+    var vectors by remember { mutableStateOf(0 to 0) }
     var sourceCount by remember { mutableIntStateOf(0) }
+    val hasEmbedder = remember { Models.embedderPath(ctx) != null }
     var perSource by remember { mutableFloatStateOf(Settings.perSource(ctx).toFloat()) }
     var candidates by remember { mutableFloatStateOf(Settings.candidates(ctx).toFloat()) }
     var daily by remember { mutableStateOf(Settings.daily(ctx)) }
 
     LaunchedEffect(running, text) {
-        withContext(Dispatchers.IO) { totals = db.totals(); sourceCount = db.sources().size }
+        withContext(Dispatchers.IO) { totals = db.totals(); vectors = db.vectorCounts(); sourceCount = db.sources().size }
     }
 
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -68,6 +70,11 @@ fun CollectScreen() {
         Card(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(14.dp)) {
                 Text("Telefonda ${totals.first} belge, ${totals.second} paragraf var.", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    if (!hasEmbedder) "Anlam modeli indirilmedi; Model sekmesinden indirin, paragraflar ondan sonra aranabilir."
+                    else "Anlam dizininde ${vectors.first} paragraf" + if (vectors.second > 0) ", ${vectors.second} paragraf sırada." else "; hepsi aranabilir.",
+                    style = MaterialTheme.typography.bodySmall,
+                )
                 if (running) LinearProgressIndicator(Modifier.fillMaxWidth().padding(vertical = 8.dp))
                 if (text.isNotEmpty()) Text(text, style = MaterialTheme.typography.bodySmall)
             }
@@ -76,6 +83,9 @@ fun CollectScreen() {
             Button(onClick = { CollectWorker.start(ctx) }, enabled = !running && sourceCount > 0) { Text("Şimdi topla") }
             OutlinedButton(onClick = { CollectWorker.stop(ctx) }, enabled = running) { Text("Durdur") }
         }
+        if (hasEmbedder && vectors.second > 0) {
+            OutlinedButton(onClick = { CollectWorker.index(ctx) }, enabled = !running) { Text("Anlam dizinini tamamla (${vectors.second} paragraf)") }
+        }
         Text("Her toplamada kaynak başına en çok ${perSource.toInt()} belge okunur. Sıradakiler bir sonraki toplamada gelir.")
         Slider(perSource, { perSource = it }, valueRange = 10f..300f, steps = 28,
             onValueChangeFinished = { Settings.setPerSource(ctx, perSource.toInt()) })
@@ -83,7 +93,7 @@ fun CollectScreen() {
             Text("Her gün kendiliğinden topla (Wi-Fi'da, şarj yeterliyken)", Modifier.weight(1f))
             Switch(daily, { daily = it; Settings.setDaily(ctx, it); CollectWorker.setDaily(ctx, it) })
         }
-        Text("Bir aramada model en uygun ${candidates.toInt()} paragrafı okur. Daha çok paragraf daha uzun sürer.")
+        Text("Bir aramada model, yargıya anlamca en yakın ${candidates.toInt()} paragrafı okur. Daha çok paragraf daha uzun sürer.")
         Slider(candidates, { candidates = it }, valueRange = 10f..100f, steps = 17,
             onValueChangeFinished = { Settings.setCandidates(ctx, candidates.toInt()) })
     }
@@ -98,6 +108,10 @@ fun ModelScreen() {
     var current by remember { mutableStateOf(Settings.modelPath(ctx)) }
     var installed by remember { mutableStateOf(Models.installed(ctx)) }
     var downloads by remember { mutableStateOf(Models.pending(ctx)) }
+    // Meaning models fully on the phone, and the one in use.
+    var haveEmb by remember { mutableStateOf(Models.embedders.filter { Models.ready(ctx, it) }.map { it.id }.toSet()) }
+    var chosenEmb by remember { mutableStateOf(Models.embedder(ctx).id) }
+    val recEmb = remember { Models.recommendedEmbedder(ctx) }
     var progress by remember { mutableStateOf(mapOf<String, Float>()) }
 
     // Follow running downloads; a finished file becomes the chosen model if none is chosen yet.
@@ -110,8 +124,17 @@ fun ModelScreen() {
                 when (if (st == null) DownloadManager.STATUS_FAILED else st.third) {
                     DownloadManager.STATUS_SUCCESSFUL -> {
                         installed = Models.installed(ctx)
-                        val m = Models.all.first { it.id == id }
-                        if (current == null) { current = Models.file(ctx, m).path; Settings.setModelPath(ctx, current) }
+                        if (Models.embedders.any { it.id == id }) {
+                            haveEmb = haveEmb + id
+                            if (id == chosenEmb) {
+                                // Paragraphs already on the phone get their meaning vectors straight away.
+                                CollectWorker.index(ctx)
+                                Toast.makeText(ctx, "Anlam modeli indi; paragrafların anlam dizini oluşturuluyor (Topla sekmesi).", Toast.LENGTH_LONG).show()
+                            }
+                        } else {
+                            val m = Models.all.first { it.id == id }
+                            if (current == null) { current = Models.file(ctx, m).path; Settings.setModelPath(ctx, current) }
+                        }
                     }
                     DownloadManager.STATUS_FAILED -> Toast.makeText(ctx, "İndirme yarım kaldı; yeniden deneyin.", Toast.LENGTH_LONG).show()
                     else -> { still[id] = dl; next[id] = if (st!!.second > 0) st.first.toFloat() / st.second else 0f }
@@ -155,6 +178,39 @@ fun ModelScreen() {
                 "Bir kez indirilir (Wi-Fi önerilir). Bu telefonda %.1f GB bellek var; önerilen: %s.".format(ram, rec.title),
             style = MaterialTheme.typography.bodySmall,
         )
+        Text("1. Anlam modeli (paragrafları anlamına göre bulur)", style = MaterialTheme.typography.titleMedium)
+        for (emb in Models.embedders) {
+            val embFile = Models.file(ctx, emb)
+            val have = emb.id in haveEmb
+            Card(Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(14.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        RadioButton(selected = chosenEmb == emb.id, onClick = {
+                            if (chosenEmb != emb.id) {
+                                chosenEmb = emb.id; Settings.setEmbedderId(ctx, emb.id)
+                                // Vectors from different models do not compare; the index is made again.
+                                if (have) {
+                                    CollectWorker.index(ctx)
+                                    Toast.makeText(ctx, "Anlam dizini bu modelle yeniden oluşturuluyor (Topla sekmesi).", Toast.LENGTH_LONG).show()
+                                }
+                            }
+                        })
+                        Column(Modifier.weight(1f)) {
+                            Text(emb.title + if (emb == recEmb) " · bu telefon için önerilen" else "", style = MaterialTheme.typography.titleMedium)
+                            Text("${emb.note} Yaklaşık ${emb.sizeMb} MB.", style = MaterialTheme.typography.bodySmall)
+                        }
+                    }
+                    progress[emb.id]?.let { p -> LinearProgressIndicator(progress = { p }, modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp)) }
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        if (!have && emb.id !in downloads) TextButton(onClick = { downloads = downloads + (emb.id to Models.download(ctx, emb)) }) { Text("İndir") }
+                        if (have) TextButton(onClick = { embFile.delete(); haveEmb = haveEmb - emb.id }) {
+                            Text("Sil", color = MaterialTheme.colorScheme.error)
+                        }
+                    }
+                }
+            }
+        }
+        Text("2. Dil modeli (paragrafları okuyup değerlendirir)", style = MaterialTheme.typography.titleMedium)
         for (m in Models.all) {
             val file = Models.file(ctx, m)
             // A file still being written is not counted until it reaches its full size.

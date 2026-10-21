@@ -1,66 +1,61 @@
 package com.orbis.research
 
 import android.content.Context
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.ensureActive
 
-enum class Verdict { SUPPORTS, CONTRADICTS }
-
-class Finding(val paragraph: Paragraph, val verdict: Verdict)
+class Finding(val paragraph: Paragraph, val judgement: Judgement)
 
 /**
- * Looks for paragraphs that bear on a claim. The model only chooses: it labels each candidate
- * paragraph; the words shown are always the paragraph as it was read from the document.
+ * One search, step by step, each step saved so an interrupted search goes on where it stopped:
+ * 1. the meaning model picks the paragraphs closest in meaning to the claim (in any wording or
+ *    language) within the chosen dates and sources;
+ * 2. the language model reads them one by one and labels each; the words shown are always the
+ *    paragraph as it was read from the document;
+ * 3. if nothing bears on the claim outright, the model offers one line on where else to look.
  */
 class Search(private val ctx: Context) {
     private val db = Db.get(ctx)
 
-    suspend fun run(claim: String, range: DateRange, sourceIds: Set<Long>?, status: (String) -> Unit, found: (Finding) -> Unit): Int {
-        status("İddia İngilizceye çevriliyor…")
-        val english = Prompts.firstLine(Llm.generate(Prompts.TRANSLATE_SYSTEM, Prompts.translate(claim), maxTokens = 120)) ?: claim
-        currentCoroutineContext().ensureActive()
-
-        status("Arama sözcükleri hazırlanıyor…")
-        val phrases = Llm.generate(Prompts.PHRASES_SYSTEM, Prompts.phrases(english), Prompts.PHRASES_GRAMMAR, maxTokens = 120)
-            ?.lines()?.map { it.trim() }?.filter { it.isNotEmpty() } ?: emptyList()
-        currentCoroutineContext().ensureActive()
-
-        status("Telefondaki belgelerde aranıyor…")
-        val ids = candidates(claim, english, phrases, range, sourceIds, Settings.candidates(ctx))
-        if (ids.isEmpty()) return 0
-
-        var read = 0
-        val started = System.currentTimeMillis()
-        for ((i, id) in ids.withIndex()) {
-            currentCoroutineContext().ensureActive()
-            // After the first few paragraphs the phone's own pace gives an honest estimate.
-            val left = if (i >= 2) ((System.currentTimeMillis() - started) / i * (ids.size - i) / 1000).toInt() else -1
-            status("Paragraf ${i + 1}/${ids.size} okunuyor…" + if (left >= 0) " (yaklaşık ${duration(left)} kaldı)" else "")
-            val p = db.paragraph(id) ?: continue
-            val answer = Llm.generate(Prompts.JUDGE_SYSTEM, Prompts.judge(claim, english, p), Prompts.JUDGE_GRAMMAR, maxTokens = 6)
-            read++
-            when (answer?.trim()) {
-                "SUPPORTS" -> found(Finding(p, Verdict.SUPPORTS))
-                "CONTRADICTS" -> found(Finding(p, Verdict.CONTRADICTS))
+    /** Step 1; false (with a message saved) when the meaning model is missing or unusable. */
+    suspend fun prepare(run: SearchRun): Boolean {
+        val path = Models.embedderPath(ctx)
+        if (path == null) { db.setRun(state = Db.RUN_FAILED, message = NO_EMBEDDER); return false }
+        if (!Embedder.ensure(ctx, path)) { db.setRun(state = Db.RUN_FAILED, message = "Anlam modeli açılamadı; Model sekmesinden yeniden indirin."); return false }
+        try {
+            val q = Embedder.embed(Vectors.queryText(path, run.claim)) ?: run {
+                db.setRun(state = Db.RUN_FAILED, message = "Yargı okunamadı."); return false
             }
+            db.setItems(db.closest(q, Settings.candidates(ctx), run.range, run.sourceIds))
+            db.setRun(prepared = true)
+        } finally {
+            Embedder.release()
         }
-        return read
+        return true
     }
 
-    /** Paragraph ids, best first: those holding whole search phrases rank above single words. */
-    private fun candidates(
-        claim: String, english: String, phrases: List<String>, range: DateRange, sourceIds: Set<Long>?, limit: Int,
-    ): List<Long> {
-        val score = HashMap<Long, Int>()
-        for (ph in phrases) {
-            val q = Prompts.ftsTerms(ph).joinToString(" ")
-            if (q.isNotEmpty()) for (id in db.match(q, 400, range, sourceIds)) score[id] = (score[id] ?: 0) + 4
-        }
-        val words = (Prompts.ftsTerms(english) + Prompts.ftsTerms(claim)).distinct()
-        for (w in words) for (id in db.match(w, 3000, range, sourceIds)) score[id] = (score[id] ?: 0) + 1
-        val min = if (words.size >= 3) 2 else 1
-        return score.entries.filter { it.value >= min }.sortedByDescending { it.value }.take(limit).map { it.key }
+    /**
+     * Step 2 for one paragraph: the model's answers as saved (the verdict, and for a paragraph that
+     * bears on the claim, on the next line, whether it says so outright and why not), or null if
+     * the search was stopped.
+     */
+    suspend fun judge(claim: String, paraId: Long): String? {
+        val p = db.paragraph(paraId) ?: return "UNRELATED"
+        val v = Llm.generate(Prompts.JUDGE_SYSTEM, Prompts.judge(claim, p), Prompts.JUDGE_GRAMMAR, maxTokens = 4)?.trim() ?: return null
+        val verdict = when (v) { "SUPPORTS" -> Verdict.SUPPORTS; "CONTRADICTS" -> Verdict.CONTRADICTS; else -> return v }
+        val how = Llm.generate(Prompts.JUDGE_SYSTEM, Prompts.how(claim, p, verdict), Prompts.HOW_GRAMMAR, maxTokens = 50)?.trim() ?: return null
+        return "$v\n$how"
     }
 
-    private fun duration(sec: Int) = if (sec < 60) "$sec sn" else "${(sec + 30) / 60} dk"
+    /** Step 3. */
+    suspend fun suggest(claim: String): String? =
+        Llm.generate(Prompts.SUGGEST_SYSTEM, Prompts.suggest(claim), Prompts.SUGGEST_GRAMMAR, maxTokens = 70)?.trim()?.ifEmpty { null }
+
+    /** The paragraphs found so far: outright findings first, supporting before contradicting. */
+    fun findings(): List<Finding> = db.answers().mapNotNull { (id, answer) ->
+        val p = db.paragraph(id) ?: return@mapNotNull null
+        Prompts.parseJudgement(answer, p.text)?.let { Finding(p, it) }
+    }.sortedWith(compareBy<Finding>({ it.judgement.indirect }, { it.judgement.verdict.ordinal }))
+
+    companion object {
+        const val NO_EMBEDDER = "Önce Model sekmesinden anlam modelini indirin."
+    }
 }

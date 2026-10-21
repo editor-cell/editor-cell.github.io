@@ -64,8 +64,14 @@ class LiveModelTest {
         DynamicTest.dynamicTest("${c.expected}${if (c.indirect) " (indirect)" else ""}: ${c.text.take(46)}") {
             ready()
             val p = Paragraph(1, c.text, "https://example.org/r", "Report", "", "Example")
-            val a = ask(Prompts.JUDGE_SYSTEM, Prompts.judge(c.claim, p), Prompts.JUDGE_GRAMMAR, 60)
-            println("JUDGE $a <- ${c.text.take(60)}")
+            // The app's two steps: the verdict, then for a paragraph that bears on the claim, how.
+            val v = ask(Prompts.JUDGE_SYSTEM, Prompts.judge(c.claim, p), Prompts.JUDGE_GRAMMAR, 4)
+            val a = when (v) {
+                "SUPPORTS" -> v + "\n" + ask(Prompts.JUDGE_SYSTEM, Prompts.how(c.claim, p, Verdict.SUPPORTS), Prompts.HOW_GRAMMAR, 50)
+                "CONTRADICTS" -> v + "\n" + ask(Prompts.JUDGE_SYSTEM, Prompts.how(c.claim, p, Verdict.CONTRADICTS), Prompts.HOW_GRAMMAR, 50)
+                else -> v
+            }
+            println("JUDGE ${a.replace("\n", " | ")} <- ${c.text.take(60)}")
             val j = Prompts.parseJudgement(a, c.text)
             assertEquals(c.expected, j?.verdict?.name ?: "UNRELATED", "got $a")
             // A reason may only use figures from the paragraph; one that does not is dropped, not shown.
@@ -86,6 +92,7 @@ class LiveModelTest {
     @TestFactory fun stopsAtOnce() = listOf(800L, 4000L).map { wait ->
         DynamicTest.dynamicTest("stop after $wait ms") {
             ready()
+            check(engine != 0L)  // load the model first, so the stop lands on an answer being written
             var out: String? = "unset"
             val long = "Summarise this text in 300 words. " + "Rivers carry water from the hills to the sea and shape the land they cross. ".repeat(40)
             val t = Thread { out = LlmNative.nativeGenerate(engine, "You write long summaries.", long, "", Prompts.answerPrefix(model), 300) }
@@ -95,12 +102,13 @@ class LiveModelTest {
             LlmNative.nativeAbort(engine)
             t.join(30_000)
             val took = System.currentTimeMillis() - asked
+            t.join()  // never let a late answer run into the next test on the same engine
             println("STOP after $wait ms took $took ms")
             assertTrue(!t.isAlive && took < 1500, "still running after $took ms")
             assertEquals(null, out)
             // The engine still answers correctly after a stop.
             val p = Paragraph(1, cases[0].text, "https://example.org/r", "Report", "", "Example")
-            val again = ask(Prompts.JUDGE_SYSTEM, Prompts.judge(SUGAR, p), Prompts.JUDGE_GRAMMAR, 60)
+            val again = ask(Prompts.JUDGE_SYSTEM, Prompts.judge(SUGAR, p), Prompts.JUDGE_GRAMMAR, 4)
             assertEquals(Verdict.SUPPORTS, Prompts.parseJudgement(again, p.text)?.verdict, "after stop: $again")
         }
     }

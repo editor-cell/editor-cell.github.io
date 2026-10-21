@@ -1,11 +1,6 @@
 package com.orbis.research
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.Context
-import android.content.pm.ServiceInfo
-import android.os.Build
-import androidx.core.app.NotificationCompat
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -34,7 +29,15 @@ class CollectWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ct
                 val notifier = launch {
                     Progress.text.collect { t -> if (t.isNotEmpty()) try { setForeground(foregroundInfo(t)) } catch (e: Exception) { } }
                 }
-                Crawler(applicationContext) { isStopped }.run(perSource, only)
+                if (!inputData.getBoolean(KEY_INDEX_ONLY, false)) Crawler(applicationContext) { isStopped }.run(perSource, only)
+                // Every new paragraph gets its meaning vector before the job ends.
+                val indexed = Indexer.run(applicationContext, { isStopped }) { done, left ->
+                    Progress.text.value = "Anlam dizini: $done paragraf işlendi, $left kaldı."
+                }
+                if (indexed && !isStopped) {
+                    val (docs, paras) = Db.get(applicationContext).totals()
+                    Progress.text.value = "Bitti. Telefonda $docs belge, $paras paragraf var; hepsi anlam dizininde."
+                }
                 notifier.cancel()
             }
         } finally {
@@ -45,27 +48,14 @@ class CollectWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ct
 
     override suspend fun getForegroundInfo(): ForegroundInfo = foregroundInfo("Belgeler toplanıyor…")
 
-    private fun foregroundInfo(text: String): ForegroundInfo {
-        val nm = applicationContext.getSystemService(NotificationManager::class.java)
-        if (Build.VERSION.SDK_INT >= 26 && nm.getNotificationChannel(CHANNEL) == null) {
-            nm.createNotificationChannel(NotificationChannel(CHANNEL, "Belge toplama", NotificationManager.IMPORTANCE_LOW))
-        }
-        val n = NotificationCompat.Builder(applicationContext, CHANNEL)
-            .setSmallIcon(android.R.drawable.stat_sys_download)
-            .setContentTitle("Orbis Araştırma")
-            .setContentText(text)
-            .setOngoing(true)
-            .setOnlyAlertOnce(true)
-            .build()
-        return if (Build.VERSION.SDK_INT >= 29) ForegroundInfo(NOTE_ID, n, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
-        else ForegroundInfo(NOTE_ID, n)
-    }
+    private fun foregroundInfo(text: String) = workNotice(applicationContext, NOTE_ID, CHANNEL, "Belge toplama", text)
 
     companion object {
         private const val CHANNEL = "collect"
         private const val NOTE_ID = 7
         private const val KEY_PER_SOURCE = "perSource"
         private const val KEY_ONLY = "only"
+        private const val KEY_INDEX_ONLY = "indexOnly"
         const val NOW = "collect-now"
         const val DAILY = "collect-daily"
 
@@ -76,6 +66,14 @@ class CollectWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ct
                     if (only == null) workDataOf(KEY_PER_SOURCE to Settings.perSource(ctx))
                     else workDataOf(KEY_PER_SOURCE to Settings.perSource(ctx), KEY_ONLY to only.toLongArray()),
                 )
+                .build()
+            WorkManager.getInstance(ctx).enqueueUniqueWork(NOW, ExistingWorkPolicy.KEEP, req)
+        }
+
+        /** Gives the paragraphs already on the phone their meaning vectors, without collecting. */
+        fun index(ctx: Context) {
+            val req = OneTimeWorkRequestBuilder<CollectWorker>()
+                .setInputData(workDataOf(KEY_INDEX_ONLY to true))
                 .build()
             WorkManager.getInstance(ctx).enqueueUniqueWork(NOW, ExistingWorkPolicy.KEEP, req)
         }
