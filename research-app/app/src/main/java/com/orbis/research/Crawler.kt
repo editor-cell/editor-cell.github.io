@@ -48,19 +48,22 @@ class Crawler(private val ctx: Context, private val stop: () -> Boolean) {
         Progress.text.value = "Bitti. Telefonda $docs belge, $paras paragraf var."
     }
 
-    private suspend fun discover(s: Source) {
-        if (db.queueSize(s.id) > MAX_QUEUE) return
+    /** Reads a source's feeds, sitemaps and front page for document addresses and queues the new ones. */
+    suspend fun discover(s: Source, force: Boolean = false) {
+        if (!force && db.queueSize(s.id) > MAX_QUEUE) return
+        scopes = db.sources().map { it.scope }.toSet()
         val base = s.url.substringBefore("://") + "://" + s.url.substringAfter("://").substringBefore('/')
         val found = ArrayList<Pair<String, String>>()
+        val titles = HashMap<String, String>()
         val sitemaps = ArrayDeque<String>()
 
         val front = fetchText(s.url)
         if (front != null) {
             if (isXml(front)) {
-                val l = Extract.listing(front, s.url); found += l.docs; sitemaps += l.sitemaps
+                val l = Extract.listing(front, s.url); found += l.docs; titles += l.titles; sitemaps += l.sitemaps
             } else {
                 for (feed in Extract.feedLinks(front, s.url).filter { inScope(it) }.take(5)) {
-                    fetchText(feed)?.let { found += Extract.listing(it, feed).docs }
+                    fetchText(feed)?.let { x -> Extract.listing(x, feed).let { found += it.docs; titles += it.titles } }
                 }
                 val page = Extract.html(s.url, front)
                 found += (page.links + page.pdfLinks).map { it to "" }
@@ -78,6 +81,7 @@ class Crawler(private val ctx: Context, private val stop: () -> Boolean) {
             val xml = fetchText(sm) ?: continue
             val l = Extract.listing(xml, sm)
             found += l.docs
+            titles += l.titles
             // Newest sitemaps first when an index names its children by year or number.
             sitemaps.addAll(l.sitemaps.sortedDescending())
             delay(300)
@@ -85,11 +89,11 @@ class Crawler(private val ctx: Context, private val stop: () -> Boolean) {
         val docs = found.filter { (u, _) -> inScope(u) && Extract.looksLikeDocument(u) }
             .map { (u, d) -> u.substringBefore('#') to d }
             .distinctBy { it.first }
-        db.enqueue(s.id, docs)
+        db.enqueue(s.id, docs, titles)
     }
 
     /** Reads one address; returns its queue state: 1 read, 2 nothing usable, 3 refused by the site. */
-    private fun read(s: Source, url: String): Int {
+    fun read(s: Source, url: String): Int {
         if (db.hasDoc(url)) return 1
         return try {
             if (!net.allowed(url)) return 3

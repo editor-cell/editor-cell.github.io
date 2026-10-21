@@ -55,6 +55,8 @@ fun CollectScreen() {
     var perSource by remember { mutableFloatStateOf(Settings.perSource(ctx).toFloat()) }
     var candidates by remember { mutableFloatStateOf(Settings.candidates(ctx).toFloat()) }
     var daily by remember { mutableStateOf(Settings.daily(ctx)) }
+    var live by remember { mutableStateOf(Settings.live(ctx)) }
+    var liveRead by remember { mutableFloatStateOf(Settings.liveRead(ctx).toFloat()) }
 
     LaunchedEffect(running, text) {
         withContext(Dispatchers.IO) { totals = db.totals(); vectors = db.vectorCounts(); sourceCount = db.sources().size }
@@ -92,6 +94,20 @@ fun CollectScreen() {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("Her gün kendiliğinden topla (Wi-Fi'da, şarj yeterliyken)", Modifier.weight(1f))
             Switch(daily, { daily = it; Settings.setDaily(ctx, it); CollectWorker.setDaily(ctx, it) })
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("Aramada kaynaklardan canlı belge de çek (internet ister)", Modifier.weight(1f))
+            Switch(live, { live = it; Settings.setLive(ctx, it) })
+        }
+        if (live) {
+            Text(
+                "Arama başlarken seçili kaynakların güncel belge listeleri alınır, başlığı yargıya anlamca en yakın " +
+                    "${liveRead.toInt()} belge açılıp okunur; toplanmamış belgeler de aramaya katılır. Her kaynağın listesi en çok " +
+                    "6 saatte bir yenilenir.",
+                style = MaterialTheme.typography.bodySmall,
+            )
+            Slider(liveRead, { liveRead = it }, valueRange = 0f..40f, steps = 39,
+                onValueChangeFinished = { Settings.setLiveRead(ctx, liveRead.toInt()) })
         }
         Text("Bir aramada model, yargıya anlamca en yakın ${candidates.toInt()} paragrafı okur. Daha çok paragraf daha uzun sürer.")
         Slider(candidates, { candidates = it }, valueRange = 10f..100f, steps = 17,

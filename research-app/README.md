@@ -16,6 +16,12 @@ numbers of its own; when nothing fits it says "Bulamadım".
   (multilingual-e5-small, converted from its publisher's files by `research-app-model-files.yml`,
   or EmbeddingGemma 300M on phones with 6 GB or more). A Turkish claim then finds English paragraphs
   that say the same thing in other words.
+- **Live search**: when a search starts, each selected source's newest document list (feed and
+  sitemaps, at most every 6 hours per source) is fetched, the documents whose title or address comes
+  closest in meaning to the claim are opened and read, and their paragraphs join the phone's index at
+  once. So documents not yet collected are found too. Only listed sources are visited (`Net.kt`);
+  the sources' own search pages were measured (`research-app-probe.yml`) and read reliably on only a
+  few sites, so they are not used.
 - **Searching** runs as a background job with a notification (`SearchWorker`), saving each answer,
   so it survives leaving the app and resumes if the phone stops it. The paragraphs closest in
   meaning, within the chosen headings, sources and dates, are read by an open language model

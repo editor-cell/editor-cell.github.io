@@ -7,7 +7,7 @@ import java.util.Locale
 
 class Page(val title: String, val date: String, val paragraphs: List<String>, val links: List<String>, val pdfLinks: List<String>)
 
-class Listing(val docs: List<Pair<String, String>>, val sitemaps: List<String>)
+class Listing(val docs: List<Pair<String, String>>, val sitemaps: List<String>, val titles: Map<String, String> = emptyMap())
 
 /** Reads documents and listings into plain parts. The words of a paragraph are never changed. */
 object Extract {
@@ -90,6 +90,7 @@ object Extract {
         val doc = Jsoup.parse(xml, base, Parser.xmlParser())
         val sitemaps = doc.select("sitemapindex > sitemap > loc").map { it.text().trim() }
         val docs = ArrayList<Pair<String, String>>()
+        val titles = HashMap<String, String>()
         for (u in doc.select("urlset > url")) {
             val loc = u.selectFirst("loc")?.text()?.trim() ?: continue
             docs += loc to normDate(u.selectFirst("lastmod")?.text() ?: "")
@@ -98,14 +99,27 @@ object Extract {
             val link = item.selectFirst("link")?.text()?.trim()?.ifEmpty { null }
                 ?: item.selectFirst("guid")?.text()?.trim()?.takeIf { it.startsWith("http") } ?: continue
             docs += link to normDate(item.selectFirst("pubDate, dc|date, date")?.text() ?: "")
+            item.selectFirst("title")?.text()?.trim()?.takeIf { it.isNotEmpty() }?.let { titles[link] = it }
         }
         for (entry in doc.select("entry")) {
             val links = entry.select("link")
             val link = (links.firstOrNull { it.attr("rel").isEmpty() || it.attr("rel") == "alternate" } ?: links.firstOrNull())
                 ?.attr("href")?.trim()?.ifEmpty { null } ?: continue
             docs += link to normDate(entry.selectFirst("published, updated")?.text() ?: "")
+            entry.selectFirst("title")?.text()?.trim()?.takeIf { it.isNotEmpty() }?.let { titles[link] = it }
         }
-        return Listing(docs, sitemaps)
+        return Listing(docs, sitemaps, titles)
+    }
+
+    /**
+     * What an address says about its document, for choosing which to open: the last two parts of
+     * its path as words ("/en/news/sugar-tax-report-2023.html" -> "news sugar tax report 2023").
+     */
+    fun slugText(url: String): String {
+        val path = url.substringAfter("://").substringAfter('/', "").substringBefore('?').substringBefore('#')
+        return path.split('/').filter { it.isNotEmpty() }.takeLast(2).joinToString(" ")
+            .replace(Regex("(?i)\\.(html?|aspx?|php|pdf)$"), "")
+            .replace(Regex("[-_+.]+"), " ").replace(Regex("%20"), " ").replace(Regex("\\s+"), " ").trim()
     }
 
     fun feedLinks(html: String, base: String): List<String> =

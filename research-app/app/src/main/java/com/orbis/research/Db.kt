@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper
  * Everything the app keeps: the sources and their headings, the queue of addresses to read,
  * documents, their paragraphs and the meaning vector of each, and the search under way.
  */
-class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", null, 4) {
+class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", null, 5) {
 
     override fun onConfigure(db: SQLiteDatabase) {
         db.setForeignKeyConstraintsEnabled(true)
@@ -19,7 +19,8 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
         db.execSQL("""CREATE TABLE sources(id INTEGER PRIMARY KEY, url TEXT NOT NULL, name TEXT NOT NULL,
             scope TEXT NOT NULL UNIQUE, added_at INTEGER NOT NULL)""")
         db.execSQL("""CREATE TABLE queue(url TEXT PRIMARY KEY, source_id INTEGER NOT NULL REFERENCES sources(id) ON DELETE CASCADE,
-            lastmod TEXT NOT NULL DEFAULT '', state INTEGER NOT NULL DEFAULT 0, added_at INTEGER NOT NULL)""")
+            lastmod TEXT NOT NULL DEFAULT '', state INTEGER NOT NULL DEFAULT 0, added_at INTEGER NOT NULL,
+            title TEXT NOT NULL DEFAULT '')""")
         db.execSQL("CREATE INDEX queue_pick ON queue(source_id, state, lastmod)")
         db.execSQL("""CREATE TABLE docs(id INTEGER PRIMARY KEY, source_id INTEGER NOT NULL REFERENCES sources(id) ON DELETE CASCADE,
             url TEXT NOT NULL UNIQUE, title TEXT NOT NULL, date TEXT NOT NULL, fetched_at INTEGER NOT NULL)""")
@@ -40,6 +41,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
         } else if (oldVersion < 4) {
             db.execSQL("ALTER TABLE search_run ADD COLUMN english TEXT")
         }
+        if (oldVersion < 5) db.execSQL("ALTER TABLE queue ADD COLUMN title TEXT NOT NULL DEFAULT ''")
     }
 
     /**
@@ -172,7 +174,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
 
     // ---- queue ----
 
-    fun enqueue(sourceId: Long, urls: List<Pair<String, String>>): Int {
+    fun enqueue(sourceId: Long, urls: List<Pair<String, String>>, titles: Map<String, String> = emptyMap()): Int {
         val db = writableDatabase
         var n = 0
         db.beginTransaction()
@@ -181,6 +183,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
             for ((url, lastmod) in urls) {
                 val v = ContentValues().apply {
                     put("url", url); put("source_id", sourceId); put("lastmod", lastmod); put("added_at", now)
+                    put("title", titles[url] ?: "")
                 }
                 if (db.insertWithOnConflict("queue", null, v, SQLiteDatabase.CONFLICT_IGNORE) > 0) n++
             }
@@ -194,6 +197,23 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
         "SELECT url FROM queue WHERE source_id = ? AND state = 0 ORDER BY lastmod = '', lastmod DESC, added_at LIMIT ?",
         arrayOf(sourceId.toString(), limit.toString()),
     ).use { c -> buildList { while (c.moveToNext()) add(c.getString(0)) } }
+
+    /**
+     * Addresses of a source not yet read whose date falls in [range], newest first: (address, title
+     * from the feed or "", date). The live search chooses among these.
+     */
+    fun liveCandidates(sourceId: Long, range: DateRange, limit: Int): List<Triple<String, String, String>> {
+        val (cond, args) = range.sqlCondition("lastmod")
+        return readableDatabase.rawQuery(
+            "SELECT url, title, lastmod FROM queue WHERE source_id = ? AND state = 0 AND $cond ORDER BY lastmod = '', lastmod DESC, added_at DESC LIMIT ?",
+            (listOf(sourceId.toString()) + args + limit.toString()).toTypedArray(),
+        ).use { c -> buildList { while (c.moveToNext()) add(Triple(c.getString(0), c.getString(1), c.getString(2))) } }
+    }
+
+    /** The paragraphs of a document, by its address, for giving them meaning vectors at once. */
+    fun paragraphsOfDoc(url: String): List<Pair<Long, String>> = readableDatabase.rawQuery(
+        "SELECT p.id, p.text FROM paras p JOIN docs d ON d.id = p.doc_id WHERE d.url = ? ORDER BY p.idx", arrayOf(url),
+    ).use { c -> buildList { while (c.moveToNext()) add(c.getLong(0) to c.getString(1)) } }
 
     fun markQueued(url: String, state: Int) {
         writableDatabase.update("queue", ContentValues().apply { put("state", state) }, "url = ?", arrayOf(url))

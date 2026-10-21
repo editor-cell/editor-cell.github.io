@@ -68,6 +68,33 @@ class EmbedderTest {
         assertTrue(times.isNotEmpty())
     })
 
+    /**
+     * Live search chooses which documents to open from their addresses alone: for a Turkish claim,
+     * the address of a document on the subject must outrank the others.
+     */
+    @TestFactory fun choosesDocumentsByAddress() = listOf(
+        "Şeker vergisi koyan ülkelerde gazlı içecek tüketimi düştü." to "https://www.who.int/publications/sugar-taxes-and-soft-drink-sales-evidence-review",
+        "Asgari ücret artışı istihdamı azaltmadı." to "https://example.org/reports/minimum-wage-increases-and-employment-effects-2022",
+        "Kentlerde hava kirliliği astım vakalarını artırıyor." to "https://example.org/health/urban-air-pollution-and-childhood-asthma-study",
+    ).map { (claim, target) ->
+        DynamicTest.dynamicTest(claim) {
+            ready()
+            val urls = listOf(
+                "https://www.who.int/news/item/annual-report-on-road-safety-2023",
+                "https://example.org/about-us/careers-and-vacancies",
+                "https://example.org/statistics/consumer-price-index-monthly-release",
+                "https://example.org/publications/vaccination-coverage-in-europe-2021",
+                "https://example.org/news/central-bank-interest-rate-decision",
+                "https://example.org/data/forest-fires-mediterranean-2021",
+                target,
+            )
+            val q = embed(Vectors.queryText(model, claim))
+            val ranked = urls.sortedByDescending { Vectors.score(Vectors.toBytes(embed(Vectors.docText(model, com.orbis.research.Extract.slugText(it)))), q) }
+            println("ADDRESS RANK for $claim: ${ranked.indexOf(target) + 1} of ${urls.size}")
+            assertTrue(ranked.indexOf(target) < 2, "ranked ${ranked.indexOf(target) + 1}: $ranked")
+        }
+    }
+
     @TestFactory fun findsParagraphsByMeaning() = claims.map { (claim, relevant) ->
         DynamicTest.dynamicTest(claim) {
             ready()

@@ -33,8 +33,7 @@ class SearchWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
         try {
             val search = Search(ctx)
             if (!run.prepared) {
-                say("Yargıya anlamca en yakın paragraflar bulunuyor…")
-                if (!search.prepare(run)) return Result.success()
+                if (!search.prepare(run, { say(it) }, { isStopped || !current() })) return Result.success()
                 SearchState.changed()
             }
             // The language model reads the paragraphs, and writes the suggestion when none bears on

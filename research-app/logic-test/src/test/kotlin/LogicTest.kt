@@ -172,6 +172,20 @@ class ExtractTest {
         assertFalse(Extract.looksLikeDocument("https://example.org/tag/health"))
     }
 
+    @Test fun slugTextForChoosingDocuments() {
+        assertEquals("news sugar tax report 2023", Extract.slugText("https://example.org/en/news/sugar-tax-report-2023.html"))
+        assertEquals("publications Sugar Taxes And Soda Sales", Extract.slugText("https://example.org/publications/Sugar_Taxes_And_Soda_Sales.pdf?download=1"))
+        assertEquals("", Extract.slugText("https://example.org/"))
+    }
+
+    @Test fun feedTitlesAreKept() {
+        val rss = """<rss><channel><item><title>Sugar tax cuts soda sales</title><link>https://example.org/a</link></item>
+            <item><link>https://example.org/b</link></item></channel></rss>"""
+        assertEquals(mapOf("https://example.org/a" to "Sugar tax cuts soda sales"), Extract.listing(rss, "https://example.org/").titles)
+        val atom = """<feed xmlns="http://www.w3.org/2005/Atom"><entry><title>Air quality report</title><link rel="alternate" href="https://example.org/e1"/></entry></feed>"""
+        assertEquals("Air quality report", Extract.listing(atom, "https://example.org/").titles["https://example.org/e1"])
+    }
+
     @Test fun feedLinks() {
         val html = """<html><head><link rel="alternate" type="application/rss+xml" href="/feed.xml"></head></html>"""
         assertEquals(listOf("https://example.org/feed.xml"), Extract.feedLinks(html, "https://example.org/"))

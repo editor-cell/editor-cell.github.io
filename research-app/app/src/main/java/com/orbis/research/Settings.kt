@@ -25,4 +25,16 @@ object Settings {
 
     fun embedderId(ctx: Context): String? = prefs(ctx).getString("embedder", null)
     fun setEmbedderId(ctx: Context, v: String) = prefs(ctx).edit().putString("embedder", v).apply()
+
+    /** Whether a search first looks at the sources' newest document lists and opens the closest ones. */
+    fun live(ctx: Context) = prefs(ctx).getBoolean("live", true)
+    fun setLive(ctx: Context, v: Boolean) = prefs(ctx).edit().putBoolean("live", v).apply()
+
+    /** How many documents a search opens live. */
+    fun liveRead(ctx: Context) = prefs(ctx).getInt("liveRead", 12)
+    fun setLiveRead(ctx: Context, v: Int) = prefs(ctx).edit().putInt("liveRead", v).apply()
+
+    /** When a source's document list was last fetched live (milliseconds), 0 if never. */
+    fun discovered(ctx: Context, sourceId: Long) = prefs(ctx).getLong("disc_$sourceId", 0L)
+    fun setDiscovered(ctx: Context, sourceId: Long, at: Long) = prefs(ctx).edit().putLong("disc_$sourceId", at).apply()
 }
