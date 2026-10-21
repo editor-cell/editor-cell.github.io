@@ -99,7 +99,7 @@ const WORDS: Record<Lang, VideoWords> = {
     showAll: "Tümünü göster",
     video: "Video",
     readTranscript: "Transkripti oku",
-    hideTranscript: "Transkripti kapat",
+    hideTranscript: "Transkripti gizle",
     playFrom: "Buradan izle",
     followFilm: "Videoyu takip et",
     listNote: "Orbis'in bütün videoları, en yeniden en eskiye.",

@@ -1906,11 +1906,12 @@ button.play-disc:active {
   display: none;
 }
 
-/* With the transcript open the screen moves up (and on a wide window grows a little smaller)
-   so the words have the rest of the window under it and scroll on their own: the film stays
-   in sight while they follow it. Where even so there is no room, the dark scrolls. */
+/* With the transcript open the screen moves up (and on a wide or low window grows a little
+   smaller) and stays put: the dark no longer scrolls, only the words do, in the rest of the
+   window under the screen, so the film is always in sight while they are read. */
 .theater.is-reading {
-  --screen-width: min(100vw, max(20rem, calc((100dvh - 9rem - 16rem) * 16 / 9)));
+  --screen-width: min(100vw, max(16rem, calc((100dvh - 9rem - 16rem) * 16 / 9)));
+  overflow: hidden;
 }
 
 .theater.is-reading .theater-frame {
@@ -1923,7 +1924,7 @@ button.play-disc:active {
 
 .theater.is-reading .theater-notes {
   flex: 1 1 0;
-  min-height: 12rem;
+  min-height: 0;
 }
 
 .theater.is-reading .theater-transcript {
@@ -1943,7 +1944,7 @@ button.play-disc:active {
     --screen-width: min(
       calc(100vw - 4rem),
       64rem,
-      max(20rem, calc((100dvh - 9rem - 16rem) * 16 / 9))
+      max(16rem, calc((100dvh - 9rem - 16rem) * 16 / 9))
     );
   }
   .theater-head,
