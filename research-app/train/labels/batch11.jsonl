@@ -1,0 +1,104 @@
+{"id":520,"tr":"Avrupa Merkez Bankası'nın senaryoları petrol ve gaz fiyatı hakkında farklı varsayımlar yapıyor.","en":"The ECB's scenarios make different assumptions about the price of oil and gas.","label":"SUPPORTS"}
+{"id":520,"tr":"Senaryo yayımlayan merkez bankalarında enflasyon beklentileri daha iyi çapalandı.","en":"Inflation expectations were better anchored at central banks that published scenarios.","label":"UNRELATED"}
+{"id":521,"tr":"2025 sonunda büyük bankalarda açık denetim tedbirlerinin sayısı yaklaşık 12.000'e çıktı.","en":"By the end of 2025, outstanding supervisory measures at significant banks had risen to around 12,000.","label":"SUPPORTS"}
+{"id":521,"tr":"Büyük bankalarda bekleyen denetim tedbirlerinin sayısı 2025'te azaldı.","en":"The number of outstanding supervisory measures at significant banks fell in 2025.","label":"CONTRADICTS"}
+{"id":522,"tr":"Yapay zekâ kullanan merkez bankaları daha isabetli tahminler yaptı.","en":"Central banks that used AI made more accurate forecasts.","label":"UNRELATED"}
+{"id":523,"tr":"Avrupa Çevre Ajansı ozona sektör bazında katkıları gösteren etkileşimli bir pano yayımladı.","en":"The EEA released an interactive dashboard showing sector-by-sector contributions to ozone.","label":"SUPPORTS"}
+{"id":523,"tr":"Ozon panosunu kullanan şehirlerde ozon seviyeleri düştü.","en":"Ozone levels fell in cities that used the ozone dashboard.","label":"UNRELATED"}
+{"id":524,"tr":"Hassas fermantasyon ve yetiştirilmiş et olgun ve ticari olarak yaygın teknolojiler.","en":"Precision fermentation and cultivated meat are mature, widely commercial technologies.","label":"UNRELATED"}
+{"id":524,"tr":"Bitkisel protein tüketimini artıran ülkelerde gıda kaynaklı emisyonlar azaldı.","en":"Food emissions fell in countries that ate more plant protein.","label":"UNRELATED"}
+{"id":525,"tr":"Çin'in iç talebi genişletme politikası küresel dengesizlikleri azalttı.","en":"China's policy of expanding domestic demand reduced global imbalances.","label":"UNRELATED"}
+{"id":526,"tr":"Kazakistan bu yılın ilk dokuz ayında altın alımlarından doğan 3,2 trilyon tenge fazla likiditeyi döviz satarak çekti.","en":"In the first nine months of this year, Kazakhstan withdrew 3.2 trillion tenge of excess liquidity from gold purchases by selling foreign currency.","label":"SUPPORTS"}
+{"id":526,"tr":"Kazakistan altın alımlarından doğan likiditeyi piyasada bıraktı.","en":"Kazakhstan left the liquidity from its gold purchases in the market.","label":"CONTRADICTS"}
+{"id":526,"tr":"Altın alımlarını sterilize eden Kazakistan'da enflasyon düştü.","en":"Inflation fell in Kazakhstan after it sterilised its gold purchases.","label":"UNRELATED"}
+{"id":527,"tr":"Euro bölgesi bankaları güçlü sermaye ve likidite tamponlarına sahip.","en":"Euro area banks maintain strong capital and liquidity buffers.","label":"SUPPORTS"}
+{"id":527,"tr":"Euro bölgesi bankalarının aktif kalitesi bozuluyor.","en":"Asset quality at euro area banks is deteriorating.","label":"CONTRADICTS"}
+{"id":527,"tr":"Faiz artışları euro bölgesi bankalarının kârlılığını artırdı.","en":"Rate rises boosted euro area banks' profitability.","label":"UNRELATED"}
+{"id":528,"tr":"Sağlık sistemini iklime dayanıklı hale getiren ülkelerde sıcak hava ölümleri azaldı.","en":"Heat deaths fell in countries that made their health systems climate-resilient.","label":"UNRELATED"}
+{"id":529,"tr":"Kooperatiflerin yaygın olduğu ülkelerde çatışmalar azaldı.","en":"Conflict fell in countries where cooperatives were widespread.","label":"UNRELATED"}
+{"id":530,"tr":"Dijital euroyu müşterilere bankalar ve ödeme hizmeti sağlayıcıları dağıtacak.","en":"Banks and payment service providers would distribute the digital euro to customers.","label":"SUPPORTS"}
+{"id":530,"tr":"Avrupa Merkez Bankası dijital euro için müşterilere doğrudan hesap açacak.","en":"The ECB would open digital euro accounts directly for customers.","label":"CONTRADICTS"}
+{"id":531,"tr":"Küçük ve karmaşık olmayan bankalar büyük bankaların raporladığı verinin en fazla yüzde 30'unu raporluyor.","en":"Small and non-complex banks report up to 30% of the data large banks must report.","label":"SUPPORTS"}
+{"id":531,"tr":"Küçük bankalar büyük bankalarla aynı raporlama yükümlülüklerine tabi.","en":"Small banks are subject to the same reporting requirements as large banks.","label":"CONTRADICTS"}
+{"id":531,"tr":"Orantılı denetime geçilen ülkelerde küçük bankaların kârlılığı arttı.","en":"Small banks became more profitable where supervision became proportionate.","label":"UNRELATED"}
+{"id":532,"tr":"Çad'da iki kızamık aşı kampanyası 1,2 milyon çocuğa ulaştı.","en":"In Chad, two measles vaccination campaigns reached 1.2 million children.","label":"SUPPORTS"}
+{"id":532,"tr":"Sudan'daki kamplarda çocuklara kızamık aşısı yapılmadı.","en":"No measles vaccines were given to children in the camps in Sudan.","label":"CONTRADICTS"}
+{"id":532,"tr":"Aşı kampanyalarından sonra Çad'da kızamık vakaları azaldı.","en":"Measles cases in Chad fell after the vaccination campaigns.","label":"UNRELATED"}
+{"id":533,"tr":"Dijital ödeme altyapısı kuran ülkelerde kamu güveni arttı.","en":"Public trust rose in countries that built a digital payment infrastructure.","label":"UNRELATED"}
+{"id":534,"tr":"ABD dijital ödemelerde Avrupa'dan farklı bir yol izledi.","en":"The White House has taken a different approach from Europe on digital payments.","label":"SUPPORTS"}
+{"id":535,"tr":"İkincil hammadde tek pazarı AB'de geri dönüştürülmüş malzeme arzını artırmayı amaçlıyor.","en":"The single market for secondary raw materials aims to increase the supply of recycled materials in the EU.","label":"SUPPORTS"}
+{"id":535,"tr":"Geri dönüştürülmüş malzeme kullanımını artıran AB ülkelerinde sanayi emisyonları düştü.","en":"Industrial emissions fell in EU countries that used more recycled materials.","label":"UNRELATED"}
+{"id":536,"tr":"AB'de kırsal bölgelerde yaşam koşulları şehirlere göre iyileşti.","en":"Living conditions in rural areas of the EU improved relative to cities.","label":"UNRELATED"}
+{"id":537,"tr":"Risk modelleri ilişkiler istikrarlıyken iyi çalışır.","en":"Risk models work well when underlying relationships are broadly stable.","label":"SUPPORTS"}
+{"id":537,"tr":"Stres testi kullanan bankalar krizde daha az zarar etti.","en":"Banks that used stress tests lost less in crises.","label":"UNRELATED"}
+{"id":538,"tr":"Orta Afrika'nın kuzeydoğusunda maden bölgeleri çevresindeki durum kaygı verici olmaya devam etti.","en":"The situation around mining sites in the northeast of the Central African Republic remained worrying.","label":"SUPPORTS"}
+{"id":538,"tr":"Maden bölgelerinde güvenlik önlemleri topluluk gerginliklerini azalttı.","en":"Security measures at mining sites reduced community tensions.","label":"UNRELATED"}
+{"id":539,"tr":"Euro bölgesinde Eylül'de manşet enflasyon yüzde 3,8 oldu.","en":"Headline inflation in the euro area was 3.8 per cent in September.","label":"SUPPORTS"}
+{"id":539,"tr":"Eylül'de euro bölgesinde enerji enflasyonu negatif oldu.","en":"Energy inflation in the euro area was negative in September.","label":"CONTRADICTS"}
+{"id":539,"tr":"Faiz artışlarından sonra euro bölgesinde enflasyon geriledi.","en":"Inflation in the euro area fell after the rate rises.","label":"UNRELATED"}
+{"id":540,"tr":"Etkileşimli yüzme suyu haritası yüzücü sayısını artırdı.","en":"The interactive bathing water map increased the number of swimmers.","label":"UNRELATED"}
+{"id":541,"tr":"İrlanda Merkez Bankası 2025'te finansal dolandırıcılıklar için İrlanda'nın ilk yasal güvenilir bildiricisi oldu.","en":"In 2025 the Central Bank of Ireland became Ireland's first statutory Trusted Flagger for financial scams.","label":"SUPPORTS"}
+{"id":541,"tr":"Finansal dolandırıcılıkların çoğu yüz yüze gerçekleşiyor.","en":"Most financial frauds and scams take place face to face.","label":"CONTRADICTS"}
+{"id":541,"tr":"Güvenilir bildirici olmasından sonra İrlanda'da çevrimiçi dolandırıcılık azaldı.","en":"Online fraud in Ireland fell after it became a Trusted Flagger.","label":"UNRELATED"}
+{"id":542,"tr":"Düşük önemdeki denetim bulgularında bankaların ek belge sunmadan önlem aldıklarını onaylamaları yeterli.","en":"For low-severity findings, banks only need to confirm they have acted, without further documentation.","label":"SUPPORTS"}
+{"id":542,"tr":"Avrupa bankacılık denetimi düşük önemdeki bulgularda ayrıntılı belge şartını sıkılaştırdı.","en":"European banking supervision tightened documentation requirements for low-severity findings.","label":"CONTRADICTS"}
+{"id":543,"tr":"Rezerv para birimini çıkaran ülke uzun süredir büyük bütçe ve cari açık veriyor.","en":"The reserve currency issuer has run large fiscal and current account deficits for a prolonged period.","label":"SUPPORTS"}
+{"id":543,"tr":"Kur ayarlaması yapan ülkelerde cari açıklar kapandı.","en":"Current account deficits closed in countries that adjusted their exchange rates.","label":"UNRELATED"}
+{"id":544,"tr":"Tasarruf ve Yatırım Birliği Avrupa'da girişim sermayesini artırdı.","en":"The Savings and Investments Union increased venture capital in Europe.","label":"UNRELATED"}
+{"id":545,"tr":"PEARL çiftçilere toprak nemini korumak için örtü bitkileri kullanmayı öğretiyor.","en":"PEARL teaches farmers to use cover crops to retain soil moisture.","label":"SUPPORTS"}
+{"id":545,"tr":"Çiftçi tarla okullarına katılan köylerde kuraklık kayıpları azaldı.","en":"Drought losses fell in villages that joined farmer field schools.","label":"UNRELATED"}
+{"id":546,"tr":"AB'de bilimde çalışan kadın sayısı arttı.","en":"The number of women working in science in the EU has risen.","label":"UNRELATED"}
+{"id":547,"tr":"İtalya'da faiz artışları ekonomik büyümeyi yavaşlattı.","en":"Rate rises slowed economic growth in Italy.","label":"UNRELATED"}
+{"id":547,"tr":"Enflasyonu düşürmek için faiz yükselten ülkelerde ekonomik durgunluk yaşandı.","en":"Countries that raised interest rates to bring inflation down went through an economic slowdown.","label":"UNRELATED"}
+{"id":548,"tr":"Ulusal Emisyon Azaltım Taahhütleri Direktifi beş ana hava kirleticisini kapsıyor.","en":"The National Emission reduction Commitments Directive covers five main air pollutants.","label":"SUPPORTS"}
+{"id":549,"tr":"Fransa 2023-2027 Küresel Sağlık Stratejisi'ni Lyon'da açıkladı.","en":"France released its Global Health Strategy for 2023-2027 in Lyon.","label":"SUPPORTS"}
+{"id":549,"tr":"Fransa'nın küresel sağlık stratejisi Afrika'da aşılama oranlarını artırdı.","en":"France's global health strategy raised vaccination rates in Africa.","label":"UNRELATED"}
+{"id":550,"tr":"İslami finans son elli yılda büyüme kapasitesini gösterdi.","en":"Islamic finance has shown its capacity to grow over the last five decades.","label":"SUPPORTS"}
+{"id":550,"tr":"İslami finans son elli yılda küçüldü.","en":"Islamic finance has shrunk over the last fifty years.","label":"CONTRADICTS"}
+{"id":551,"tr":"Asgari bankacılık standartlarını düşürmek riskleri ortadan kaldırmaz.","en":"Simply lowering banking standards does not make the risks disappear.","label":"SUPPORTS"}
+{"id":551,"tr":"Basel standartlarını gevşeten ülkelerde banka krizleri arttı.","en":"Banking crises rose in countries that loosened Basel standards.","label":"UNRELATED"}
+{"id":552,"tr":"FAO Genel Direktörü çiftçiliği büyükannesinden öğrendiğini anlattı.","en":"The FAO Director-General recalled learning to farm from his grandmother.","label":"SUPPORTS"}
+{"id":553,"tr":"Kore heyetine Sağlık Bakan Yardımcısı başkanlık etti.","en":"The Korean delegation was led by the Deputy Minister of Health.","label":"SUPPORTS"}
+{"id":554,"tr":"Önümüzdeki iki yıl beklenen mali sıkılaşma ekonomik faaliyet için ters rüzgâr oluşturuyor.","en":"The expected fiscal tightening over the next couple of years is a headwind to economic activity.","label":"SUPPORTS"}
+{"id":554,"tr":"Bu yılki mali teşvik büyümeye katkı yapmadı.","en":"This year's fiscal impulse has not contributed to growth.","label":"CONTRADICTS"}
+{"id":554,"tr":"Enflasyonu düşürmek için faiz yükselten ülkelerde ekonomik durgunluk yaşandı.","en":"Countries that raised interest rates to bring inflation down went through an economic slowdown.","label":"UNRELATED"}
+{"id":555,"tr":"Devlet sağlık sigortasına katılan kakao çiftçisi ailelerinde çocuk işçiliği azaldı.","en":"Child labour fell among cocoa farming families that joined state health insurance.","label":"UNRELATED"}
+{"id":556,"tr":"Eurostat podcast'lerindeki görüşler Avrupa Komisyonu'nun resmi tutumunu yansıtır.","en":"The views in Eurostat's podcasts reflect the European Commission's official position.","label":"CONTRADICTS"}
+{"id":557,"tr":"Ulusal su yol haritası hazırlayan ülkelerde su verimliliği arttı.","en":"Water efficiency rose in countries that drew up national water roadmaps.","label":"UNRELATED"}
+{"id":558,"tr":"Avrupalıların onda dokuzundan fazlası DSÖ kılavuz değerlerinin üzerinde PM2,5 ve ozona maruz kalıyor.","en":"More than nine in ten Europeans are exposed to PM2.5 and ozone above WHO guideline levels.","label":"SUPPORTS"}
+{"id":558,"tr":"Avrupalıların çoğu DSÖ kılavuzlarının altında temiz havada yaşıyor.","en":"Most Europeans breathe air that is cleaner than WHO guidelines.","label":"CONTRADICTS"}
+{"id":559,"tr":"Küçük belediyelerin yalnızca yüzde 16'sının iklim uyum eylem planı var.","en":"Only 16% of small municipalities have climate adaptation action plans.","label":"SUPPORTS"}
+{"id":559,"tr":"Küçük belediyeler iklim uyum planı yapmada büyük belediyelerin önünde.","en":"Small municipalities are ahead of larger ones in adopting adaptation plans.","label":"CONTRADICTS"}
+{"id":559,"tr":"Uyum planı olan belediyelerde sel zararları azaldı.","en":"Flood damage fell in municipalities with adaptation plans.","label":"UNRELATED"}
+{"id":560,"tr":"Sergide 400 tarım ürünü, teknoloji ve yenilik tanıtıldı.","en":"The exhibition showcased 400 agricultural products, technologies and innovations.","label":"SUPPORTS"}
+{"id":561,"tr":"Yapay zekâ ile ilgili inşaat faaliyeti euro bölgesinde ücretleri yukarı itecek ölçekte değil.","en":"AI-related construction in the euro area is not large enough to push up wages.","label":"SUPPORTS"}
+{"id":561,"tr":"Euro bölgesindeki haneler ABD'deki yüksek gelirliler kadar yapay zekâ servet etkisinden yararlandı.","en":"Euro area households have gained as much from the AI wealth effect as high-income Americans.","label":"CONTRADICTS"}
+{"id":561,"tr":"Yapay zekâ euro bölgesinde işsizliği artırdı.","en":"AI increased unemployment in the euro area.","label":"UNRELATED"}
+{"id":562,"tr":"17 döngüsel ekonomi eylemi AB'nin iklim etkisini yüzde 22 azaltabilir.","en":"Seventeen circular economy actions could cut the EU's climate impact by 22%.","label":"SUPPORTS"}
+{"id":562,"tr":"Döngüsel ekonomi eylemlerinin hava kirliliğine bir etkisi olmaz.","en":"Circular economy actions would have no effect on air pollution.","label":"CONTRADICTS"}
+{"id":563,"tr":"ASIS kuraklık izlemesi için uydu verisi kullanıyor.","en":"ASIS draws on satellite data for drought monitoring.","label":"SUPPORTS"}
+{"id":564,"tr":"DSÖ, COVID-19 sırasında maske ve aşı zorunluluğu tavsiye etmediğini söyledi.","en":"WHO says it never recommended mask or vaccine mandates during COVID-19.","label":"SUPPORTS"}
+{"id":564,"tr":"DSÖ pandemi sırasında ülkelere karantina zorunluluğu getirmelerini tavsiye etti.","en":"WHO advised countries to impose lockdown mandates during the pandemic.","label":"CONTRADICTS"}
+{"id":564,"tr":"DSÖ'nün tavsiyelerine uyan ülkelerde COVID-19 ölümleri daha düşük oldu.","en":"COVID-19 deaths were lower in countries that followed WHO advice.","label":"UNRELATED"}
+{"id":565,"tr":"Orta Doğu'daki çatışma büyüme, enflasyon ve faizler konusunda büyük belirsizlik yarattı.","en":"The Middle East conflict has created major uncertainty about growth, inflation and interest rates.","label":"SUPPORTS"}
+{"id":565,"tr":"Yapay zekâ finansmanı bankaların kredi kayıplarını artırdı.","en":"AI financing increased banks' credit losses.","label":"UNRELATED"}
+{"id":566,"tr":"Kahve yıkama istasyonları kahve kalitesini artırdı.","en":"Coffee washing stations improved coffee quality.","label":"UNRELATED"}
+{"id":567,"tr":"Ukrayna'nın Avrupa Çevre Ajansı'na katılması kıtanın çevresel dayanıklılığını şimdiden artırdı.","en":"Ukraine joining the EEA has already strengthened the continent's environmental resilience.","label":"UNRELATED"}
+{"id":568,"tr":"Avrupa sanayisinde kolay emisyon kazanımları artık geride kaldı.","en":"The easier emission wins in European industry are behind us.","label":"SUPPORTS"}
+{"id":568,"tr":"Avrupa sanayisinde emisyon azaltımı giderek kolaylaşıyor.","en":"Cutting emissions in European industry is getting easier.","label":"CONTRADICTS"}
+{"id":569,"tr":"Ozon ve öncülleri uzun mesafelere taşınabiliyor.","en":"Ozone and its precursors can travel long distances.","label":"SUPPORTS"}
+{"id":569,"tr":"Ozon kirliliği yalnızca yerel önlemlerle tamamen çözülebilir.","en":"Ozone pollution can be fully solved by local measures alone.","label":"CONTRADICTS"}
+{"id":570,"tr":"Euro bölgesinde getirilerin artması devlet kredi riskinin yeniden değerlendirilmesine yol açmadı.","en":"The rise in euro area yields did not trigger a broader reassessment of sovereign credit risk.","label":"SUPPORTS"}
+{"id":570,"tr":"Euro bölgesinde devlet tahvili farkları son toplantıdan bu yana sert yükseldi.","en":"Euro area sovereign bond spreads have jumped since the last meeting.","label":"CONTRADICTS"}
+{"id":571,"tr":"Avrupa Çevre Ajansı Ukrayna'yı işbirliği yapan ülke olarak kabul etti.","en":"The EEA welcomed Ukraine as a cooperating country.","label":"SUPPORTS"}
+{"id":572,"tr":"Önceki 3 derecelik El Niño olaylarının dünya çapında çok büyük etkileri oldu.","en":"Previous El Niños with 3°C anomalies had very substantive impacts around the world.","label":"SUPPORTS"}
+{"id":572,"tr":"El Niño yıllarında küresel tahıl üretimi düştü.","en":"Global grain production fell in El Niño years.","label":"UNRELATED"}
+{"id":573,"tr":"Moldova'nın AB ajanslarına katılımı ilk AB-Moldova Zirvesi bildirgesinde yer aldı.","en":"Moldova's participation in EU agencies was referenced in the first EU-Moldova Summit declaration.","label":"SUPPORTS"}
+{"id":574,"tr":"Borlaug'un yüksek verimli buğday çeşitleri üzerindeki çalışmaları yüz milyonlarca insanı açlıktan kurtardı.","en":"Borlaug's work on higher-yielding wheat lifted hundreds of millions out of hunger.","label":"SUPPORTS"}
+{"id":574,"tr":"Dünya Gıda Ödülü törenine 60'tan fazla ülkeden katılım oldu.","en":"Participants from more than 60 countries attended the World Food Prize gathering.","label":"SUPPORTS"}
+{"id":575,"tr":"Afrika'da patates üretimi 2019-2023 arasında yüzde 20 arttı.","en":"Potato production in Africa surged 20 per cent between 2019 and 2023.","label":"SUPPORTS"}
+{"id":575,"tr":"Afrika'da patates üretimi 2019'dan bu yana azaldı.","en":"Potato production in Africa has fallen since 2019.","label":"CONTRADICTS"}
+{"id":575,"tr":"Patates kist nematodu Doğu Afrika'da kontrol altına alındı.","en":"Potato cyst nematodes have been brought under control in eastern Africa.","label":"CONTRADICTS"}
+{"id":576,"tr":"Enerji yoğun sanayiler AB sanayisinin sera gazı emisyonlarının yaklaşık yüzde 27'sini oluşturuyor.","en":"Energy-intensive industries account for around 27% of EU industrial greenhouse gas emissions.","label":"SUPPORTS"}
+{"id":576,"tr":"Enerji yoğun sanayiler AB sanayi emisyonlarının çok küçük bir kısmını oluşturuyor.","en":"Energy-intensive industries account for only a tiny share of EU industrial emissions.","label":"CONTRADICTS"}
+{"id":577,"tr":"Pandemi sonrası Avrupa'da turizm harcamaları rekor kırdı.","en":"Tourism spending in Europe hit a record after the pandemic.","label":"UNRELATED"}
