@@ -16,7 +16,8 @@ data class ModelInfo(val id: String, val title: String, val note: String, val ur
 
 object Models {
     // Chosen by the comparison workflow (research-app-models.yml): the app's own prompts on five
-    // Turkish claims and eight paragraphs. Qwen2.5 1.5B mistranslated Turkish and is not offered.
+    // Turkish claims and eight paragraphs: 4B 15/15, 1.7B 14/15. Not offered: Qwen2.5 1.5B
+    // (mistranslated Turkish) and Qwen3 0.6B (8/15, called almost every paragraph supporting).
     // The app suggests the largest one the phone's memory holds; the owner can pick any.
     val all = listOf(
         ModelInfo(
@@ -26,13 +27,8 @@ object Models {
         ),
         ModelInfo(
             "qwen3-1.7b", "Qwen3 1.7B (orta)", "4 GB bellekli telefonlar için (ör. Redmi Note 8). Türkçeyi doğru " +
-                "çeviriyor; büyük modele göre çürüten paragrafları daha sık kaçırabilir.",
+                "çeviriyor; denemelerde 15 kontrolün 14'ünü doğru yaptı, bir çürüten paragrafı destekliyor sandı.",
             "https://huggingface.co/unsloth/Qwen3-1.7B-GGUF/resolve/main/Qwen3-1.7B-Q4_K_M.gguf", 1100, 3,
-        ),
-        ModelInfo(
-            "qwen3-0.6b", "Qwen3 0.6B (küçük)", "3 GB ve altı bellekli telefonlar için son çare; en hızlısı ama " +
-                "en az isabetlisi. Sonuçları özellikle dikkatle okuyun.",
-            "https://huggingface.co/unsloth/Qwen3-0.6B-GGUF/resolve/main/Qwen3-0.6B-Q4_K_M.gguf", 400, 2,
         ),
     )
 
@@ -45,11 +41,7 @@ object Models {
     /** The largest model this phone holds comfortably; a "4 GB" phone reports about 3.6 GB. */
     fun recommended(ctx: Context): ModelInfo {
         val ram = ramGb(ctx)
-        return when {
-            ram >= 5.5 -> all[0]
-            ram >= 2.8 -> all[1]
-            else -> all[2]
-        }
+        return if (ram >= 5.5) all[0] else all[1]
     }
 
     fun dir(ctx: Context): File = File(ctx.getExternalFilesDir(null) ?: ctx.filesDir, "models").apply { mkdirs() }
