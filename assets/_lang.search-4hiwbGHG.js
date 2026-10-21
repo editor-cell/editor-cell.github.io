@@ -1,0 +1,1 @@
+import{t as e}from"./search-Cpg0os7V.js";var t=e;export{t as component};

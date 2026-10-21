@@ -1,1 +1,0 @@
-import{cn as e}from"./shell-CdYFRRr9.js";import{t}from"./legal-BMWvYUAr.js";var n=e(),r=()=>(0,n.jsx)(t,{page:`terms`});export{r as component};
