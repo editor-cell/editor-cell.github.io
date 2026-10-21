@@ -65,8 +65,8 @@ object Prompts {
     fun how(claim: String, english: String?, p: Paragraph, verdict: Verdict): String = claimAndParagraph(claim, english, p) +
         "This paragraph shows the claim is ${if (verdict == Verdict.SUPPORTS) "true" else "false"}. Does it say so " +
         "outright (DIRECT), or does it follow in one clear step from facts or figures in the paragraph (INDIRECT)? " +
-        "If INDIRECT, write a colon and one short sentence in Turkish naming that step, using only facts and " +
-        "figures from the paragraph. Example: INDIRECT: Kişi başı satış 2017'de 120 litreyken 2020'de 95 litreye inmiş."
+        "If INDIRECT, write a colon and one short sentence (at most 25 words) in Turkish naming that step, using " +
+        "only facts and figures from the paragraph. Example: INDIRECT: Kişi başı satış 2017'de 120 litreyken 2020'de 95 litreye inmiş."
 
     const val HOW_GRAMMAR = "root ::= \"DIRECT\" | \"INDIRECT: \" reason\nreason ::= [^\\n<>]+"
 

@@ -95,8 +95,8 @@ class LiveModelTest {
             val en = english(c.claim)
             val v = ask(Prompts.JUDGE_SYSTEM, Prompts.judge(c.claim, en, p), Prompts.JUDGE_GRAMMAR, 8)
             val a = when (v) {
-                "SUPPORTS" -> v + "\n" + ask(Prompts.JUDGE_SYSTEM, Prompts.how(c.claim, en, p, Verdict.SUPPORTS), Prompts.HOW_GRAMMAR, 50)
-                "CONTRADICTS" -> v + "\n" + ask(Prompts.JUDGE_SYSTEM, Prompts.how(c.claim, en, p, Verdict.CONTRADICTS), Prompts.HOW_GRAMMAR, 50)
+                "SUPPORTS" -> v + "\n" + ask(Prompts.JUDGE_SYSTEM, Prompts.how(c.claim, en, p, Verdict.SUPPORTS), Prompts.HOW_GRAMMAR, 100)
+                "CONTRADICTS" -> v + "\n" + ask(Prompts.JUDGE_SYSTEM, Prompts.how(c.claim, en, p, Verdict.CONTRADICTS), Prompts.HOW_GRAMMAR, 100)
                 else -> v
             }
             println("JUDGE ${a.replace("\n", " | ")} <- ${c.text.take(60)}")

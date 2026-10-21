@@ -42,7 +42,7 @@ class Search(private val ctx: Context) {
         val p = db.paragraph(paraId) ?: return "UNRELATED"
         val v = Llm.generate(Prompts.JUDGE_SYSTEM, Prompts.judge(claim, english, p), Prompts.JUDGE_GRAMMAR, maxTokens = 8)?.trim() ?: return null
         val verdict = when (v) { "SUPPORTS" -> Verdict.SUPPORTS; "CONTRADICTS" -> Verdict.CONTRADICTS; else -> return v }
-        val how = Llm.generate(Prompts.JUDGE_SYSTEM, Prompts.how(claim, english, p, verdict), Prompts.HOW_GRAMMAR, maxTokens = 50)?.trim() ?: return null
+        val how = Llm.generate(Prompts.JUDGE_SYSTEM, Prompts.how(claim, english, p, verdict), Prompts.HOW_GRAMMAR, maxTokens = 100)?.trim() ?: return null
         return "$v\n$how"
     }
 
