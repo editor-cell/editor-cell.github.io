@@ -59,6 +59,9 @@ object Prompts {
         "methods, or give no finding about the claim. A title, a reference to another publication, a copyright " +
         "or legal notice, a sentence cut off in the middle, or a paragraph that only shares some words or the " +
         "general subject with the claim is always UNRELATED. When in doubt, answer UNRELATED.\n" +
+        "A claim, question or topic often joins two things: a measure or cause, and what followed it (\"in countries " +
+        "that did X, Y happened\"). A paragraph that deals with only one of the two, or that gives the measure " +
+        "but not what followed, is always UNRELATED.\n" +
         "The claim may also be a question or a topic instead of a statement. Then SUPPORTS means the paragraph " +
         "answers the question or gives concrete information on the topic (a definition, a finding, a figure, what " +
         "a country did and what followed); CONTRADICTS is not used, and anything else is UNRELATED."

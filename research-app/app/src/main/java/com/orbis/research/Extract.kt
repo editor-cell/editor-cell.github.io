@@ -69,6 +69,16 @@ object Extract {
     }
 
     private val NOTICE = Regex("©|(?i)all rights reserved|brief excerpts may be|\\bISBN\\b|\\bISSN\\b")
+    // Thanks, funding and contact lines ("We would like to thank …", "… gratefully acknowledges financial
+    // support …", "The views expressed here are those of the authors", an e-mail address): text about the
+    // paper, not what it found.
+    private val AUTHOR_NOTE = Regex(
+        "(?i)\\b(?:would like to thank|gratefully acknowledges?|acknowledges? (?:the )?(?:financial )?support|" +
+            "acknowledge the use of|views expressed (?:here|in this)|do(?:es)? not necessarily (?:reflect|represent)|" +
+            "grant no\\.?)|[\\w.+-]+@[\\w-]+\\.[\\w.-]+",
+    )
+    // The note under a figure or table: "Note: The figure displays …", "Source: …".
+    private val FIGURE_NOTE = Regex("^(?:Notes?|Sources?|Legend)\\s*:")
     private val SENTENCE_END = Regex("[.!?…][\"”’')\\]]*\\d{0,3}$")
     private val REFERENCE = Regex("^\\p{Lu}[\\p{L}'’-]+,\\s+(\\p{Lu}\\.\\s*)+")
     // "Board of Governors (2023): “Financial Stability”" — a source named with its year, then its title.
@@ -85,6 +95,7 @@ object Extract {
         if (t.first().isLowerCase()) return false
         if (!SENTENCE_END.containsMatchIn(t)) return false
         if (NOTICE.containsMatchIn(t)) return false
+        if (AUTHOR_NOTE.containsMatchIn(t) || FIGURE_NOTE.containsMatchIn(t)) return false
         if (REFERENCE.containsMatchIn(t) || CITED_YEAR.containsMatchIn(t)) return false
         return true
     }
@@ -148,7 +159,7 @@ object Extract {
             .map { it.absUrl("href") }.filter { it.isNotEmpty() }.distinct()
 
     private val skipExt = Regex("(?i)\\.(jpe?g|png|gif|webp|svg|ico|css|js|json|zip|gz|rar|7z|mp3|mp4|m4a|wav|avi|mov|webm|xlsx?|csv|docx?|pptx?|xml|rss|epub|exe|dmg|apk)(\\?.*)?$")
-    private val skipPath = Regex("(?i)/(tag|tags|category|categories|author|search|login|signin|signup|register|cart|account|share|print|feed|wp-admin|wp-json)(/|$|\\?)")
+    private val skipPath = Regex("(?i)/(tag|tags|category|categories|author|search|login|signin|signup|register|cart|account|share|print|feed|wp-admin|wp-json|about|about-us|contact|careers|vacancies|privacy|cookies|accessibility)(/|$|\\?)")
 
     fun looksPdf(url: String) = Regex("(?i)\\.pdf(\\?.*)?$").containsMatchIn(url) || url.contains("/bitstream/") || url.contains("/download/")
 

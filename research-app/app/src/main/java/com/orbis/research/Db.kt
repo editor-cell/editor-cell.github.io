@@ -288,12 +288,13 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
         val (cond, args) = range.sqlCondition("d.date")
         val best = java.util.PriorityQueue<Pair<Float, Long>>(k + 1, compareBy { it.first })
         readableDatabase.rawQuery(
-            """SELECT v.para_id, v.vec, p.text FROM para_vec v JOIN paras p ON p.id = v.para_id JOIN docs d ON d.id = p.doc_id
+            """SELECT v.para_id, v.vec, p.text, d.url FROM para_vec v JOIN paras p ON p.id = v.para_id JOIN docs d ON d.id = p.doc_id
                WHERE $cond ${inSources(sourceIds)}""", args.toTypedArray(),
         ).use { c ->
             while (c.moveToNext()) {
-                // Parts collected before the app learnt to leave out titles, references and cut lines.
-                if (!Extract.isProse(c.getString(2))) continue
+                // Parts collected before the app learnt to leave out titles, references, cut lines, thanks
+                // and figure notes, and pages that are not documents (about pages, contacts).
+                if (!Extract.isProse(c.getString(2)) || !Extract.looksLikeDocument(c.getString(3))) continue
                 best.add(Vectors.score(c.getBlob(1), query) to c.getLong(0))
                 if (best.size > k) best.poll()
             }
