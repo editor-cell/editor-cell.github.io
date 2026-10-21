@@ -78,8 +78,21 @@ jobs:
         run: |
           export ORBIS_LIB="$PWD/build-host/liborbisllm.so" ORBIS_MODEL=~/test-model/Qwen3-4B-Q4_K_M.gguf
           export ORBIS_EMBED=~/test-model/multilingual-e5-small-q8_0.gguf
-          ./gradlew -p logic-test test --no-daemon
-          python3 ../.github/scripts/model-score.py logic-test/build/test-results/test
+          status=0
+          ./gradlew -p logic-test test --no-daemon || status=$?
+          # The score card is also left as notes on the run, readable without the log.
+          python3 ../.github/scripts/model-score.py logic-test/build/test-results/test | tee score.txt || true
+          grep -E '^(FAIL|SCORE)' score.txt | head -40 | while IFS= read -r line; do echo "::warning::$line"; done || true
+          python3 - <<'PY' || true
+          import glob, xml.etree.ElementTree as ET
+          for p in glob.glob("logic-test/build/test-results/test/TEST-*.xml"):
+              for c in ET.parse(p).getroot().iter("testcase"):
+                  f = c.find("failure")
+                  if f is not None:
+                      msg = (f.get("message") or "").replace("\n", " ")[:300]
+                      print(f"::error::{c.get('classname')} {c.get('name')[:80]}: {msg}")
+          PY
+          exit $status
 
       - name: Build the APK
         env:
