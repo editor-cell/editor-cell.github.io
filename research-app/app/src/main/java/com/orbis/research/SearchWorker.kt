@@ -74,7 +74,7 @@ class SearchWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
             // No paragraph says it outright: as in kıyas, reason from comparable cases among the
             // closest paragraphs the model found unrelated, then suggest where else to look.
             if (search.findings().none { !it.judgement.indirect }) {
-                val judged = db.judgedItems()
+                val judged = if (Models.canReasonByAnalogy(path)) db.judgedItems() else emptyList()
                 val tried = judged.count { it.third?.startsWith("UNRELATED\n") == true }
                 val toTry = judged.filter { it.third?.trim() == "UNRELATED" }.take(maxOf(0, Search.ANALOGY_TRIES - tried))
                 val english = db.run()?.english

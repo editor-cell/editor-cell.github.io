@@ -183,6 +183,13 @@ fun SearchScreen(goTo: (Int) -> Unit) {
                 }
             }
         }
+        if (r != null && r.state == Db.RUN_DONE && findings.none { !it.judgement.indirect } && !Models.canReasonByAnalogy(Settings.modelPath(ctx))) item {
+            Text(
+                "Kıyas yapılmadı: bu telefondaki dil modeli denemelerde kıyası ters yönde kurdu. Kıyas için büyük model " +
+                    "(Qwen3 4B, 6 GB ve üstü bellekli telefon) gerekir.",
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
         if (r != null && r.state == Db.RUN_DONE && findings.isNotEmpty()) item {
             Text("${r.total} paragraf okundu, ${findings.size} tanesi yargıyla ilgili.", style = MaterialTheme.typography.bodySmall)
         }

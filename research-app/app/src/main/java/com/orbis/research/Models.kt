@@ -64,6 +64,12 @@ object Models {
     /** The meaning model the owner chose, or the one this phone's memory suggests. */
     fun embedder(ctx: Context): ModelInfo = embedders.firstOrNull { it.id == Settings.embedderId(ctx) } ?: recommendedEmbedder(ctx)
 
+    /**
+     * Whether the language model at [path] may reason by analogy (kıyas). In the comparison
+     * workflow only Qwen3 4B built analogies in the right direction; 1.7B turned one around.
+     */
+    fun canReasonByAnalogy(path: String?): Boolean = path != null && path.endsWith(all[0].fileName)
+
     /** A model file that is fully downloaded. */
     fun ready(ctx: Context, m: ModelInfo): Boolean {
         val f = file(ctx, m)
