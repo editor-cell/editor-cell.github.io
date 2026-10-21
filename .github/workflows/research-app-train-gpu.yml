@@ -1,7 +1,7 @@
 name: Research app (train the NLI model on a graphics card)
 
 # The same training as "Research app (train the NLI model)", run on a Hugging Face graphics card
-# with the owner's key, so it takes minutes instead of hours (one pair at a time, eight per update). Paid by the minute from the owner's
+# with the owner's key, so it takes minutes instead of hours (one pair at a time, eight per update, full precision). Paid by the minute from the owner's
 # Hugging Face credit; started by hand or by a change to this file. Nothing reaches the app.
 on:
   push:

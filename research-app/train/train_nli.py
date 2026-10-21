@@ -43,6 +43,11 @@ dev = [e for e in examples if e["id"] in dev_ids]
 
 tok = AutoTokenizer.from_pretrained(MODEL)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL)
+# Newer libraries load a model in the precision it was saved in (here half precision). Reading is fine
+# that way, but training in half precision without care breaks at the first update (Adam's tiny
+# epsilon rounds to zero): the cause of the NaN in the first three runs. Train in full precision.
+print(f"::notice title=Precision::loaded as {next(model.parameters()).dtype}, training in float32", flush=True)
+model = model.float()
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 model.to(DEVICE)
 print(f"::notice title=Training::running on {DEVICE}", flush=True)
