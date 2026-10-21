@@ -1,0 +1,103 @@
+{"id":578,"tr":"AB'de istilacı yabancı türlere karşı yapılan hızlı yok etme eylemlerinin yaklaşık üçte ikisi başarılı oldu.","en":"Nearly two thirds of the rapid eradication actions against invasive alien species in the EU succeeded.","label":"SUPPORTS"}
+{"id":578,"tr":"İstilacı yabancı türlerin AB'de yayılması durdu.","en":"Invasive alien species have stopped spreading in the EU.","label":"CONTRADICTS"}
+{"id":578,"tr":"İstilacı türlerle mücadele eden ülkelerde tarımsal kayıplar azaldı.","en":"Farm losses fell in countries that fought invasive species.","label":"UNRELATED"}
+{"id":579,"tr":"DSÖ maaşları nakit ödeme uygulamasından uzaklaşmada uluslararası kuruluşlar arasında öncü.","en":"WHO has been leading international organisations in moving away from paying salaries in cash.","label":"SUPPORTS"}
+{"id":579,"tr":"Better Than Cash Alliance'ın 80 üyesi var.","en":"The Better Than Cash Alliance has 80 members.","label":"SUPPORTS"}
+{"id":580,"tr":"Yerli yenilenebilir elektrik Avrupa'nın enerji fiyatı oynaklığına karşı en iyi korunma yolu.","en":"Home-grown renewable electricity is Europe's best way to reduce its vulnerability to volatile energy prices.","label":"SUPPORTS"}
+{"id":580,"tr":"Yenilenebilir enerji Avrupa'yı enerji fiyatı şoklarına karşı daha kırılgan hale getiriyor.","en":"Renewables make Europe more vulnerable to energy price shocks.","label":"CONTRADICTS"}
+{"id":581,"tr":"2025'te AB'deki kıyı yüzme sularının yüzde 88'i mükemmel kalitede sınıflandırıldı.","en":"In 2025, 88% of coastal bathing waters in the EU were classified as excellent.","label":"SUPPORTS"}
+{"id":581,"tr":"AB'de iç sulardaki yüzme alanları kıyı sularından daha temiz.","en":"Inland bathing waters in the EU are cleaner than coastal waters.","label":"CONTRADICTS"}
+{"id":581,"tr":"Yüzme suyu kalitesi yüksek ülkelerde turist sayısı arttı.","en":"Tourist numbers rose in countries with excellent bathing water.","label":"UNRELATED"}
+{"id":582,"tr":"Dünya Gıda Forumu'nun gençlik girişimi tarımda genç istihdamını artırdı.","en":"The World Food Forum's youth initiative raised youth employment in agriculture.","label":"UNRELATED"}
+{"id":583,"tr":"OCHA 2020-21'de DSÖ'ye 201 milyon dolar katkı yaptı.","en":"OCHA contributed US$201 million to WHO in 2020-21.","label":"SUPPORTS"}
+{"id":583,"tr":"OCHA, DSÖ'nün salgın ve kriz müdahalesine katkı vermiyor.","en":"OCHA does not contribute to WHO's outbreak and crisis response.","label":"CONTRADICTS"}
+{"id":584,"tr":"Cenevre'deki insani yardım görüşmeleri Sudan'da yardım erişimini artırdı.","en":"The humanitarian talks in Geneva improved aid access in Sudan.","label":"UNRELATED"}
+{"id":585,"tr":"Libya ticaret odalarının yeni hizmetleri üyelerin memnuniyetini artırdı.","en":"New services at Libyan chambers raised member satisfaction.","label":"UNRELATED"}
+{"id":586,"tr":"DSÖ, Doğu Timor'u sıtmadan arınmış ülke olarak onayladı.","en":"WHO has certified Timor-Leste as malaria-free.","label":"SUPPORTS"}
+{"id":586,"tr":"Doğu Timor'da sıtma bulaşı hâlâ devam ediyor.","en":"Malaria transmission is still ongoing in Timor-Leste.","label":"CONTRADICTS"}
+{"id":587,"tr":"Çocuk refahındaki ilerleme çatışmalar, yoksulluk ve iklim şokları nedeniyle tehdit altında.","en":"Progress on child wellbeing is under threat from conflict, poverty and climate shocks.","label":"SUPPORTS"}
+{"id":587,"tr":"Çocuklara yönelik sosyal yardımları artıran ülkelerde çocuk yoksulluğu azaldı.","en":"Child poverty fell in countries that raised child benefits.","label":"UNRELATED"}
+{"id":588,"tr":"Uluslararası Patates Günü 30 Mayıs'ta kutlanıyor.","en":"The International Day of Potato is celebrated on 30 May.","label":"SUPPORTS"}
+{"id":589,"tr":"Veri okuryazarlığı eğitimi veren ülkelerde yanlış bilgi azaldı.","en":"Misinformation fell in countries that taught data literacy.","label":"UNRELATED"}
+{"id":590,"tr":"PM2,5 nedir?","en":"What is PM2.5?","label":"SUPPORTS"}
+{"id":591,"tr":"Avrupa'daki hava kalitesi istasyonlarının çoğu kilit kirleticiler için mevcut AB standartlarını karşılıyor.","en":"Most air quality stations in Europe meet current EU standards for key pollutants.","label":"SUPPORTS"}
+{"id":591,"tr":"Avrupa'da yer seviyesindeki ozon artık önemli bir sorun değil.","en":"Ground-level ozone is no longer a significant problem in Europe.","label":"CONTRADICTS"}
+{"id":591,"tr":"Hava kalitesi standartlarını karşılayan ülkelerde solunum yolu hastalıkları azaldı.","en":"Respiratory diseases fell in countries that met air quality standards.","label":"UNRELATED"}
+{"id":592,"tr":"DSÖ, COVID-19 değerlendirmelerinin ardından kendi çalışmalarını güçlendirmek için adımlar attı.","en":"WHO has taken steps to strengthen its own work after the reviews of the COVID-19 pandemic.","label":"SUPPORTS"}
+{"id":592,"tr":"DSÖ pandemi değerlendirmelerinden sonra hiçbir değişiklik yapmadı.","en":"WHO made no changes after the pandemic reviews.","label":"CONTRADICTS"}
+{"id":593,"tr":"Sohbet botu kullanan istatistik kurumlarına gelen bilgi talepleri azaldı.","en":"Information requests fell at statistical offices that used chatbots.","label":"UNRELATED"}
+{"id":594,"tr":"AB'de yer seviyesindeki ozona 63.000 ölüm atfediliyor.","en":"63,000 deaths in the EU can be attributed to ground-level ozone.","label":"SUPPORTS"}
+{"id":594,"tr":"Yer seviyesindeki ozonun tarım ürünlerine zararı yok.","en":"Ground-level ozone does no damage to crops.","label":"CONTRADICTS"}
+{"id":594,"tr":"Ozon seviyesini düşüren ülkelerde tarımsal verim arttı.","en":"Crop yields rose in countries that reduced ozone levels.","label":"UNRELATED"}
+{"id":595,"tr":"Kooperatife katılan çiftçinin ailesi işi sürdürmeye karar verdi.","en":"The farmer's family has been encouraged to continue what she started.","label":"SUPPORTS"}
+{"id":596,"tr":"Fransa'nın küresel sağlık stratejisini izlemek için bir komite kurulacak.","en":"A monitoring committee will track France's global health strategy.","label":"SUPPORTS"}
+{"id":597,"tr":"ASEAN'ın göç tavsiyeleri uygulamaya konuldu ve dolandırıcılık azaldı.","en":"ASEAN's migration recommendations were put into practice and fraud fell.","label":"UNRELATED"}
+{"id":598,"tr":"ETS2 binalardan ve karayolu taşımacılığından kaynaklanan CO2 emisyonlarını azaltmayı amaçlıyor.","en":"ETS2 aims to cut CO2 emissions from buildings and road transport.","label":"SUPPORTS"}
+{"id":598,"tr":"ETS2 büyük sanayi tesislerinin emisyonlarını kapsıyor.","en":"ETS2 covers emissions from large industrial plants.","label":"CONTRADICTS"}
+{"id":599,"tr":"Dünya Gıda Forumu'na 189 ülkeden 90.000'den fazla kişi katıldı.","en":"More than 90,000 people from 189 countries took part in the World Food Forum.","label":"SUPPORTS"}
+{"id":599,"tr":"Dünya Gıda Forumu'na yüz yüze katılım geçen yıla göre azaldı.","en":"In-person attendance at the World Food Forum fell from the year before.","label":"CONTRADICTS"}
+{"id":600,"tr":"Avrupa'da ruh sağlığı bozukluklarının yaygınlığı son 25 yılda önemli ölçüde arttı.","en":"The prevalence of mental health disorders in Europe has risen significantly over the past 25 years.","label":"SUPPORTS"}
+{"id":600,"tr":"Avrupa'da ruh sağlığı bozuklukları son 25 yılda azaldı.","en":"Mental health disorders in Europe have declined over the past 25 years.","label":"CONTRADICTS"}
+{"id":600,"tr":"Hava kirliliğini azaltan ülkelerde depresyon vakaları düştü.","en":"Depression cases fell in countries that reduced air pollution.","label":"UNRELATED"}
+{"id":601,"tr":"IRMA sulama ihtiyaçlarını değerlendirmek için bir karar destek çerçevesi sunuyor.","en":"IRMA provides a decision-support framework for assessing irrigation needs.","label":"SUPPORTS"}
+{"id":601,"tr":"IRMA'yı kullanan ülkelerde sulanan alan genişledi.","en":"Irrigated area expanded in countries that used IRMA.","label":"UNRELATED"}
+{"id":602,"tr":"Bitkisel proteinler şu anda en hızlı çevresel faydayı sağlıyor.","en":"Plant-based proteins currently offer the most immediate environmental benefits.","label":"SUPPORTS"}
+{"id":602,"tr":"Yeni protein çeşitlendirme yolları maliyet ve düzenleme engelleriyle karşılaşmıyor.","en":"Emerging protein pathways face no cost or regulatory hurdles.","label":"CONTRADICTS"}
+{"id":602,"tr":"Bitkisel proteine geçen ülkelerde tarımsal azot kirliliği azaldı.","en":"Nitrogen pollution from farming fell in countries that shifted to plant protein.","label":"UNRELATED"}
+{"id":603,"tr":"CERF fonları DSÖ'nün Malavi'deki kolera salgınına müdahalesini destekledi.","en":"CERF funds supported WHO's response to cholera in Malawi.","label":"SUPPORTS"}
+{"id":603,"tr":"CERF desteğiyle Afrika Boynuzu'nda açlık sona erdi.","en":"With CERF support, hunger in the Horn of Africa came to an end.","label":"UNRELATED"}
+{"id":604,"tr":"AB'nin 2020 tarım sayımı 9 milyon çiftçiyi kapsadı.","en":"The EU's 2020 agricultural census involved 9 million farmers.","label":"SUPPORTS"}
+{"id":604,"tr":"AB tarım sayımı her yıl yapılıyor.","en":"The EU agricultural census is held every year.","label":"CONTRADICTS"}
+{"id":605,"tr":"Yerli halkların gıda bilgisini koruyan ülkelerde gıda güvenliği arttı.","en":"Food security improved in countries that protected Indigenous food knowledge.","label":"UNRELATED"}
+{"id":606,"tr":"AB-Çin projesi Çin'de sosyal güvenlik kapsamını genişletti.","en":"The EU-China project widened social security coverage in China.","label":"UNRELATED"}
+{"id":607,"tr":"Pandemi anlaşması için belirlenen takvim iddialı bulunuyordu.","en":"Countries set an ambitious timeline for the pandemic agreement.","label":"SUPPORTS"}
+{"id":608,"tr":"Düşük karbonlu sağlık sistemine geçen ülkelerde sağlık sektörü emisyonları düştü.","en":"Health sector emissions fell in countries that moved to low-carbon health systems.","label":"UNRELATED"}
+{"id":609,"tr":"Norveç İstatistik Kurumu'nun yapay zekâ ekibi var.","en":"Statistics Norway has a team working on AI.","label":"SUPPORTS"}
+{"id":610,"tr":"Çalışma süresi standartlarını güncelleyen ülkelerde fazla mesai azaldı.","en":"Overtime fell in countries that updated working-time standards.","label":"UNRELATED"}
+{"id":611,"tr":"Bilim ve İnovasyon Forumu'nda yapay zekâ yönetişimi ele alındı.","en":"AI governance was among the topics at the Science and Innovation Forum.","label":"SUPPORTS"}
+{"id":612,"tr":"Afrika Birliği'nin liderliği kıtada salgınlara müdahaleyi hızlandırdı.","en":"The African Union's leadership sped up outbreak response on the continent.","label":"UNRELATED"}
+{"id":613,"tr":"2026 Dünya Gıda Ödülü Hollandalı bilim insanı Huub Lelieveld'e verildi.","en":"The 2026 World Food Prize was awarded to Dutch scientist Huub Lelieveld.","label":"SUPPORTS"}
+{"id":613,"tr":"Uyumlaştırılmış gıda güvenliği standartları gıda kaynaklı hastalıkları azalttı.","en":"Harmonised food safety standards reduced foodborne illness.","label":"UNRELATED"}
+{"id":614,"tr":"Taliban kadınları ve kız çocuklarını okullardan ve toplumdan sistematik olarak dışlıyor.","en":"The Taliban systematically exclude women and girls from schools and society.","label":"SUPPORTS"}
+{"id":614,"tr":"Afganistan'da kız çocukları okullara geri döndü.","en":"Girls have returned to school in Afghanistan.","label":"CONTRADICTS"}
+{"id":615,"tr":"Fransa'nın DSÖ anlaşmaları sağlık eşitsizliklerini azalttı.","en":"France's agreements with WHO reduced health inequality.","label":"UNRELATED"}
+{"id":616,"tr":"Hollanda Küresel Sağlık Stratejisi 2023-2030 salgınlara daha iyi hazırlanmayı amaçlıyor.","en":"The Dutch Global Health Strategy 2023-2030 aims to better prepare for pandemics.","label":"SUPPORTS"}
+{"id":616,"tr":"Hollanda'nın sağlık stratejisi Hollanda'da sağlık harcamalarını düşürdü.","en":"The Dutch health strategy lowered health spending in the Netherlands.","label":"UNRELATED"}
+{"id":617,"tr":"Erken uyarı sistemleri kuran ülkelerde sel kayıpları azaldı.","en":"Flood losses fell in countries that set up early warning systems.","label":"UNRELATED"}
+{"id":618,"tr":"Saloum Deltası etkinliği yerel ürünlerin satışını iki katına çıkardı.","en":"The Saloum Delta event doubled sales of local products.","label":"UNRELATED"}
+{"id":619,"tr":"Hipertansiyonla yaşayan insan sayısı 1990-2019 arasında iki katına çıktı.","en":"The number of people living with hypertension doubled between 1990 and 2019.","label":"SUPPORTS"}
+{"id":619,"tr":"Hipertansiyonu olanların çoğu yüksek gelirli ülkelerde yaşıyor.","en":"Most people with hypertension live in high-income countries.","label":"CONTRADICTS"}
+{"id":619,"tr":"Hipertansiyonu olanların neredeyse yarısı durumunun farkında değil.","en":"Nearly half of people with hypertension are unaware of their condition.","label":"SUPPORTS"}
+{"id":620,"tr":"Geniş bant hızı yüksek AB bölgelerinde istihdam arttı.","en":"Employment rose in EU regions with faster broadband.","label":"UNRELATED"}
+{"id":621,"tr":"Avrupa'da 15-29 yaş arası gençlerin istihdam oranı arttı.","en":"The employment rate of 15 to 29-year-olds in Europe has risen.","label":"UNRELATED"}
+{"id":622,"tr":"ILO programından sonra Libya'da iş dünyasının temsil gücü arttı.","en":"Business representation in Libya grew stronger after the ILO programme.","label":"UNRELATED"}
+{"id":623,"tr":"MINUSCA'nın on yılı aşkın varlığından sonra Orta Afrika Cumhuriyeti bazı kurumlarını ve topraklarını geri kazandı.","en":"After more than a decade of MINUSCA's presence, CAR has recovered some institutions and territory.","label":"SUPPORTS"}
+{"id":623,"tr":"Orta Afrika Cumhuriyeti'nin kazanımları artık uluslararası desteğe bağlı değil.","en":"CAR's gains no longer depend on international support.","label":"CONTRADICTS"}
+{"id":624,"tr":"Afrika ilk kez açlık çeken insan sayısında Asya'yı geçti.","en":"For the first time, Africa has more hungry people than Asia.","label":"SUPPORTS"}
+{"id":624,"tr":"Afrika'da açlık çeken nüfusun payı 2024'ten 2025'e arttı.","en":"The share of Africa's population facing hunger rose from 2024 to 2025.","label":"CONTRADICTS"}
+{"id":624,"tr":"Asya'da açlığın azalmasını sosyal yardım programları sağladı.","en":"Social protection programmes drove the fall in hunger in Asia.","label":"UNRELATED"}
+{"id":625,"tr":"Malavi'deki ILO eğitimi gençler için yeni iş imkânları yaratıyor.","en":"The ILO training in Malawi is creating new job opportunities for young people.","label":"SUPPORTS"}
+{"id":625,"tr":"Malavi'de süt üretimi eğitim programından sonra iki katına çıktı.","en":"Dairy output in Malawi doubled after the training programme.","label":"UNRELATED"}
+{"id":626,"tr":"Doğu Timor riskli topluluklara ücretsiz ilaçlı cibinlik dağıttı.","en":"Timor-Leste distributed free insecticide-treated nets to at-risk communities.","label":"SUPPORTS"}
+{"id":626,"tr":"Ücretsiz cibinlik dağıtan ülkelerde sıtma ölümleri azaldı.","en":"Malaria deaths fell in countries that gave out free bed nets.","label":"UNRELATED"}
+{"id":627,"tr":"İstatistik yarışmasına katılan okullarda öğrencilerin çevre bilinci arttı.","en":"Environmental awareness rose among students at schools that entered the statistics competition.","label":"UNRELATED"}
+{"id":628,"tr":"ABD, Çin ile bir yapay zekâ bildirim mekanizması önerdi.","en":"The United States proposed an AI notification mechanism with China.","label":"SUPPORTS"}
+{"id":628,"tr":"ABD ile Çin askeri yapay zekâ konusunda bağlayıcı bir antlaşma imzaladı.","en":"The US and China signed a binding treaty on military AI.","label":"UNRELATED"}
+{"id":629,"tr":"Nijerya'da daha güvenli barınma için bir yol haritası çalışması Haziran 2025'te başladı.","en":"Work on a roadmap for safer shelter in Nigeria began in June 2025.","label":"SUPPORTS"}
+{"id":629,"tr":"Nijerya'ya yapılan yardımlar arttı.","en":"Aid to Nigeria has increased.","label":"CONTRADICTS"}
+{"id":630,"tr":"ILO'nun Filipinler'deki platform çalışması araştırması kesinleşmiş ve resmi olarak onaylanmış bir rapor.","en":"The ILO's study on platform work in the Philippines is a final, officially endorsed report.","label":"CONTRADICTS"}
+{"id":631,"tr":"Doğu Timor'da 2021'den bu yana hiç yerel sıtma vakası görülmedi.","en":"Timor-Leste has had zero indigenous malaria cases since 2021.","label":"SUPPORTS"}
+{"id":631,"tr":"Doğu Timor'da sıtma vakaları 2006'dan sonra arttı.","en":"Malaria cases in Timor-Leste rose after 2006.","label":"CONTRADICTS"}
+{"id":632,"tr":"Yapay zekâ savaş alanında hedef tespiti ile vuruş arasındaki süreyi kısaltıyor.","en":"AI is shortening the time between identifying and striking targets on the battlefield.","label":"SUPPORTS"}
+{"id":632,"tr":"Askeri yapay zekâ kullanan ordularda sivil kayıplar azaldı.","en":"Civilian casualties fell in armies that used military AI.","label":"UNRELATED"}
+{"id":633,"tr":"Etiyopya'nın Metema bölgesinde Sudan'dan kaçanların kaldığı alanlarda kolera salgını hızla gelişiyor.","en":"A cholera outbreak is fast evolving in Metema, Ethiopia, in sites hosting people who fled Sudan.","label":"SUPPORTS"}
+{"id":633,"tr":"Mülteci kamplarında kolera aşısı stokları yeterli.","en":"Cholera vaccine stocks for the refugee sites are sufficient.","label":"CONTRADICTS"}
+{"id":633,"tr":"Kolera aşısı kampanyasından sonra Metema'da ölümler durdu.","en":"Deaths in Metema stopped after the cholera vaccination campaign.","label":"UNRELATED"}
+{"id":634,"tr":"Cenevre Sözleşmeleri sivillerin korunmasının ateşkesi beklememesi gerektiğini öngörüyor.","en":"The Geneva Conventions require that the protection of civilians not wait for a ceasefire.","label":"SUPPORTS"}
+{"id":635,"tr":"Kimyasal istatistik toplayan ülkelerde tehlikeli madde kullanımı azaldı.","en":"Use of hazardous chemicals fell in countries that collected chemicals statistics.","label":"UNRELATED"}
+{"id":636,"tr":"İlk Küresel Durum Değerlendirmesi 2021-2023 arasında yapıldı.","en":"The first Global Stocktake was held from 2021 to 2023.","label":"SUPPORTS"}
+{"id":636,"tr":"Küresel Durum Değerlendirmesi ülkelerin emisyonlarını azalttı.","en":"The Global Stocktake reduced countries' emissions.","label":"UNRELATED"}
+{"id":637,"tr":"Dünya Gıda Forumu Dünya Gıda Günü ile sona erdi.","en":"The World Food Forum ended with World Food Day.","label":"SUPPORTS"}
+{"id":638,"tr":"Kahve yıkama istasyonlarının yaygınlaşması Ruanda kahvesinin daha yüksek fiyatlı özel kahveye dönüşmesinde kilit rol oynadı.","en":"The spread of coffee washing stations was crucial in turning Rwanda's harvests into higher-priced specialty coffee.","label":"SUPPORTS"}
+{"id":638,"tr":"Yıkama istasyonları Ruanda kahvesinin fiyatını düşürdü.","en":"Washing stations lowered the price of Rwandan coffee.","label":"CONTRADICTS"}
+{"id":639,"tr":"Balıkçılıkta Çalışma Sözleşmesi'ni onaylayan ülkelerde balıkçıların iş kazaları azaldı.","en":"Work accidents among fishers fell in countries that ratified the Work in Fishing Convention.","label":"UNRELATED"}
