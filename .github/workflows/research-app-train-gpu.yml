@@ -1,0 +1,36 @@
+name: Research app (train the NLI model on a graphics card)
+
+# The same training as "Research app (train the NLI model)", run on a Hugging Face graphics card
+# with the owner's key, so it takes minutes instead of hours. Paid by the minute from the owner's
+# Hugging Face credit; started by hand or by a change to this file. Nothing reaches the app.
+on:
+  push:
+    branches: [anlam-okuma]
+    paths:
+      - .github/workflows/research-app-train-gpu.yml
+  workflow_dispatch:
+    inputs:
+      flavor:
+        default: "l4x1"
+      epochs:
+        default: "3"
+      lr:
+        default: "2e-5"
+
+permissions:
+  contents: read
+
+jobs:
+  train:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install --quiet "huggingface_hub>=0.34"
+      - name: Train on the graphics card
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: python .github/scripts/hf-train.py "${{ inputs.flavor || 'l4x1' }}" "${{ inputs.epochs || '3' }}" "${{ inputs.lr || '2e-5' }}"
