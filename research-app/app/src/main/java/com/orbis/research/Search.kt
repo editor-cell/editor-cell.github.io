@@ -15,7 +15,7 @@ class Finding(val paragraph: Paragraph, val verdict: Verdict)
 class Search(private val ctx: Context) {
     private val db = Db.get(ctx)
 
-    suspend fun run(claim: String, range: DateRange, status: (String) -> Unit, found: (Finding) -> Unit): Int {
+    suspend fun run(claim: String, range: DateRange, sourceIds: Set<Long>?, status: (String) -> Unit, found: (Finding) -> Unit): Int {
         status("İddia İngilizceye çevriliyor…")
         val english = Prompts.firstLine(Llm.generate(Prompts.TRANSLATE_SYSTEM, Prompts.translate(claim), maxTokens = 120)) ?: claim
         currentCoroutineContext().ensureActive()
@@ -26,7 +26,7 @@ class Search(private val ctx: Context) {
         currentCoroutineContext().ensureActive()
 
         status("Telefondaki belgelerde aranıyor…")
-        val ids = candidates(claim, english, phrases, range, Settings.candidates(ctx))
+        val ids = candidates(claim, english, phrases, range, sourceIds, Settings.candidates(ctx))
         if (ids.isEmpty()) return 0
 
         var read = 0
@@ -48,14 +48,16 @@ class Search(private val ctx: Context) {
     }
 
     /** Paragraph ids, best first: those holding whole search phrases rank above single words. */
-    private fun candidates(claim: String, english: String, phrases: List<String>, range: DateRange, limit: Int): List<Long> {
+    private fun candidates(
+        claim: String, english: String, phrases: List<String>, range: DateRange, sourceIds: Set<Long>?, limit: Int,
+    ): List<Long> {
         val score = HashMap<Long, Int>()
         for (ph in phrases) {
             val q = Prompts.ftsTerms(ph).joinToString(" ")
-            if (q.isNotEmpty()) for (id in db.match(q, 400, range)) score[id] = (score[id] ?: 0) + 4
+            if (q.isNotEmpty()) for (id in db.match(q, 400, range, sourceIds)) score[id] = (score[id] ?: 0) + 4
         }
         val words = (Prompts.ftsTerms(english) + Prompts.ftsTerms(claim)).distinct()
-        for (w in words) for (id in db.match(w, 3000, range)) score[id] = (score[id] ?: 0) + 1
+        for (w in words) for (id in db.match(w, 3000, range, sourceIds)) score[id] = (score[id] ?: 0) + 1
         val min = if (words.size >= 3) 2 else 1
         return score.entries.filter { it.value >= min }.sortedByDescending { it.value }.take(limit).map { it.key }
     }

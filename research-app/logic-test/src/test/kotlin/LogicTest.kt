@@ -51,6 +51,37 @@ class SourcesTest {
         assertFalse(Sources.inScope("google.com", scopes))
     }
 
+    @Test fun headingsAfterTheAddress() {
+        val s = Sources.parse("WHO, https://www.who.int, Sağlık; Çevre\nOECD | oecd.org | Ekonomi\nimf.org (IMF)\nwho.int, Halk sağlığı")
+        assertEquals(listOf("Sağlık", "Çevre", "Halk sağlığı"), s[0].groups)
+        assertEquals(listOf("Ekonomi"), s[1].groups)
+        assertEquals(emptyList(), s[2].groups)
+        assertEquals(3, s.size)
+    }
+
+    @Test fun feedlyFoldersBecomeHeadings() {
+        val opml = """<?xml version="1.0"?><opml version="1.0"><body>
+            <outline text="Sağlık" title="Sağlık">
+              <outline type="rss" text="WHO" xmlUrl="https://www.who.int/rss-feeds/news-english.xml"/>
+              <outline type="rss" text="CDC" xmlUrl="https://tools.cdc.gov/api/v2/resources/media/132608.rss"></outline>
+            </outline>
+            <outline text="Ekonomi"><outline type="rss" text="IMF" xmlUrl="https://www.imf.org/en/Blogs/rss"/></outline>
+            <outline type="rss" text="Eurostat" xmlUrl="https://ec.europa.eu/eurostat/news/rss"/>
+            </body></opml>"""
+        val s = Sources.parse(opml).associate { it.name to it.groups }
+        assertEquals(mapOf("WHO" to listOf("Sağlık"), "CDC" to listOf("Sağlık"), "IMF" to listOf("Ekonomi"), "Eurostat" to emptyList()), s)
+    }
+
+    @Test fun exportKeepsHeadings() {
+        val src = listOf(
+            com.orbis.research.Source(1, "https://www.who.int", "WHO", "who.int", 0, groups = listOf("Sağlık", "Çevre")),
+            com.orbis.research.Source(2, "https://oecd.org", "OECD", "oecd.org", 0),
+        )
+        val back = Sources.parse(Sources.export(src))
+        assertEquals(listOf(listOf("Sağlık", "Çevre"), emptyList()), back.map { it.groups })
+        assertEquals(listOf("WHO", "OECD"), back.map { it.name })
+    }
+
     @Test fun rejectsNonsense() {
         assertTrue(Sources.parse("hello world\njust words").isEmpty())
     }

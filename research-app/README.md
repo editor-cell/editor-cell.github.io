@@ -6,7 +6,9 @@ word, each with the direct address of its document. It never summarises and neve
 numbers of its own; when nothing fits it says "Bulamadım".
 
 - **Sources** are managed in the app: add one, paste many, import a file (one address per line,
-  "Name, address", or a Feedly OPML export), select several and remove them, save the list to a file.
+  "Name, address, Heading; Heading", or a Feedly OPML export whose folders become headings), select
+  several and remove them, file them under headings, save the list to a file.
+- **Searching** can be limited to some headings, to sources picked one by one, and to a date range.
 - **Collecting** reads each source's feeds, sitemaps and front page, newest first, into the phone
   (HTML and PDF). Every request is checked against the source list (`Net.kt`); nothing else is
   fetched. robots.txt is respected.

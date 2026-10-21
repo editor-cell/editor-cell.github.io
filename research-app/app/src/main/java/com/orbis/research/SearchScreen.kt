@@ -7,6 +7,10 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.material3.AlertDialog
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.material3.Checkbox
@@ -60,6 +64,10 @@ object SearchState {
     var finished by mutableStateOf(false)
     var read by mutableStateOf(0)
     var range by mutableStateOf(DateRange())
+    // Where to search: the sources under the chosen headings plus the sources picked one by one.
+    // Nothing chosen means every source.
+    var pickedGroups by mutableStateOf(emptySet<Long>())
+    var pickedSources by mutableStateOf(emptySet<Long>())
     val findings = mutableStateListOf<Finding>()
     private var job: Job? = null
 
@@ -73,7 +81,7 @@ object SearchState {
                 if (path == null || !java.io.File(path).exists()) { status = "Önce Model sekmesinden bir model indirin."; return@launch }
                 status = "Model yükleniyor…"
                 if (!Llm.ensure(ctx, path)) { status = "Model açılamadı. Dosya bozuk olabilir; Model sekmesinden yeniden indirin."; return@launch }
-                read = Search(ctx).run(c, range, { s -> status = s }) { f ->
+                read = Search(ctx).run(c, range, sourceIds(Db.get(ctx)), { s -> status = s }) { f ->
                     scope.launch(Dispatchers.Main) { findings.add(f) }
                 }
                 status = ""
@@ -89,6 +97,11 @@ object SearchState {
     }
 
     fun stop() { job?.cancel() }
+
+    fun searchesAll() = pickedGroups.isEmpty() && pickedSources.isEmpty()
+
+    /** The source ids to search, or null for all of them. */
+    fun sourceIds(db: Db): Set<Long>? = if (searchesAll()) null else db.sourcesIn(pickedGroups) + pickedSources
 }
 
 @Composable
@@ -112,7 +125,8 @@ fun SearchScreen(goTo: (Int) -> Unit) {
                 s.claim, { s.claim = it }, modifier = Modifier.fillMaxWidth(), minLines = 3,
                 placeholder = { Text("ör. Şeker vergisi koyan ülkelerde gazlı içecek tüketimi düştü.") },
             )
-            DateRangeRow(db, s.range, enabled = !s.running) { s.range = it }
+            WhereRow(db, enabled = !s.running)
+            DateRangeRow(db, s.range, s.sourceIds(db), enabled = !s.running) { s.range = it }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
                 if (s.running) OutlinedButton(onClick = { s.stop() }) { Text("Durdur") }
                 else Button(onClick = { s.start(ctx.applicationContext) }, enabled = s.claim.isNotBlank()) { Text("Ara") }
@@ -139,8 +153,8 @@ fun SearchScreen(goTo: (Int) -> Unit) {
                 Column(Modifier.padding(16.dp)) {
                     Text("Bulamadım.", style = MaterialTheme.typography.titleLarge)
                     Text(
-                        if (s.read == 0) "${s.range.label()} içinde yargıyla ilgili sözcükleri taşıyan bir paragraf yok."
-                        else "En yakın ${s.read} paragraf okundu (${s.range.label()}); hiçbiri bu yargıyı açıkça desteklemiyor ya da çürütmüyor.",
+                        if (s.read == 0) "${whereLabel(db)}, ${s.range.label().lowercase()}: yargıyla ilgili sözcükleri taşıyan bir paragraf yok."
+                        else "En yakın ${s.read} paragraf okundu (${whereLabel(db)}, ${s.range.label().lowercase()}); hiçbiri bu yargıyı açıkça desteklemiyor ya da çürütmüyor.",
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }
@@ -210,9 +224,9 @@ private fun open(ctx: Context, p: Paragraph) {
 /** Which documents a search looks at, by date: quick choices, any range from a calendar, and undated ones. */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-private fun DateRangeRow(db: Db, range: DateRange, enabled: Boolean, onChange: (DateRange) -> Unit) {
+private fun DateRangeRow(db: Db, range: DateRange, sourceIds: Set<Long>?, enabled: Boolean, onChange: (DateRange) -> Unit) {
     var picking by remember { mutableStateOf(false) }
-    val counts = remember(range) { db.docsIn(range) }
+    val counts = remember(range, sourceIds) { db.docsIn(range, sourceIds) }
     Column(Modifier.padding(top = 8.dp)) {
         Text("Tarih aralığı: ${range.label()}", style = MaterialTheme.typography.titleSmall)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -230,7 +244,7 @@ private fun DateRangeRow(db: Db, range: DateRange, enabled: Boolean, onChange: (
             Text("Tarihi belli olmayan belgeler de aransın", style = MaterialTheme.typography.bodySmall)
         }
         Text(
-            "Bu aralıkta telefonda ${counts.first} belge var" + if (counts.second > 0) " (${counts.second} tanesinin tarihi belli değil)." else ".",
+            "Seçilen kaynaklarda bu aralıkta telefonda ${counts.first} belge var" + if (counts.second > 0) " (${counts.second} tanesinin tarihi belli değil)." else ".",
             style = MaterialTheme.typography.bodySmall,
         )
     }
@@ -256,3 +270,74 @@ private fun DateRangeRow(db: Db, range: DateRange, enabled: Boolean, onChange: (
 
 private fun toMillis(d: String) = java.time.LocalDate.parse(d).atStartOfDay(java.time.ZoneOffset.UTC).toInstant().toEpochMilli()
 private fun toDate(ms: Long) = java.time.Instant.ofEpochMilli(ms).atZone(java.time.ZoneOffset.UTC).toLocalDate().toString()
+
+private fun whereLabel(db: Db): String {
+    val s = SearchState
+    if (s.searchesAll()) return "Tüm kaynaklar"
+    val names = db.groups().filter { it.id in s.pickedGroups }.map { it.name }
+    return (names + if (s.pickedSources.isEmpty()) emptyList() else listOf("${s.pickedSources.size} seçili kaynak")).joinToString(" + ")
+}
+
+/** Where a search looks: every source, the sources under some headings, or sources picked one by one. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun WhereRow(db: Db, enabled: Boolean) {
+    val s = SearchState
+    val groups = remember { db.groups() }
+    val sources = remember { db.sources() }
+    var picking by remember { mutableStateOf(false) }
+    // Headings or sources removed since they were chosen no longer count.
+    LaunchedEffect(groups, sources) {
+        s.pickedGroups = s.pickedGroups.intersect(groups.map { it.id }.toSet())
+        s.pickedSources = s.pickedSources.intersect(sources.map { it.id }.toSet())
+    }
+    val count = remember(s.pickedGroups, s.pickedSources) { s.sourceIds(db)?.size }
+    Column(Modifier.padding(top = 8.dp)) {
+        Text("Nerede aransın: ${whereLabel(db)}", style = MaterialTheme.typography.titleSmall)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            FilterChip(s.searchesAll(), enabled = enabled, onClick = { s.pickedGroups = emptySet(); s.pickedSources = emptySet() },
+                label = { Text("Tüm kaynaklar") })
+            for (g in groups) {
+                val on = g.id in s.pickedGroups
+                FilterChip(on, enabled = enabled, onClick = { s.pickedGroups = if (on) s.pickedGroups - g.id else s.pickedGroups + g.id },
+                    label = { Text("${g.name} (${g.sourceCount})") })
+            }
+            FilterChip(s.pickedSources.isNotEmpty(), enabled = enabled, onClick = { picking = true },
+                label = { Text(if (s.pickedSources.isEmpty()) "Kaynak seç…" else "${s.pickedSources.size} kaynak seçili") })
+        }
+        if (count != null) Text("$count kaynakta aranacak.", style = MaterialTheme.typography.bodySmall)
+    }
+    if (picking) PickSourcesDialog(sources, s.pickedSources, onDone = { s.pickedSources = it; picking = false }, onDismiss = { picking = false })
+}
+
+@Composable
+private fun PickSourcesDialog(sources: List<Source>, initial: Set<Long>, onDone: (Set<Long>) -> Unit, onDismiss: () -> Unit) {
+    var chosen by remember { mutableStateOf(initial) }
+    var filter by remember { mutableStateOf("") }
+    val shown = sources.filter { f ->
+        filter.isBlank() || f.name.contains(filter, true) || f.url.contains(filter, true) || f.groups.any { it.contains(filter, true) }
+    }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Hangi kaynaklarda aransın?") },
+        text = {
+            Column {
+                if (sources.size > 8) OutlinedTextField(filter, { filter = it }, label = { Text("Ad ya da başlık ara") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                LazyColumn(Modifier.heightIn(max = 380.dp)) {
+                    items(shown, key = { it.id }) { src ->
+                        val on = src.id in chosen
+                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().clickable { chosen = if (on) chosen - src.id else chosen + src.id }) {
+                            Checkbox(on, onCheckedChange = { chosen = if (on) chosen - src.id else chosen + src.id })
+                            Column {
+                                Text(src.name, style = MaterialTheme.typography.bodyMedium)
+                                if (src.groups.isNotEmpty()) Text(src.groups.joinToString(" · "), style = MaterialTheme.typography.labelSmall)
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = { TextButton(onClick = { onDone(chosen) }) { Text(if (chosen.isEmpty()) "Tamam" else "${chosen.size} kaynak seç") } },
+        dismissButton = { TextButton(onClick = { chosen = emptySet() }) { Text("Temizle") } },
+    )
+}
