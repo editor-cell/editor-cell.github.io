@@ -1,0 +1,27 @@
+name: Research app (Hugging Face job status)
+
+# Reads where the owner's Hugging Face jobs stand and leaves it as notes. Re-run it to look again.
+on:
+  push:
+    branches: [anlam-okuma]
+    paths:
+      - .github/workflows/research-app-hf-status.yml
+      - .github/scripts/hf-status.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  status:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install --quiet "huggingface_hub>=0.34"
+      - env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: timeout 120 python .github/scripts/hf-status.py
