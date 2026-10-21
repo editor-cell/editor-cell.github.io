@@ -1,7 +1,8 @@
 import { Play, X } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Film, type FilmCaption } from "@/components/film";
+import { Transcript } from "@/components/transcript";
 import { imageSet } from "@/lib/image-set";
 import { announceStart, fmt } from "@/lib/listen";
 import type { Lang } from "@/lib/types";
@@ -26,14 +27,24 @@ export type FilmClip = {
  * the foot as on some news sites): the page darkens, a screen comes down from its roller in
  * a little above the middle and the film plays on it with the site's own controls (play,
  * time, seek line, subtitles, speed, sound, full screen; taps and double taps as on
- * YouTube). Under the screen the transcript opens behind one button, as on the page. The
- * cross, a tap on the dark around the screen or Escape rolls the screen up and brings the
- * page back; the film waits where it was stopped.
+ * YouTube). Under the screen the transcript opens behind one button, as on the page; open,
+ * the screen moves up to leave the words the rest of the window, and they follow the film.
+ * The cross, a tap on the dark around the screen or Escape rolls the screen up and brings
+ * the page back; the film waits where it was stopped.
  *
  * The screen and its video element are on the page from the start, hidden, so the reader's
- * tap can start the sound at once on a phone.
+ * tap can start the sound at once on a phone. What follows the still on the page (its
+ * transcript) is drawn by `children`, which can start the film at a given second.
  */
-export function VideoStart({ clip, className = "" }: { clip: FilmClip; className?: string }) {
+export function VideoStart({
+  clip,
+  className = "",
+  children,
+}: {
+  clip: FilmClip;
+  className?: string;
+  children?: (startAt: (seconds: number) => void) => ReactNode;
+}) {
   const words = videoWords(clip.lang);
   const [open, setOpen] = useState(false);
   const [ready, setReady] = useState(false);
@@ -49,10 +60,17 @@ export function VideoStart({ clip, className = "" }: { clip: FilmClip; className
     screen.current = el;
   }, []);
 
-  function start() {
+  /** Lights down and the film on, from where it was or from the second given. */
+  function start(at?: number) {
     setOpen(true);
+    playFrom(at);
+  }
+
+  function playFrom(at?: number) {
     const el = screen.current;
-    if (el && el.paused) {
+    if (!el) return;
+    if (at !== undefined) el.currentTime = at;
+    if (el.paused) {
       announceStart("film");
       void el.play().catch(() => {});
     }
@@ -88,7 +106,7 @@ export function VideoStart({ clip, className = "" }: { clip: FilmClip; className
       <button
         ref={still}
         type="button"
-        onClick={start}
+        onClick={() => start()}
         aria-label={`${words.play}: ${clip.title}`}
         aria-haspopup="dialog"
         className={`film film-still relative block aspect-video overflow-hidden bg-ink ${className}`}
@@ -128,7 +146,7 @@ export function VideoStart({ clip, className = "" }: { clip: FilmClip; className
               aria-label={clip.title}
               aria-hidden={open ? undefined : true}
               inert={!open}
-              className={`theater no-print ${open ? "is-on" : ""}`}
+              className={`theater no-print ${open ? "is-on" : ""} ${reading && clip.transcript?.length ? "is-reading" : ""}`}
               onClick={(event) => {
                 // A tap on the dark (around the screen, not on it or its words) closes.
                 const target = event.target as HTMLElement;
@@ -185,11 +203,16 @@ export function VideoStart({ clip, className = "" }: { clip: FilmClip; className
                     >
                       {reading ? words.hideTranscript : words.readTranscript}
                     </button>
-                    <div id="theater-transcript" hidden={!reading} className="theater-transcript">
-                      {clip.transcript.map((para, i) => (
-                        <p key={i}>{para}</p>
-                      ))}
-                    </div>
+                    <Transcript
+                      id="theater-transcript"
+                      paragraphs={clip.transcript}
+                      captions={clip.captions?.find((c) => c.lang === clip.lang)?.src}
+                      lang={clip.lang}
+                      hidden={!reading}
+                      film={open ? screen : null}
+                      onPlayFrom={playFrom}
+                      className="theater-transcript"
+                    />
                   </section>
                 ) : null}
               </div>
@@ -197,6 +220,7 @@ export function VideoStart({ clip, className = "" }: { clip: FilmClip; className
             document.body,
           )
         : null}
+      {children?.(start)}
     </>
   );
 }

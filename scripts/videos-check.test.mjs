@@ -2,11 +2,13 @@ import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { test } from "node:test";
+import { parseVtt, timeTranscript } from "../src/lib/transcript.ts";
 
 /**
  * Every video file is checked before the site is built, as the reading files are. A video
  * stands on its own (no reading, no issue): content/videos/<id>.json with its film, its
- * still, and in each language a title, one sentence and the full transcript. If a check
+ * still, and in each language a title, one sentence and the full transcript. Subtitles in a
+ * language time that language's transcript, so they must say what it says. If a check
  * fails, nothing is published and the live site stays as it was.
  */
 
@@ -51,11 +53,14 @@ for (const file of files) {
       assert.ok(LANGS.includes(lang), `${file}: subtitles in an unknown language ${lang}`);
       assert.match(String(path), /\.vtt$/, `${file} (${lang}): subtitles are a .vtt file`);
       assert.ok(mediaExists(path), `${file} (${lang}): subtitles ${path} are missing`);
-      if (!/^https:/.test(path))
-        assert.match(
-          readFileSync(path.replace(/^\//, ""), "utf8"),
-          /^(\uFEFF)?WEBVTT/,
-          `${file} (${lang}): ${path} must begin with WEBVTT`,
+      if (/^https:/.test(path)) continue;
+      const source = readFileSync(path.replace(/^\//, ""), "utf8");
+      assert.match(source, /^(\uFEFF)?WEBVTT/, `${file} (${lang}): ${path} must begin with WEBVTT`);
+      const transcript = video.locales?.[lang]?.transcript?.trim();
+      if (transcript)
+        assert.ok(
+          timeTranscript(transcript.split(/\n\s*\n/), parseVtt(source)),
+          `${file} (${lang}): the subtitles in ${path} do not follow the transcript, so its times cannot be shown`,
         );
     }
     const langs = Object.keys(video.locales ?? {});

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { VideoStart } from "@/components/theater";
 import { Shell } from "@/components/shell";
 import { Trail } from "@/components/trail";
+import { Transcript } from "@/components/transcript";
 import { imageSet } from "@/lib/image-set";
 import { langMeta } from "@/lib/i18n";
 import { mediaLink, videoLink } from "@/lib/lang-path";
@@ -205,7 +206,8 @@ export function VideoListPage() {
   );
 }
 
-/** One video: the film, its title and sentence, then its transcript behind one button. */
+/** One video: the film, its title and sentence, then its transcript behind one button. A
+ * timed transcript can start the film at a chosen line. */
 export function VideoPage({ video }: { video: Video | null }) {
   const lang = useLang();
   const words = videoWords(lang);
@@ -246,30 +248,33 @@ export function VideoPage({ video }: { video: Video | null }) {
                   })),
                 }}
                 className="-mx-5 w-[calc(100%+2.5rem)] max-w-none md:mx-0 md:w-full md:max-w-full"
-              />
-              {transcript.length ? (
-                <section className="-mt-2 md:mt-0 md:border-t md:border-rule md:pt-4">
-                  <button
-                    type="button"
-                    aria-expanded={open}
-                    aria-controls="video-transcript"
-                    onClick={() => setOpen((value) => !value)}
-                    className="atlas-more inline-flex min-h-11 items-center text-[0.85rem]"
-                  >
-                    {open ? words.hideTranscript : words.readTranscript}
-                  </button>
-                  {/* Written into the page either way, so search engines read it; shown on demand. */}
-                  <div
-                    id="video-transcript"
-                    hidden={!open}
-                    className="font-body mt-3 flex max-w-2xl flex-col gap-5 text-pretty text-[1.05rem] leading-[1.6]"
-                  >
-                    {transcript.map((para, i) => (
-                      <p key={i}>{para}</p>
-                    ))}
-                  </div>
-                </section>
-              ) : null}
+              >
+                {(startAt) =>
+                  transcript.length ? (
+                    <section className="-mt-2 md:mt-0 md:border-t md:border-rule md:pt-4">
+                      <button
+                        type="button"
+                        aria-expanded={open}
+                        aria-controls="video-transcript"
+                        onClick={() => setOpen((value) => !value)}
+                        className="atlas-more inline-flex min-h-11 items-center text-[0.85rem]"
+                      >
+                        {open ? words.hideTranscript : words.readTranscript}
+                      </button>
+                      {/* Written into the page either way, so search engines read it; shown on demand. */}
+                      <Transcript
+                        id="video-transcript"
+                        paragraphs={transcript}
+                        captions={video.captions?.[lang]}
+                        lang={lang}
+                        hidden={!open}
+                        onPlayFrom={startAt}
+                        className="font-body mt-3 flex max-w-2xl flex-col gap-5 text-pretty text-[1.05rem] leading-[1.6]"
+                      />
+                    </section>
+                  ) : null
+                }
+              </VideoStart>
             </>
           ) : (
             <p className="py-10 text-muted">{words.missing}</p>

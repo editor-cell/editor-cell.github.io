@@ -61,6 +61,10 @@ export type VideoWords = {
   video: string;
   readTranscript: string;
   hideTranscript: string;
+  /** A timed transcript: the key beside a chosen line, and the key that makes the words
+   * follow the film again after the reader has scrolled them. */
+  playFrom: string;
+  followFilm: string;
   /** Under the list's title. */
   listNote: string;
   missing: string;
@@ -96,6 +100,8 @@ const WORDS: Record<Lang, VideoWords> = {
     video: "Video",
     readTranscript: "Transkripti oku",
     hideTranscript: "Transkripti kapat",
+    playFrom: "Buradan izle",
+    followFilm: "Videoyu takip et",
     listNote: "Orbis'in bütün videoları, en yeniden en eskiye.",
     missing: "Bu video bulunamadı.",
     empty: "Henüz video yok.",
@@ -122,6 +128,8 @@ const WORDS: Record<Lang, VideoWords> = {
     video: "Video",
     readTranscript: "Read the transcript",
     hideTranscript: "Hide the transcript",
+    playFrom: "Play from here",
+    followFilm: "Follow the video",
     listNote: "Every Orbis video, newest first.",
     missing: "This video could not be found.",
     empty: "No videos yet.",
@@ -148,6 +156,8 @@ const WORDS: Record<Lang, VideoWords> = {
     video: "فيديو",
     readTranscript: "اقرأ النص",
     hideTranscript: "إخفاء النص",
+    playFrom: "شاهد من هنا",
+    followFilm: "تابع الفيديو",
     listNote: "كل فيديوهات أوربيس، من الأحدث إلى الأقدم.",
     missing: "تعذّر العثور على هذا الفيديو.",
     empty: "لا توجد فيديوهات بعد.",
@@ -174,6 +184,8 @@ const WORDS: Record<Lang, VideoWords> = {
     video: "Vidéo",
     readTranscript: "Lire la transcription",
     hideTranscript: "Masquer la transcription",
+    playFrom: "Lire à partir d’ici",
+    followFilm: "Suivre la vidéo",
     listNote: "Toutes les vidéos d’Orbis, des plus récentes aux plus anciennes.",
     missing: "Cette vidéo est introuvable.",
     empty: "Pas encore de vidéo.",
@@ -200,6 +212,8 @@ const WORDS: Record<Lang, VideoWords> = {
     video: "Vídeo",
     readTranscript: "Leer la transcripción",
     hideTranscript: "Ocultar la transcripción",
+    playFrom: "Reproducir desde aquí",
+    followFilm: "Seguir el vídeo",
     listNote: "Todos los vídeos de Orbis, del más reciente al más antiguo.",
     missing: "No se encontró este vídeo.",
     empty: "Todavía no hay vídeos.",

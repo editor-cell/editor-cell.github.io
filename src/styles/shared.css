@@ -1767,6 +1767,9 @@ button.play-disc:active {
   margin-inline: auto;
   padding-top: max(1rem, calc(44dvh - var(--screen-width) * 9 / 32 - 4.75rem));
   padding-bottom: 2.5rem;
+  transition:
+    width 400ms ease,
+    padding-top 400ms ease;
 }
 
 .theater-head {
@@ -1903,14 +1906,178 @@ button.play-disc:active {
   display: none;
 }
 
+/* With the transcript open the screen moves up (and on a wide window grows a little smaller)
+   so the words have the rest of the window under it and scroll on their own: the film stays
+   in sight while they follow it. Where even so there is no room, the dark scrolls. */
+.theater.is-reading {
+  --screen-width: min(100vw, max(20rem, calc((100dvh - 9rem - 16rem) * 16 / 9)));
+}
+
+.theater.is-reading .theater-frame {
+  display: flex;
+  height: 100dvh;
+  flex-direction: column;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.theater.is-reading .theater-notes {
+  flex: 1 1 0;
+  min-height: 12rem;
+}
+
+.theater.is-reading .theater-transcript {
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+  max-width: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
 @media (--orbis-desktop) {
   .theater {
     --screen-width: min(calc(100vw - 4rem), 64rem, calc((100dvh - 9rem) * 16 / 9));
+  }
+  .theater.is-reading {
+    --screen-width: min(
+      calc(100vw - 4rem),
+      64rem,
+      max(20rem, calc((100dvh - 9rem - 16rem) * 16 / 9))
+    );
   }
   .theater-head,
   .theater-notes {
     padding-inline: 0;
   }
+}
+
+/* ---------- The timed transcript (October 2026) ----------
+   With subtitles in its language a transcript is timed. Beside each paragraph, in a narrow
+   column that scrolls with the words, stands a small play key, a hairline round like the
+   film's keys, with the time the paragraph begins under it; only that key moves the film.
+   Under the screen the line being spoken is marked in a soft ivory and its paragraph's key
+   fills, as the film's own play key is filled. On the page the colours are the page's own;
+   on the black of the cinema, ivory. */
+.transcript {
+  --transcript-time: var(--color-muted);
+  --transcript-ring: var(--color-rule);
+  --transcript-key: var(--color-ink);
+  --transcript-key-text: var(--color-paper);
+}
+
+.theater-transcript {
+  --transcript-time: rgb(244 239 230 / 0.55);
+  --transcript-ring: rgb(244 239 230 / 0.35);
+  --transcript-key: #f4efe6;
+  --transcript-key-text: #0c0c0c;
+}
+
+.transcript-row {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  column-gap: 0.75rem;
+  align-items: start;
+}
+
+/* The column has the words' size and line, so the key's round sits in the middle of the
+   paragraph's first line. */
+.transcript-time {
+  padding-top: calc((1lh - 1.5rem) / 2);
+}
+
+.transcript-play {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding-bottom: 0.35rem;
+  border-radius: 6px;
+  color: var(--transcript-time);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  transition: color 150ms ease;
+}
+
+.transcript-play-ring {
+  display: inline-flex;
+  width: 1.5rem;
+  height: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--transcript-ring);
+  border-radius: 999px;
+  color: var(--transcript-key);
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+
+.transcript-play:hover {
+  color: var(--transcript-key);
+}
+
+.transcript-play:hover .transcript-play-ring,
+.transcript-row.is-now .transcript-play-ring {
+  border-color: var(--transcript-key);
+  background: var(--transcript-key);
+  color: var(--transcript-key-text);
+}
+
+.transcript-row.is-now .transcript-play {
+  color: var(--transcript-key);
+}
+
+.transcript-play:focus-visible {
+  outline: 1px solid var(--transcript-key);
+  outline-offset: 1px;
+}
+
+/* A run of words keeps the same room whether it is marked or not. */
+.transcript-piece {
+  padding-inline: 0.15em;
+  margin-inline: -0.15em;
+  border-radius: 3px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition:
+    background-color 200ms ease,
+    color 200ms ease;
+}
+
+.transcript-piece.is-now {
+  background: rgb(244 239 230 / 0.16);
+  color: #fff;
+}
+
+/* After the reader has moved the words: one key, kept at the foot of the box, to follow the
+   film again. The same black glass as the film's bar. */
+.transcript-follow {
+  position: sticky;
+  bottom: 0;
+  align-self: center;
+  margin-top: auto;
+  min-height: 2.25rem;
+  padding: 0 1rem;
+  border: 1px solid rgb(244 239 230 / 0.2);
+  border-radius: 999px;
+  background: rgb(10 10 10 / 0.72);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.45);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(16px) saturate(140%);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #f4efe6;
+}
+
+.transcript-follow:focus-visible {
+  outline: 1px solid #f4efe6;
+  outline-offset: 2px;
 }
 
 /* The search field's hint is set in italic so it reads as a hint, not as typed text. */
