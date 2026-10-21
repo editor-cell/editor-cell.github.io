@@ -103,29 +103,47 @@ object Prompts {
         "line ::= [^\\n]{1,220}\n" +
         "match ::= \"same\" | \"opposite\" | \"answers\" | \"no\""
 
-    /**
-     * The owner's second idea (21 Oct 2026), reading backwards: start from the end, what the paragraph
-     * says happened in the end, then go back to what led to it. A paragraph with no outcome cannot
-     * show what followed a measure, however close its subject. Tried beside [read].
-     */
-    fun readBackwards(claim: String, english: String?, p: Paragraph): String = claimAndParagraph(claim, english, p) +
-        "The claim's words, or words that mean the same, appear in this paragraph. That alone proves nothing. Read it " +
-        "backwards: first find what the paragraph says happened in the end, then go back to what led to it. Write four lines.\n" +
-        "Claim: in a few words, what the claim says happened (the measure or cause, and what followed it). " +
-        "If the claim is a question or a topic, what it asks about.\n" +
-        "Outcome: in one short sentence, the result the paragraph itself reports, what happened in the end; " +
-        "write none if it reports no result (only a subject, a plan, a target or a view).\n" +
-        "Cause: in one short sentence, what the paragraph says led to that outcome; write none if it says nothing.\n" +
-        "Match: same (the paragraph's cause and outcome are the claim's, linked, as the claim says), opposite (the " +
-        "claim's cause, but no effect or the opposite followed), answers (the claim is a question or topic and the " +
-        "paragraph answers it or gives concrete information on it), or no (anything else, including no outcome)."
+    /** A paragraph's sentences in their order, cut where a sentence ends and the next begins. */
+    fun sentences(text: String): List<String> =
+        Regex("(?<=[.!?])\\s+(?=[A-Z0-9\"“(])").split(text.trim()).map { it.trim() }.filter { it.isNotEmpty() }
 
-    const val READ_BACK_GRAMMAR = "root ::= \"Claim: \" line \"\\nOutcome: \" line \"\\nCause: \" line \"\\nMatch: \" match\n" +
-        "line ::= [^\\n]{1,220}\n" +
-        "match ::= \"same\" | \"opposite\" | \"answers\" | \"no\""
+    /**
+     * The owner's second idea (21 Oct 2026), the hafız's way: a hafız learns a page by heart from its
+     * last line. The paragraph is given in its own order, its sentences numbered, and the model goes
+     * from the last sentence back to the first, writing what each one says; the grammar holds it to
+     * every sentence, so none can be skipped. Only then does it say whether the paragraph matches the
+     * claim. Tried beside [read].
+     */
+    fun readBackwards(claim: String, english: String?, p: Paragraph): String {
+        val c = if (english.isNullOrBlank() || english.equals(claim, ignoreCase = true)) claim else "$claim\n(English: $english)"
+        val numbered = sentences(p.text.take(2000)).mapIndexed { i, s -> "${i + 1}. $s" }.joinToString("\n")
+        val n = sentences(p.text.take(2000)).size
+        return "Claim: $c\n\nParagraph from \"${p.docTitle.take(200)}\", its sentences numbered in order:\n<<<\n$numbered\n>>>\n\n" +
+            "The claim's words, or words that mean the same, appear in this paragraph. That alone proves nothing. " +
+            "Read the paragraph the way a hafız learns a page by heart: start from the last sentence and go back to the " +
+            "first, one sentence at a time. First write the claim in a few words (what the claim says happened: the measure " +
+            "or cause, and what followed it; or what a question or topic asks about). Then, from sentence $n down to " +
+            "sentence 1, write in a few words of your own what that sentence says. Then write Match: same (the paragraph " +
+            "reports both parts of the claim, linked, as the claim says), opposite (it reports both, but no effect or the " +
+            "opposite followed), answers (the claim is a question or topic and the paragraph answers it or gives concrete " +
+            "information on it), or no (anything else, including a paragraph on the same subject that does not report " +
+            "what the claim says)."
+    }
+
+    /** Holds the model to every sentence, from the last to the first. */
+    fun readBackwardsGrammar(text: String): String {
+        val n = sentences(text.take(2000)).size.coerceAtLeast(1)
+        val steps = (n downTo 1).joinToString(" ") { "\"\\nS$it: \" line" }
+        return "root ::= \"Claim: \" line $steps \"\\nMatch: \" match\n" +
+            "line ::= [^\\n]{1,160}\n" +
+            "match ::= \"same\" | \"opposite\" | \"answers\" | \"no\""
+    }
+
+    /** Room for a note on every sentence and the match. */
+    fun readBackwardsMax(text: String) = (40 + 30 * sentences(text.take(2000)).size).coerceAtMost(360)
 
     /** Room for the short lines and the match. */
-    const val READ_MAX = 200
+    const val READ_MAX = 160
 
     /** The verdict a reading arrives at, in step one's words; null when the reading did not finish. */
     fun verdictOfReading(raw: String?): String? =
