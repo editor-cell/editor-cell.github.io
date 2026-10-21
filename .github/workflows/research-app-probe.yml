@@ -1,0 +1,22 @@
+name: Research app (probe site search)
+
+# Measures, for typical sources, whether the site's own search page can be read without a browser.
+# Run by hand; it changes nothing.
+on:
+  workflow_dispatch:
+    inputs:
+      sites:
+        description: "Space-separated hosts (empty: the default list)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - name: Probe
+        run: python3 .github/scripts/probe-search.py ${{ github.event.inputs.sites }} | tee -a "$GITHUB_STEP_SUMMARY"
