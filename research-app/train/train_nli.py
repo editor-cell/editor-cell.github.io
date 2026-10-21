@@ -43,6 +43,9 @@ dev = [e for e in examples if e["id"] in dev_ids]
 
 tok = AutoTokenizer.from_pretrained(MODEL)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL)
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+model.to(DEVICE)
+print(f"::notice title=Training::running on {DEVICE}", flush=True)
 name_to_id = {n.lower(): i for i, n in model.config.id2label.items()}
 TO_NLI = {"SUPPORTS": "entailment", "CONTRADICTS": "contradiction", "UNRELATED": "neutral"}
 FROM_NLI = {v: k for k, v in TO_NLI.items()}
@@ -57,7 +60,7 @@ def predict(items):
     out = []
     with torch.no_grad():
         for prem, hyp in items:
-            enc = tok(prem, hyp, truncation="only_first", max_length=384, return_tensors="pt")
+            enc = tok(prem, hyp, truncation="only_first", max_length=384, return_tensors="pt").to(DEVICE)
             p = torch.softmax(model(**enc).logits[0], -1)
             out.append(FROM_NLI[model.config.id2label[int(p.argmax())].lower()])
     return out
@@ -84,6 +87,7 @@ before_dev, _ = score(pairs(dev, ("en",)), "held-out, before")
 before_trial, _ = score(trial_rows, "first 26 paragraphs, before")
 notes += [before_dev, before_trial]
 print("\n".join(notes), flush=True)
+print("::notice title=Before training::" + "%0A".join(notes), flush=True)
 
 data = pairs(train)
 opt = torch.optim.AdamW(model.parameters(), lr=LR, weight_decay=0.01)
@@ -97,8 +101,8 @@ for epoch in range(EPOCHS):
     for i in range(0, len(data), 8):
         batch = data[i:i + 8]
         enc = tok([p for p, _, _ in batch], [h for _, h, _ in batch], truncation="only_first",
-                  max_length=384, padding=True, return_tensors="pt")
-        y = torch.tensor([name_to_id[TO_NLI[w]] for _, _, w in batch])
+                  max_length=384, padding=True, return_tensors="pt").to(DEVICE)
+        y = torch.tensor([name_to_id[TO_NLI[w]] for _, _, w in batch]).to(DEVICE)
         loss = model(**enc, labels=y).loss
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
@@ -120,3 +124,8 @@ print("::notice title=Training::" + "%0A".join(notes))
 os.makedirs(OUT, exist_ok=True)
 model.save_pretrained(OUT)
 tok.save_pretrained(OUT)
+if os.environ.get("HUB_REPO") and os.environ.get("HF_TOKEN"):
+    # Kept in a private model repository on the owner's Hugging Face account, for the phone to fetch later.
+    model.push_to_hub(os.environ["HUB_REPO"], private=True, commit_message=notes[-len(trial_rows) - 2])
+    tok.push_to_hub(os.environ["HUB_REPO"], private=True)
+    print(f"::notice title=Saved::model saved to the private repository {os.environ['HUB_REPO']}")
