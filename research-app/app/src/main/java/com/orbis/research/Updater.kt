@@ -43,7 +43,7 @@ import java.util.concurrent.TimeUnit
  * own address, not a source, so it does not go through [Net].
  */
 object Updater {
-    private const val RELEASES = "https://api.github.com/repos/editor-cell/editor-cell.github.io/releases?per_page=30"
+    private const val RELEASES = "https://api.github.com/repos/editor-cell/editor-cell.github.io/releases?per_page=100"
     private const val APK = "orbis-arastirma.apk"
     private val TAG = Regex("^arastirma-v0\\.1\\.(\\d+)$")
 
