@@ -198,3 +198,25 @@ class DateRangeTest {
         assertEquals("2021-10-21", y.from); assertEquals("2026-10-21", y.to)
     }
 }
+
+class JudgementTest {
+    private val para = "Sales were 120 litres per person in 2017 and 95 litres in 2020; a 9.7% fall in 2019."
+
+    @Test fun directAndUnrelated() {
+        val j = com.orbis.research.Prompts.parseJudgement("SUPPORTS DIRECT", para)!!
+        assertEquals(com.orbis.research.Verdict.SUPPORTS, j.verdict)
+        assertFalse(j.indirect)
+        assertEquals(null, com.orbis.research.Prompts.parseJudgement("UNRELATED", para))
+        assertEquals(null, com.orbis.research.Prompts.parseJudgement(null, para))
+    }
+
+    @Test fun indirectReasonKeptOnlyWithTheParagraphsFigures() {
+        val ok = com.orbis.research.Prompts.parseJudgement("SUPPORTS INDIRECT: Kişi başı satış 2017'de 120, 2020'de 95 litre; yani düştü.", para)!!
+        assertTrue(ok.indirect); assertFalse(ok.reasonDropped)
+        assertEquals("Kişi başı satış 2017'de 120, 2020'de 95 litre; yani düştü.", ok.reason)
+        val comma = com.orbis.research.Prompts.parseJudgement("CONTRADICTS INDIRECT: 2019'da yüzde 9,7 düşüş var.", para)!!
+        assertFalse(comma.reasonDropped)
+        val made = com.orbis.research.Prompts.parseJudgement("SUPPORTS INDIRECT: Tüketim yüzde 21 azaldı.", para)!!
+        assertTrue(made.reasonDropped); assertEquals(null, made.reason); assertTrue(made.indirect)
+    }
+}

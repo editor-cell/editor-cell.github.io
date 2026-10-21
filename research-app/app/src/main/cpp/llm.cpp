@@ -33,11 +33,14 @@ struct Engine {
     // Tokens now held in the model's memory. A new prompt that starts the same way (same
     // instructions, same claim) only has its new part read, which matters on a slow phone.
     std::vector<llama_token> cached;
-    // Set from another thread to stop the current call; llama.cpp checks it between steps.
+    // Set from another thread to stop the current call. It is checked between steps, never
+    // inside one: stopping llama.cpp in the middle of a step (its abort callback) corrupted
+    // memory in our tests with the 4B model.
     std::atomic<bool> abort{false};
 };
 
-static bool abort_cb(void * data) { return ((std::atomic<bool> *) data)->load(); }
+// The prompt is read this many tokens at a time, so a stop waits for one small step at most.
+static const int STEP = 32;
 
 static int phone_threads() {
     const int cores = (int) sysconf(_SC_NPROCESSORS_ONLN);
@@ -100,14 +103,13 @@ Java_com_orbis_research_LlmNative_nativeLoad(JNIEnv * env, jobject, jstring path
     e->model = model;
     e->ctx = ctx;
     e->vocab = llama_model_get_vocab(model);
-    llama_set_abort_callback(ctx, abort_cb, &e->abort);
     const char * t = llama_model_chat_template(model, nullptr);
     e->tmpl = t ? t : "chatml";
     LOGI("model loaded, %d threads", threads);
     return (jlong) e;
 }
 
-// Stops the call running on [handle] as soon as llama.cpp next looks; safe from any thread.
+// Stops the call running on [handle] after its current small step; safe from any thread.
 extern "C" JNIEXPORT void JNICALL
 Java_com_orbis_research_LlmNative_nativeAbort(JNIEnv *, jobject, jlong handle) {
     auto * e = (Engine *) handle;
@@ -179,14 +181,14 @@ Java_com_orbis_research_LlmNative_nativeGenerate(JNIEnv * env, jobject, jlong ha
     }
     llama_sampler_chain_add(smpl, llama_sampler_init_greedy());
 
-    // Feed the prompt in pieces no larger than the batch size.
-    for (int i = (int) common; i < nt; i += 512) {
-        int len = std::min(512, nt - i);
-        if (llama_decode(e->ctx, llama_batch_get_one(toks.data() + i, len)) != 0) {
+    // Feed the prompt in small pieces, looking for a stop between them.
+    for (int i = (int) common; i < nt; i += STEP) {
+        int len = std::min(STEP, nt - i);
+        if (e->abort || llama_decode(e->ctx, llama_batch_get_one(toks.data() + i, len)) != 0) {
             llama_sampler_free(smpl);
             llama_memory_clear(mem, true);
             e->cached.clear();
-            LOGE("decode failed");
+            if (!e->abort) LOGE("decode failed");
             return nullptr;
         }
         e->cached.insert(e->cached.end(), toks.begin() + i, toks.begin() + i + len);
@@ -232,7 +234,6 @@ Java_com_orbis_research_LlmNative_nativeLoadEmbedder(JNIEnv * env, jobject, jstr
     e->model = model;
     e->ctx = ctx;
     e->vocab = llama_model_get_vocab(model);
-    llama_set_abort_callback(ctx, abort_cb, &e->abort);
     LOGI("embedding model loaded, %d threads, %d dims", threads, llama_model_n_embd_out(model));
     return (jlong) e;
 }

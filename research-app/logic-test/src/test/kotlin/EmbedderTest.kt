@@ -58,6 +58,16 @@ class EmbedderTest {
         private val poolVectors: List<ByteArray> by lazy { pool.map { Vectors.toBytes(embed(Vectors.docText(model, it))) } }
     }
 
+    /** How long one full paragraph takes, the work done for every paragraph a phone collects. */
+    @TestFactory fun paragraphSpeed() = listOf(DynamicTest.dynamicTest("paragraph of 1200 characters") {
+        ready()
+        val para = ("In the two years after the levy took effect, purchases of taxed drinks fell among all income groups, " +
+            "with the largest falls among the poorest households, while purchases of untaxed drinks such as bottled water rose. ").repeat(6).take(1200)
+        val times = (1..5).map { val t = System.nanoTime(); LlmNative.nativeEmbed(engine, Vectors.docText(model, para)); (System.nanoTime() - t) / 1_000_000 }
+        println("PARAGRAPH ms: $times")
+        assertTrue(times.isNotEmpty())
+    })
+
     @TestFactory fun findsParagraphsByMeaning() = claims.map { (claim, relevant) ->
         DynamicTest.dynamicTest(claim) {
             ready()
