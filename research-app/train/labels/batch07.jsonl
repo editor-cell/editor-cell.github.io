@@ -1,0 +1,97 @@
+{"id":300,"tr":"Döngüsel ekonomi önlemleri AB'nin alüminyum ve nikel cevherlerine dış bağımlılığını yaklaşık yüzde 20 azaltabilir.","en":"Circularity measures could cut the EU's reliance on imported aluminium and nickel ores by around 20%.","label":"SUPPORTS"}
+{"id":300,"tr":"Döngüsel ekonomi önlemlerinin AB'nin hammadde bağımlılığına hiçbir etkisi olmaz.","en":"Circularity measures would have no effect on the EU's dependence on raw materials.","label":"CONTRADICTS"}
+{"id":300,"tr":"Geri dönüşüm oranını artıran AB ülkelerinde bakır ithalatı azaldı.","en":"Copper imports fell in EU countries that raised recycling rates.","label":"UNRELATED"}
+{"id":301,"tr":"DSÖ'nün Dijital Finans Ekibi Afrika'da 24 ülkede dijital ödeme çözümleri uyguladı.","en":"WHO's Digital Finance Team has implemented digital payment solutions in 24 African countries.","label":"SUPPORTS"}
+{"id":301,"tr":"DSÖ'nün dijital ödeme sistemleri sağlık çalışanlarının işi bırakma oranını düşürdü.","en":"WHO's digital payments reduced the rate at which health workers quit.","label":"UNRELATED"}
+{"id":302,"tr":"3.000 euroluk dijital euro sınırı bankaların likidite karşılama oranını yalnızca biraz düşürür.","en":"A €3,000 digital euro holding limit would lower banks' liquidity coverage ratio only slightly.","label":"SUPPORTS"}
+{"id":302,"tr":"Dijital euro bankaların likidite oranlarını ciddi biçimde çökertir.","en":"The digital euro would severely deplete banks' liquidity ratios.","label":"CONTRADICTS"}
+{"id":303,"tr":"Ortak dolandırıcılık veri tabanı kuran ülkelerde dolandırıcılık kayıpları azaldı.","en":"Fraud losses fell in countries that set up a shared fraud database.","label":"UNRELATED"}
+{"id":304,"tr":"Pekin'deki finans reformları yabancı yatırımı artırdı.","en":"Financial reforms in Beijing raised foreign investment.","label":"UNRELATED"}
+{"id":305,"tr":"FAO, Küresel Su Mülkiyeti Diyaloğu'nu 2022 BM Su Konferansı'nda başlattı.","en":"FAO launched the Global Dialogue on Water Tenure at the 2022 UN Water Conference.","label":"SUPPORTS"}
+{"id":305,"tr":"Su mülkiyeti haklarını düzenleyen ülkelerde tarımsal su çatışmaları azaldı.","en":"Farm water conflicts fell in countries that regulated water tenure.","label":"UNRELATED"}
+{"id":306,"tr":"Küresel sıcaklık artışının sanayi öncesi dönemin 1,5 derece üzerine çıkması bekleniyor.","en":"Global temperature rise is set to exceed 1.5°C above pre-industrial levels.","label":"SUPPORTS"}
+{"id":306,"tr":"Küresel ısınma 1,5 derece sınırının altında kalacak.","en":"Global warming will stay below the 1.5°C threshold.","label":"CONTRADICTS"}
+{"id":307,"tr":"Salgınlarda erken veri paylaşımı yapan ülkelerde ölümler azaldı.","en":"Deaths fell in countries that shared outbreak data early.","label":"UNRELATED"}
+{"id":308,"tr":"Dünyada 2,69 milyar insan sağlıklı beslenmeyi karşılayamıyor.","en":"2.69 billion people in the world cannot afford a healthy diet.","label":"SUPPORTS"}
+{"id":308,"tr":"Afrika'da sağlıklı beslenmeye erişim dünyanın geri kalanından daha hızlı iyileşiyor.","en":"Access to a healthy diet in Africa is improving faster than in the rest of the world.","label":"CONTRADICTS"}
+{"id":308,"tr":"Gıda sübvansiyonu veren ülkelerde sağlıklı beslenme ucuzladı.","en":"A healthy diet became cheaper in countries that subsidised food.","label":"UNRELATED"}
+{"id":309,"tr":"IMF'nin üç büyük incelemesi tamamlandı.","en":"The IMF's three major reviews have been completed.","label":"SUPPORTS"}
+{"id":309,"tr":"IMF programlarına katılan ülkelerde dış dengesizlikler azaldı.","en":"External imbalances fell in countries in IMF programmes.","label":"UNRELATED"}
+{"id":310,"tr":"Hollanda 2022-2023'te DSÖ'ye 106 milyon dolardan fazla katkı yaptı.","en":"The Netherlands contributed more than US$106 million to WHO in 2022-2023.","label":"SUPPORTS"}
+{"id":310,"tr":"Hollanda'nın DSÖ'ye katkılarının çoğu belirli projelere bağlı zorunlu ödemelerdi.","en":"Most of the Netherlands' contributions to WHO were assessed, not voluntary.","label":"CONTRADICTS"}
+{"id":311,"tr":"Temiz Sanayi Anlaşması'ndan sonra AB'de sanayi emisyonları düştü.","en":"Industrial emissions in the EU fell after the Clean Industrial Deal.","label":"UNRELATED"}
+{"id":312,"tr":"Harita tabanlı istatistik yayınlayan ülkelerde halkın verilere güveni arttı.","en":"Public trust in data rose in countries that published map-based statistics.","label":"UNRELATED"}
+{"id":313,"tr":"İklim bilgisine erişen Kamboçyalı çiftçilerin verimi arttı.","en":"Cambodian farmers with access to climate information had higher yields.","label":"UNRELATED"}
+{"id":314,"tr":"Giderek daha fazla dağıtık defter ağı GL1 standartlarını benimsiyor.","en":"A growing number of distributed ledger networks are adopting GL1 standards.","label":"SUPPORTS"}
+{"id":314,"tr":"GL1 standartlarını benimseyen ağlarda işlem maliyetleri düştü.","en":"Transaction costs fell on networks that adopted GL1 standards.","label":"UNRELATED"}
+{"id":315,"tr":"Orta Afrika Cumhuriyeti'nin doğusunda şiddet artıyor.","en":"Violence is multiplying in the east of the Central African Republic.","label":"SUPPORTS"}
+{"id":315,"tr":"Sudan'daki savaş Orta Afrika Cumhuriyeti'nde barış gücünün azaltılmasını kolaylaştırdı.","en":"The war in Sudan has made it easier to draw down peacekeepers in the Central African Republic.","label":"CONTRADICTS"}
+{"id":316,"tr":"İç denetim ağlarına katılan ASEAN merkez bankalarında yönetişim güçlendi.","en":"Governance improved at ASEAN central banks that joined internal audit networks.","label":"UNRELATED"}
+{"id":317,"tr":"Enflasyonu düşürmek için faiz yükselten ülkelerde ekonomik durgunluk yaşandı.","en":"Countries that raised interest rates to bring inflation down went through an economic slowdown.","label":"UNRELATED"}
+{"id":317,"tr":"Avrupa Merkez Bankası'nın faiz artışları euro bölgesi ekonomisini yavaşlattı.","en":"The ECB's rate rises slowed the euro area economy.","label":"UNRELATED"}
+{"id":318,"tr":"Düzenleyici kurumları birleştiren ülkelerde tüketici şikâyetleri azaldı.","en":"Consumer complaints fell in countries that merged their regulators.","label":"UNRELATED"}
+{"id":319,"tr":"Avrupa'da iklim risklerine ilişkin kanıtlar tutarlı biçimde ortak eyleme dönüşmüyor.","en":"Europe's evidence on climate risks is not consistently translated into coordinated action.","label":"SUPPORTS"}
+{"id":319,"tr":"Avrupa'da iklim uyumu politikaları bütün yönetim düzeylerinde tam uyumlu işliyor.","en":"Climate adaptation policy in Europe works in full coordination across all levels of government.","label":"CONTRADICTS"}
+{"id":320,"tr":"Eurostat'ın veri uyumlaştırması üye ülkelerin istatistik hatalarını azalttı.","en":"Eurostat's data harmonisation reduced Member States' statistical errors.","label":"UNRELATED"}
+{"id":321,"tr":"Sudan'daki kapsayıcı diyalog süreci şiddeti azalttı.","en":"The inclusive dialogue process in Sudan reduced violence.","label":"UNRELATED"}
+{"id":322,"tr":"İklim modelleri bilim insanlarının olası gördüğü her şeyi yakalamıyor.","en":"Climate models do not capture everything scientists know is likely to occur.","label":"SUPPORTS"}
+{"id":322,"tr":"İklim modelleri bütün olası iklim etkilerini eksiksiz hesaplıyor.","en":"Climate models fully account for every likely climate effect.","label":"CONTRADICTS"}
+{"id":323,"tr":"İrlanda Merkez Bankası bankacılık sektöründe yetkili itme ödemesi dolandırıcılığına ilişkin bir incelemeyi tamamladı.","en":"The Central Bank of Ireland completed a thematic review of authorised push payment fraud in banking.","label":"SUPPORTS"}
+{"id":323,"tr":"Kara para aklama denetimlerini artıran İrlanda'da şüpheli işlem bildirimleri arttı.","en":"Suspicious transaction reports rose in Ireland after it stepped up AML inspections.","label":"UNRELATED"}
+{"id":324,"tr":"Dünyada bir milyardan fazla insan her gün patates yiyor.","en":"More than a billion people eat potatoes every day.","label":"SUPPORTS"}
+{"id":324,"tr":"Patates yalnızca birkaç ülkede temel gıda olarak tüketiliyor.","en":"Potatoes are a staple food in only a few countries.","label":"CONTRADICTS"}
+{"id":324,"tr":"Patates üretimini artıran ülkelerde açlık azaldı.","en":"Hunger fell in countries that grew more potatoes.","label":"UNRELATED"}
+{"id":325,"tr":"Dolandırıcılık mağdurlarına hızlı geri ödeme yapan bankalarda müşteri kaybı azaldı.","en":"Banks that refunded fraud victims quickly lost fewer customers.","label":"UNRELATED"}
+{"id":326,"tr":"Çin Halk Bankası bu yıl yabancı merkez bankaları için bir renminbi repo imkânı kurdu.","en":"The PBOC set up a renminbi repo facility for overseas central banks this year.","label":"SUPPORTS"}
+{"id":326,"tr":"Renminbi repo imkânı yabancı merkez bankalarının renminbi rezervlerini artırdı.","en":"The renminbi repo facility increased foreign central banks' renminbi reserves.","label":"UNRELATED"}
+{"id":327,"tr":"Ayrıştırılmış sağlık verisi toplayan ülkeler COVID-19'a daha iyi yanıt verdi.","en":"Countries that collected disaggregated health data responded better to COVID-19.","label":"UNRELATED"}
+{"id":328,"tr":"Sosyal İklim Fonu emisyon ticaretinin ikinci aşamasının gelirleriyle finanse edilecek.","en":"The Social Climate Fund will be financed by ETS2 revenues.","label":"SUPPORTS"}
+{"id":328,"tr":"Sosyal İklim Fonu düşük gelirli hanelerin enerji yoksulluğunu azalttı.","en":"The Social Climate Fund reduced energy poverty among low-income households.","label":"UNRELATED"}
+{"id":329,"tr":"Kenya'da küçük ölçekli kahve üretimi büyük ölçüde kooperatiflere dayanıyor.","en":"Small-scale coffee production in Kenya relies heavily on cooperatives.","label":"SUPPORTS"}
+{"id":329,"tr":"Kenyalı kahve çiftçileri kooperatiflerden bağımsız çalışıyor.","en":"Kenyan coffee farmers work independently of cooperatives.","label":"CONTRADICTS"}
+{"id":330,"tr":"Enerji fiyatlarındaki artış sağlıklı şirketlerde bile ani bir nakit sıkışıklığı yaratabilir.","en":"A surge in energy prices can create an immediate cash-flow squeeze even for healthy firms.","label":"SUPPORTS"}
+{"id":330,"tr":"Enerji şoku şirketlerin kısa vadeli finansman ihtiyacını azalttı.","en":"The energy shock reduced firms' short-term financing needs.","label":"CONTRADICTS"}
+{"id":330,"tr":"Enflasyonu düşürmek için faiz yükselten ülkelerde ekonomik durgunluk yaşandı.","en":"Countries that raised interest rates to bring inflation down went through an economic slowdown.","label":"UNRELATED"}
+{"id":331,"tr":"Eylül'de manşet enflasyon yükseldi.","en":"Headline inflation rose in September.","label":"SUPPORTS"}
+{"id":331,"tr":"Enerji şoku ücretlerde belirgin bir artışa yol açtı.","en":"The energy shock led to a marked rise in wages.","label":"CONTRADICTS"}
+{"id":331,"tr":"Faiz artırımından sonra enflasyon geriledi.","en":"Inflation fell after the rate hike.","label":"UNRELATED"}
+{"id":332,"tr":"Sürdürülebilir Kalkınma Hedefleri'nin yalnızca yüzde 36'sı yolunda ya da orta düzeyde ilerliyor.","en":"Only 36 per cent of assessable SDG targets are on track or making moderate progress.","label":"SUPPORTS"}
+{"id":332,"tr":"Sürdürülebilir Kalkınma Hedefleri'nin büyük çoğunluğu yolunda ilerliyor.","en":"Most Sustainable Development Goal targets are on track.","label":"CONTRADICTS"}
+{"id":333,"tr":"Hindistan, DSÖ Küresel Geleneksel Tıp Merkezi'ne on yılda 85 milyon dolar katkı taahhüt etti.","en":"India committed US$85 million over ten years to the WHO Global Traditional Medicine Centre.","label":"SUPPORTS"}
+{"id":333,"tr":"Hindistan'ın katkısı geleneksel tıp ürünlerinin güvenliğini artırdı.","en":"India's contribution made traditional medicine products safer.","label":"UNRELATED"}
+{"id":334,"tr":"Liberya'nın eski Devlet Başkanı Ellen Johnson Sirleaf açılış törenine katıldı.","en":"Former Liberian President Ellen Johnson Sirleaf took part in the opening ceremony.","label":"SUPPORTS"}
+{"id":335,"tr":"İsviçre, DSÖ Avrupa Bölgesi'nde DSÖ ile işbirliği stratejisini deneyen ilk yüksek gelirli ülke oldu.","en":"Switzerland was the first high-income country in WHO's European Region to pilot a cooperation strategy with WHO.","label":"SUPPORTS"}
+{"id":335,"tr":"İsviçre DSÖ ile işbirliği stratejisini yenilemedi.","en":"Switzerland did not renew its cooperation strategy with WHO.","label":"CONTRADICTS"}
+{"id":336,"tr":"Dünya Bankası'nın Ukrayna'daki çalışmaları özel yatırımları artırdı.","en":"The World Bank's work in Ukraine increased private investment.","label":"UNRELATED"}
+{"id":337,"tr":"Döngüsel iş modellerini destekleyen ülkelerde istihdam arttı.","en":"Employment rose in countries that supported circular business models.","label":"UNRELATED"}
+{"id":338,"tr":"Hollanda ile DSÖ arasındaki stratejik diyalog salgın hazırlığını iyileştirdi.","en":"The strategic dialogue between the Netherlands and WHO improved pandemic preparedness.","label":"UNRELATED"}
+{"id":339,"tr":"Dokuz gezegen sınırının yedisi aşılmış durumda.","en":"Seven of the nine planetary boundaries have already been transgressed.","label":"SUPPORTS"}
+{"id":339,"tr":"İnsanlık gezegen sınırlarının çoğunun içinde yaşıyor.","en":"Humanity is living within most of its planetary boundaries.","label":"CONTRADICTS"}
+{"id":340,"tr":"Filipinler'de en yoksul kesimler arasında refahın bir numaralı göstergesi düşük enflasyon.","en":"Among the poorest in the Philippines, low inflation is the number one indicator of well-being.","label":"SUPPORTS"}
+{"id":340,"tr":"Enflasyon hedeflemesi uygulayan ülkelerde yoksulluk azaldı.","en":"Poverty fell in countries with inflation targeting.","label":"UNRELATED"}
+{"id":341,"tr":"Yapay zekâyı benimseyen bankaların yönetim kurulları daha iyi kararlar aldı.","en":"Bank boards that embraced AI made better decisions.","label":"UNRELATED"}
+{"id":342,"tr":"Çin'de bazı finans kuruluşları değişken faizli kredilerde gecelik repo faizini gösterge olarak kullanmaya başladı.","en":"Some financial institutions in China have started using the overnight repo rate as the benchmark for floating-rate loans.","label":"SUPPORTS"}
+{"id":342,"tr":"Çin'de kredi fiyatlamasında tek gösterge hâlâ LPR.","en":"The LPR remains the only benchmark for loan pricing in China.","label":"CONTRADICTS"}
+{"id":343,"tr":"Uzun vadeli faizlerdeki küresel artış euro bölgesinde büyümeyi beklenenden fazla yavaşlattı.","en":"The global rise in long-term rates slowed euro area growth more than expected.","label":"UNRELATED"}
+{"id":344,"tr":"Avrupa Merkez Bankası para kuruluşlarının faiz istatistiklerine ilişkin yönergesini değiştirdi.","en":"The ECB amended its guideline on interest rate statistics of monetary financial institutions.","label":"SUPPORTS"}
+{"id":345,"tr":"Çin'in sınır ötesi işlemlerinde renminbi ile yapılan ödemelerin payı son on yılda iki katına çıktı.","en":"The share of renminbi settlement in China's cross-border transactions has doubled over the last decade.","label":"SUPPORTS"}
+{"id":345,"tr":"Çin'in sınır ötesi işlemlerinin çoğu hâlâ dolarla yapılıyor.","en":"Most of China's cross-border transactions are still settled in dollars.","label":"CONTRADICTS"}
+{"id":345,"tr":"Renminbinin uluslararasılaşması Çin'e yabancı yatırımı artırdı.","en":"The internationalisation of the renminbi raised foreign investment in China.","label":"UNRELATED"}
+{"id":346,"tr":"Yapay zekâ bazı mesleklerde talebi artırırken bazılarında azaltabilir.","en":"AI may raise demand for some occupations and lower it for others.","label":"SUPPORTS"}
+{"id":346,"tr":"Yapay zekâyı benimseyen şirketlerde istihdam azaldı.","en":"Employment fell at firms that adopted AI.","label":"UNRELATED"}
+{"id":347,"tr":"Müşterini tanı kurallarını sıkılaştıran ülkelerde kara para aklama azaldı.","en":"Money laundering fell in countries that tightened know-your-customer rules.","label":"UNRELATED"}
+{"id":348,"tr":"El Niño nedeniyle 50 milyon kadar insan daha fazla açlıkla karşılaşabilir.","en":"Some 50 million people could face increased hunger because of El Niño.","label":"SUPPORTS"}
+{"id":348,"tr":"El Niño'nun Afrika ekonomilerine bir maliyeti olmayacak.","en":"El Niño will have no cost for African economies.","label":"CONTRADICTS"}
+{"id":348,"tr":"El Niño yıllarında Afrika'da gıda ithalatı arttı.","en":"Food imports in Africa rose in El Niño years.","label":"UNRELATED"}
+{"id":349,"tr":"Temiz enerji sektöründe kadınlar ve gençler az temsil ediliyor.","en":"Women and young people are underrepresented in the clean energy sector.","label":"SUPPORTS"}
+{"id":349,"tr":"Temiz enerji sektöründe nitelikli işgücü fazlası var.","en":"There is a surplus of skilled workers in the clean energy sector.","label":"CONTRADICTS"}
+{"id":349,"tr":"Yenilenebilir enerjiye geçen bölgelerde fosil yakıt işçileri işsiz kaldı.","en":"Fossil fuel workers lost their jobs in regions that moved to renewables.","label":"UNRELATED"}
+{"id":350,"tr":"Programlanabilir para kullanan ülkelerde ödemeler hızlandı.","en":"Payments got faster in countries that used programmable money.","label":"UNRELATED"}
+{"id":351,"tr":"Fransa yeni bir küresel sağlık mimarisi kurulmasına destek çağrısı yaptı.","en":"France called for support to build a new global health architecture.","label":"SUPPORTS"}
+{"id":351,"tr":"Fransa'nın sağlık diplomasisi Afrika'da sağlık hizmetlerine erişimi artırdı.","en":"France's health diplomacy improved access to health care in Africa.","label":"UNRELATED"}
+{"id":352,"tr":"Euro banknotlarının tasarım anketini yaklaşık on milyon kişi tamamladı.","en":"Almost ten million people completed the survey on the design of euro banknotes.","label":"SUPPORTS"}
+{"id":352,"tr":"Euro banknot anketine katılım çok düşük kaldı.","en":"Participation in the euro banknote survey was very low.","label":"CONTRADICTS"}
+{"id":353,"tr":"Fildişi Sahili, Liberya ve Tanzanya'daki sağlık çalışanları ücretlerini dijital olarak almanın hızını takdir etti.","en":"Health workers in Côte d'Ivoire, Liberia and Tanzania valued the speed of being paid digitally.","label":"SUPPORTS"}
+{"id":353,"tr":"Dijital ödemeye geçişten sonra sağlık çalışanları ücretlerini daha geç almaya başladı.","en":"After the switch to digital payments, health workers were paid later.","label":"CONTRADICTS"}
+{"id":353,"tr":"Dijital ödemelere geçen ülkelerde sağlık çalışanlarının işten ayrılma oranı düştü.","en":"Health worker turnover fell in countries that moved to digital payments.","label":"UNRELATED"}
+{"id":354,"tr":"Doğruluk kontrolü yapan kuruluşların çalışmaları yanlış bilgilerin yayılmasını azalttı.","en":"Fact-checkers' work reduced the spread of misinformation.","label":"UNRELATED"}
