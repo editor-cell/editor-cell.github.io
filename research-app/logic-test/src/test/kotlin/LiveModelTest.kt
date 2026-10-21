@@ -82,6 +82,32 @@ class LiveModelTest {
             "reaching a market share of 14.6%."),
     )
 
+    /** Without the translation step: the model reads the Turkish claim as it was written. */
+    @TestFactory fun judgesParagraphsFromTurkishAlone() = cases.map { c ->
+        DynamicTest.dynamicTest("TR ${c.expected}: ${c.text.take(46)}") {
+            ready()
+            val p = Paragraph(1, c.text, "https://example.org/r", "Report", "", "Example")
+            val a = ask(Prompts.JUDGE_SYSTEM, Prompts.judge(c.claim, c.claim, p), Prompts.JUDGE_GRAMMAR, 6)
+            assertEquals(c.expected, a, "got $a")
+        }
+    }
+
+    /** "Durdur" must end an answer in progress at once, not when the model is done. */
+    @TestFactory fun stopsAtOnce() = listOf(DynamicTest.dynamicTest("abort") {
+        ready()
+        var out: String? = "unset"
+        val t = Thread { out = LlmNative.nativeGenerate(engine, "You write long essays.", "Write 400 words about rivers.", "", Prompts.answerPrefix(model), 400) }
+        t.start()
+        Thread.sleep(1500)
+        val asked = System.currentTimeMillis()
+        LlmNative.nativeAbort(engine)
+        t.join(10_000)
+        val took = System.currentTimeMillis() - asked
+        println("ABORT took $took ms")
+        assertTrue(!t.isAlive && took < 1500, "still running after $took ms")
+        assertEquals(null, out)
+    })
+
     @TestFactory fun judgesParagraphs() = cases.map { c ->
         DynamicTest.dynamicTest("${c.expected}: ${c.text.take(50)}") {
             ready()

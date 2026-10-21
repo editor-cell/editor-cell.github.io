@@ -1,5 +1,5 @@
-// A thin JNI bridge to llama.cpp: load one GGUF model, run one prompt at a time.
-// Every call starts from an empty context, so no answer leaks into the next.
+// A thin JNI bridge to llama.cpp: load a GGUF model and either run one prompt at a time
+// (the language model) or turn a text into a vector of its meaning (the embedding model).
 
 #include <jni.h>
 #ifdef __ANDROID__
@@ -14,6 +14,7 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <atomic>
 #include <string>
 #include <vector>
 
@@ -32,7 +33,16 @@ struct Engine {
     // Tokens now held in the model's memory. A new prompt that starts the same way (same
     // instructions, same claim) only has its new part read, which matters on a slow phone.
     std::vector<llama_token> cached;
+    // Set from another thread to stop the current call; llama.cpp checks it between steps.
+    std::atomic<bool> abort{false};
 };
+
+static bool abort_cb(void * data) { return ((std::atomic<bool> *) data)->load(); }
+
+static int phone_threads() {
+    const int cores = (int) sysconf(_SC_NPROCESSORS_ONLN);
+    return std::max(2, std::min(4, cores - 2));
+}
 
 static void log_cb(ggml_log_level level, const char * text, void *) {
     if (level >= GGML_LOG_LEVEL_WARN) __android_log_print(ANDROID_LOG_WARN, TAG, "%s", text);
@@ -76,8 +86,7 @@ Java_com_orbis_research_LlmNative_nativeLoad(JNIEnv * env, jobject, jstring path
     llama_model * model = llama_model_load_from_file(p.c_str(), mp);
     if (!model) { LOGE("model load failed: %s", p.c_str()); return 0; }
 
-    const int cores = (int) sysconf(_SC_NPROCESSORS_ONLN);
-    const int threads = std::max(2, std::min(4, cores - 2));
+    const int threads = phone_threads();
     llama_context_params cp = llama_context_default_params();
     cp.n_ctx = (uint32_t) nCtx;
     cp.n_batch = 512;
@@ -91,10 +100,18 @@ Java_com_orbis_research_LlmNative_nativeLoad(JNIEnv * env, jobject, jstring path
     e->model = model;
     e->ctx = ctx;
     e->vocab = llama_model_get_vocab(model);
+    llama_set_abort_callback(ctx, abort_cb, &e->abort);
     const char * t = llama_model_chat_template(model, nullptr);
     e->tmpl = t ? t : "chatml";
     LOGI("model loaded, %d threads", threads);
     return (jlong) e;
+}
+
+// Stops the call running on [handle] as soon as llama.cpp next looks; safe from any thread.
+extern "C" JNIEXPORT void JNICALL
+Java_com_orbis_research_LlmNative_nativeAbort(JNIEnv *, jobject, jlong handle) {
+    auto * e = (Engine *) handle;
+    if (e) e->abort = true;
 }
 
 extern "C" JNIEXPORT void JNICALL
@@ -114,6 +131,7 @@ Java_com_orbis_research_LlmNative_nativeGenerate(JNIEnv * env, jobject, jlong ha
                                            jstring juser, jstring jgrammar, jstring jprefix, jint maxTokens) {
     auto * e = (Engine *) handle;
     if (!e) return nullptr;
+    e->abort = false;
     std::string sys = jstr(env, jsys), user = jstr(env, juser), grammar = jstr(env, jgrammar);
 
     llama_chat_message msgs[2] = {{"system", sys.c_str()}, {"user", user.c_str()}};
@@ -176,7 +194,7 @@ Java_com_orbis_research_LlmNative_nativeGenerate(JNIEnv * env, jobject, jlong ha
 
     std::string out;
     char piece[256];
-    for (int i = 0; i < maxTokens; i++) {
+    for (int i = 0; i < maxTokens && !e->abort; i++) {
         llama_token tok = llama_sampler_sample(smpl, e->ctx, -1);
         if (llama_vocab_is_eog(e->vocab, tok)) break;
         int len = llama_token_to_piece(e->vocab, tok, piece, sizeof(piece), 0, false);
@@ -189,5 +207,78 @@ Java_com_orbis_research_LlmNative_nativeGenerate(JNIEnv * env, jobject, jlong ha
         e->cached.push_back(tok);
     }
     llama_sampler_free(smpl);
+    if (e->abort) return nullptr;
     return to_jstring(env, out);
+}
+
+// ---- meaning vectors ----
+
+extern "C" JNIEXPORT jlong JNICALL
+Java_com_orbis_research_LlmNative_nativeLoadEmbedder(JNIEnv * env, jobject, jstring path, jint nCtx) {
+    std::string p = jstr(env, path);
+    llama_model * model = llama_model_load_from_file(p.c_str(), llama_model_default_params());
+    if (!model) { LOGE("embedding model load failed: %s", p.c_str()); return 0; }
+    const int threads = phone_threads();
+    llama_context_params cp = llama_context_default_params();
+    cp.n_ctx = (uint32_t) nCtx;
+    cp.n_batch = (uint32_t) nCtx;   // a text is read in one piece: these models look both ways
+    cp.n_ubatch = (uint32_t) nCtx;
+    cp.n_threads = threads;
+    cp.n_threads_batch = threads;
+    cp.embeddings = true;
+    llama_context * ctx = llama_init_from_model(model, cp);
+    if (!ctx) { llama_model_free(model); LOGE("embedding context init failed"); return 0; }
+    auto * e = new Engine();
+    e->model = model;
+    e->ctx = ctx;
+    e->vocab = llama_model_get_vocab(model);
+    llama_set_abort_callback(ctx, abort_cb, &e->abort);
+    LOGI("embedding model loaded, %d threads, %d dims", threads, llama_model_n_embd_out(model));
+    return (jlong) e;
+}
+
+// The meaning of [text] as a vector (not yet normalised); null if it could not be read.
+extern "C" JNIEXPORT jfloatArray JNICALL
+Java_com_orbis_research_LlmNative_nativeEmbed(JNIEnv * env, jobject, jlong handle, jstring jtext) {
+    auto * e = (Engine *) handle;
+    if (!e) return nullptr;
+    e->abort = false;
+    std::string text = jstr(env, jtext);
+    const int n_ctx = (int) llama_n_ctx(e->ctx);
+    std::vector<llama_token> toks(text.size() + 16);
+    int nt = llama_tokenize(e->vocab, text.c_str(), (int32_t) text.size(), toks.data(), (int32_t) toks.size(), true, false);
+    if (nt < 0) {
+        toks.resize(-nt);
+        nt = llama_tokenize(e->vocab, text.c_str(), (int32_t) text.size(), toks.data(), (int32_t) toks.size(), true, false);
+    }
+    if (nt <= 0) return nullptr;
+    if (nt > n_ctx) {
+        // Keep the beginning, and the end-of-text marker some models pool on.
+        llama_token last = toks[nt - 1];
+        nt = n_ctx;
+        if (llama_vocab_get_add_eos(e->vocab)) toks[nt - 1] = last;
+    }
+    llama_batch batch = llama_batch_init(nt, 0, 1);
+    for (int i = 0; i < nt; i++) {
+        batch.token[i] = toks[i];
+        batch.pos[i] = i;
+        batch.n_seq_id[i] = 1;
+        batch.seq_id[i][0] = 0;
+        batch.logits[i] = true;
+    }
+    batch.n_tokens = nt;
+    llama_memory_clear(llama_get_memory(e->ctx), true);
+    const llama_model * m = e->model;
+    int rc = (llama_model_has_encoder(m) && !llama_model_has_decoder(m)) ? llama_encode(e->ctx, batch) : llama_decode(e->ctx, batch);
+    llama_batch_free(batch);
+    if (rc != 0) { LOGE("embedding failed: %d", rc); return nullptr; }
+
+    const int n = llama_model_n_embd_out(m);
+    const float * v = llama_pooling_type(e->ctx) == LLAMA_POOLING_TYPE_NONE
+        ? llama_get_embeddings_ith(e->ctx, nt - 1)
+        : llama_get_embeddings_seq(e->ctx, 0);
+    if (!v) return nullptr;
+    jfloatArray out = env->NewFloatArray(n);
+    env->SetFloatArrayRegion(out, 0, n, v);
+    return out;
 }
