@@ -39,8 +39,7 @@ object Prompts {
     /** Step one: does the paragraph bear on the claim? One word. */
     fun judge(claim: String, p: Paragraph): String = claimAndParagraph(claim, p) +
         "Does this paragraph show the claim is true (SUPPORTS), show it is false, for example no effect, " +
-        "no change or the opposite (CONTRADICTS), or neither (UNRELATED)? Figures before and after that show " +
-        "the change count as showing it. Answer with one word."
+        "no change or the opposite (CONTRADICTS), or neither (UNRELATED)? Answer with one word."
 
     const val JUDGE_GRAMMAR = "root ::= \"SUPPORTS\" | \"CONTRADICTS\" | \"UNRELATED\""
 
