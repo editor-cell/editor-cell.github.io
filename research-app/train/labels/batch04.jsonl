@@ -1,0 +1,99 @@
+{"id":135,"tr":"Döviz kuru ile cari denge arasında doğrudan bir ilişki yoktur.","en":"There is no straightforward relationship between the exchange rate and the current account.","label":"SUPPORTS"}
+{"id":135,"tr":"Kurun değer kaybı cari açığı her zaman kapatır.","en":"A weaker currency always closes a current account deficit.","label":"CONTRADICTS"}
+{"id":135,"tr":"Kurunu düşük tutan ülkelerde ihracat arttı.","en":"Countries that kept their currency undervalued exported more.","label":"UNRELATED"}
+{"id":136,"tr":"Project Guardian, varlıkların tokenleştirilmesinin farklı varlık sınıflarında değer yarattığını test etti.","en":"Project Guardian tested and established the value of tokenisation across asset classes.","label":"SUPPORTS"}
+{"id":136,"tr":"Tokenleştirme ticari olarak yaygınlaştı.","en":"Tokenisation has reached wide commercial adoption.","label":"CONTRADICTS"}
+{"id":137,"tr":"Çin'de bankalararası gecelik repo faizi son yıllarda oldukça istikrarlı seyretti.","en":"China's interbank overnight repo rate has been quite stable in recent years.","label":"SUPPORTS"}
+{"id":137,"tr":"Çin'de gecelik repo faizi son yıllarda çok oynak oldu.","en":"China's overnight repo rate has been very volatile in recent years.","label":"CONTRADICTS"}
+{"id":137,"tr":"Faiz koridorunu daraltan Çin'de kredi büyümesi hızlandı.","en":"Credit growth sped up in China after it narrowed its interest rate corridor.","label":"UNRELATED"}
+{"id":138,"tr":"Yüksek borçlanma maliyetleri ve zayıf büyüme borç-milli gelir oranını yükseltir.","en":"Higher borrowing costs and weaker growth raise debt-to-GDP ratios.","label":"SUPPORTS"}
+{"id":138,"tr":"Faiz artışlarından sonra bazı ülkelerde kamu borcunun milli gelire oranı yükseldi.","en":"After rate rises, public debt-to-GDP rose in some countries.","label":"UNRELATED"}
+{"id":139,"tr":"Enerji arz şokunun ikinci dalgası büyüme görünümü için aşağı yönlü risk oluşturuyor.","en":"The second wave of the energy supply shock poses downside risks to growth.","label":"SUPPORTS"}
+{"id":139,"tr":"Enerji şokunun ikinci dalgası euro bölgesinde büyümeyi düşürdü.","en":"The second wave of the energy shock lowered growth in the euro area.","label":"UNRELATED"}
+{"id":140,"tr":"Okyanus ısısı rekor seviyeye ulaştı.","en":"Ocean heat has reached record levels.","label":"SUPPORTS"}
+{"id":140,"tr":"Son yirmi yılda okyanusların ısınma hızı yavaşladı.","en":"Ocean warming has slowed over the past two decades.","label":"CONTRADICTS"}
+{"id":140,"tr":"Mercan resiflerini koruyan ülkelerde balıkçılık geliri arttı.","en":"Fishing income rose in countries that protected coral reefs.","label":"UNRELATED"}
+{"id":141,"tr":"Sahte e-para ödemeleri iki yıl üst üste en hızlı artan dolandırıcılık türü oldu.","en":"Fraudulent e-money payments saw the biggest relative increase for the second year running.","label":"SUPPORTS"}
+{"id":141,"tr":"Sahte e-para ödemeleri geçen yıl azaldı.","en":"Fraudulent e-money payments fell last year.","label":"CONTRADICTS"}
+{"id":142,"tr":"DSÖ'nün finansmanına katkı veren Afrika ülkeleri arasında Ruanda ve Senegal de var.","en":"Rwanda and Senegal are among the African countries that pledged to fund WHO.","label":"SUPPORTS"}
+{"id":142,"tr":"DSÖ'ye katkı veren Afrika ülkelerinde sağlık harcamaları arttı.","en":"Health spending rose in the African countries that contributed to WHO.","label":"UNRELATED"}
+{"id":143,"tr":"MINUSCA'nın hızlı müdahalesi Çad ve Sudan sınırındaki saldırılarda ölü sayısının daha yüksek olmasını önledi.","en":"MINUSCA's rapid response prevented more deaths in attacks near the borders with Chad and Sudan.","label":"SUPPORTS"}
+{"id":143,"tr":"MINUSCA'nın müdahalesi sınır bölgesindeki saldırılarda kayıpları artırdı.","en":"MINUSCA's response increased casualties in the border attacks.","label":"CONTRADICTS"}
+{"id":144,"tr":"Dijital euro Avrupa'da kart ödemelerinin maliyetini düşürdü.","en":"The digital euro lowered the cost of card payments in Europe.","label":"UNRELATED"}
+{"id":145,"tr":"ChatGPT'nin çıkışından bu yana veri merkezlerine ve dijitalleşmeye yatırım yaklaşık yüzde 15 arttı.","en":"Investment in data centres and digitalisation has risen by about 15 per cent since ChatGPT's launch.","label":"SUPPORTS"}
+{"id":145,"tr":"Avrupalı şirketler yapay zekâya yatırım yapmayı planlamıyor.","en":"European firms do not plan to invest in AI.","label":"CONTRADICTS"}
+{"id":145,"tr":"Yapay zekâ yatırımları euro bölgesinde verimliliği artırdı.","en":"AI investment raised productivity in the euro area.","label":"UNRELATED"}
+{"id":146,"tr":"Stablecoin kullanan ülkelerde bankacılık mevduatları azaldı.","en":"Bank deposits fell in countries where stablecoins were used.","label":"UNRELATED"}
+{"id":147,"tr":"Yemen'de dört milyondan fazla insan yerinden edilmiş durumda.","en":"More than four million people are displaced in Yemen.","label":"SUPPORTS"}
+{"id":147,"tr":"2024'te Yemen'de sel felaketi yaşanmadı.","en":"There were no floods in Yemen in 2024.","label":"CONTRADICTS"}
+{"id":147,"tr":"Al-Hazm'daki sel kanalı sel zararlarını azalttı.","en":"The flood channel in Al-Hazm reduced flood damage.","label":"UNRELATED"}
+{"id":148,"tr":"Euro bölgesi ekonomisi şu ana kadar dayanıklı kaldı ve büyümeye yönelik aşağı yönlü risk gerçekleşmedi.","en":"The euro area economy has so far been resilient, and the downside risk to activity has not materialised.","label":"SUPPORTS"}
+{"id":148,"tr":"Enerji şoku euro bölgesinde ekonomik faaliyeti çökertti.","en":"The energy shock caused economic activity in the euro area to collapse.","label":"CONTRADICTS"}
+{"id":148,"tr":"Enflasyonu düşürmek için faiz yükselten ülkelerde ekonomik durgunluk yaşandı.","en":"Countries that raised interest rates to bring inflation down went through an economic slowdown.","label":"UNRELATED"}
+{"id":149,"tr":"AB'de elektrik tüketiminde yenilenebilir enerjinin payı 2021'den 2025 sonuna arttı.","en":"The share of renewables in EU electricity consumption rose between 2021 and the end of 2025.","label":"SUPPORTS"}
+{"id":149,"tr":"AB'de sanayinin gaz kullanımı 2021'den bu yana arttı.","en":"Industrial gas use in the EU has risen since 2021.","label":"CONTRADICTS"}
+{"id":149,"tr":"Yüksek enerji fiyatları enerji tüketimini azalttı.","en":"Higher energy prices led to lower energy consumption.","label":"SUPPORTS"}
+{"id":149,"tr":"Yenilenebilir enerjiye geçiş AB'de elektrik faturalarını düşürdü.","en":"The shift to renewables lowered electricity bills in the EU.","label":"UNRELATED"}
+{"id":150,"tr":"Geleneksel tıbbı yaygınlaştıran ülkelerde hastane başvuruları azaldı.","en":"Hospital visits fell in countries that expanded traditional medicine.","label":"UNRELATED"}
+{"id":151,"tr":"Kredi yönlendirmesi yapan ülkelerde stratejik sektörler daha hızlı büyüdü.","en":"Strategic sectors grew faster in countries that directed credit.","label":"UNRELATED"}
+{"id":152,"tr":"Yapay zekâ euro bölgesinde potansiyel büyümeyi şimdiden artırdı.","en":"AI has already raised potential growth in the euro area.","label":"UNRELATED"}
+{"id":153,"tr":"Avrupa Çevre Ajansı aşırı hava olaylarına ilişkin kanıtları bir araya getiren bir çevrimiçi platform açtı.","en":"The EEA launched an online platform bringing together its evidence on extreme weather events.","label":"SUPPORTS"}
+{"id":153,"tr":"Sel uyarı sistemlerini geliştiren Avrupa ülkelerinde sel ölümleri azaldı.","en":"Flood deaths fell in European countries that improved flood warnings.","label":"UNRELATED"}
+{"id":154,"tr":"DSÖ, Better Than Cash Alliance'a katıldı.","en":"WHO joined the Better Than Cash Alliance.","label":"SUPPORTS"}
+{"id":154,"tr":"Sağlık ödemelerini dijitalleştiren ülkelerde sağlık çalışanlarının maaşları daha düzenli ödendi.","en":"Health workers were paid more reliably in countries that digitised health payments.","label":"UNRELATED"}
+{"id":155,"tr":"Avrupa Merkez Bankası'nın Eylül tahminine göre manşet enflasyon 2026'da ortalama yüzde 3 olacak.","en":"The ECB's September projections see headline inflation averaging 3.0% in 2026.","label":"SUPPORTS"}
+{"id":155,"tr":"Avrupa Merkez Bankası 2027 enflasyon tahminini aşağı yönlü revize etti.","en":"The ECB revised its 2027 inflation projection down.","label":"CONTRADICTS"}
+{"id":155,"tr":"Emisyon ticaret sistemi euro bölgesinde enflasyonu yükseltti.","en":"The emissions trading system pushed up inflation in the euro area.","label":"UNRELATED"}
+{"id":156,"tr":"Ekonomik büyüme ve verimlilik artışı her zaman daha iyi işlere ve daha yüksek gelirlere dönüşür.","en":"Economic growth and rising productivity always translate into better jobs and higher incomes.","label":"CONTRADICTS"}
+{"id":156,"tr":"Asgari ücreti artıran ülkelerde verimlilik düştü.","en":"Productivity fell in countries that raised the minimum wage.","label":"UNRELATED"}
+{"id":157,"tr":"Su verimliliğine yatırım yapan ülkelerde tarımsal su kullanımı azaldı.","en":"Agricultural water use fell in countries that invested in water efficiency.","label":"UNRELATED"}
+{"id":158,"tr":"Fotoğraf yarışmasına katılım geçen yıla göre arttı.","en":"Entries to the photo competition rose compared with last year.","label":"UNRELATED"}
+{"id":159,"tr":"FAO ile çalışan kahve üreticisi ülkelerde küçük çiftçilerin geliri arttı.","en":"Smallholder incomes rose in coffee-growing countries working with FAO.","label":"UNRELATED"}
+{"id":160,"tr":"Sudan'daki çatışma Nisan 2023'te Sudan Silahlı Kuvvetleri ile Hızlı Destek Kuvvetleri arasında başladı.","en":"The conflict in Sudan began in April 2023 between the Sudanese Armed Forces and the Rapid Support Forces.","label":"SUPPORTS"}
+{"id":160,"tr":"Sudan'daki çatışma 2019'da sona erdi.","en":"The conflict in Sudan ended in 2019.","label":"CONTRADICTS"}
+{"id":161,"tr":"Avrupa'da sağlık çalışanı sayısı son on yılda azaldı.","en":"The number of health workers in Europe has fallen over the past decade.","label":"UNRELATED"}
+{"id":162,"tr":"Akıllı telefon verisi kullanan istatistik kurumlarında anket maliyetleri düştü.","en":"Survey costs fell at statistical offices that used smartphone data.","label":"UNRELATED"}
+{"id":163,"tr":"Yapay Zekâ Yasası AB'de dijital şirketlerin rekabet gücünü azalttı.","en":"The AI Act reduced the competitiveness of digital firms in the EU.","label":"UNRELATED"}
+{"id":164,"tr":"Çin Halk Bankası bazı yabancı bankaları renminbi takas bankası olarak atadı.","en":"The People's Bank of China has appointed several foreign banks as renminbi clearing banks.","label":"SUPPORTS"}
+{"id":164,"tr":"Çin sınır ötesi renminbi işlemlerinin maliyetini artırdı.","en":"China has raised the cost of cross-border renminbi business.","label":"CONTRADICTS"}
+{"id":164,"tr":"Renminbi takas bankalarının artması Çin'in dış ticaretini büyüttü.","en":"More renminbi clearing banks boosted China's foreign trade.","label":"UNRELATED"}
+{"id":165,"tr":"Swap hatları doğrudan banka kredisi kanalıyla işler.","en":"Swap lines work more directly through the bank credit channel.","label":"SUPPORTS"}
+{"id":165,"tr":"Swap hatlarını kullanan ülkelerde kriz sırasında kredi daralması yaşanmadı.","en":"Countries that used swap lines had no credit crunch during crises.","label":"UNRELATED"}
+{"id":166,"tr":"Ozonu azaltmak diğer büyük hava kirleticilerini azaltmaktan daha zordur.","en":"Reducing ozone is harder than reducing other major air pollutants.","label":"SUPPORTS"}
+{"id":166,"tr":"Ozon doğrudan bacalardan salınan bir kirleticidir.","en":"Ozone is emitted directly from chimneys.","label":"CONTRADICTS"}
+{"id":166,"tr":"Yer seviyesindeki ozon nasıl oluşur?","en":"How is ground-level ozone formed?","label":"SUPPORTS"}
+{"id":167,"tr":"AB ve üye devlet politikaları emisyonlardaki düşüşün önemli bir kısmını sağladı.","en":"EU and Member State policies drove much of the decline in emissions.","label":"SUPPORTS"}
+{"id":167,"tr":"AB politikalarının emisyonlardaki düşüşte hiçbir payı olmadı.","en":"EU policies played no part in the fall in emissions.","label":"CONTRADICTS"}
+{"id":167,"tr":"Emisyon ticaret sistemi AB'de elektrik fiyatlarını yükseltti.","en":"The emissions trading system raised electricity prices in the EU.","label":"UNRELATED"}
+{"id":168,"tr":"Sağlıklı beslenme ve sigarayı bırakmak tansiyonu düşürmeye yardımcı olur.","en":"A healthier diet and quitting tobacco can help lower blood pressure.","label":"SUPPORTS"}
+{"id":168,"tr":"Yaşam tarzı değişikliklerinin tansiyon üzerinde hiçbir etkisi yoktur.","en":"Lifestyle changes have no effect on blood pressure.","label":"CONTRADICTS"}
+{"id":168,"tr":"Tansiyon ilacını ücretsiz dağıtan ülkelerde kalp krizi ölümleri azaldı.","en":"Countries that gave blood pressure drugs free of charge saw fewer heart attack deaths.","label":"UNRELATED"}
+{"id":169,"tr":"Denizcilik Çalışma Sözleşmesi gemi adamlarının çalışma koşullarını iyileştirdi.","en":"The Maritime Labour Convention improved seafarers' working conditions.","label":"UNRELATED"}
+{"id":170,"tr":"Tokenleştirilmiş piyasalarda ortak standart kullanan kurumların maliyetleri düştü.","en":"Institutions using common standards in tokenised markets cut their costs.","label":"UNRELATED"}
+{"id":171,"tr":"AB büyük miktarda kaynak ve ürün ithal ediyor.","en":"The EU imports large amounts of resources and products.","label":"SUPPORTS"}
+{"id":171,"tr":"Kaynak kullanımını azaltan AB ülkelerinde ekonomik büyüme yavaşladı.","en":"Growth slowed in EU countries that cut their resource use.","label":"UNRELATED"}
+{"id":172,"tr":"Avrupa Merkez Bankası gelecekteki faiz patikası hakkında yönlendirme yapmaktan kaçındı.","en":"The ECB refrained from giving guidance on the future interest rate path.","label":"SUPPORTS"}
+{"id":172,"tr":"Avrupa Merkez Bankası bu faiz artışının son artış olduğunu açıkladı.","en":"The ECB announced that this rate hike was the last one.","label":"CONTRADICTS"}
+{"id":172,"tr":"Avrupa Merkez Bankası'nın faiz artışları euro bölgesinde büyümeyi yavaşlattı.","en":"The ECB's rate hikes slowed growth in the euro area.","label":"UNRELATED"}
+{"id":173,"tr":"Belirsizliğin arttığı dönemlerde şirket yatırımları azaldı.","en":"Business investment fell in periods of greater uncertainty.","label":"UNRELATED"}
+{"id":174,"tr":"Saloum Deltası'nda eğitim ve pazar bağlantıları kayıt dışı faaliyetleri kayıtlı hale getirdi.","en":"Training and market links turned informal activities in the Saloum Delta into a registered value chain.","label":"UNRELATED"}
+{"id":175,"tr":"Avrupa Merkez Bankası para politikasını tek bir veri noktasına göre belirler.","en":"The ECB sets monetary policy according to single data points.","label":"CONTRADICTS"}
+{"id":175,"tr":"Orta vadeli enflasyona odaklanan merkez bankaları enflasyonu daha hızlı düşürdü.","en":"Central banks that focused on medium-term inflation brought it down faster.","label":"UNRELATED"}
+{"id":176,"tr":"Avrupa Çevre Ajansı'nın fotoğraf yarışmasına 35 ülkeden yaklaşık 2.800 başvuru geldi.","en":"The EEA photo competition received close to 2,800 entries from 35 countries.","label":"SUPPORTS"}
+{"id":176,"tr":"Fotoğraf yarışmasına yalnızca birkaç yüz başvuru geldi.","en":"The photo competition received only a few hundred entries.","label":"CONTRADICTS"}
+{"id":177,"tr":"İşçi hakları maddesi içeren ticaret anlaşmaları imzalayan ülkelerde çocuk işçiliği azaldı.","en":"Child labour fell in countries that signed trade agreements with labour clauses.","label":"UNRELATED"}
+{"id":178,"tr":"Küresel kaynaklı uzun vadeli faiz artışları Avrupa ekonomisini yavaşlatır ve enflasyonu düşürür.","en":"A rise in long-term interest rates driven by global factors slows the European economy and lowers inflation.","label":"SUPPORTS"}
+{"id":178,"tr":"Uzun vadeli faizlerin yükselmesinin Avrupa ekonomisine etkisi yoktur.","en":"Higher long-term interest rates have no effect on the European economy.","label":"CONTRADICTS"}
+{"id":178,"tr":"Enflasyonu düşürmek için faiz yükselten ülkelerde ekonomik durgunluk yaşandı.","en":"Countries that raised interest rates to bring inflation down went through an economic slowdown.","label":"UNRELATED"}
+{"id":179,"tr":"Belçika ile DSÖ arasındaki işbirliği Belçika'da sağlık hizmetlerine erişimi artırdı.","en":"Cooperation between Belgium and WHO improved access to health care in Belgium.","label":"UNRELATED"}
+{"id":180,"tr":"Hükümetler pandemi anlaşması taslağı üzerinde çalışmaya devam etme kararı aldı.","en":"Governments agreed to keep working on the draft pandemic agreement.","label":"SUPPORTS"}
+{"id":180,"tr":"Hükümetler pandemi anlaşması müzakerelerini sonlandırdı.","en":"Governments ended negotiations on the pandemic agreement.","label":"CONTRADICTS"}
+{"id":181,"tr":"Better Work programına katılan Mısır fabrikalarında iş kazaları azaldı.","en":"Workplace accidents fell in Egyptian factories in the Better Work programme.","label":"UNRELATED"}
+{"id":182,"tr":"Yapay zekâ küresel büyümenin önemli bir itici gücü haline geliyor.","en":"AI is emerging as an important driver of global growth.","label":"SUPPORTS"}
+{"id":182,"tr":"Yapay zekâ yatırımları küresel büyümeyi frenliyor.","en":"AI investment is holding back global growth.","label":"CONTRADICTS"}
+{"id":182,"tr":"Yapay zekâ yatırımı yapan ülkelerde işsizlik arttı.","en":"Unemployment rose in countries that invested in AI.","label":"UNRELATED"}
+{"id":183,"tr":"Avrupa mevduat sigortası kuran ülkelerde banka paniği yaşanmadı.","en":"Countries with a European deposit insurance scheme had no bank runs.","label":"UNRELATED"}
+{"id":184,"tr":"Çin'de 600 milyondan fazla kişi üretken yapay zekâ kullandı.","en":"More than 600 million people in China have used generative AI.","label":"SUPPORTS"}
+{"id":184,"tr":"Dünyadaki yeni endüstriyel robot kurulumlarının yarıdan fazlası Çin fabrikalarında.","en":"Chinese factories account for more than half of the world's new industrial robot installations.","label":"SUPPORTS"}
+{"id":184,"tr":"Çin'de yeni endüstriyel robot kurulumları azalıyor.","en":"New industrial robot installations in China are declining.","label":"UNRELATED"}
+{"id":184,"tr":"Robot kullanımını artıran Çin fabrikalarında verimlilik yükseldi.","en":"Productivity rose in Chinese factories that used more robots.","label":"UNRELATED"}
