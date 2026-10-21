@@ -3,6 +3,11 @@ name: Research app (probe site search)
 # Measures, for typical sources, whether the site's own search page can be read without a browser.
 # Run by hand; it changes nothing.
 on:
+  push:
+    branches: [ccr-b3ffb058-472a31]
+    paths:
+      - .github/workflows/research-app-probe.yml
+      - .github/scripts/probe-search.py
   workflow_dispatch:
     inputs:
       sites:
