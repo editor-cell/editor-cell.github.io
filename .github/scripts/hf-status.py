@@ -3,7 +3,11 @@ lines of the newest ones, as notes on this run."""
 from huggingface_hub import HfApi, fetch_job_logs
 
 api = HfApi()
-jobs = sorted(api.list_jobs(), key=lambda j: str(j.created_at), reverse=True)[:3]
+user = api.whoami()["name"]
+all_jobs = list(api.list_jobs())
+names = [r.id for r in api.list_datasets(author=user)] + [r.id for r in api.list_models(author=user)]
+print(f"::notice title=Account::{user}: {len(all_jobs)} jobs; repositories: {', '.join(names) or 'none'}")
+jobs = sorted(all_jobs, key=lambda j: str(j.created_at), reverse=True)[:3]
 for j in jobs:
     lines = []
     try:
