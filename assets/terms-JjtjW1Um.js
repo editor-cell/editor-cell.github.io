@@ -1,0 +1,1 @@
+import{cn as e}from"./shell-NAMdA7Kr.js";import{t}from"./legal-BWoD-35D.js";var n=e(),r=()=>(0,n.jsx)(t,{page:`terms`});export{r as component};
