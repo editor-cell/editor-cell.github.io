@@ -88,7 +88,7 @@ class LiveModelTest {
             val p = Paragraph(1, c.text, "https://example.org/r", "Report", "", "Example")
             val a = ask(Prompts.JUDGE_SYSTEM, Prompts.judge(c.claim, english(c.claim), p), Prompts.JUDGE_GRAMMAR, 6)
             println("JUDGE expected ${c.expected}, got $a <- ${c.text.take(60)}")
-            assertEquals(c.expected, a)
+            assertEquals(c.expected, a, "got $a")
         }
     }
 }

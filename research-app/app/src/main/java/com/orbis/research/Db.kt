@@ -140,12 +140,23 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
 
     // ---- search ----
 
-    /** Paragraph ids matching an FTS query (all its words), at most [limit]. */
-    fun match(query: String, limit: Int): List<Long> = try {
+    /** Paragraph ids matching an FTS query (all its words) in documents dated within [range], at most [limit]. */
+    fun match(query: String, limit: Int, range: DateRange = DateRange()): List<Long> = try {
+        val (cond, args) = range.sqlCondition("d.date")
         readableDatabase.rawQuery(
-            "SELECT docid FROM paras_fts WHERE paras_fts MATCH ? LIMIT ?", arrayOf(query, limit.toString()),
+            """SELECT paras_fts.docid FROM paras_fts JOIN paras p ON p.id = paras_fts.docid JOIN docs d ON d.id = p.doc_id
+               WHERE paras_fts MATCH ? AND $cond LIMIT ?""",
+            (listOf(query) + args + limit.toString()).toTypedArray(),
         ).use { c -> buildList { while (c.moveToNext()) add(c.getLong(0)) } }
     } catch (e: Exception) { emptyList() }
+
+    /** (documents in [range], of which undated) — undated ones are counted only when the range takes them. */
+    fun docsIn(range: DateRange): Pair<Int, Int> {
+        val (cond, args) = range.sqlCondition("d.date")
+        return readableDatabase.rawQuery(
+            "SELECT COUNT(*), SUM(d.date = '') FROM docs d WHERE $cond", args.toTypedArray(),
+        ).use { c -> c.moveToFirst(); c.getInt(0) to c.getInt(1) }
+    }
 
     fun paragraph(id: Long): Paragraph? = readableDatabase.rawQuery(
         """SELECT p.id, p.text, d.url, d.title, d.date, s.name FROM paras p

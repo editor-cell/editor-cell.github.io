@@ -15,18 +15,24 @@ data class ModelInfo(val id: String, val title: String, val note: String, val ur
 }
 
 object Models {
+    // Chosen by the comparison workflow (research-app-models.yml): the app's own prompts on five
+    // Turkish claims and eight paragraphs. Qwen2.5 1.5B mistranslated Turkish and is not offered.
+    // The app suggests the largest one the phone's memory holds; the owner can pick any.
     val all = listOf(
         ModelInfo(
-            "qwen2.5-0.5b", "Qwen2.5 0.5B (küçük)", "En hızlısı; az bellekli telefonlar için. Kararları daha kaba.",
-            "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/qwen2.5-0.5b-instruct-q4_k_m.gguf", 490, 3,
+            "qwen3-4b", "Qwen3 4B (büyük)", "En isabetlisi: denemelerde her çeviriyi ve her paragrafı doğru yaptı. " +
+                "6 GB ve üstü bellekli telefonlar için; bir paragrafı okuması birkaç saniye sürer.",
+            "https://huggingface.co/Qwen/Qwen3-4B-GGUF/resolve/main/Qwen3-4B-Q4_K_M.gguf", 2500, 6,
         ),
         ModelInfo(
-            "qwen2.5-1.5b", "Qwen2.5 1.5B (önerilen)", "Hız ile isabet arasında denge. Çoğu telefon için.",
-            "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q4_k_m.gguf", 1120, 4,
+            "qwen3-1.7b", "Qwen3 1.7B (orta)", "4 GB bellekli telefonlar için (ör. Redmi Note 8). Türkçeyi doğru " +
+                "çeviriyor; büyük modele göre çürüten paragrafları daha sık kaçırabilir.",
+            "https://huggingface.co/unsloth/Qwen3-1.7B-GGUF/resolve/main/Qwen3-1.7B-Q4_K_M.gguf", 1100, 3,
         ),
         ModelInfo(
-            "qwen3-4b", "Qwen3 4B (güçlü)", "Daha isabetli, ama bir paragrafı okuması birkaç kat uzun sürer. 8 GB bellek ister.",
-            "https://huggingface.co/Qwen/Qwen3-4B-GGUF/resolve/main/Qwen3-4B-Q4_K_M.gguf", 2500, 8,
+            "qwen3-0.6b", "Qwen3 0.6B (küçük)", "3 GB ve altı bellekli telefonlar için son çare; en hızlısı ama " +
+                "en az isabetlisi. Sonuçları özellikle dikkatle okuyun.",
+            "https://huggingface.co/unsloth/Qwen3-0.6B-GGUF/resolve/main/Qwen3-0.6B-Q4_K_M.gguf", 400, 2,
         ),
     )
 
@@ -36,8 +42,15 @@ object Models {
         return mi.totalMem / 1024.0 / 1024.0 / 1024.0
     }
 
-    /** The largest model this phone's memory comfortably holds, never the 4B one by default. */
-    fun recommended(ctx: Context): ModelInfo = if (ramGb(ctx) >= 3.5) all[1] else all[0]
+    /** The largest model this phone holds comfortably; a "4 GB" phone reports about 3.6 GB. */
+    fun recommended(ctx: Context): ModelInfo {
+        val ram = ramGb(ctx)
+        return when {
+            ram >= 5.5 -> all[0]
+            ram >= 2.8 -> all[1]
+            else -> all[2]
+        }
+    }
 
     fun dir(ctx: Context): File = File(ctx.getExternalFilesDir(null) ?: ctx.filesDir, "models").apply { mkdirs() }
 

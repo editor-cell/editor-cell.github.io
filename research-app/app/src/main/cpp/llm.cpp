@@ -29,6 +29,9 @@ struct Engine {
     llama_context * ctx = nullptr;
     const llama_vocab * vocab = nullptr;
     std::string tmpl;
+    // Tokens now held in the model's memory. A new prompt that starts the same way (same
+    // instructions, same claim) only has its new part read, which matters on a slow phone.
+    std::vector<llama_token> cached;
 };
 
 static void log_cb(ggml_log_level level, const char * text, void *) {
@@ -140,7 +143,15 @@ Java_com_orbis_research_LlmNative_nativeGenerate(JNIEnv * env, jobject, jlong ha
     if (nt <= 0 || nt + maxTokens >= n_ctx) { LOGE("prompt too long: %d tokens", nt); return nullptr; }
     toks.resize(nt);
 
-    llama_memory_clear(llama_get_memory(e->ctx), true);
+    llama_memory_t mem = llama_get_memory(e->ctx);
+    size_t common = 0;
+    while (common < e->cached.size() && common < toks.size() && e->cached[common] == toks[common]) common++;
+    if (common == toks.size()) common--;  // the last prompt token must be read again to answer
+    if (common == 0 || !llama_memory_seq_rm(mem, 0, (llama_pos) common, -1)) {
+        llama_memory_clear(mem, true);
+        common = 0;
+    }
+    e->cached.assign(toks.begin(), toks.begin() + common);
 
     llama_sampler * smpl = llama_sampler_chain_init(llama_sampler_chain_default_params());
     if (!grammar.empty()) {
@@ -151,13 +162,16 @@ Java_com_orbis_research_LlmNative_nativeGenerate(JNIEnv * env, jobject, jlong ha
     llama_sampler_chain_add(smpl, llama_sampler_init_greedy());
 
     // Feed the prompt in pieces no larger than the batch size.
-    for (int i = 0; i < nt; i += 512) {
+    for (int i = (int) common; i < nt; i += 512) {
         int len = std::min(512, nt - i);
         if (llama_decode(e->ctx, llama_batch_get_one(toks.data() + i, len)) != 0) {
             llama_sampler_free(smpl);
+            llama_memory_clear(mem, true);
+            e->cached.clear();
             LOGE("decode failed");
             return nullptr;
         }
+        e->cached.insert(e->cached.end(), toks.begin() + i, toks.begin() + i + len);
     }
 
     std::string out;
@@ -167,7 +181,12 @@ Java_com_orbis_research_LlmNative_nativeGenerate(JNIEnv * env, jobject, jlong ha
         if (llama_vocab_is_eog(e->vocab, tok)) break;
         int len = llama_token_to_piece(e->vocab, tok, piece, sizeof(piece), 0, false);
         if (len > 0) out.append(piece, len);
-        if (llama_decode(e->ctx, llama_batch_get_one(&tok, 1)) != 0) break;
+        if (llama_decode(e->ctx, llama_batch_get_one(&tok, 1)) != 0) {
+            llama_memory_clear(mem, true);
+            e->cached.clear();
+            break;
+        }
+        e->cached.push_back(tok);
     }
     llama_sampler_free(smpl);
     return to_jstring(env, out);

@@ -10,7 +10,7 @@ object Settings {
     fun setPerSource(ctx: Context, v: Int) = prefs(ctx).edit().putInt("perSource", v).apply()
 
     /** How many of the best-matching paragraphs the model reads for one claim. */
-    fun candidates(ctx: Context) = prefs(ctx).getInt("candidates", 30)
+    fun candidates(ctx: Context) = prefs(ctx).getInt("candidates", 20)
     fun setCandidates(ctx: Context, v: Int) = prefs(ctx).edit().putInt("candidates", v).apply()
 
     fun daily(ctx: Context) = prefs(ctx).getBoolean("daily", false)

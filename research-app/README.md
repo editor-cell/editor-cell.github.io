@@ -10,7 +10,7 @@ numbers of its own; when nothing fits it says "Bulamadım".
 - **Collecting** reads each source's feeds, sitemaps and front page, newest first, into the phone
   (HTML and PDF). Every request is checked against the source list (`Net.kt`); nothing else is
   fetched. robots.txt is respected.
-- **Searching**: an open model running on the phone (llama.cpp, Qwen2.5 / Qwen3 GGUF, Apache 2.0)
+- **Searching**: an open model running on the phone (llama.cpp; Qwen3 4B, or Qwen3 1.7B on small phones; Apache 2.0, chosen by `research-app-models.yml`)
   translates the claim into English, writes search phrases, and labels each candidate paragraph
   SUPPORTS / CONTRADICTS / UNRELATED under a grammar that allows only those words. The text shown
   is always the stored paragraph, never model output.

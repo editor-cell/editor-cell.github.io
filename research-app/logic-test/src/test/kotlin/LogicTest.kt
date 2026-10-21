@@ -146,3 +146,24 @@ class ExtractTest {
         assertEquals(listOf("https://example.org/feed.xml"), Extract.feedLinks(html, "https://example.org/"))
     }
 }
+
+class DateRangeTest {
+    @Test fun partialDatesCountWhenAnyDayFits() {
+        val r = com.orbis.research.DateRange("2020-06-01", "2021-06-15", includeUndated = false)
+        assertTrue(r.contains("2020"))
+        assertTrue(r.contains("2021-06"))
+        assertTrue(r.contains("2021-06-15"))
+        assertFalse(r.contains("2021-06-16"))
+        assertFalse(r.contains("2019-05-03"))
+        assertFalse(r.contains(""))
+        assertTrue(r.copy(includeUndated = true).contains(""))
+    }
+
+    @Test fun openEndsAndLabels() {
+        assertTrue(com.orbis.research.DateRange(from = "2023-01-01").contains("2030"))
+        assertFalse(com.orbis.research.DateRange(to = "2010-12-31").contains("2011-01"))
+        assertEquals("01.06.2020 – 15.06.2021", com.orbis.research.DateRange("2020-06-01", "2021-06-15").label())
+        val y = com.orbis.research.DateRange.lastYears(5, java.time.LocalDate.of(2026, 10, 21))
+        assertEquals("2021-10-21", y.from); assertEquals("2026-10-21", y.to)
+    }
+}

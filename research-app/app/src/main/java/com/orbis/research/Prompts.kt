@@ -59,7 +59,8 @@ object Prompts {
 
     fun judge(claim: String, english: String, p: Paragraph): String {
         val c = if (english.equals(claim, ignoreCase = true)) claim else "$claim\n(English: $english)"
-        return "Claim: $c\n\nParagraph from \"${p.docTitle.take(200)}\":\n<<<\n${p.text.take(2400)}\n>>>\n\n" +
-            "Answer with one word: SUPPORTS, CONTRADICTS or UNRELATED."
+        return "Claim: $c\n\nParagraph from \"${p.docTitle.take(200)}\":\n<<<\n${p.text.take(2000)}\n>>>\n\n" +
+            "Does this paragraph show the claim is true (SUPPORTS), show it is false, for example no effect, " +
+            "no change or the opposite (CONTRADICTS), or neither (UNRELATED)? Answer with one word."
     }
 }

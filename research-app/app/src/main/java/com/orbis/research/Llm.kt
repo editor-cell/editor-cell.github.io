@@ -23,7 +23,9 @@ object Llm {
         init(ctx)
         if (loadedPath == path && handle != 0L) return@withLock true
         if (handle != 0L) { LlmNative.nativeFree(handle); handle = 0L; loadedPath = null }
-        handle = LlmNative.nativeLoad(path, 4096)
+        // 2048 tokens hold the longest prompt (a paragraph is cut at 2000 characters) and keep
+        // the model's working memory small enough for a 4 GB phone.
+        handle = LlmNative.nativeLoad(path, 2048)
         if (handle != 0L) loadedPath = path
         handle != 0L
     }

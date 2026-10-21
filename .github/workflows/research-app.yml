@@ -60,20 +60,20 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ~/test-model
-          key: test-model-qwen2.5-1.5b-q4_k_m
+          key: test-model-qwen3-4b-q4_k_m
 
       - name: Fetch the recommended model for the tests
         run: |
           mkdir -p ~/test-model
-          f=~/test-model/model.gguf
-          [ -s "$f" ] || curl -fsSL -o "$f" https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q4_k_m.gguf
+          f=~/test-model/Qwen3-4B-Q4_K_M.gguf
+          [ -s "$f" ] || curl -fsSL -o "$f" https://huggingface.co/Qwen/Qwen3-4B-GGUF/resolve/main/Qwen3-4B-Q4_K_M.gguf
           ls -la "$f"
 
-      # Source lists, robots.txt, reading pages and PDFs; then the app's prompts on the real model:
-      # a supporting, a contradicting and an unrelated paragraph must each get the right label.
+      # Source lists, robots.txt, reading pages and PDFs; then the app's prompts on the recommended
+      # model: five Turkish claims translated, search phrases, and eight paragraphs labelled right.
       - name: Test the reading logic and the model's judgements
         run: |
-          export ORBIS_LIB="$PWD/build-host/liborbisllm.so" ORBIS_MODEL=~/test-model/model.gguf
+          export ORBIS_LIB="$PWD/build-host/liborbisllm.so" ORBIS_MODEL=~/test-model/Qwen3-4B-Q4_K_M.gguf
           ./gradlew -p logic-test test --no-daemon
 
       - name: Build the APK

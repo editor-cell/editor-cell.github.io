@@ -7,6 +7,15 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DateRangePicker
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.rememberDateRangePickerState
+import androidx.compose.ui.Alignment
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -50,6 +59,7 @@ object SearchState {
     var running by mutableStateOf(false)
     var finished by mutableStateOf(false)
     var read by mutableStateOf(0)
+    var range by mutableStateOf(DateRange())
     val findings = mutableStateListOf<Finding>()
     private var job: Job? = null
 
@@ -63,7 +73,7 @@ object SearchState {
                 if (path == null || !java.io.File(path).exists()) { status = "Önce Model sekmesinden bir model indirin."; return@launch }
                 status = "Model yükleniyor…"
                 if (!Llm.ensure(ctx, path)) { status = "Model açılamadı. Dosya bozuk olabilir; Model sekmesinden yeniden indirin."; return@launch }
-                read = Search(ctx).run(c, { s -> status = s }) { f ->
+                read = Search(ctx).run(c, range, { s -> status = s }) { f ->
                     scope.launch(Dispatchers.Main) { findings.add(f) }
                 }
                 status = ""
@@ -102,6 +112,7 @@ fun SearchScreen(goTo: (Int) -> Unit) {
                 s.claim, { s.claim = it }, modifier = Modifier.fillMaxWidth(), minLines = 3,
                 placeholder = { Text("ör. Şeker vergisi koyan ülkelerde gazlı içecek tüketimi düştü.") },
             )
+            DateRangeRow(db, s.range, enabled = !s.running) { s.range = it }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
                 if (s.running) OutlinedButton(onClick = { s.stop() }) { Text("Durdur") }
                 else Button(onClick = { s.start(ctx.applicationContext) }, enabled = s.claim.isNotBlank()) { Text("Ara") }
@@ -128,7 +139,8 @@ fun SearchScreen(goTo: (Int) -> Unit) {
                 Column(Modifier.padding(16.dp)) {
                     Text("Bulamadım.", style = MaterialTheme.typography.titleLarge)
                     Text(
-                        "En yakın ${s.read} paragraf okundu; hiçbiri bu yargıyı açıkça desteklemiyor ya da çürütmüyor.",
+                        if (s.read == 0) "${s.range.label()} içinde yargıyla ilgili sözcükleri taşıyan bir paragraf yok."
+                        else "En yakın ${s.read} paragraf okundu (${s.range.label()}); hiçbiri bu yargıyı açıkça desteklemiyor ya da çürütmüyor.",
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }
@@ -194,3 +206,53 @@ private fun open(ctx: Context, p: Paragraph) {
     try { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(target)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
     catch (e: Exception) { Toast.makeText(ctx, "Açacak bir tarayıcı bulunamadı.", Toast.LENGTH_SHORT).show() }
 }
+
+/** Which documents a search looks at, by date: quick choices, any range from a calendar, and undated ones. */
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@Composable
+private fun DateRangeRow(db: Db, range: DateRange, enabled: Boolean, onChange: (DateRange) -> Unit) {
+    var picking by remember { mutableStateOf(false) }
+    val counts = remember(range) { db.docsIn(range) }
+    Column(Modifier.padding(top = 8.dp)) {
+        Text("Tarih aralığı: ${range.label()}", style = MaterialTheme.typography.titleSmall)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            val und = range.includeUndated
+            FilterChip(range.isAll, enabled = enabled, onClick = { onChange(DateRange(includeUndated = und)) }, label = { Text("Tümü") })
+            for (n in listOf(1, 5, 10)) {
+                val r = DateRange.lastYears(n, includeUndated = und)
+                FilterChip(range.from == r.from && range.to == r.to, enabled = enabled, onClick = { onChange(r) }, label = { Text("Son $n yıl") })
+            }
+            FilterChip(!range.isAll && listOf(1, 5, 10).none { DateRange.lastYears(it).from == range.from && DateRange.lastYears(it).to == range.to },
+                enabled = enabled, onClick = { picking = true }, label = { Text("Tarih seç…") })
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Checkbox(range.includeUndated, enabled = enabled, onCheckedChange = { onChange(range.copy(includeUndated = it)) })
+            Text("Tarihi belli olmayan belgeler de aransın", style = MaterialTheme.typography.bodySmall)
+        }
+        Text(
+            "Bu aralıkta telefonda ${counts.first} belge var" + if (counts.second > 0) " (${counts.second} tanesinin tarihi belli değil)." else ".",
+            style = MaterialTheme.typography.bodySmall,
+        )
+    }
+    if (picking) {
+        val state = rememberDateRangePickerState(
+            initialSelectedStartDateMillis = range.from?.let { toMillis(it) },
+            initialSelectedEndDateMillis = range.to?.let { toMillis(it) },
+        )
+        DatePickerDialog(
+            onDismissRequest = { picking = false },
+            confirmButton = {
+                TextButton(enabled = state.selectedStartDateMillis != null, onClick = {
+                    picking = false
+                    onChange(DateRange(state.selectedStartDateMillis?.let(::toDate), state.selectedEndDateMillis?.let(::toDate) ?: state.selectedStartDateMillis?.let(::toDate), range.includeUndated))
+                }) { Text("Tamam") }
+            },
+            dismissButton = { TextButton(onClick = { picking = false }) { Text("Vazgeç") } },
+        ) {
+            DateRangePicker(state, modifier = Modifier.weight(1f), title = { Text("Başlangıç ve bitiş gününe dokunun", Modifier.padding(16.dp)) })
+        }
+    }
+}
+
+private fun toMillis(d: String) = java.time.LocalDate.parse(d).atStartOfDay(java.time.ZoneOffset.UTC).toInstant().toEpochMilli()
+private fun toDate(ms: Long) = java.time.Instant.ofEpochMilli(ms).atZone(java.time.ZoneOffset.UTC).toLocalDate().toString()

@@ -166,9 +166,9 @@ fun ModelScreen() {
                             current = file.path; Settings.setModelPath(ctx, file.path); scope.launch { Llm.release() }
                         })
                         Column(Modifier.weight(1f)) {
-                            Text(m.title, style = MaterialTheme.typography.titleMedium)
+                            Text(m.title + if (m == rec) " · bu telefon için önerilen" else "", style = MaterialTheme.typography.titleMedium)
                             Text("${m.note} Yaklaşık ${m.sizeMb} MB.", style = MaterialTheme.typography.bodySmall)
-                            if (ram < m.minRamGb - 0.5) Text("Bu telefonun belleği bu model için az olabilir.", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+                            if (ram < m.minRamGb - 0.6) Text("Bu telefonun belleği bu model için az olabilir.", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
                         }
                     }
                     progress[m.id]?.let { p -> LinearProgressIndicator(progress = { p }, modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp)) }
