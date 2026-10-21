@@ -1,0 +1,73 @@
+name: Research app (model files)
+
+# Builds model files the app downloads but nobody trustworthy publishes in the form it needs:
+# multilingual-e5-small (intfloat, MIT licence) as a GGUF file for llama.cpp. It is converted here
+# from the publisher's own files with llama.cpp's converter, checked with the meaning test, and
+# attached to the release "models-1", where the app fetches it.
+on:
+  push:
+    branches: [ccr-b3ffb058-472a31]
+    paths:
+      - .github/workflows/research-app-model-files.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  e5-small:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: research-app
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+      - run: ./fetch-llama.sh
+      - name: Install llama.cpp's converter
+        run: pip install -q -r app/src/main/cpp/llama.cpp/requirements/requirements-convert_hf_to_gguf.txt
+      - name: Fetch the publisher's files
+        run: |
+          python - <<'PY'
+          from huggingface_hub import snapshot_download
+          path = snapshot_download("intfloat/multilingual-e5-small", local_dir="e5",
+                                   allow_patterns=["*.json", "*.safetensors", "*.model", "*.txt"])
+          print("fetched", path)
+          PY
+          ls -la e5
+      - name: Convert to GGUF
+        run: |
+          python app/src/main/cpp/llama.cpp/convert_hf_to_gguf.py e5 --outtype q8_0 --outfile multilingual-e5-small-q8_0.gguf
+          ls -la multilingual-e5-small-q8_0.gguf
+          sha256sum multilingual-e5-small-q8_0.gguf | tee e5.sha256
+      - name: Build the model bridge
+        run: |
+          cmake -S app/src/main/cpp -B build-host -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF \
+            -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_TOOLS=OFF \
+            -DLLAMA_BUILD_EXAMPLES=OFF -DLLAMA_BUILD_SERVER=OFF -DLLAMA_BUILD_COMMON=OFF -DLLAMA_BUILD_APP=OFF \
+            -DLLAMA_CURL=OFF -DLLAMA_OPENSSL=OFF > /dev/null
+          cmake --build build-host -j4 --target orbisllm
+      # The file is published only if it finds paragraphs by meaning as the app needs.
+      - name: Check it with the meaning test
+        run: |
+          export ORBIS_LIB="$PWD/build-host/liborbisllm.so" ORBIS_EMBED="$PWD/multilingual-e5-small-q8_0.gguf"
+          ./gradlew -p logic-test test --tests EmbedderTest --no-daemon
+          python3 ../.github/scripts/model-score.py logic-test/build/test-results/test
+      - name: Attach to the release "models-1"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          notes="Model files for Orbis Araştırma. multilingual-e5-small: converted from intfloat/multilingual-e5-small (MIT licence) with llama.cpp $(cat llama.cpp.version). sha256 $(cut -d' ' -f1 e5.sha256)"
+          if gh release view models-1 > /dev/null 2>&1; then
+            gh release upload models-1 multilingual-e5-small-q8_0.gguf --clobber
+            gh release edit models-1 --notes "$notes"
+          else
+            gh release create models-1 multilingual-e5-small-q8_0.gguf --target "${{ github.sha }}" --title "Model files" --notes "$notes" --prerelease
+          fi
