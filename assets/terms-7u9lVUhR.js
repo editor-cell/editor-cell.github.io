@@ -1,0 +1,1 @@
+import{cn as e}from"./shell-DCxO6Y8n.js";import{t}from"./legal-B5HvPEot.js";var n=e(),r=()=>(0,n.jsx)(t,{page:`terms`});export{r as component};
