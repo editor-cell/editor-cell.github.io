@@ -1,7 +1,7 @@
 import { Play, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Film } from "@/components/film";
+import { Film, type FilmCaption } from "@/components/film";
 import { imageSet } from "@/lib/image-set";
 import { announceStart, fmt } from "@/lib/listen";
 import type { Lang } from "@/lib/types";
@@ -14,16 +14,21 @@ export type FilmClip = {
   poster?: string;
   /** Seconds, from the video's file, until the film reports its own length. */
   duration?: number;
+  /** Subtitles the reader can turn on in the film. */
+  captions?: FilmCaption[];
+  /** The transcript's paragraphs, readable under the screen. */
+  transcript?: string[];
 };
 
 /**
  * A video's still on its page, with the large burgundy play button and the length. A tap
  * turns the lights down, as in a cinema (a projection screen, not a panel sliding up from
  * the foot as on some news sites): the page darkens, a screen comes down from its roller in
- * the middle and the film plays on it with
- * the site's own controls (play, time, seek line, sound, full screen; taps and double taps
- * as on YouTube). The cross, a tap on the dark around the screen or Escape rolls the screen
- * up and brings the page back; the film waits where it was stopped.
+ * a little above the middle and the film plays on it with the site's own controls (play,
+ * time, seek line, subtitles, speed, sound, full screen; taps and double taps as on
+ * YouTube). Under the screen the transcript opens behind one button, as on the page. The
+ * cross, a tap on the dark around the screen or Escape rolls the screen up and brings the
+ * page back; the film waits where it was stopped.
  *
  * The screen and its video element are on the page from the start, hidden, so the reader's
  * tap can start the sound at once on a phone.
@@ -32,6 +37,7 @@ export function VideoStart({ clip, className = "" }: { clip: FilmClip; className
   const words = videoWords(clip.lang);
   const [open, setOpen] = useState(false);
   const [ready, setReady] = useState(false);
+  const [reading, setReading] = useState(false);
   const screen = useRef<HTMLVideoElement | null>(null);
   const still = useRef<HTMLButtonElement | null>(null);
   const cross = useRef<HTMLButtonElement | null>(null);
@@ -124,7 +130,10 @@ export function VideoStart({ clip, className = "" }: { clip: FilmClip; className
               inert={!open}
               className={`theater no-print ${open ? "is-on" : ""}`}
               onClick={(event) => {
-                if (event.target === event.currentTarget) stop();
+                // A tap on the dark (around the screen, not on it or its words) closes.
+                const target = event.target as HTMLElement;
+                if (target === event.currentTarget || target.classList.contains("theater-frame"))
+                  stop();
               }}
             >
               <div className="theater-frame">
@@ -161,9 +170,28 @@ export function VideoStart({ clip, className = "" }: { clip: FilmClip; className
                     lang={clip.lang}
                     length={clip.duration}
                     onScreen={onScreen}
+                    captions={clip.captions}
                     className="w-full"
                   />
                 </div>
+                {clip.transcript?.length ? (
+                  <section className="theater-notes">
+                    <button
+                      type="button"
+                      aria-expanded={reading}
+                      aria-controls="theater-transcript"
+                      onClick={() => setReading((value) => !value)}
+                      className="theater-notes-button"
+                    >
+                      {reading ? words.hideTranscript : words.readTranscript}
+                    </button>
+                    <div id="theater-transcript" hidden={!reading} className="theater-transcript">
+                      {clip.transcript.map((para, i) => (
+                        <p key={i}>{para}</p>
+                      ))}
+                    </div>
+                  </section>
+                ) : null}
               </div>
             </div>,
             document.body,

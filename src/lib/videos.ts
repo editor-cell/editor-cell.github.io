@@ -35,6 +35,11 @@ export async function loadVideo(id: string): Promise<Video | null> {
     id: card!.id,
     src: mediaUrl(video.src),
     poster: video.poster ? mediaUrl(video.poster) : undefined,
+    captions: video.captions
+      ? Object.fromEntries(
+          Object.entries(video.captions).map(([lang, path]) => [lang, mediaUrl(path)]),
+        )
+      : undefined,
   };
 }
 
@@ -78,6 +83,10 @@ export type VideoWords = {
   openPanel: string;
   /** The cross on the cinema screen. */
   closeFilm: string;
+  /** The film's own menus: subtitles (off, or a language) and the playing speed. */
+  subtitles: string;
+  subtitlesOff: string;
+  speed: string;
 };
 
 const WORDS: Record<Lang, VideoWords> = {
@@ -103,6 +112,9 @@ const WORDS: Record<Lang, VideoWords> = {
     foldPanel: "Paneli küçült",
     openPanel: "Paneli aç",
     closeFilm: "Videoyu kapat",
+    subtitles: "Altyazı",
+    subtitlesOff: "Kapalı",
+    speed: "Oynatma hızı",
   },
   en: {
     videos: "Videos",
@@ -126,6 +138,9 @@ const WORDS: Record<Lang, VideoWords> = {
     foldPanel: "Fold the panel",
     openPanel: "Open the panel",
     closeFilm: "Close the video",
+    subtitles: "Subtitles",
+    subtitlesOff: "Off",
+    speed: "Playback speed",
   },
   ar: {
     videos: "الفيديوهات",
@@ -149,6 +164,9 @@ const WORDS: Record<Lang, VideoWords> = {
     foldPanel: "تصغير اللوحة",
     openPanel: "فتح اللوحة",
     closeFilm: "إغلاق الفيديو",
+    subtitles: "الترجمة",
+    subtitlesOff: "إيقاف",
+    speed: "سرعة التشغيل",
   },
   fr: {
     videos: "Vidéos",
@@ -172,6 +190,9 @@ const WORDS: Record<Lang, VideoWords> = {
     foldPanel: "Réduire le panneau",
     openPanel: "Ouvrir le panneau",
     closeFilm: "Fermer la vidéo",
+    subtitles: "Sous-titres",
+    subtitlesOff: "Désactivés",
+    speed: "Vitesse de lecture",
   },
   es: {
     videos: "Vídeos",
@@ -195,6 +216,9 @@ const WORDS: Record<Lang, VideoWords> = {
     foldPanel: "Plegar el panel",
     openPanel: "Abrir el panel",
     closeFilm: "Cerrar el vídeo",
+    subtitles: "Subtítulos",
+    subtitlesOff: "Desactivados",
+    speed: "Velocidad",
   },
 };
 

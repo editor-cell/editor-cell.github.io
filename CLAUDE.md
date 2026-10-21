@@ -54,7 +54,8 @@ before every push; push and let the workflow check.
 
 Videos stand on their own: no reading and no issue behind them. One file per video,
 `content/videos/<id>.json` (`id`, `date`, `src`, `poster`, `duration` in seconds, and per
-language `title`, `dek`, `transcript`). The newest sits first in the one-row media strip
+language `title`, `dek`, `transcript`; optional `captions`, per language a WebVTT file
+`videos/<id>-<lang>.vtt` timed to the narration). The newest sits first in the one-row media strip
 between the newest issue and the archive; "Show all" opens `/media`; each video has its
 own page `/media/<id>` with the transcript behind a button; search finds a video by its
 title and transcript. `scripts/videos-check.test.mjs` checks every file. Cloudflare serves

@@ -238,6 +238,12 @@ export function VideoPage({ video }: { video: Video | null }) {
                   src: video.src,
                   poster: video.poster,
                   duration: video.duration,
+                  transcript,
+                  captions: Object.entries(video.captions ?? {}).map(([code, path]) => ({
+                    lang: code as Lang,
+                    src: path,
+                    label: langMeta[code as Lang].name,
+                  })),
                 }}
                 className="-mx-5 w-[calc(100%+2.5rem)] max-w-none md:mx-0 md:w-full md:max-w-full"
               />

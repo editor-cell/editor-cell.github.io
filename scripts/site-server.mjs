@@ -15,6 +15,7 @@ const MIME = {
   ".webp": "image/webp",
   ".mp3": "audio/mpeg",
   ".mp4": "video/mp4",
+  ".vtt": "text/vtt",
 };
 const file = (path) => existsSync(path) && statSync(path).isFile();
 

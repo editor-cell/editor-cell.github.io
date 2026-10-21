@@ -47,6 +47,17 @@ for (const file of files) {
         `${file}: duration in seconds`,
       );
     }
+    for (const [lang, path] of Object.entries(video.captions ?? {})) {
+      assert.ok(LANGS.includes(lang), `${file}: subtitles in an unknown language ${lang}`);
+      assert.match(String(path), /\.vtt$/, `${file} (${lang}): subtitles are a .vtt file`);
+      assert.ok(mediaExists(path), `${file} (${lang}): subtitles ${path} are missing`);
+      if (!/^https:/.test(path))
+        assert.match(
+          readFileSync(path.replace(/^\//, ""), "utf8"),
+          /^(\uFEFF)?WEBVTT/,
+          `${file} (${lang}): ${path} must begin with WEBVTT`,
+        );
+    }
     const langs = Object.keys(video.locales ?? {});
     for (const lang of langs) {
       assert.ok(LANGS.includes(lang), `${file}: unknown language ${lang}`);

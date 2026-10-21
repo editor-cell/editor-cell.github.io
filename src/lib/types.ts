@@ -191,6 +191,8 @@ export type Video = {
   poster?: string;
   /** Length in seconds. */
   duration?: number;
+  /** Subtitles per language: WebVTT files (videos/<id>-<lang>.vtt), timed to the film. */
+  captions?: Partial<Record<Lang, string>>;
   locales: Partial<Record<Lang, VideoCopy>>;
 };
 

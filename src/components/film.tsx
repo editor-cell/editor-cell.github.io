@@ -9,7 +9,7 @@ import {
   VolumeX,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { AUDIO_EVENT, announceStart, fmt } from "@/lib/listen";
+import { AUDIO_EVENT, RATES, announceStart, fmt } from "@/lib/listen";
 import type { Lang } from "@/lib/types";
 import { videoWords } from "@/lib/videos";
 
@@ -24,6 +24,11 @@ const SEEK_RUN = 700;
 const TAP_STEP = 10;
 
 type Side = "back" | "ahead";
+
+/** One language of subtitles: a WebVTT file timed to the film. */
+export type FilmCaption = { lang: Lang; src: string; label: string };
+
+const CAPTIONS_KEY = "orbis-captions";
 
 /**
  * The site's own video player, after the clean players of Vimeo and Plyr: before the first
@@ -49,6 +54,7 @@ export function Film({
   className = "",
   bare = false,
   onScreen,
+  captions = [],
 }: {
   /** Left out in the panel at the foot of the page, which sets the film itself. */
   src?: string;
@@ -63,6 +69,8 @@ export function Film({
   bare?: boolean;
   /** Receives the video element once it is on the page. */
   onScreen?: (el: HTMLVideoElement | null) => void;
+  /** Subtitles the reader can turn on, one per language. */
+  captions?: FilmCaption[];
 }) {
   const words = videoWords(lang);
   const box = useRef<HTMLDivElement | null>(null);
@@ -85,6 +93,67 @@ export function Film({
   const run = useRef<{ side: Side; until: number } | null>(null);
   const jumpTimer = useRef<number | undefined>(undefined);
   const barShown = useRef(false);
+  // The film's two menus, the subtitles chosen (none, or a language), the line shown now,
+  // and the playing speed.
+  const [menu, setMenu] = useState<"subtitles" | "speed" | null>(null);
+  const [cc, setCc] = useState<Lang | null>(null);
+  const [cue, setCue] = useState("");
+  const [rate, setRate] = useState(1);
+  const captionKey = captions.map((c) => `${c.lang}:${c.src}`).join(" ");
+
+  // The reader's last choice of subtitles, if this film has them in that language.
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(CAPTIONS_KEY);
+      if (saved && captions.some((c) => c.lang === saved)) setCc(saved as Lang);
+    } catch {
+      /* no saved choice */
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [captionKey]);
+
+  // The chosen language's track is read but not drawn by the browser: the line is set in
+  // the site's own type, above the bar when the bar shows.
+  useEffect(() => {
+    const el = film.current;
+    if (!el) return;
+    let active: TextTrack | null = null;
+    Array.from(el.textTracks).forEach((track, i) => {
+      const mine = captions[i]?.lang === cc && cc !== null;
+      track.mode = mine ? "hidden" : "disabled";
+      if (mine) active = track;
+    });
+    setCue("");
+    const track = active as TextTrack | null;
+    if (!track) return;
+    const onCue = () => {
+      const now = track.activeCues?.[0] as VTTCue | undefined;
+      setCue(now ? now.text.replace(/<[^>]+>/g, "") : "");
+    };
+    track.addEventListener("cuechange", onCue);
+    onCue();
+    return () => track.removeEventListener("cuechange", onCue);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cc, captionKey]);
+
+  useEffect(() => {
+    const el = film.current;
+    if (!el) return;
+    el.defaultPlaybackRate = rate;
+    el.playbackRate = rate;
+  }, [rate]);
+
+  function chooseCaptions(lang: Lang | null) {
+    setCc(lang);
+    setMenu(null);
+    wake();
+    try {
+      if (lang) localStorage.setItem(CAPTIONS_KEY, lang);
+      else localStorage.removeItem(CAPTIONS_KEY);
+    } catch {
+      /* the choice holds for this visit */
+    }
+  }
 
   useEffect(() => {
     onScreen?.(film.current);
@@ -113,7 +182,11 @@ export function Film({
   function wake(stay = !playing) {
     setShown(true);
     window.clearTimeout(timer.current);
-    if (!stay) timer.current = window.setTimeout(() => setShown(false), HIDE_AFTER);
+    if (!stay)
+      timer.current = window.setTimeout(() => {
+        setShown(false);
+        setMenu(null);
+      }, HIDE_AFTER);
   }
 
   async function toggle() {
@@ -157,6 +230,7 @@ export function Film({
   function hide() {
     window.clearTimeout(timer.current);
     setShown(false);
+    setMenu(null);
   }
 
   function onSurface(event: React.MouseEvent<HTMLVideoElement>) {
@@ -251,7 +325,7 @@ export function Film({
         pointer.current = event.pointerType;
       }}
       onMouseLeave={() => {
-        if (playing) setShown(false);
+        if (playing && !menu) setShown(false);
       }}
       onFocus={() => wake(true)}
       onBlur={() => wake()}
@@ -297,7 +371,17 @@ export function Film({
           setReported(Number.isFinite(d) ? d : 0);
         }}
         onError={() => setFailed(true)}
-      />
+      >
+        {captions.map((c) => (
+          <track key={c.lang} kind="subtitles" src={c.src} srcLang={c.lang} label={c.label} />
+        ))}
+      </video>
+
+      {cue ? (
+        <p aria-live="off" className="film-cue">
+          <span>{cue}</span>
+        </p>
+      ) : null}
 
       {!started && !bare ? (
         <button
@@ -346,79 +430,157 @@ export function Film({
       ) : null}
 
       {started ? (
-        <div className="film-bar absolute inset-x-0 bottom-0" aria-hidden={!bar}>
-          <div className="film-seek relative mx-3 md:mx-4">
-            <div className="film-rule" aria-hidden="true">
-              <span className="film-fill" style={{ width: pct }} />
-              <span className="film-knob" style={{ insetInlineStart: pct }} />
+        <div className="film-bar" aria-hidden={!bar}>
+          <div className="film-glass">
+            {menu ? (
+              <div
+                role="menu"
+                aria-label={menu === "speed" ? words.speed : words.subtitles}
+                className="film-menu"
+              >
+                {menu === "speed"
+                  ? RATES.map((value) => (
+                      <button
+                        key={value}
+                        type="button"
+                        role="menuitemradio"
+                        aria-checked={rate === value}
+                        onClick={() => {
+                          setRate(value);
+                          setMenu(null);
+                          wake();
+                        }}
+                        className="film-menu-item"
+                      >
+                        <span dir="ltr" className="tabular-nums">
+                          {value}×
+                        </span>
+                      </button>
+                    ))
+                  : [null, ...captions.map((c) => c.lang)].map((lang) => (
+                      <button
+                        key={lang ?? "off"}
+                        type="button"
+                        role="menuitemradio"
+                        aria-checked={cc === lang}
+                        onClick={() => chooseCaptions(lang)}
+                        className="film-menu-item"
+                      >
+                        {lang ? captions.find((c) => c.lang === lang)?.label : words.subtitlesOff}
+                      </button>
+                    ))}
+              </div>
+            ) : null}
+            <div className="film-seek">
+              <div className="film-rule" aria-hidden="true">
+                <span className="film-fill" style={{ width: pct }} />
+                <span className="film-knob" style={{ insetInlineStart: pct }} />
+              </div>
+              <input
+                type="range"
+                min={0}
+                max={duration || 0}
+                step={0.1}
+                value={Math.min(time, duration || 0)}
+                aria-label={words.seek}
+                aria-valuetext={`${fmt(time)} / ${fmt(duration)}`}
+                tabIndex={bar ? 0 : -1}
+                onChange={(event) => seek(Number(event.target.value))}
+                onPointerDown={() => wake(true)}
+                onPointerUp={() => wake()}
+              />
             </div>
-            <input
-              type="range"
-              min={0}
-              max={duration || 0}
-              step={0.1}
-              value={Math.min(time, duration || 0)}
-              aria-label={words.seek}
-              aria-valuetext={`${fmt(time)} / ${fmt(duration)}`}
-              tabIndex={bar ? 0 : -1}
-              onChange={(event) => seek(Number(event.target.value))}
-              onPointerDown={() => wake(true)}
-              onPointerUp={() => wake()}
-            />
-          </div>
-          <div className="flex items-center gap-1 px-1.5 pb-1 md:px-2.5 md:pb-1.5">
-            <button
-              type="button"
-              onClick={() => void toggle()}
-              aria-label={playing ? words.pause : words.play}
-              tabIndex={bar ? 0 : -1}
-              className="film-button"
-            >
-              {playing ? (
-                <Pause className="size-5" fill="currentColor" strokeWidth={0} aria-hidden="true" />
-              ) : (
-                <Play
-                  className="size-5 rtl:-scale-x-100"
-                  fill="currentColor"
-                  strokeWidth={0}
-                  aria-hidden="true"
-                />
-              )}
-            </button>
-            <span dir="ltr" className="film-time tabular-nums">
-              {fmt(time)}
-              <span className="px-1 opacity-60" aria-hidden="true">
-                /
+            <div className="film-row">
+              <button
+                type="button"
+                onClick={() => void toggle()}
+                aria-label={playing ? words.pause : words.play}
+                tabIndex={bar ? 0 : -1}
+                className="film-key film-key-main"
+              >
+                {playing ? (
+                  <Pause
+                    className="size-4"
+                    fill="currentColor"
+                    strokeWidth={0}
+                    aria-hidden="true"
+                  />
+                ) : (
+                  <Play
+                    className="ms-0.5 size-4 rtl:-scale-x-100"
+                    fill="currentColor"
+                    strokeWidth={0}
+                    aria-hidden="true"
+                  />
+                )}
+              </button>
+              <span dir="ltr" className="film-time">
+                {fmt(time)}
+                <span className="film-time-rule" aria-hidden="true">
+                  /
+                </span>
+                {fmt(duration)}
               </span>
-              {fmt(duration)}
-            </span>
-            <span className="flex-1" />
-            <button
-              type="button"
-              onClick={toggleSound}
-              aria-label={muted ? words.unmute : words.mute}
-              tabIndex={bar ? 0 : -1}
-              className="film-button"
-            >
-              {muted ? (
-                <VolumeX className="size-5" strokeWidth={1.5} aria-hidden="true" />
-              ) : (
-                <Volume2 className="size-5" strokeWidth={1.5} aria-hidden="true" />
-              )}
-            </button>
-            <button
-              type="button"
-              onClick={toggleFull}
-              aria-label={full ? words.exitFullscreen : words.fullscreen}
-              tabIndex={bar ? 0 : -1}
-              className="film-button"
-            >
-              {full ? (
-                <Minimize className="size-5" strokeWidth={1.5} aria-hidden="true" />
-              ) : (
-                <Maximize className="size-5" strokeWidth={1.5} aria-hidden="true" />
-              )}
-            </button>
+              <span className="flex-1" />
+              {captions.length ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenu(menu === "subtitles" ? null : "subtitles");
+                    wake(true);
+                  }}
+                  aria-label={words.subtitles}
+                  aria-haspopup="menu"
+                  aria-expanded={menu === "subtitles"}
+                  tabIndex={bar ? 0 : -1}
+                  className={`film-word ${cc ? "is-on" : ""}`}
+                >
+                  CC
+                </button>
+              ) : null}
+              <button
+                type="button"
+                onClick={() => {
+                  setMenu(menu === "speed" ? null : "speed");
+                  wake(true);
+                }}
+                aria-label={`${words.speed}: ${rate}×`}
+                aria-haspopup="menu"
+                aria-expanded={menu === "speed"}
+                tabIndex={bar ? 0 : -1}
+                className={`film-word ${rate !== 1 ? "is-on" : ""}`}
+              >
+                <span dir="ltr" className="tabular-nums">
+                  {rate}×
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={toggleSound}
+                aria-label={muted ? words.unmute : words.mute}
+                tabIndex={bar ? 0 : -1}
+                className="film-key"
+              >
+                {muted ? (
+                  <VolumeX className="size-[18px]" strokeWidth={1.25} aria-hidden="true" />
+                ) : (
+                  <Volume2 className="size-[18px]" strokeWidth={1.25} aria-hidden="true" />
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={toggleFull}
+                aria-label={full ? words.exitFullscreen : words.fullscreen}
+                tabIndex={bar ? 0 : -1}
+                className="film-key"
+              >
+                {full ? (
+                  <Minimize className="size-[18px]" strokeWidth={1.25} aria-hidden="true" />
+                ) : (
+                  <Maximize className="size-[18px]" strokeWidth={1.25} aria-hidden="true" />
+                )}
+              </button>
+            </div>
           </div>
         </div>
       ) : null}
