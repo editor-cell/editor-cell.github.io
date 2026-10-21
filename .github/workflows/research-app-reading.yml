@@ -1,0 +1,57 @@
+name: Research app (reading for meaning, trial)
+
+# A trial only: the one-word verdict against reading the paragraph for meaning first, on the big
+# model and on the phone's small model. It builds no APK and puts nothing on the release page, so
+# the phone is never offered this branch.
+on:
+  push:
+    branches: [anlam-okuma]
+    paths:
+      - .github/workflows/research-app-reading.yml
+      - .github/scripts/reading-notes.py
+      - research-app/app/src/main/java/com/orbis/research/Prompts.kt
+      - research-app/logic-test/src/test/kotlin/ReadingCompareTest.kt
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compare:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: Qwen3 4B
+            url: https://huggingface.co/Qwen/Qwen3-4B-GGUF/resolve/main/Qwen3-4B-Q4_K_M.gguf
+          - label: Qwen3 1.7B
+            url: https://huggingface.co/unsloth/Qwen3-1.7B-GGUF/resolve/main/Qwen3-1.7B-Q4_K_M.gguf
+    defaults:
+      run:
+        working-directory: research-app
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+      - run: ./fetch-llama.sh
+      - name: Build the model bridge
+        run: |
+          cmake -S app/src/main/cpp -B build-host -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF \
+            -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_TOOLS=OFF \
+            -DLLAMA_BUILD_EXAMPLES=OFF -DLLAMA_BUILD_SERVER=OFF -DLLAMA_BUILD_COMMON=OFF -DLLAMA_BUILD_APP=OFF \
+            -DLLAMA_CURL=OFF -DLLAMA_OPENSSL=OFF > /dev/null
+          cmake --build build-host -j4 --target orbisllm
+      - name: Fetch the model
+        run: |
+          name=$(basename "${{ matrix.url }}")
+          curl -fsSL -o ~/"$name" "${{ matrix.url }}"
+          echo "ORBIS_MODEL=$HOME/$name" >> "$GITHUB_ENV"
+      - name: One word against reading
+        run: |
+          export ORBIS_LIB="$PWD/build-host/liborbisllm.so"
+          ./gradlew -p logic-test test --tests ReadingCompareTest --no-daemon || echo "the trial did not finish"
+          python3 ../.github/scripts/reading-notes.py logic-test/build/test-results/test "${{ matrix.label }}" | tee -a "$GITHUB_STEP_SUMMARY"

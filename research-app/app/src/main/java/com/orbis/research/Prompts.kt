@@ -81,6 +81,41 @@ object Prompts {
     const val JUDGE_GRAMMAR = "root ::= \"SUPPORTS\" | \"CONTRADICTS\" | \"UNRELATED\""
 
     /**
+     * Step one read for meaning, the owner's way (21 Oct 2026): the word check has already found the
+     * claim's words, or words that mean the same, in the paragraph; that alone proves nothing. The
+     * model first writes down what the claim says happened and what the paragraph itself reports,
+     * and only then whether the two match. The verdict follows from Match, not from a one-word guess.
+     * Being tried against [judge] before the app uses it.
+     */
+    fun read(claim: String, english: String?, p: Paragraph): String = claimAndParagraph(claim, english, p) +
+        "The claim's words, or words that mean the same, appear in this paragraph. That alone proves nothing: " +
+        "read what the paragraph actually says before you decide. Write three lines.\n" +
+        "Claim: in a few words, what the claim says happened (the measure or cause, and what followed it). " +
+        "If the claim is a question or a topic, what it asks about.\n" +
+        "Says: in one short sentence of your own, what the paragraph itself reports: who did what, and what followed. " +
+        "If it only names the subject, a plan, a target or a view, say so.\n" +
+        "Match: same (the paragraph reports both parts of the claim, linked, as the claim says), opposite (it reports " +
+        "both, but no effect or the opposite followed), answers (the claim is a question or topic and the paragraph " +
+        "answers it or gives concrete information on it), or no (anything else, including a paragraph on the same " +
+        "subject that does not report what the claim says)."
+
+    const val READ_GRAMMAR = "root ::= \"Claim: \" line \"\\nSays: \" line \"\\nMatch: \" match\n" +
+        "line ::= [^\\n]{1,220}\n" +
+        "match ::= \"same\" | \"opposite\" | \"answers\" | \"no\""
+
+    /** Room for the two short lines and the match. */
+    const val READ_MAX = 160
+
+    /** The verdict a reading arrives at, in step one's words; null when the reading did not finish. */
+    fun verdictOfReading(raw: String?): String? =
+        when (raw?.substringAfterLast("Match:", "")?.trim()?.substringBefore('\n')?.trim()) {
+            "same", "answers" -> "SUPPORTS"
+            "opposite" -> "CONTRADICTS"
+            "no" -> "UNRELATED"
+            else -> null
+        }
+
+    /**
      * Step two, only for a paragraph that bears on the claim: does it say so outright, or does the
      * claim follow from it in one step, and which step. It starts as step one did, so the model
      * reads only the new question. Asked together, the two questions confused the small model.
