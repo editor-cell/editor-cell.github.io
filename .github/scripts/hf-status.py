@@ -10,6 +10,10 @@ user = api.whoami()["name"]
 all_jobs = list(api.list_jobs())
 names = [r.id for r in api.list_datasets(author=user)] + [r.id for r in api.list_models(author=user)]
 print(f"::notice title=Account::{user}: {len(all_jobs)} jobs; repositories: {', '.join(names) or 'none'}", flush=True)
+for name in names:
+    if "nli" in name:
+        c = api.list_repo_commits(name)[0]
+        print(f"::notice title=Latest save of {name}::{c.created_at}: {c.title}", flush=True)
 for j in sorted(all_jobs, key=lambda j: str(j.created_at), reverse=True)[:3]:
     print(f"::notice title=Job stage::{j.id} {j.status.stage} on {j.flavor}, created {j.created_at}", flush=True)
     lines = []
