@@ -1,0 +1,95 @@
+{"id":410,"tr":"Yangın sonrası doğal yenilenme bölgedeki bitki örtüsünü bir yılda eski haline getirdi.","en":"Natural regrowth restored the area's vegetation within a year after the fire.","label":"UNRELATED"}
+{"id":411,"tr":"Son El Niño olayları yağıştaki değişimlerin kuraklık ve sele ne kadar hızlı yol açabildiğini gösterdi.","en":"Recent El Niño events showed how quickly rainfall shifts can cause droughts and floods.","label":"SUPPORTS"}
+{"id":411,"tr":"El Niño yıllarında su kaynakları üzerindeki baskı azaldı.","en":"Pressure on water resources eased in El Niño years.","label":"CONTRADICTS"}
+{"id":412,"tr":"AB'de son 34 yılda emisyonlardaki düşüşü yenilenebilir enerjinin artan payı ve enerji verimliliği sağladı.","en":"Over the last 34 years, a larger share of renewables and better energy efficiency drove the fall in EU emissions.","label":"SUPPORTS"}
+{"id":412,"tr":"AB'de emisyonlardaki düşüş yalnızca birkaç üye devletten kaynaklandı.","en":"The fall in EU emissions came from only a few Member States.","label":"CONTRADICTS"}
+{"id":412,"tr":"Emisyonlarını azaltan AB ülkelerinde ekonomik büyüme yavaşladı.","en":"Growth slowed in EU countries that cut their emissions.","label":"UNRELATED"}
+{"id":413,"tr":"Yeni otomobil ve hafif ticari araç emisyonlarındaki düşüş sıfır emisyonlu araçların artan payıyla bağlantılı.","en":"The fall in emissions from new cars and vans is linked to the growing share of zero-emission vehicles.","label":"SUPPORTS"}
+{"id":413,"tr":"Elektrikli araç payının artmasının yeni araç emisyonlarına bir etkisi olmadı.","en":"The growing share of electric vehicles has had no effect on new vehicle emissions.","label":"CONTRADICTS"}
+{"id":414,"tr":"Uç senaryoda bile bankaların toplam likidite oranları yüzde 100'ün oldukça üzerinde kalıyor.","en":"Even in the extreme scenario, banks' aggregate liquidity metrics stay well above 100%.","label":"SUPPORTS"}
+{"id":414,"tr":"Dijital euro uç senaryosunda bankaların çoğunun likidite oranı yüzde 100'ün altına düşüyor.","en":"In the extreme digital euro scenario, most banks' liquidity ratios fall below 100%.","label":"CONTRADICTS"}
+{"id":415,"tr":"Hipertansiyon kontrolünü iyileştiren ülkeler sağlık hedeflerinde daha hızlı ilerledi.","en":"Countries that improved hypertension control made faster progress on health goals.","label":"UNRELATED"}
+{"id":416,"tr":"İklim dayanıklılığı platformu yerel yönetimlerin uyum planlarını hızlandırdı.","en":"The climate resilience platform sped up local adaptation plans.","label":"UNRELATED"}
+{"id":417,"tr":"SCORE paketinin amacı sağlık verilerinin zamanında, güvenilir ve karşılaştırılabilir olmasını sağlamak.","en":"The SCORE package aims to make health data timely, reliable and comparable.","label":"SUPPORTS"}
+{"id":417,"tr":"SCORE paketini kullanan ülkelerde sağlık hizmeti kalitesi arttı.","en":"Health care quality rose in countries that used the SCORE package.","label":"UNRELATED"}
+{"id":418,"tr":"El Ele Yatırım Forumu'nda 38 ülke rekor düzeyde 20,16 milyar dolarlık tarım-gıda yatırımı önerdi.","en":"At the Hand-in-Hand Investment Forum, 38 countries presented a record $20.16 billion in proposed agrifood investments.","label":"SUPPORTS"}
+{"id":418,"tr":"El Ele Forumu'nda önerilen yatırımların hepsi hayata geçirildi.","en":"All the investments proposed at the Hand-in-Hand Forum have been carried out.","label":"UNRELATED"}
+{"id":419,"tr":"Yapay zekânın yaygın kullanımı gelişmekte olan ekonomilerde potansiyel büyümeyi yılda 0,8 puan artırabilir.","en":"Widespread AI adoption could lift potential growth in developing economies by 0.8 percentage points a year.","label":"SUPPORTS"}
+{"id":419,"tr":"Yapay zekânın gelişmekte olan ülkelerde büyümeye bir katkısı olmaz.","en":"AI will not add to growth in developing countries.","label":"CONTRADICTS"}
+{"id":419,"tr":"Yapay zekâyı benimseyen gelişmekte olan ülkelerde büyüme hızlandı.","en":"Growth sped up in developing countries that adopted AI.","label":"UNRELATED"}
+{"id":420,"tr":"Dönüşüme yönelik yatırımlar finansman koşullarına duyarlı.","en":"Transition-related investments are sensitive to financing conditions.","label":"SUPPORTS"}
+{"id":420,"tr":"Faiz artışları Avrupa'da yeşil yatırımları azalttı.","en":"Rate rises reduced green investment in Europe.","label":"UNRELATED"}
+{"id":421,"tr":"Girişim Lübnan'ın Merkez Halk Sağlığı Laboratuvarı'nı yeniden kuracak.","en":"The initiative will re-establish Lebanon's Central Public Health Laboratory.","label":"SUPPORTS"}
+{"id":421,"tr":"Lübnan'da kronik hastalıklardan ölümler girişimden sonra azaldı.","en":"Deaths from chronic diseases in Lebanon fell after the initiative.","label":"UNRELATED"}
+{"id":422,"tr":"Güçlü bankalar ve sağlam bilançolar şok anında politika yapıcılara hareket alanı sağlar.","en":"Strong banks and sound balance sheets give policymakers room to respond to a shock.","label":"SUPPORTS"}
+{"id":422,"tr":"Banka sermayesini artıran ülkelerde son krizde durgunluk daha kısa sürdü.","en":"Recessions were shorter in the last crisis in countries that raised bank capital.","label":"UNRELATED"}
+{"id":423,"tr":"El Niño izleme verisi kullanan ülkelerde çiftçilerin kayıpları azaldı.","en":"Farmers' losses fell in countries that used El Niño monitoring data.","label":"UNRELATED"}
+{"id":424,"tr":"Fransa DSÖ Akademisi'ni destekliyor.","en":"France supports the WHO Academy.","label":"SUPPORTS"}
+{"id":425,"tr":"Avrupa İstatistik Uygulama Kodu istatistik kalitesini artırdı.","en":"The European Statistics Code of Practice improved the quality of statistics.","label":"UNRELATED"}
+{"id":426,"tr":"Hürmüz Boğazı'ndaki tedarik krizi insani yardım sistemine ek yük getirdi.","en":"The supply crunch in the Strait of Hormuz put additional strain on the humanitarian system.","label":"SUPPORTS"}
+{"id":426,"tr":"Hürmüz Boğazı krizinin insani yardıma etkisi kısa sürede sona erdi.","en":"The effect of the Hormuz crisis on humanitarian aid ended quickly.","label":"CONTRADICTS"}
+{"id":427,"tr":"Radikal belirsizlik nedir?","en":"What is radical uncertainty?","label":"SUPPORTS"}
+{"id":427,"tr":"Belirsizliği ölçmeyi başaran merkez bankaları daha isabetli kararlar aldı.","en":"Central banks that measured uncertainty made better decisions.","label":"UNRELATED"}
+{"id":428,"tr":"Tokenleştirme ödeme maliyetlerini şimdiden düşürdü.","en":"Tokenisation has already lowered payment costs.","label":"UNRELATED"}
+{"id":429,"tr":"Uganda'da Kolektif Yatırım Planları rejimi 2003'te kuruldu.","en":"Uganda's Collective Investment Schemes regime was set up in 2003.","label":"SUPPORTS"}
+{"id":429,"tr":"Okullarda sermaye piyasası eğitimi veren Uganda'da yatırımcı sayısı arttı.","en":"The number of investors rose in Uganda after capital markets were taught in schools.","label":"UNRELATED"}
+{"id":430,"tr":"Doğu Afrika Menkul Kıymet Düzenleyicileri Birliği ortak kurallar sayesinde bölgesel yatırımı artırdı.","en":"The East African Securities Regulators Association raised regional investment through common rules.","label":"UNRELATED"}
+{"id":431,"tr":"Protein kaynaklarının çeşitlendirilmesi AB tarımının sera gazı emisyonlarını 2035'e kadar yaklaşık yüzde 5 azaltabilir.","en":"Diversifying protein sources could cut EU agricultural greenhouse gas emissions by around 5% by 2035.","label":"SUPPORTS"}
+{"id":431,"tr":"Yerli protein bitkilerine geçiş AB'nin yem ithalatını artırır.","en":"A shift to home-grown protein crops would increase the EU's feed imports.","label":"CONTRADICTS"}
+{"id":432,"tr":"Avrupa Merkez Bankası faiz kararlarını üç ölçüte göre veriyor.","en":"The ECB bases its interest rate decisions on three criteria.","label":"SUPPORTS"}
+{"id":432,"tr":"Avrupa Merkez Bankası faiz kararlarında para politikasının aktarım gücünü dikkate almıyor.","en":"The ECB does not take the strength of monetary policy transmission into account in its rate decisions.","label":"CONTRADICTS"}
+{"id":432,"tr":"Enflasyonu düşürmek için faiz yükselten ülkelerde ekonomik durgunluk yaşandı.","en":"Countries that raised interest rates to bring inflation down went through an economic slowdown.","label":"UNRELATED"}
+{"id":433,"tr":"Yıkama istasyonları kahve çiftçilerinin gelirini artırdı.","en":"Washing stations raised coffee farmers' income.","label":"UNRELATED"}
+{"id":434,"tr":"Avrupa Çevre Ajansı'nın platformu belediyelerin iklim uyum harcamalarını artırdı.","en":"The EEA platform increased municipal spending on climate adaptation.","label":"UNRELATED"}
+{"id":435,"tr":"On'dan fazla ülkede ulusal düzeyde tarımsal kuraklık izleme sistemi (ASIS) var.","en":"More than 10 countries already have a national-level ASIS drought monitoring system.","label":"SUPPORTS"}
+{"id":435,"tr":"ASIS kullanan ülkelerde kuraklık kayıpları azaldı.","en":"Drought losses fell in countries that used ASIS.","label":"UNRELATED"}
+{"id":436,"tr":"Euro bölgesinde hane kredisi büyümesi nominal gelir artışının altında kaldı.","en":"Household credit growth in the euro area has stayed below nominal income growth.","label":"SUPPORTS"}
+{"id":436,"tr":"Euro bölgesinde hane borcunun gelire oranı tarihi zirvede.","en":"The euro area household debt-to-income ratio is at a record high.","label":"CONTRADICTS"}
+{"id":436,"tr":"Faiz artışları euro bölgesinde hanelerin borçlanmasını azalttı.","en":"Rate rises reduced household borrowing in the euro area.","label":"UNRELATED"}
+{"id":437,"tr":"Uzun ömürlü ürünlerin döngüselliğini artırmak AB ekonomisine daha ucuz yerli hammadde sağlayabilir.","en":"Improving the circularity of long-lived products can give the EU more cost-competitive home-grown raw materials.","label":"SUPPORTS"}
+{"id":437,"tr":"Binaların geri dönüşümünü artıran ülkelerde inşaat maliyetleri düştü.","en":"Construction costs fell in countries that recycled more building materials.","label":"UNRELATED"}
+{"id":438,"tr":"İklim senaryolarını genişleten bankalarda kredi kayıpları azaldı.","en":"Credit losses fell at banks that broadened their climate scenarios.","label":"UNRELATED"}
+{"id":439,"tr":"Enerji güvenliğine yatırım yapan Avrupa şirketleri daha rekabetçi oldu.","en":"European firms that invested in energy security became more competitive.","label":"UNRELATED"}
+{"id":440,"tr":"Singapur Para Otoritesi farklı ağların birlikte çalışabilmesi için ortak standartlar oluşturmaya çalışıyor.","en":"The Monetary Authority of Singapore is working to establish common standards so that different networks can interact.","label":"SUPPORTS"}
+{"id":440,"tr":"Singapur bütün kurumların tek bir defter üzerinde çalışmasını zorunlu kılıyor.","en":"Singapore requires all institutions to operate on a single ledger.","label":"CONTRADICTS"}
+{"id":441,"tr":"Katkının 2 milyon eurosu Ukrayna'da ruh sağlığı girişimlerine ayrıldı.","en":"€2 million of the contribution goes to mental health initiatives in Ukraine.","label":"SUPPORTS"}
+{"id":441,"tr":"Malavi'deki kolera salgını bağıştan sonra kontrol altına alındı.","en":"The cholera outbreak in Malawi was brought under control after the donation.","label":"UNRELATED"}
+{"id":442,"tr":"Malzeme stoklarını geri kazanan ülkelerde hammadde ithalatı azaldı.","en":"Raw material imports fell in countries that recovered material stocks.","label":"UNRELATED"}
+{"id":443,"tr":"Parlamenterlerle çalışmak DSÖ'nün ülkelerdeki sağlık bütçelerini artırdı.","en":"Working with parliamentarians increased health budgets in WHO member countries.","label":"UNRELATED"}
+{"id":444,"tr":"Hürmüz krizi tarım-gıda sistemleri için gerekli girdilerin dörtte biri ile üçte birini etkiliyor.","en":"The Hormuz crisis has been affecting between a quarter and a third of all inputs needed for agrifood systems.","label":"SUPPORTS"}
+{"id":444,"tr":"SOFI raporunun açlık rakamları Hürmüz krizinin etkilerini kapsıyor.","en":"The SOFI hunger figures include the effects of the Hormuz crisis.","label":"CONTRADICTS"}
+{"id":445,"tr":"İrlanda Merkez Bankası'nın bildirdiği dolandırıcılık sitelerinin yüzde 99'u kaldırıldı.","en":"99 per cent of the scam websites reported by the Central Bank of Ireland were removed.","label":"SUPPORTS"}
+{"id":445,"tr":"Merkez bankasının bildirdiği sahte sitelerin çoğu yayında kaldı.","en":"Most of the scam sites the central bank reported stayed online.","label":"CONTRADICTS"}
+{"id":445,"tr":"Sahte sitelerin kaldırılması İrlanda'da dolandırıcılık kayıplarını azalttı.","en":"Removing scam websites reduced fraud losses in Ireland.","label":"UNRELATED"}
+{"id":446,"tr":"Enerji fiyatlarındaki son artış enerji arz şokunun ikinci dalgası olarak yorumlanabilir.","en":"The recent surge in energy prices can be seen as a second wave of the energy supply shock.","label":"SUPPORTS"}
+{"id":446,"tr":"Enerji şokunun ikinci dalgası euro bölgesinde büyümeyi birinciden daha sert düşürdü.","en":"The second wave of the energy shock hit euro area growth harder than the first.","label":"UNRELATED"}
+{"id":447,"tr":"Yin Yuzhen'in çalışmaları yaklaşık 5.000 hektar arazinin iyileştirilmesine katkıda bulundu.","en":"Yin Yuzhen's work contributed to restoring nearly 5,000 hectares of land.","label":"SUPPORTS"}
+{"id":447,"tr":"Mu Us Kumluğu'ndaki ağaçlandırma çölleşmeyi durduramadı.","en":"Tree planting in the Mu Us Sandy Land failed to halt desertification.","label":"CONTRADICTS"}
+{"id":448,"tr":"Merkez bankası parasını merkeze alan ülkelerde finansal istikrar güçlendi.","en":"Financial stability improved in countries that kept central bank money at the centre.","label":"UNRELATED"}
+{"id":449,"tr":"Yeni istatistik standartlarını benimseyen ülkelerde kayıt dışı istihdam azaldı.","en":"Informal employment fell in countries that adopted the new statistical standards.","label":"UNRELATED"}
+{"id":450,"tr":"Hipertansiyonu olan her beş kişiden yaklaşık dördü yeterli tedavi görmüyor.","en":"About four in five people with hypertension are not adequately treated.","label":"SUPPORTS"}
+{"id":450,"tr":"Hipertansiyon hastalarının çoğu yeterli tedavi alıyor.","en":"Most people with hypertension are adequately treated.","label":"CONTRADICTS"}
+{"id":450,"tr":"Hipertansiyon tedavisini yaygınlaştıran ülkelerde ölümler azaldı.","en":"Deaths fell in countries that scaled up hypertension treatment.","label":"UNRELATED"}
+{"id":451,"tr":"Sanayiyi koruyan politikalar AB'de temiz teknoloji yatırımlarını artırdı.","en":"Policies that protect industry increased clean-tech investment in the EU.","label":"UNRELATED"}
+{"id":452,"tr":"Siber güvenlikte uluslararası işbirliği yapan ülkelerde siber saldırılar azaldı.","en":"Cyber attacks fell in countries that cooperated internationally on cybersecurity.","label":"UNRELATED"}
+{"id":453,"tr":"İstatistik video yarışmasına katılan öğrencilerin istatistik notları yükseldi.","en":"Students who entered the statistics video competition got better grades in statistics.","label":"UNRELATED"}
+{"id":454,"tr":"DSÖ, Çin'den ilk ölüm bildirilmeden önce dünyayı resmi kanallardan uyarmıştı.","en":"WHO had alerted the world through formal channels before the first death was reported from China.","label":"SUPPORTS"}
+{"id":454,"tr":"DSÖ, Çin dışında yüzlerce ölüm olduktan sonra acil durum ilan etti.","en":"WHO declared an emergency only after hundreds of deaths outside China.","label":"CONTRADICTS"}
+{"id":454,"tr":"DSÖ'nün erken uyarısına uyan ülkelerde COVID-19 ölümleri daha az oldu.","en":"Countries that heeded WHO's early warning had fewer COVID-19 deaths.","label":"UNRELATED"}
+{"id":455,"tr":"Mali destek bu yıl euro bölgesi ekonomisini destekledi.","en":"Fiscal support has supported the euro area economy this year.","label":"SUPPORTS"}
+{"id":455,"tr":"Enflasyonu düşürmek için faiz yükselten ülkelerde ekonomik durgunluk yaşandı.","en":"Countries that raised interest rates to bring inflation down went through an economic slowdown.","label":"UNRELATED"}
+{"id":456,"tr":"Dijital euro tutma limitleri para politikasının aktarımını zayıflattı.","en":"Digital euro holding limits weakened monetary policy transmission.","label":"UNRELATED"}
+{"id":457,"tr":"Uzun vadeli faizlerdeki küresel artış ABD'de başladı.","en":"The global rise in long-term yields originated in the United States.","label":"SUPPORTS"}
+{"id":457,"tr":"Uzun vadeli faizlerdeki artış euro bölgesinde başladı ve ABD'ye yayıldı.","en":"The rise in long-term yields started in the euro area and spread to the US.","label":"CONTRADICTS"}
+{"id":457,"tr":"Yükselen uzun vadeli faizler euro bölgesinde konut piyasasını soğuttu.","en":"Rising long-term yields cooled the euro area housing market.","label":"UNRELATED"}
+{"id":458,"tr":"Dünya ekonomisi yüksek belirsizliğe rağmen şaşırtıcı biçimde dayanıklı kaldı.","en":"The global economy has proven surprisingly resilient despite high uncertainty.","label":"SUPPORTS"}
+{"id":458,"tr":"Ticaret gerginlikleri dünya ekonomisini resesyona soktu.","en":"Trade tensions pushed the world economy into recession.","label":"CONTRADICTS"}
+{"id":458,"tr":"Enflasyonu düşürmek için faiz yükselten ülkelerde ekonomik durgunluk yaşandı.","en":"Countries that raised interest rates to bring inflation down went through an economic slowdown.","label":"UNRELATED"}
+{"id":459,"tr":"Ortak ulaşım tanımlarına geçen ülkelerde demiryolu kullanımı arttı.","en":"Rail use rose in countries that adopted common transport definitions.","label":"UNRELATED"}
+{"id":460,"tr":"Yapay zekâ yatırımı yapan sektörlerde verimlilik arttı.","en":"Productivity rose in sectors that invested in AI.","label":"UNRELATED"}
+{"id":461,"tr":"Avrupa'da bir bankanın küçük ve karmaşık olmayan sayılması için toplam varlık eşiği şu an 5 milyar euro.","en":"The threshold for a small and non-complex bank in Europe is currently €5 billion in total assets.","label":"SUPPORTS"}
+{"id":461,"tr":"Avrupa'da küçük banka eşiği 10 milyar euroya yükseltildi.","en":"The small bank threshold in Europe has been raised to €10 billion.","label":"CONTRADICTS"}
+{"id":462,"tr":"Anlık ödemeleri yaygınlaştıran ülkelerde sınır ötesi ödemeler ucuzladı.","en":"Cross-border payments got cheaper in countries that spread instant payments.","label":"UNRELATED"}
+{"id":463,"tr":"Yapay zekâ zirveleri ülkelerin yapay zekâ politikalarını uyumlaştırdı.","en":"AI summits harmonised countries' AI policies.","label":"UNRELATED"}
+{"id":464,"tr":"İrlanda bu yıl firmaların dolandırıcılık mağdurlarını desteklemesini zorunlu kılan yeni kurallar getirdi.","en":"Ireland introduced new rules this year requiring firms to support victims of fraud.","label":"SUPPORTS"}
+{"id":464,"tr":"Yeni geri ödeme kurallarından sonra İrlanda'da dolandırıcılık mağdurlarının kayıpları azaldı.","en":"Fraud victims' losses in Ireland fell after the new reimbursement rules.","label":"UNRELATED"}
