@@ -1,13 +1,17 @@
 name: Research app (model comparison)
 
 # Runs the app's prompts on several free, open models: Turkish claims translated correctly,
-# paragraphs labelled correctly, and how long each takes. Used to choose the models the app offers.
+# paragraphs labelled correctly, and how long each takes; for embedding models, whether English
+# paragraphs that say what a Turkish claim says in other words rank first. Used to choose the
+# models the app offers.
 on:
   push:
     branches: [ccr-b3ffb058-472a31]
     paths:
       - .github/workflows/research-app-models.yml
       - research-app/logic-test/src/test/kotlin/LiveModelTest.kt
+      - research-app/logic-test/src/test/kotlin/EmbedderTest.kt
+      - research-app/app/src/main/java/com/orbis/research/Vectors.kt
       - research-app/app/src/main/java/com/orbis/research/Prompts.kt
       - research-app/app/src/main/cpp/llm.cpp
       - .github/scripts/model-score.py
@@ -53,5 +57,60 @@ jobs:
         run: |
           export ORBIS_LIB="$PWD/build-host/liborbisllm.so"
           ./gradlew -p logic-test test --tests LiveModelTest --no-daemon || echo "some checks failed"
+      - name: Score
+        run: python3 ../.github/scripts/model-score.py logic-test/build/test-results/test | tee -a "$GITHUB_STEP_SUMMARY"
+
+  embedders:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - repo: ggml-org/embeddinggemma-300M-GGUF
+            pick: 'Q8_0\.gguf$'
+          - repo: Qwen/Qwen3-Embedding-0.6B-GGUF
+            pick: 'Q8_0\.gguf$'
+          - repo: TwinSunsLLC/multilingual-e5-small-gguf
+            pick: '(?i)q8_0\.gguf$'
+          - repo: cstr/multilingual-e5-small-GGUF
+            pick: '(?i)q8_0\.gguf$'
+    defaults:
+      run:
+        working-directory: research-app
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+      - run: ./fetch-llama.sh
+      - name: Build the model bridge
+        run: |
+          cmake -S app/src/main/cpp -B build-host -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF \
+            -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_TOOLS=OFF \
+            -DLLAMA_BUILD_EXAMPLES=OFF -DLLAMA_BUILD_SERVER=OFF -DLLAMA_BUILD_COMMON=OFF -DLLAMA_BUILD_APP=OFF \
+            -DLLAMA_CURL=OFF -DLLAMA_OPENSSL=OFF > /dev/null
+          cmake --build build-host -j4 --target orbisllm
+      # The file name is looked up in the repository's list, so its exact spelling need not be known.
+      - name: Fetch the model
+        env:
+          REPO: ${{ matrix.repo }}
+          PICK: ${{ matrix.pick }}
+        run: |
+          name=$(curl -fsSL "https://huggingface.co/api/models/$REPO" | python3 -c "
+          import json, os, re, sys
+          files = [s['rfilename'] for s in json.load(sys.stdin)['siblings'] if re.search(os.environ['PICK'], s['rfilename'])]
+          print(min(files, key=len) if files else '')")
+          [ -n "$name" ] || { echo "no file matching $PICK in $REPO"; exit 1; }
+          url="https://huggingface.co/$REPO/resolve/main/$name"
+          echo "MODEL URL: $url"
+          curl -fsSL -o ~/"$(basename "$name")" "$url"
+          ls -la ~/"$(basename "$name")"
+          echo "ORBIS_EMBED=$HOME/$(basename "$name")" >> "$GITHUB_ENV"
+      - name: Rank paragraphs by meaning
+        run: |
+          export ORBIS_LIB="$PWD/build-host/liborbisllm.so"
+          ./gradlew -p logic-test test --tests EmbedderTest --no-daemon || echo "some checks failed"
       - name: Score
         run: python3 ../.github/scripts/model-score.py logic-test/build/test-results/test | tee -a "$GITHUB_STEP_SUMMARY"

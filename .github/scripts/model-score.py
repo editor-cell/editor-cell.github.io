@@ -1,4 +1,4 @@
-"""Prints a short score card from the LiveModelTest results: one line per check, then totals."""
+"""Prints a short score card from the live model tests: one line per check, then totals."""
 import glob
 import re
 import sys
@@ -6,7 +6,7 @@ import xml.etree.ElementTree as ET
 
 passed = total = 0
 times = []
-for path in glob.glob(f"{sys.argv[1]}/TEST-*LiveModelTest*.xml"):
+for path in glob.glob(f"{sys.argv[1]}/TEST-*LiveModelTest*.xml") + glob.glob(f"{sys.argv[1]}/TEST-*EmbedderTest*.xml"):
     root = ET.parse(path).getroot()
     times += [int(t) for t in re.findall(r"\[(\d+) ms\]", "".join(root.itertext()))]
     for case in root.iter("testcase"):
