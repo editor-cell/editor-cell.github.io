@@ -219,15 +219,29 @@ private fun FindingCard(f: Finding) {
     val p = f.paragraph
     val j = f.judgement
     val supports = j.verdict == Verdict.SUPPORTS
+    val an = j.analogy
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = if (supports) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.errorContainer,
+            containerColor = when {
+                an != null -> MaterialTheme.colorScheme.tertiaryContainer
+                supports -> MaterialTheme.colorScheme.secondaryContainer
+                else -> MaterialTheme.colorScheme.errorContainer
+            },
         ),
     ) {
         Column(Modifier.padding(14.dp)) {
             Text(label(j), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
+            if (an != null) {
+                // The model's kıyas comes first and is marked as its own reasoning; the paragraph it
+                // rests on follows, word for word.
+                Text("Motorun kıyası (belgede yok):", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(top = 6.dp))
+                for ((name, text) in listOf("Asıl" to an.asil, "Fer" to an.fer, "İllet" to an.illet, "Hüküm" to an.hukum)) {
+                    Text("$name: $text", fontStyle = FontStyle.Italic, style = MaterialTheme.typography.bodyMedium)
+                }
+                Text("Dayandığı paragraf:", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(top = 8.dp))
+            }
             SelectionContainer { Text("“${p.text}”", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(vertical = 8.dp)) }
-            if (j.indirect) {
+            if (j.indirect && an == null) {
                 // The model's own words, set apart from the quote and never mistaken for it.
                 Text(
                     if (j.reason != null) "Gerekçe (motorun): ${j.reason}"
@@ -251,13 +265,19 @@ private fun FindingCard(f: Finding) {
 
 private fun quote(p: Paragraph) = "“${p.text}”\n— ${p.docTitle}${if (p.docDate.isNotEmpty()) " (${p.docDate})" else ""}\n${p.docUrl}"
 
-private fun label(j: Judgement) = (if (j.verdict == Verdict.SUPPORTS) "DESTEKLİYOR" else "ÇÜRÜTÜYOR") + if (j.indirect) " · DOLAYLI" else ""
+private fun label(j: Judgement) = when {
+    j.analogy != null -> "KIYAS · " + if (j.verdict == Verdict.SUPPORTS) "DESTEKLİYOR OLABİLİR" else "ÇÜRÜTÜYOR OLABİLİR"
+    else -> (if (j.verdict == Verdict.SUPPORTS) "DESTEKLİYOR" else "ÇÜRÜTÜYOR") + if (j.indirect) " · DOLAYLI" else ""
+}
 
 private fun copyAll(ctx: Context, claim: String, list: List<Finding>) {
     val text = buildString {
         appendLine("Yargı: $claim").appendLine()
         for (f in list) {
             appendLine("[${label(f.judgement)}]")
+            f.judgement.analogy?.let { a ->
+                appendLine("Motorun kıyası (belgede yok): Asıl: ${a.asil} / Fer: ${a.fer} / İllet: ${a.illet} / Hüküm: ${a.hukum}")
+            }
             appendLine(quote(f.paragraph))
             f.judgement.reason?.let { appendLine("Gerekçe (motorun): $it") }
             appendLine()

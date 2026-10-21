@@ -225,3 +225,31 @@ class JudgementTest {
         assertTrue(made.reasonDropped); assertEquals(null, made.reason); assertTrue(made.indirect)
     }
 }
+
+class AnalogyTest {
+    private val para = "After France raised tobacco taxes sharply between 2003 and 2004, cigarette sales fell by a third."
+    private val claim = "Türkiye'de sigara vergisi artırılırsa sigara tüketimi azalır."
+
+    private fun saved(body: String) = com.orbis.research.Prompts.withAnalogy(body)
+
+    @Test fun fourPartsAreRead() {
+        val j = com.orbis.research.Prompts.parseJudgement(saved(
+            "SUPPORTS\nASIL: Fransa'da 2003-2004'te tütün vergisi artınca sigara satışı düştü.\nFER: Türkiye'de sigara vergisinin artırılması.\n" +
+                "ILLET: Vergi fiyatı yükseltir, fiyat yükselince satın alma azalır.\nHUKUM: Türkiye'de de sigara tüketimi azalabilir."), para, claim)!!
+        assertEquals(com.orbis.research.Verdict.SUPPORTS, j.verdict)
+        assertEquals("Türkiye'de sigara vergisinin artırılması.", j.analogy!!.fer)
+        assertTrue(j.analogy!!.hukum.endsWith("azalabilir."))
+    }
+
+    @Test fun noneAndBrokenAnswersShowNothing() {
+        assertEquals("UNRELATED\nNOANALOGY", saved("NONE"))
+        assertEquals(null, com.orbis.research.Prompts.parseJudgement(saved("NONE"), para, claim))
+        assertEquals(null, com.orbis.research.Prompts.parseJudgement("UNRELATED", para, claim))
+        assertEquals(null, com.orbis.research.Prompts.parseJudgement(saved("SUPPORTS\nASIL: yalnız asıl"), para, claim))
+    }
+
+    @Test fun aFigureFromNowhereDropsTheWholeAnalogy() {
+        val made = saved("SUPPORTS\nASIL: Fransa'da satış yüzde 33 düştü.\nFER: Türkiye.\nILLET: Vergi.\nHUKUM: Türkiye'de de düşebilir.")
+        assertEquals(null, com.orbis.research.Prompts.parseJudgement(made, para, claim))
+    }
+}

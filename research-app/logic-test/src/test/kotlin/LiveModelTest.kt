@@ -108,6 +108,36 @@ class LiveModelTest {
         }
     }
 
+    /**
+     * Kıyas: a paragraph about a comparable case elsewhere, for a claim it does not speak to. The
+     * model must give the four parts with the right direction, and stay out of unrelated paragraphs.
+     */
+    private class AnalogyCase(val claim: String, val text: String, val expected: String)
+
+    private val analogies = listOf(
+        AnalogyCase("Türkiye'de sigara vergisi artırılırsa sigara tüketimi azalır.",
+            "After France raised tobacco taxes sharply between 2003 and 2004, cigarette sales fell by a third.", "SUPPORTS"),
+        AnalogyCase("Türkiye'de şekerli içeceklere vergi konursa bu içeceklerin tüketimi azalır.",
+            "In Mexico, purchases of taxed sugar-sweetened beverages declined by 6% in the first year after the excise tax was introduced in 2014.", "SUPPORTS"),
+        AnalogyCase("Türkiye'de şekerli içeceklere vergi konursa bu içeceklerin tüketimi azalır.",
+            "The ministry will publish its annual report on road safety in March, covering traffic accidents and speeding fines.", "NONE"),
+    )
+
+    @TestFactory fun reasonsByAnalogy() = analogies.map { c ->
+        DynamicTest.dynamicTest("${c.expected}: ${c.text.take(50)}") {
+            ready()
+            val p = Paragraph(1, c.text, "https://example.org/r", "Report", "", "Example")
+            val raw = ask(Prompts.JUDGE_SYSTEM, Prompts.analogy(c.claim, english(c.claim), p), Prompts.ANALOGY_GRAMMAR, 180)
+            println("ANALOGY ${raw.replace("\n", " | ")} <- ${c.text.take(60)}")
+            val j = Prompts.parseJudgement(Prompts.withAnalogy(raw), c.text, c.claim)
+            if (c.expected == "NONE") assertEquals(null, j, "an analogy from an unrelated paragraph: $raw")
+            else {
+                assertTrue(raw.startsWith(c.expected), "expected ${c.expected}: $raw")
+                if (j == null) println("HIDDEN ANALOGY (a figure not in the paragraph or claim): ${raw.replace("\n", " | ")}")
+            }
+        }
+    }
+
     @TestFactory fun suggestsADirection() = listOf(SUGAR, WAGE).map { claim ->
         DynamicTest.dynamicTest(claim) {
             ready()

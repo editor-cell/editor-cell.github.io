@@ -11,7 +11,9 @@ class Finding(val paragraph: Paragraph, val judgement: Judgement)
  * 2. the language model puts the claim into English once (it judges English paragraphs better
  *    with it), then reads the paragraphs one by one and labels each; the words shown are always
  *    the paragraph as it was read from the document;
- * 3. if nothing bears on the claim outright, the model offers one line on where else to look.
+ * 3. if nothing bears on the claim outright, the model looks among the closest paragraphs for a
+ *    comparable case to reason from by analogy (kıyas), shown apart from the evidence, and offers
+ *    one line on where else to look.
  */
 class Search(private val ctx: Context) {
     private val db = Db.get(ctx)
@@ -46,6 +48,16 @@ class Search(private val ctx: Context) {
         return "$v\n$how"
     }
 
+    /**
+     * Step four for one paragraph that step one called unrelated: the answer as saved, with the
+     * model's kıyas if it found one, or null if the search was stopped.
+     */
+    suspend fun analogy(claim: String, english: String?, paraId: Long): String? {
+        val p = db.paragraph(paraId) ?: return Prompts.withAnalogy(null)
+        val a = Llm.generate(Prompts.JUDGE_SYSTEM, Prompts.analogy(claim, english, p), Prompts.ANALOGY_GRAMMAR, maxTokens = 180) ?: return null
+        return Prompts.withAnalogy(a)
+    }
+
     /** The claim in English, once per search; null if the search was stopped. */
     suspend fun translate(claim: String): String? =
         Llm.generate(Prompts.TRANSLATE_SYSTEM, Prompts.translate(claim), maxTokens = 60)?.let { Prompts.firstLine(it) ?: "" }
@@ -54,13 +66,21 @@ class Search(private val ctx: Context) {
     suspend fun suggest(claim: String): String? =
         Llm.generate(Prompts.SUGGEST_SYSTEM, Prompts.suggest(claim), Prompts.SUGGEST_GRAMMAR, maxTokens = 70)?.trim()?.ifEmpty { null }
 
-    /** The paragraphs found so far: outright findings first, supporting before contradicting. */
-    fun findings(): List<Finding> = db.answers().mapNotNull { (id, answer) ->
-        val p = db.paragraph(id) ?: return@mapNotNull null
-        Prompts.parseJudgement(answer, p.text)?.let { Finding(p, it) }
-    }.sortedWith(compareBy<Finding>({ it.judgement.indirect }, { it.judgement.verdict.ordinal }))
+    /**
+     * The paragraphs found so far: outright findings first, then indirect ones, then the model's
+     * analogies; within each, supporting before contradicting.
+     */
+    fun findings(): List<Finding> {
+        val claim = db.run()?.claim ?: ""
+        return db.answers().mapNotNull { (id, answer) ->
+            val p = db.paragraph(id) ?: return@mapNotNull null
+            Prompts.parseJudgement(answer, p.text, claim)?.let { Finding(p, it) }
+        }.sortedWith(compareBy<Finding>({ it.judgement.analogy != null }, { it.judgement.indirect }, { it.judgement.verdict.ordinal }))
+    }
 
     companion object {
+        /** How many of the closest unrelated paragraphs are tried for a kıyas. */
+        const val ANALOGY_TRIES = 5
         const val NO_EMBEDDER = "Önce Model sekmesinden anlam modelini indirin."
     }
 }

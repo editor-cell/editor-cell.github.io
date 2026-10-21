@@ -22,7 +22,11 @@ numbers of its own; when nothing fits it says "Bulamadım".
   (llama.cpp; Qwen3 4B, or Qwen3 1.7B on 4 GB phones; Apache 2.0) in two steps: SUPPORTS /
   CONTRADICTS / UNRELATED under a grammar, then for a hit DIRECT or INDIRECT with a one-line reason.
   A reason carrying a figure the paragraph lacks is dropped. With no outright finding, the model
-  offers one digit-free line on where else to look, shown apart as a suggestion. The quote shown is
+  tries a kıyas (reasoning by analogy, as in usul) on the closest paragraphs it found unrelated:
+  the case in the paragraph (asıl), the case in the claim (fer), the shared cause (illet) and what
+  follows (hüküm, as a likelihood), shown on a card of its own as the model's reasoning, with the
+  paragraph beside it; one figure outside the paragraph and claim and the analogy is not shown.
+  Then it offers one digit-free line on where else to look, shown apart as a suggestion. The quote shown is
   always the stored paragraph, never model output. "Durdur" stops within one 32-token step.
 - The only addresses outside the source list are the model downloads (Hugging Face, and this
   repository's release `models-1`), fetched once when the owner asks.

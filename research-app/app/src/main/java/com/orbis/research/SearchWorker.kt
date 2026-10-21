@@ -71,7 +71,21 @@ class SearchWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
                 }
             }
             if (isStopped || !current()) return Result.success()
+            // No paragraph says it outright: as in kıyas, reason from comparable cases among the
+            // closest paragraphs the model found unrelated, then suggest where else to look.
             if (search.findings().none { !it.judgement.indirect }) {
+                val judged = db.judgedItems()
+                val tried = judged.count { it.third?.startsWith("UNRELATED\n") == true }
+                val toTry = judged.filter { it.third?.trim() == "UNRELATED" }.take(maxOf(0, Search.ANALOGY_TRIES - tried))
+                val english = db.run()?.english
+                for ((n, item) in toTry.withIndex()) {
+                    if (isStopped || !current()) return Result.success()
+                    say("Kıyas için benzer durumlar inceleniyor (${n + 1}/${toTry.size})…")
+                    val a = search.analogy(run.claim, english, item.second) ?: return Result.success()
+                    db.saveAnswer(item.first, a, run.startedAt)
+                    SearchState.changed()
+                }
+                if (isStopped || !current()) return Result.success()
                 say("Araştırma için bir yön önerisi hazırlanıyor…")
                 search.suggest(run.claim)?.let { if (current()) db.setRun(suggestion = it) }
             }

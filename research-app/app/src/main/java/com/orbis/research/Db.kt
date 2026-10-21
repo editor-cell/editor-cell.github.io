@@ -346,6 +346,11 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
         )
     }
 
+    /** (position, paragraph, answer) of each paragraph read so far, in order. */
+    fun judgedItems(): List<Triple<Int, Long, String?>> = readableDatabase.rawQuery(
+        "SELECT idx, para_id, answer FROM search_items WHERE judged = 1 ORDER BY idx", null,
+    ).use { c -> buildList { while (c.moveToNext()) add(Triple(c.getInt(0), c.getLong(1), c.getString(2))) } }
+
     /** What the model said about each paragraph read so far, in order. */
     fun answers(): List<Pair<Long, String?>> = readableDatabase.rawQuery(
         "SELECT para_id, answer FROM search_items WHERE judged = 1 ORDER BY idx", null,

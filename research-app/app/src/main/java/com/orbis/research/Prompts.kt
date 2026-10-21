@@ -7,12 +7,24 @@ enum class Verdict { SUPPORTS, CONTRADICTS }
  * step rather than being stated; [reason] names that step, and is dropped ([reasonDropped]) when it
  * carries a figure the paragraph does not.
  */
-data class Judgement(val verdict: Verdict, val indirect: Boolean, val reason: String?, val reasonDropped: Boolean = false)
+data class Judgement(
+    val verdict: Verdict, val indirect: Boolean, val reason: String?, val reasonDropped: Boolean = false,
+    /** Set when the finding is the model's analogy (kıyas), not evidence in the paragraph. */
+    val analogy: Analogy? = null,
+)
+
+/**
+ * A kıyas, as in usul: the case the paragraph knows ([asil]) and its outcome, the case the claim
+ * is about ([fer]), the cause the two share ([illet]), and what follows for the claim ([hukum]),
+ * worded as a likelihood. All four are the model's words; the paragraph is shown beside them.
+ */
+data class Analogy(val asil: String, val fer: String, val illet: String, val hukum: String)
 
 /**
  * Everything the app says to the model, kept free of Android so the tests run these exact prompts
  * against the real model. The quote shown is always the paragraph itself; the model only labels
- * it, and may add a one-line reason for an indirect finding and a one-line direction to try.
+ * it, and may add a one-line reason for an indirect finding, an analogy (kıyas) set apart from the
+ * evidence, and a one-line direction to try.
  */
 object Prompts {
     /**
@@ -74,8 +86,9 @@ object Prompts {
      * The model's answers (step one, then step two on the next line) as a judgement; null when the
      * paragraph does not bear on the claim.
      */
-    fun parseJudgement(answer: String?, paragraph: String): Judgement? {
+    fun parseJudgement(answer: String?, paragraph: String, claim: String = ""): Judgement? {
         val a = answer?.trim() ?: return null
+        if (a.startsWith("UNRELATED")) return if (a.contains("\nANALOGY ")) parseAnalogy(a, paragraph, claim) else null
         val verdict = when {
             a.startsWith("SUPPORTS") -> Verdict.SUPPORTS
             a.startsWith("CONTRADICTS") -> Verdict.CONTRADICTS
@@ -86,6 +99,43 @@ object Prompts {
         val reason = a.substringAfter("INDIRECT:", "").trim().ifEmpty { null }
         val ok = reason != null && numbersIn(reason).all { it in numbersIn(paragraph) }
         return Judgement(verdict, true, if (ok) reason else null, reasonDropped = reason != null && !ok)
+    }
+
+    /**
+     * Step four, kıyas: only when no paragraph bears on the claim outright, and only for the
+     * paragraphs closest in meaning that step one called unrelated. It starts as step one did.
+     */
+    fun analogy(claim: String, english: String?, p: Paragraph): String = claimAndParagraph(claim, english, p) +
+        "This paragraph does not show the claim itself. Reason by analogy (qiyas): does it describe a comparable " +
+        "case, the same cause or mechanism in another country, time, group or product, whose outcome can be " +
+        "carried over to the case in the claim? If not, answer NONE. If yes, first write SUPPORTS or CONTRADICTS " +
+        "(what the analogy suggests for the claim), then four lines in Turkish: ASIL: the case in the paragraph " +
+        "and its outcome; FER: the case in the claim; ILLET: the cause the two share; HUKUM: what follows for the " +
+        "claim, worded as a likelihood (olabilir), not as a fact. Use only facts and figures from the paragraph " +
+        "and the claim."
+
+    const val ANALOGY_GRAMMAR = "root ::= \"NONE\" | dir \"\\nASIL: \" line \"\\nFER: \" line \"\\nILLET: \" line \"\\nHUKUM: \" line\n" +
+        "dir ::= \"SUPPORTS\" | \"CONTRADICTS\"\n" +
+        "line ::= [^\\n<>]+"
+
+    /** How a checked paragraph is saved after step four: "UNRELATED", then the analogy or NOANALOGY. */
+    fun withAnalogy(answer: String?): String =
+        if (answer.isNullOrBlank() || answer.trim() == "NONE") "UNRELATED\nNOANALOGY" else "UNRELATED\nANALOGY ${answer.trim()}"
+
+    private fun parseAnalogy(a: String, paragraph: String, claim: String): Judgement? {
+        val body = a.substringAfter("\nANALOGY ", "").trim()
+        val verdict = when {
+            body.startsWith("SUPPORTS") -> Verdict.SUPPORTS
+            body.startsWith("CONTRADICTS") -> Verdict.CONTRADICTS
+            else -> return null
+        }
+        fun field(name: String) = Regex("(?m)^$name: (.+)$").find(body)?.groupValues?.get(1)?.trim()
+        val an = Analogy(field("ASIL") ?: return null, field("FER") ?: return null, field("ILLET") ?: return null, field("HUKUM") ?: return null)
+        // An analogy is all the model's own words: one figure that is in neither the paragraph nor the
+        // claim, and the whole analogy is left out.
+        val allowed = numbersIn(paragraph) + numbersIn(claim)
+        if (!numbersIn(listOf(an.asil, an.fer, an.illet, an.hukum).joinToString(" ")).all { it in allowed }) return null
+        return Judgement(verdict, indirect = true, reason = null, analogy = an)
     }
 
     /**
