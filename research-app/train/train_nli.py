@@ -83,12 +83,12 @@ def problem_scores(when):
     return out
 
 
-def problem_percent():
+def problem_acc():
     rows = pairs([e for e in dev_problems if e.get("premise_lang") != "tr"], ("en",))
     if not rows:
-        return ""
+        return None
     got = predict([(p, h) for p, h, _ in rows])
-    return f"; word problems held-out {100 * sum(g == w for g, (_, _, w) in zip(got, rows)) / len(rows):.1f}% right"
+    return 100 * sum(g == w for g, (_, _, w) in zip(got, rows)) / len(rows)
 
 tok = AutoTokenizer.from_pretrained(MODEL)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL)
@@ -206,9 +206,16 @@ with torch.no_grad():
     l_eval = model(**e0, labels=torch.tensor([name_to_id[TO_NLI[w0]]]).to(DEVICE)).loss.item()
 print(f"::notice title=First pair::loss in training mode {l_train:.3f}, in reading mode {l_eval:.3f}", flush=True)
 
-# The model as it came is a candidate too: training is kept only if it does better on the held-out claims.
+# The model as it came is a candidate too. Without word problems, training is kept only if it does
+# better on the held-out paragraph claims. With word problems (Yavuz, 22 Oct 2026: first the problems,
+# above 90%), the paragraphs set a floor instead: an epoch may lose at most two held-out paragraph
+# claims and add at most one wrong finding, and among those that keep to it the best on the held-out
+# problems is kept. The first round with problems kept nothing: the paragraphs, already at 226/239,
+# could not get better, so no epoch could ever win under the old rule.
 dev_rows = pairs(dev, ("en",))
 best_key, ok0, wrong0 = dev_key(dev_rows)
+acc0 = problem_acc()
+best_acc = acc0
 best_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
 best_epoch = 0
 for epoch in range(EPOCHS):
@@ -258,11 +265,17 @@ for epoch in range(EPOCHS):
             print(f"epoch {epoch + 1} step {step}/{steps} loss {losses[-1]:.3f} {time.time() - t0:.0f}s", flush=True)
     key, ok, wrong = dev_key(dev_rows)
     mean = sum(losses) / len(losses) if losses else float("nan")
+    acc = problem_acc()
     line = (f"epoch {epoch + 1}: mean loss {mean:.3f}, {skipped} broken steps skipped; held-out paragraphs {ok}/{len(dev_rows)} right, "
-            f"{wrong} wrong findings{problem_percent()}")
+            f"{wrong} wrong findings" + (f"; word problems held-out {acc:.1f}% right (before training {acc0:.1f}%)" if acc is not None else ""))
     print(f"::notice title=Epoch {epoch + 1}::{line}", flush=True)
     notes.append(line)
-    if key > best_key:
+    if acc is not None:
+        better = ok >= ok0 - 2 and wrong <= wrong0 + 1 and (acc, key) > (best_acc, best_key)
+    else:
+        better = key > best_key
+    if better:
+        best_acc = acc
         best_key, best_epoch = key, epoch + 1
         best_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
 model.load_state_dict(best_state)
