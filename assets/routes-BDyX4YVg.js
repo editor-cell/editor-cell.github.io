@@ -1,0 +1,1 @@
+import{n as e}from"./atlas-mKNKg5nK.js";var t=e;export{t as component};

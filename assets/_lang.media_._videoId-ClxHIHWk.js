@@ -1,0 +1,1 @@
+import{cn as e}from"./shell-Bk1D3MRQ.js";import{r as t}from"./videos-DHJ_cOvn.js";import{n}from"./index-DurkTA3L.js";var r=e();function i(){return(0,r.jsx)(t,{video:n.useLoaderData()})}export{i as component};
