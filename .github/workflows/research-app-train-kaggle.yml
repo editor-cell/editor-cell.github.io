@@ -30,6 +30,9 @@ on:
       kernel:
         description: "Kaggle notebook name; a new name for a round that must not replace a running one"
         default: "orbis-kuran-okuma"
+      program:
+        description: "kaggle_read.py (Quran and full round) or fast_problems.py (quick word-problem round)"
+        default: "kaggle_read.py"
       start:
         description: "start from this earlier round's private Hugging Face model (e.g. orbis-nli-mdeberta-quran); empty = the original model"
         default: ""
@@ -150,6 +153,7 @@ jobs:
               -e 's/os.environ.get("HOURS", "7")/os.environ.get("HOURS", "${{ inputs.hours || '7' }}")/' \
               -e 's/os.environ.get("HUMAN", "0")/os.environ.get("HUMAN", "${{ inputs.human || '0' }}")/' \
               research-app/train/kaggle_read.py > kk/kaggle_read.py
+          if [ "${{ inputs.program }}" = "fast_problems.py" ]; then cp research-app/train/fast_problems.py kk/kaggle_read.py; fi
           cat > kk/kernel-metadata.json <<EOF
           {"id": "$KAGGLE_USERNAME/$KERNEL", "title": "$KERNEL", "code_file": "kaggle_read.py",
            "language": "python", "kernel_type": "script", "is_private": true,
