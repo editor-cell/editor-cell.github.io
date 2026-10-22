@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - research-app/train/peek_logic.py
+      - research-app/train/logic_human.py
       - .github/workflows/peek-logic-data.yml
 permissions:
   contents: read
@@ -20,7 +21,7 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          python peek_logic.py > peek.txt 2> err.txt || true
+          python logic_human.py > peek.txt 2> err.txt || true
           cat peek.txt
           echo "::notice title=Peek::$(head -c 9000 peek.txt | tr '\n' '|' | sed 's/|/%0A/g')"
           tail -c 800 err.txt || true
