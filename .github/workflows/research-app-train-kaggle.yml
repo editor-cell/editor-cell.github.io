@@ -1,0 +1,145 @@
+name: Research app (Quran reading on a free Kaggle graphics card)
+
+# The NLI model reads the Quran eleven times on Kaggle's free graphics card, then is trained on our
+# own examples as every round (research-app/train/kaggle_read.py). Free: Kaggle gives 30 card hours
+# a week. The training files go to a private Kaggle dataset; the Quran texts are fetched on Kaggle
+# while the reading runs and are never stored here. The result goes to a separate private Hugging
+# Face repository (orbis-nli-mdeberta-quran); the model the app uses is not touched.
+#   smoke   - a few pairs on this machine, to catch mistakes before Kaggle hours are spent
+#   start   - send the reading to Kaggle and wait for it (up to about five and a half hours)
+#   collect - fetch the result of a reading that outlasted the wait
+on:
+  push:
+    branches: [anlam-okuma]
+    paths:
+      - .github/workflows/research-app-train-kaggle.yml
+      - research-app/train/kaggle_read.py
+      - research-app/train/quran.py
+  workflow_dispatch:
+    inputs:
+      mode:
+        default: "smoke"
+      readings:
+        default: "11"
+      hours:
+        default: "7"
+
+permissions:
+  contents: read
+
+jobs:
+  read:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    env:
+      KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+      KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+      KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      DATASET: orbis-train-data
+      KERNEL: orbis-kuran-okuma
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Gather the training files (flat, as Kaggle keeps them)
+        run: |
+          mkdir -p kd
+          cp research-app/train/{train_nli.py,pool.json,quran.py,kaggle_read.py} kd/
+          for f in research-app/train/labels/*.jsonl; do cp "$f" "kd/labels__$(basename "$f")"; done
+          cp research-app/nli-trial/cases.json kd/
+          ls kd | wc -l
+
+      - name: Trial on this machine
+        if: (inputs.mode || 'smoke') == 'smoke'
+        run: |
+          pip install --quiet torch --index-url https://download.pytorch.org/whl/cpu
+          cd kd && SMOKE=1 READINGS=2 python kaggle_read.py
+          echo "::notice title=Trial::$(tr '\n' '|' < work/notes.txt | sed 's/|/%0A/g')"
+
+      - name: Kaggle key
+        if: (inputs.mode || 'smoke') != 'smoke'
+        run: |
+          pip install --quiet --upgrade kaggle "huggingface_hub>=0.34"
+          [ -n "$KAGGLE_KEY" ] || unset KAGGLE_KEY
+          [ -n "$KAGGLE_API_TOKEN" ] || unset KAGGLE_API_TOKEN
+          if [ -z "$KAGGLE_USERNAME" ]; then echo "::error title=Kaggle::KAGGLE_USERNAME is missing"; exit 1; fi
+          if ! kaggle datasets list --mine > /dev/null 2>err.txt; then
+            echo "::error title=Kaggle::the Kaggle key did not work: $(tail -c 400 err.txt | tr '\n' ' ')"; exit 1
+          fi
+          echo "::notice title=Kaggle::the key works for $KAGGLE_USERNAME"
+
+      - name: Send the reading to Kaggle
+        if: inputs.mode == 'start'
+        run: |
+          [ -n "$KAGGLE_KEY" ] || unset KAGGLE_KEY
+          [ -n "$KAGGLE_API_TOKEN" ] || unset KAGGLE_API_TOKEN
+          printf '{"title": "%s", "id": "%s/%s", "licenses": [{"name": "other"}]}' "$DATASET" "$KAGGLE_USERNAME" "$DATASET" > kd/dataset-metadata.json
+          if kaggle datasets status "$KAGGLE_USERNAME/$DATASET" > /dev/null 2>&1; then
+            kaggle datasets version -p kd -m "update" -q
+          else
+            kaggle datasets create -p kd -q
+          fi
+          for i in $(seq 1 40); do
+            s=$(kaggle datasets status "$KAGGLE_USERNAME/$DATASET" 2>&1 || true)
+            echo "dataset: $s"
+            echo "$s" | grep -qi ready && break
+            sleep 15
+          done
+          mkdir -p kk
+          sed -e 's/os.environ.get("READINGS", "11")/os.environ.get("READINGS", "${{ inputs.readings || '11' }}")/' \
+              -e 's/os.environ.get("HOURS", "7")/os.environ.get("HOURS", "${{ inputs.hours || '7' }}")/' \
+              research-app/train/kaggle_read.py > kk/kaggle_read.py
+          cat > kk/kernel-metadata.json <<EOF
+          {"id": "$KAGGLE_USERNAME/$KERNEL", "title": "$KERNEL", "code_file": "kaggle_read.py",
+           "language": "python", "kernel_type": "script", "is_private": true,
+           "enable_gpu": true, "enable_internet": true, "machine_shape": "NvidiaTeslaT4",
+           "dataset_sources": ["$KAGGLE_USERNAME/$DATASET"], "competition_sources": [], "kernel_sources": []}
+          EOF
+          kaggle kernels push -p kk
+          echo "::notice title=Kaggle::the reading was sent ($(date -u +%H:%M) UTC)"
+
+      - name: Wait for the reading
+        if: inputs.mode == 'start'
+        id: wait
+        run: |
+          [ -n "$KAGGLE_KEY" ] || unset KAGGLE_KEY
+          [ -n "$KAGGLE_API_TOKEN" ] || unset KAGGLE_API_TOKEN
+          end=$(( $(date +%s) + 330*60 ))
+          while [ "$(date +%s)" -lt "$end" ]; do
+            sleep 120
+            s=$(kaggle kernels status "$KAGGLE_USERNAME/$KERNEL" 2>&1 || true)
+            echo "$(date -u +%H:%M) $s"
+            if echo "$s" | grep -qiE 'complete|error|cancel'; then echo "done=1" >> "$GITHUB_OUTPUT"; exit 0; fi
+          done
+          echo "::notice title=Kaggle::still reading after five and a half hours; run this again with mode collect later"
+
+      - name: Collect the result
+        if: inputs.mode == 'collect' || steps.wait.outputs.done == '1'
+        run: |
+          [ -n "$KAGGLE_KEY" ] || unset KAGGLE_KEY
+          [ -n "$KAGGLE_API_TOKEN" ] || unset KAGGLE_API_TOKEN
+          s=$(kaggle kernels status "$KAGGLE_USERNAME/$KERNEL" 2>&1 || true)
+          echo "$s"
+          if ! echo "$s" | grep -qiE 'complete|error|cancel'; then echo "::notice title=Kaggle::still running: $s"; exit 0; fi
+          mkdir -p res && kaggle kernels output "$KAGGLE_USERNAME/$KERNEL" -p res -q || true
+          ls -R res | head -30
+          python - <<'EOF'
+          import glob, json, os
+          from huggingface_hub import HfApi
+          notes = open("res/notes.txt", encoding="utf-8").read().strip() if os.path.exists("res/notes.txt") else ""
+          if not notes:
+              log = "".join(open(f, encoding="utf-8", errors="replace").read() for f in glob.glob("res/*.log"))
+              print(log[-6000:])
+              print("::error title=Kaggle::the reading left no notes; the end of its log is printed above")
+              raise SystemExit(1)
+          print("::notice title=Reading::" + notes.replace("\n", "%0A")[:8000])
+          status = json.load(open("res/status.json")) if os.path.exists("res/status.json") else {}
+          if status.get("ok") and os.path.exists("res/out/config.json"):
+              api = HfApi()
+              repo = api.whoami()["name"] + "/orbis-nli-mdeberta-quran"
+              api.create_repo(repo, private=True, exist_ok=True)
+              api.upload_folder(repo_id=repo, folder_path="res/out", commit_message=f"read the Quran {status['readings']} times, then our examples")
+              print(f"::notice title=Saved::kept in the private repository {repo}")
+          EOF
