@@ -127,7 +127,7 @@ for level in range(1, 11):
                 r["dev"] = True
             rows.append(r)
         pid += 1
-with open(os.path.join(HERE, "labels", "logic_levels.jsonl"), "w", encoding="utf-8") as f:
+with open(os.path.join(HERE, "archive", "logic_levels.jsonl"), "w", encoding="utf-8") as f:
     for r in rows:
         f.write(json.dumps(r, ensure_ascii=False) + "\n")
 print(f"{pid - 70000} puzzles (250 training, 100 held-out), {len(rows)} statements:",
@@ -149,7 +149,7 @@ for level in range(1, 11):
             rows2.append({"id": pid, "kind": "logic", "level": level, "premise": text, "en": e, "tr": t, "label": l})
         pid += 1
         made += 1
-with open(os.path.join(HERE, "labels", "logic_levels2.jsonl"), "w", encoding="utf-8") as f:
+with open(os.path.join(HERE, "archive", "logic_levels2.jsonl"), "w", encoding="utf-8") as f:
     for r in rows2:
         f.write(json.dumps(r, ensure_ascii=False) + "\n")
 print(f"second set: {pid - 71000} training puzzles, {len(rows2)} statements")

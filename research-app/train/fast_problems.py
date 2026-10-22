@@ -104,7 +104,7 @@ if FOCUS == "logic":
     wp = pairs([e for e in train if e.get("kind") == "problem"])
     random.shuffle(wp)
     others += wp[: len(wp) // 3]
-    probs = probs * 2
+    probs = probs * (2 if len(probs) < 8000 else 1)
 note(f"training pairs an epoch: {len(probs)} from {FOCUS}, {len(others)} from our other examples; "
      f"held-out ({FOCUS}): {len(dev_prob_en)} claims, {len(dev_par)} paragraph claims, {len(dev_puz)} puzzle statements")
 
