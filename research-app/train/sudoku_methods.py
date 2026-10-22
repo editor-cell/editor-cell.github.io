@@ -1,22 +1,23 @@
-"""Sudoku the way people solve it (Yavuz, 22 Oct 2026): not "what is in this square" for a whole hard puzzle, but
-the published human techniques, one step at a time, in the order the tutorials teach them (SudokuWiki,
-HoDoKu): the only digit left, the only square left for a digit, pairs and triples, pointing pairs and box/line
-reduction, X-Wing, XY-Wing, Swordfish.
+"""Sudoku in the order a published course teaches it (Yavuz, 22 Oct 2026: "do not teach it yourself; take a published
+series that goes from the simplest to the expert level"). The course is SudokuWiki (sudokuwiki.org): its
+"Getting Started" page, then Naked Candidates, Hidden Candidates, Intersection Removal (the Basic tier), then the
+Tough tier (X-Wing, Y-Wing, Swordfish, XYZ-Wing ...), in the site's own order. This file only walks real puzzles
+with those techniques as the site defines them and writes each step down; it adds no technique and no order of its own.
 
-The puzzles come from a published collection (sapientinc/sudoku-extreme, sudoku.py fetches it while the round
-runs). A plain human solver walks each puzzle: always the easiest technique that applies, written down at each
-step. A step becomes a short reading puzzle (the squares or lines the technique looks at, with what each can
-hold) and statements about one square. Every label is worked out by trying all the ways the premise allows
-(not by the technique code), so a label is exactly what the premise says: SUPPORTS if it follows, CONTRADICTS
-if it is ruled out, UNRELATED if it stays open.
+The puzzles come from a published collection (sapientinc/sudoku-extreme, sudoku.py fetches it while the round runs).
+A step becomes a short reading puzzle: the grid drawn as nine lines of nine squares ("_" for an empty one), or, for the
+techniques that work on pencil marks ("candidates", as the site's own "Take Step" tool shows them), the squares or
+lines the technique looks at with what each can hold. Statements are about one square. Every label is worked out by
+trying all the ways the premise allows (not by the technique code): SUPPORTS if it follows, CONTRADICTS if it is
+ruled out, UNRELATED if it stays open.
 
-Twelve levels (1 is new: a row, column or box drawn as lines with one square empty), the order of the tutorials, each
-number below one higher in the output:
-  1 the only digit left in a square, the digits of its row, column and box spelled out
-  2 the same, from the whole grid alone
-  3 hidden single: the only square left in a unit for a digit
-  4 naked pair      5 hidden pair      6 pointing pair (box -> line)      7 box/line reduction (line -> box)
-  8 naked triple    9 X-Wing           10 XY-Wing                          11 Swordfish
+Levels, in the course's order (output level numbers):
+  1 last remaining cell in a box          (Getting Started: the digit's other places in rows and columns rule squares out)
+  2 last remaining cell in a row or column
+  3 the last possible number in a square  (naked single)
+  4 naked pair   5 naked triple   6 hidden pair   7 hidden triple      (Naked Candidates, Hidden Candidates)
+  8 pointing pair/triple   9 box/line reduction                         (Intersection Removal)
+  10 X-Wing   11 Y-Wing   12 Swordfish   13 XYZ-Wing                   (Tough)
 build(n_train, n_dev, cache) -> rows in the labels shape (kind "sudoku", "level", held-out "dev").
 Usage: sudoku_methods.py [real]   (no argument: puzzles made here for a quick local test)"""
 import itertools
@@ -34,13 +35,14 @@ for _u in UNITS:
         PEERS[_i] |= set(_u)
 for _i in range(81):
     PEERS[_i].discard(_i)
-LEVELS = 11
+LEVELS = 13
 
 
 def out_level(k):
-    """The number a step's level carries: -3 digit in a line, -2 ruled out by a line, -1 only square left (from the grid),
-    0 one line with one square empty, then the technique levels 1.. after them."""
-    return {-3: 2, -2: 3, -1: 4, 0: 1}.get(k, k + 4)
+    """Levels are the course's order, as numbered in the docstring."""
+    return k
+
+
 RULE = "Each row, each column and each box holds every digit from 1 to 9 exactly once."
 
 
@@ -239,8 +241,40 @@ def f_xywing(st, rnd):
                         return {"pivot": p, "wing1": x, "wing2": y, "digit": c, "elims": el}
 
 
-LADDER = [(1, f_naked_single), (3, f_hidden_single), (4, f_naked_pair), (5, f_hidden_pair), (6, f_pointing),
-          (7, f_boxline), (8, f_naked_triple), (9, f_xwing), (10, f_xywing), (11, f_swordfish)]
+def f_hidden_triple(st, rnd):
+    order = list(range(27))
+    rnd.shuffle(order)
+    for u in order:
+        have = st.unit_digits(u)
+        pos = {d: [i for i in UNITS[u] if d in st.cand[i]] for d in range(1, 10) if d not in have}
+        few = [d for d in pos if 2 <= len(pos[d]) <= 3]
+        for trio in itertools.combinations(few, 3):
+            cells = set().union(*(pos[d] for d in trio))
+            if len(cells) == 3:
+                el = [(i, x) for i in cells for x in st.cand[i] if x not in trio]
+                if el:
+                    return {"unit": u, "elims": el}
+
+
+def f_xyzwing(st, rnd):
+    pivots = [i for i in range(81) if not st.g[i] and len(st.cand[i]) == 3]
+    rnd.shuffle(pivots)
+    for p in pivots:
+        near = [i for i in PEERS[p] if not st.g[i] and len(st.cand[i]) == 2 and st.cand[i] < st.cand[p]]
+        for x, y in itertools.combinations(near, 2):
+            common = st.cand[x] & st.cand[y]
+            if len(common) == 1 and st.cand[x] | st.cand[y] == st.cand[p]:
+                z = next(iter(common))
+                el = [(j, z) for j in PEERS[p] & PEERS[x] & PEERS[y] if not st.g[j] and z in st.cand[j]]
+                if el:
+                    return {"pivot": p, "wing1": x, "wing2": y, "digit": z, "elims": el}
+
+
+# The course's order: the singles, Naked Candidates, Hidden Candidates, Intersection Removal, then the Tough tier.
+# A level 0 step only places a digit (the walk needs it); the others are written down as reading puzzles.
+LADDER = [(0, f_naked_single), (0, f_hidden_single), (4, f_naked_pair), (5, f_naked_triple), (6, f_hidden_pair),
+          (7, f_hidden_triple), (8, f_pointing), (9, f_boxline), (10, f_xwing), (11, f_xywing), (12, f_swordfish),
+          (13, f_xyzwing)]
 
 
 # ---- exact labels: try every way the premise allows ----------------------------------------------------
@@ -367,29 +401,25 @@ def picks_instance(st, d, unit_ids, extra, target_unit=None):
 
 
 def make_instance(level, st, found, rnd):
-    """-> (premise, model, [(form, cell, digit)] the step's own claim) or None"""
-    if level == 3:
-        text, m = unit_instance(st, found["unit"], 3, found)
-        return text, m, ("holds", found["cell"], found["digit"])
-    if level in (4, 5, 8):
+    """-> (premise, model, the step's own claim) or None"""
+    if level in (4, 5, 6, 7):
         text, m = unit_instance(st, found["unit"], level, found)
         i, d = rnd.choice(found["elims"])
         return text, m, ("cannot", i, d)
-    if level in (6, 7):
+    if level in (8, 9):
         i, d = rnd.choice(found["elims"])
-        units = [found["box"], found["line"]] if level == 6 else [found["line"], found["box"]]
+        units = [found["box"], found["line"]] if level == 8 else [found["line"], found["box"]]
         text, m = picks_instance(st, found["digit"], units, [i])
-        # the line is told in full (the squares outside the box too), so the square asked about is in it
         return text, m, ("cannot", i, found["digit"])
-    if level in (9, 11):
+    if level in (10, 12):
         i, d = rnd.choice(found["elims"])
         base = found["bases"][0] // 9
         tline = (i // 9) if base == 0 else 9 + (i % 9)
         units = list(found["bases"]) + [tline]
         text, m = picks_instance(st, d, units, [])
         return text, m, ("cannot", i, d)
-    if level == 10:
-        p, x, y, c = found["pivot"], found["wing1"], found["wing2"], found["digit"]
+    if level in (11, 13):
+        p, x, y = found["pivot"], found["wing1"], found["wing2"]
         i, d = rnd.choice(found["elims"])
         cells = [p, x, y, i]
         cand = {k: set(st.cand[k]) for k in cells}
@@ -441,105 +471,43 @@ def grid_text(g):
     return "\n".join(" ".join(str(x) if x else "_" for x in g[r * 9:(r + 1) * 9]) for r in range(9))
 
 
-def draw_unit(g, u):
-    """One row (a line), column (a line going down) or box (three lines), drawn the same way, under its name."""
-    cell = lambda i: str(g[i]) if g[i] else "_"
-    if u < 9:
-        return f"Row {u + 1}\n" + " ".join(cell(i) for i in UNITS[u])
-    if u < 18:
-        return f"Column {u - 8}\n" + "\n".join(cell(i) for i in UNITS[u])
-    return f"Box {u - 17}\n" + "\n".join(" ".join(cell(i) for i in UNITS[u][k:k + 3]) for k in (0, 3, 6))
+def basic_cells(st, u, d):
+    """The empty squares of a unit where a d is not ruled out by a d already standing in the square's row, column or box."""
+    return [i for i in UNITS[u] if not st.g[i] and d not in {st.g[j] for j in PEERS[i] if st.g[j]}]
 
 
-def line_instance(st, rnd):
-    """A row, column or box with one empty square, drawn: the digit that is missing goes there."""
-    units = [u for u in range(27) if sum(1 for i in UNITS[u] if not st.g[i]) == 1]
-    if not units:
-        return []
-    u = rnd.choice(units)
-    i = next(i for i in UNITS[u] if not st.g[i])
-    d = (set(range(1, 10)) - st.unit_digits(u)).pop()
-    seen = sorted(st.unit_digits(u))
-    text = RULE + " " + draw_unit(st.g, u)
-    out = [("SUPPORTS", ("holds", i, d)), ("CONTRADICTS", ("cannot", i, d)),
-           ("SUPPORTS", ("cannot", i, rnd.choice(seen))), ("CONTRADICTS", ("holds", i, rnd.choice(seen)))]
-    return [(text, lab, c) for lab, c in out]
-
-
-def present(st, d, u):
-    return d in st.unit_digits(u)
-
-
-def scan_instances(st, rnd):
-    """From a drawn grid: -3 a digit stands in a row, column or box (or does not); -2 so a square cannot hold it;
-    -1 the only square left in a unit for a digit (all read from the grid alone)."""
+def scan_levels(st, rnd):
+    """From the grid drawn as lines, the course's first three steps:
+    1 the last remaining cell in a box   2 the last remaining cell in a row or column   3 the last possible number."""
     out = {}
     text = RULE + "\n" + grid_text(st.g)
-    # -3
-    items = []
-    for want in (True, True, False, False):
-        for _ in range(30):
-            u, d = rnd.randrange(27), rnd.randint(1, 9)
-            if present(st, d, u) == want:
-                nm = unit_name(u)
-                num = u % 9 + 1
-                en = f"A {d} already stands in {nm}."
-                tr = f"{d} rakamı {num}. " + ("satırda" if u < 9 else "sütunda" if u < 18 else "kutuda") + " zaten var."
-                items.append((text, "SUPPORTS" if want else "CONTRADICTS", ("raw", en, tr)))
+    for level, units in ((1, range(18, 27)), (2, range(18))):
+        units = list(units)
+        rnd.shuffle(units)
+        for u in units:
+            have = st.unit_digits(u)
+            digits = [d for d in range(1, 10) if d not in have]
+            rnd.shuffle(digits)
+            done = False
+            for d in digits:
+                cells = basic_cells(st, u, d)
+                others = [j for j in UNITS[u] if not st.g[j] and j not in cells]
+                if len(cells) == 1 and others:
+                    i, j = cells[0], rnd.choice(others)
+                    out[level] = [(text, "SUPPORTS", ("holds", i, d)), (text, "CONTRADICTS", ("cannot", i, d)),
+                                  (text, "SUPPORTS", ("cannot", j, d)), (text, "CONTRADICTS", ("holds", j, d))]
+                    done = True
+                    break
+            if done:
                 break
-    out[-3] = items
-    # -2
-    blanks = [i for i in range(81) if not st.g[i]]
-    items = []
-    rnd.shuffle(blanks)
-    for i in blanks[:30]:
+    f = f_naked_single(st, rnd)
+    if f and f["scan"]:
+        i, d = f["cell"], f["digit"]
         seen = sorted({st.g[j] for j in PEERS[i] if st.g[j]})
-        if seen and len(items) < 4:
-            d = rnd.choice(seen)
-            items.append((text, "SUPPORTS", ("cannot", i, d)))
-            items.append((text, "CONTRADICTS", ("holds", i, d)))
-    out[-2] = items
-    # -1
-    for u in rnd.sample(range(27), 27):
-        have = st.unit_digits(u)
-        for d in rnd.sample(range(1, 10), 9):
-            if d in have:
-                continue
-            cells = [i for i in UNITS[u] if not st.g[i] and d not in {st.g[j] for j in PEERS[i] if st.g[j]}]
-            if len(cells) == 1:
-                i = cells[0]
-                others = [j for j in UNITS[u] if not st.g[j] and j != i]
-                if not others:
-                    continue
-                j = rnd.choice(others)
-                out[-1] = [(text, "SUPPORTS", ("holds", i, d)), (text, "CONTRADICTS", ("cannot", i, d)),
-                           (text, "SUPPORTS", ("cannot", j, d)), (text, "CONTRADICTS", ("holds", j, d))]
-                return out
+        e = rnd.choice(seen)
+        out[3] = [(text, "SUPPORTS", ("holds", i, d)), (text, "CONTRADICTS", ("cannot", i, d)),
+                  (text, "SUPPORTS", ("cannot", i, e)), (text, "CONTRADICTS", ("holds", i, e))]
     return out
-
-
-def scan_rows(st, found, level, rnd):
-    i, d = found["cell"], found["digit"]
-    seen_r = sorted({st.g[j] for j in ROWS[i // 9] if st.g[j]})
-    seen_c = sorted({st.g[j] for j in COLS[i % 9] if st.g[j]})
-    seen_b = sorted({st.g[j] for j in BOXES[(i // 27) * 3 + (i % 9) // 3] if st.g[j]})
-    seen = sorted(set(seen_r) | set(seen_c) | set(seen_b))
-    if len(seen) != 8:
-        return []
-    if level == 1:
-        text = (f"{RULE} {square(i).capitalize()} is empty. Its row already holds {join_and(seen_r) if seen_r else 'nothing'}. "
-                f"Its column already holds {join_and(seen_c) if seen_c else 'nothing'}. "
-                f"Its box already holds {join_and(seen_b) if seen_b else 'nothing'}.")
-    else:
-        text = RULE + " " + grid_text(st.g)
-    out = [("SUPPORTS", ("holds", i, d)), ("CONTRADICTS", ("cannot", i, d)),
-           ("SUPPORTS", ("cannot", i, rnd.choice(seen))), ("CONTRADICTS", ("holds", i, rnd.choice(seen)))]
-    if level == 1:
-        others = [j for j in range(81) if not st.g[j] and j not in PEERS[i] and j != i]
-        if others:
-            j = rnd.choice(others)
-            out.append(("UNRELATED", ("holds", j, rnd.randint(1, 9))))
-    return [(text, lab, c) for lab, c in out]
 
 
 # ---- walking the puzzles --------------------------------------------------------------------------------
@@ -548,39 +516,24 @@ def to_digits(p):
 
 
 def collect(puzzle, solution, rnd, quota, per_level=2, rare=6):
-    """-> [(level, premise, [(label, (form, cell, digit))])] for one puzzle"""
+    """-> [(level, [(premise, label, claim)])] for one puzzle"""
     out, got = [], {}
     sol = to_digits(solution)
 
     def add(level, items):
-        if items and got.get(level, 0) < (rare if level >= 8 else per_level) and quota.get(level, 0) > 0:
+        if items and got.get(level, 0) < (rare if level >= 10 else per_level) and quota.get(level, 0) > 0:
             got[level] = got.get(level, 0) + 1
             out.append((level, items))
 
-    # a game partly played: the squares the only-digit and hidden-single steps need
-    g = to_digits(puzzle)
-    blanks = [i for i in range(81) if not g[i]]
-    rnd.shuffle(blanks)
-    for i in blanks[: int(len(blanks) * rnd.uniform(0.25, 0.7))]:
-        g[i] = sol[i]
-    st = State(g)
-    f = f_naked_single(st, rnd)
-    if f and f["scan"]:
-        for lv in (1, 2):
-            add(lv, [(t, lab, c) for t, lab, c in scan_rows(st, f, lv, rnd)])
-    g = to_digits(puzzle)
-    blanks = [i for i in range(81) if not g[i]]
-    rnd.shuffle(blanks)
-    for i in blanks[: int(len(blanks) * rnd.uniform(0.8, 0.97))]:
-        g[i] = sol[i]
-    add(0, line_instance(State(g), rnd))
-    g = to_digits(puzzle)
-    blanks = [i for i in range(81) if not g[i]]
-    rnd.shuffle(blanks)
-    for i in blanks[: int(len(blanks) * rnd.uniform(0.3, 0.7))]:
-        g[i] = sol[i]
-    for lv, items in scan_instances(State(g), rnd).items():
-        add(lv, items)
+    # a game partly played (some squares of the published solution filled in): the first three steps
+    for _ in range(2):
+        g = to_digits(puzzle)
+        blanks = [i for i in range(81) if not g[i]]
+        rnd.shuffle(blanks)
+        for i in blanks[: int(len(blanks) * rnd.uniform(0.3, 0.75))]:
+            g[i] = sol[i]
+        for lv, items in scan_levels(State(g), rnd).items():
+            add(lv, items)
     # the puzzle as published, walked by the easiest technique that applies
     st = State(to_digits(puzzle))
     for _ in range(80):
@@ -592,10 +545,7 @@ def collect(puzzle, solution, rnd, quota, per_level=2, rare=6):
             if not f:
                 continue
             moved = True
-            if level == 1:
-                if f["scan"]:
-                    for lv in (1, 2):
-                        add(lv, [(t, lab, c) for t, lab, c in scan_rows(st, f, lv, rnd)])
+            if level == 0:
                 st.place(f["cell"], f["digit"])
             else:
                 try:
@@ -607,11 +557,8 @@ def collect(puzzle, solution, rnd, quota, per_level=2, rare=6):
                             add(level, [(text, model.label(*c), c) for c in cl])
                 except (ValueError, OverflowError):
                     pass
-                if level == 3:
-                    st.place(f["cell"], f["digit"])
-                else:
-                    for i, d in f["elims"]:
-                        st.cand[i].discard(d)
+                for i, d in f["elims"]:
+                    st.cand[i].discard(d)
             break
         if not moved:
             break
@@ -620,8 +567,8 @@ def collect(puzzle, solution, rnd, quota, per_level=2, rare=6):
 
 def build_from(samples, n_train=120, n_dev=15, seed=5, budget=240, weights=None):
     rnd = random.Random(seed)
-    quota_train = {lv: int(n_train * (weights or {}).get(out_level(lv), 1)) for lv in range(-3, LEVELS + 1)}
-    quota_dev = {lv: n_dev for lv in range(-3, LEVELS + 1)}
+    quota_train = {lv: int(n_train * (weights or {}).get(out_level(lv), 1)) for lv in range(1, LEVELS + 1)}
+    quota_dev = {lv: n_dev for lv in range(1, LEVELS + 1)}
     rows, pid = [], 90000
     t0 = time.time()
     used = 0
