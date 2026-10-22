@@ -68,9 +68,27 @@ dev = [e for e in dev if e.get("kind") not in ("puzzle", "meaning", "words", "hu
 def problem_scores(when):
     en_prem = [e for e in dev_problems if e.get("premise_lang") != "tr"]
     tr_prem = [e for e in dev_problems if e.get("premise_lang") == "tr"]
-    return [score(pairs(en_prem, ("en",)), f"word problems held-out, English text and claim, {when}")[0],
-            score(pairs(en_prem, ("tr",)), f"word problems held-out, English text and Turkish claim, {when}")[0],
-            score(pairs(tr_prem, ("tr",)), f"word problems held-out, Turkish text and claim, {when}")[0]]
+    out = [score(pairs(en_prem, ("en",)), f"word problems held-out, English text and claim, {when}")[0],
+           score(pairs(en_prem, ("tr",)), f"word problems held-out, English text and Turkish claim, {when}")[0],
+           score(pairs(tr_prem, ("tr",)), f"word problems held-out, Turkish text and claim, {when}")[0]]
+    levels = sorted({e.get("level", 0) for e in en_prem})
+    if levels != [0]:
+        # Level by level (English text and claim): where the model stops keeping up.
+        parts = []
+        for lv in levels:
+            rows = pairs([e for e in en_prem if e.get("level", 0) == lv], ("en",))
+            got = predict([(p, h) for p, h, _ in rows])
+            parts.append(f"{lv}: {sum(g == w for g, (_, _, w) in zip(got, rows))}/{len(rows)}")
+        out.append(f"word problems held-out by level, {when}: " + ", ".join(parts))
+    return out
+
+
+def problem_percent():
+    rows = pairs([e for e in dev_problems if e.get("premise_lang") != "tr"], ("en",))
+    if not rows:
+        return ""
+    got = predict([(p, h) for p, h, _ in rows])
+    return f"; word problems held-out {100 * sum(g == w for g, (_, _, w) in zip(got, rows)) / len(rows):.1f}% right"
 
 tok = AutoTokenizer.from_pretrained(MODEL)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL)
@@ -141,6 +159,29 @@ print("\n".join(notes), flush=True)
 print("::notice title=Before training::" + "%0A".join(notes), flush=True)
 
 data = pairs(train)
+# The first epoch goes through the word problems from level 1 to level 10 (Yavuz's plan: easy first,
+# harder as the model learns), spread evenly among the other examples; later epochs mix everything.
+_levelled = [(e.get("level", 0), x) for e in train if e.get("kind") == "problem" for x in pairs([e])]
+_others = pairs([e for e in train if e.get("kind") != "problem"])
+
+
+def first_epoch():
+    rest = _others[:]
+    random.shuffle(rest)
+    probs = sorted(_levelled, key=lambda lx: (lx[0], random.random()))
+    probs = [x for _, x in probs]
+    if not probs:
+        return rest
+    out, k = [], 0
+    for i, x in enumerate(rest):
+        out.append(x)
+        # After i of the others, as many problems as their share of the way through.
+        while k < len(probs) and k < (i + 1) * len(probs) / len(rest):
+            out.append(probs[k])
+            k += 1
+    return out + probs[k:]
+
+
 opt = torch.optim.AdamW(model.parameters(), lr=LR, weight_decay=0.01)
 steps = EPOCHS * ((len(data) + 7) // 8)
 sched = torch.optim.lr_scheduler.LambdaLR(opt, lambda s: min(1.0, (s + 1) / (0.1 * steps)) * max(0.0, 1 - s / steps))
@@ -171,7 +212,10 @@ best_key, ok0, wrong0 = dev_key(dev_rows)
 best_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
 best_epoch = 0
 for epoch in range(EPOCHS):
-    random.shuffle(data)
+    if epoch == 0:
+        data = first_epoch()
+    else:
+        random.shuffle(data)
     model.train()
     losses, skipped = [], 0
     # One pair at a time, eight pairs per update: no padding inside a batch, which is where the
@@ -214,7 +258,10 @@ for epoch in range(EPOCHS):
             print(f"epoch {epoch + 1} step {step}/{steps} loss {losses[-1]:.3f} {time.time() - t0:.0f}s", flush=True)
     key, ok, wrong = dev_key(dev_rows)
     mean = sum(losses) / len(losses) if losses else float("nan")
-    print(f"::notice title=Epoch {epoch + 1}::mean loss {mean:.3f}, {skipped} broken steps skipped; held-out {ok}/{len(dev_rows)} right, {wrong} wrong findings", flush=True)
+    line = (f"epoch {epoch + 1}: mean loss {mean:.3f}, {skipped} broken steps skipped; held-out paragraphs {ok}/{len(dev_rows)} right, "
+            f"{wrong} wrong findings{problem_percent()}")
+    print(f"::notice title=Epoch {epoch + 1}::{line}", flush=True)
+    notes.append(line)
     if key > best_key:
         best_key, best_epoch = key, epoch + 1
         best_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
