@@ -31,8 +31,9 @@ labels = [json.loads(l) for f in sorted(glob.glob(os.path.join(HERE, "labels", "
 seen = collections.Counter()
 examples = []
 for e in labels:
-    # A claim that recurs is kept at most three times; a puzzle statement counts with its puzzle.
-    key = (e.get("premise", "") if e.get("kind") == "puzzle" else "", e["en"])
+    # A claim that recurs is kept at most three times; a puzzle or form-meaning statement counts with
+    # its own premise.
+    key = (e.get("premise", "") if e.get("kind") in ("puzzle", "meaning") else "", e["en"])
     seen[key] += 1
     if seen[key] <= 3:
         examples.append(e)
@@ -45,7 +46,8 @@ dev = [e for e in examples if e["id"] in dev_ids]
 # Held-out puzzles are scored on their own; the model is chosen on the paragraphs alone, so the
 # puzzles can teach but cannot buy a model that reads paragraphs worse.
 dev_puzzles = [e for e in dev if e.get("kind") == "puzzle"]
-dev = [e for e in dev if e.get("kind") != "puzzle"]
+dev_meaning = [e for e in dev if e.get("kind") == "meaning"]
+dev = [e for e in dev if e.get("kind") not in ("puzzle", "meaning")]
 
 tok = AutoTokenizer.from_pretrained(MODEL)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL)
@@ -101,6 +103,9 @@ before_trial, _ = score(trial_rows, "first 26 paragraphs, before")
 notes += [before_dev, before_trial]
 if dev_puzzles:
     notes.append(score(pairs(dev_puzzles, ("en",)), "puzzles held-out, before")[0])
+if dev_meaning:
+    notes.append(score(pairs(dev_meaning, ("en",)), "form and meaning held-out, before")[0])
+    notes.append(score(pairs(dev_meaning, ("tr",)), "form and meaning held-out with the Turkish claim, before")[0])
 print("\n".join(notes), flush=True)
 print("::notice title=Before training::" + "%0A".join(notes), flush=True)
 
@@ -186,6 +191,9 @@ notes += [after_dev, after_dev_tr, after_trial]
 if dev_puzzles:
     notes.append(score(pairs(dev_puzzles, ("en",)), "puzzles held-out, after")[0])
     notes.append(score(pairs(dev_puzzles, ("tr",)), "puzzles held-out with the Turkish statement, after")[0])
+if dev_meaning:
+    notes.append(score(pairs(dev_meaning, ("en",)), "form and meaning held-out, after")[0])
+    notes.append(score(pairs(dev_meaning, ("tr",)), "form and meaning held-out with the Turkish claim, after")[0])
 notes.append(f"training took {time.time() - t0:.0f}s")
 for c, g, (_, _, w) in zip(trial["cases"], got, trial_rows):
     notes.append(("ok" if g == w else "WRONG") + f" | {c['label']}: {g}, right {w}")
