@@ -33,7 +33,7 @@ examples = []
 for e in labels:
     # A claim that recurs is kept at most three times; a puzzle or form-meaning statement counts with
     # its own premise.
-    key = (e.get("premise", "") if e.get("kind") in ("puzzle", "meaning") else "", e["en"])
+    key = (e.get("premise", "") if e.get("kind") in ("puzzle", "meaning", "words") else "", e["en"])
     seen[key] += 1
     if seen[key] <= 3:
         examples.append(e)
@@ -47,7 +47,8 @@ dev = [e for e in examples if e["id"] in dev_ids]
 # puzzles can teach but cannot buy a model that reads paragraphs worse.
 dev_puzzles = [e for e in dev if e.get("kind") == "puzzle"]
 dev_meaning = [e for e in dev if e.get("kind") == "meaning"]
-dev = [e for e in dev if e.get("kind") not in ("puzzle", "meaning")]
+dev_words = [e for e in dev if e.get("kind") == "words"]
+dev = [e for e in dev if e.get("kind") not in ("puzzle", "meaning", "words")]
 
 tok = AutoTokenizer.from_pretrained(MODEL)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL)
@@ -106,6 +107,8 @@ if dev_puzzles:
 if dev_meaning:
     notes.append(score(pairs(dev_meaning, ("en",)), "form and meaning held-out, before")[0])
     notes.append(score(pairs(dev_meaning, ("tr",)), "form and meaning held-out with the Turkish claim, before")[0])
+if dev_words:
+    notes.append(score(pairs(dev_words, ("tr",)), "synonyms and homonyms held-out with the Turkish claim, before")[0])
 print("\n".join(notes), flush=True)
 print("::notice title=Before training::" + "%0A".join(notes), flush=True)
 
@@ -194,6 +197,8 @@ if dev_puzzles:
 if dev_meaning:
     notes.append(score(pairs(dev_meaning, ("en",)), "form and meaning held-out, after")[0])
     notes.append(score(pairs(dev_meaning, ("tr",)), "form and meaning held-out with the Turkish claim, after")[0])
+if dev_words:
+    notes.append(score(pairs(dev_words, ("tr",)), "synonyms and homonyms held-out with the Turkish claim, after")[0])
 notes.append(f"training took {time.time() - t0:.0f}s")
 for c, g, (_, _, w) in zip(trial["cases"], got, trial_rows):
     notes.append(("ok" if g == w else "WRONG") + f" | {c['label']}: {g}, right {w}")
