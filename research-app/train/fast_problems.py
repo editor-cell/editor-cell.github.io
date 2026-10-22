@@ -78,8 +78,9 @@ labels = [e for e in labels if e.get("kind") != "human"]
 if FOCUS == "sudoku":
     sys.path.insert(0, inp)
     subprocess.run([sys.executable, "-m", "pip", "install", "--quiet", "huggingface_hub"], check=False)
-    import sudoku  # noqa: E402
-    labels += sudoku.build(2000, 200, os.path.join(WORK, "sudoku-cache"))
+    import sudoku_methods  # noqa: E402  (the human techniques, step by step; sudoku.py fetches the published puzzles)
+    labels += sudoku_methods.build(120, 15, os.path.join(WORK, "sudoku-cache"))
+    note("sudoku steps made (training, held-out) by level: " + str(sudoku_methods.build_from.stats))
 seen = collections.Counter()
 examples = []
 for e in labels:
@@ -122,7 +123,7 @@ if FOCUS == "logic":
 if FOCUS == "sudoku":
     # A sample of everything else comes along, so fifteen minutes go mostly to the sudoku.
     random.shuffle(others)
-    others = others[:4000]
+    others = others[:3000]
 note(f"training pairs an epoch: {len(probs)} from {FOCUS}, {len(others)} from our other examples; "
      f"held-out ({FOCUS}): {len(dev_prob_en)} claims, {len(dev_par)} paragraph claims, {len(dev_puz)} puzzle statements")
 

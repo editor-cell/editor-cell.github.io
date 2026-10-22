@@ -65,7 +65,7 @@ jobs:
       - name: Gather the training files (flat, as Kaggle keeps them)
         run: |
           mkdir -p kd
-          cp research-app/train/{train_nli.py,pool.json,quran.py,human.py,kaggle_read.py,fast_problems.py,sudoku.py} kd/
+          cp research-app/train/{train_nli.py,pool.json,quran.py,human.py,kaggle_read.py,fast_problems.py,sudoku.py,sudoku_methods.py} kd/
           [ -f research-app/train/labels/agreed.json ] && cp research-app/train/labels/agreed.json kd/labels__agreed.json || true
           for f in research-app/train/labels/*.jsonl; do cp "$f" "kd/labels__$(basename "$f")"; done
           cp research-app/nli-trial/cases.json kd/
@@ -78,6 +78,7 @@ jobs:
           cd kd
           pip install --quiet huggingface_hub
           python sudoku.py 2> err.txt | sed 's/^/::notice title=Sudoku::/' || { echo "::error title=Sudoku::$(tail -c 1500 err.txt | tr '\n' '|' | sed 's/|/%0A/g')"; exit 1; }
+          python sudoku_methods.py real 2> err.txt | head -c 6000 | tr '\n' '|' | sed 's/|/%0A/g; s/^/::notice title=SudokuMethods::/' || { echo "::error title=SudokuMethods::$(tail -c 1500 err.txt | tr '\n' '|' | sed 's/|/%0A/g')"; exit 1; }
           SMOKE=1 READINGS=2 python kaggle_read.py 2> err.txt || { echo "::error title=Trial::$(tail -c 1500 err.txt | tr '\n' '|' | sed 's/|/%0A/g')"; exit 1; }
           echo "::notice title=Trial::$(tr '\n' '|' < work/notes.txt | sed 's/|/%0A/g')"
           python -c "import human; r = human.build(40, 30, 'work/human-cache'); print(len(r), r[:3])" 2> err.txt || { echo "::error title=Human::$(tail -c 1500 err.txt | tr '\n' '|' | sed 's/|/%0A/g')"; exit 1; }
