@@ -124,6 +124,7 @@ export function Film({
   const [reported, setReported] = useState(0);
   const duration = reported || length;
   const [muted, setMuted] = useState(false);
+  const [volume, setVolume] = useState(1);
   const [full, setFull] = useState(false);
   const [shown, setShown] = useState(true);
   const [failed, setFailed] = useState(false);
@@ -328,8 +329,16 @@ export function Film({
   function toggleSound() {
     const el = film.current;
     if (!el) return;
+    if (el.muted && el.volume === 0) el.volume = 0.5;
     el.muted = !el.muted;
-    setMuted(el.muted);
+  }
+
+  /** The sound bar beside the speaker: all the way left is silence. */
+  function setLoudness(value: number) {
+    const el = film.current;
+    if (!el) return;
+    el.volume = value;
+    el.muted = value === 0;
   }
 
   function toggleFull() {
@@ -367,6 +376,7 @@ export function Film({
   const span = duration > 0 ? Math.min(time, duration) / duration : 0;
   const pct = `${span * 100}%`;
   const bar = started && shown;
+  const loud = muted ? 0 : volume;
   barShown.current = bar;
 
   return (
@@ -426,6 +436,10 @@ export function Film({
           setReported(Number.isFinite(d) ? d : 0);
         }}
         onError={() => setFailed(true)}
+        onVolumeChange={(event) => {
+          setMuted(event.currentTarget.muted);
+          setVolume(event.currentTarget.volume);
+        }}
       >
         {captions.map((c) => (
           <track key={c.lang} kind="subtitles" src={c.src} srcLang={c.lang} label={c.label} />
@@ -489,19 +503,6 @@ export function Film({
           <div className="film-glass">
             {menu ? (
               <div role="menu" aria-label={words.settings} className="film-menu">
-                <button
-                  type="button"
-                  role="menuitem"
-                  onClick={() => {
-                    toggleSound();
-                    wake(true);
-                  }}
-                  className="film-set"
-                >
-                  {muted ? <Icon d={ICON.muted} /> : <Icon d={ICON.sound} />}
-                  <span className="film-set-label">{words.sound}</span>
-                  <span className="film-set-value">{muted ? words.soundOff : words.soundOn}</span>
-                </button>
                 <button
                   type="button"
                   role="menuitem"
@@ -611,6 +612,42 @@ export function Film({
                   <Icon d={ICON.play} fill className="film-ico-bar rtl:-scale-x-100" />
                 )}
               </button>
+              <div className="film-vol" dir="ltr">
+                <button
+                  type="button"
+                  onClick={() => {
+                    toggleSound();
+                    wake(true);
+                  }}
+                  aria-label={muted ? words.unmute : words.mute}
+                  tabIndex={bar ? 0 : -1}
+                  className="film-key"
+                >
+                  <Icon
+                    d={muted || volume === 0 ? ICON.muted : ICON.sound}
+                    className="film-ico-bar"
+                  />
+                </button>
+                <div className="film-vol-line">
+                  <div className="film-rule" aria-hidden="true">
+                    <span className="film-fill" style={{ width: `${loud * 100}%` }} />
+                    <span className="film-knob" style={{ insetInlineStart: `${loud * 100}%` }} />
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={1}
+                    step={0.05}
+                    value={loud}
+                    aria-label={words.volume}
+                    aria-valuetext={`${Math.round(loud * 100)}%`}
+                    tabIndex={bar ? 0 : -1}
+                    onChange={(event) => setLoudness(Number(event.target.value))}
+                    onPointerDown={() => wake(true)}
+                    onPointerUp={() => wake()}
+                  />
+                </div>
+              </div>
               <span dir="ltr" className="film-time">
                 {fmt(time)}
                 <span className="film-time-rule" aria-hidden="true">

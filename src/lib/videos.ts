@@ -93,9 +93,8 @@ export type VideoWords = {
   speed: string;
   /** The gear that holds the film's settings, and the panel's own lines. */
   settings: string;
-  sound: string;
-  soundOn: string;
-  soundOff: string;
+  /** The sound bar beside the speaker. */
+  volume: string;
 };
 
 const WORDS: Record<Lang, VideoWords> = {
@@ -127,9 +126,7 @@ const WORDS: Record<Lang, VideoWords> = {
     subtitlesOff: "Kapalı",
     speed: "Oynatma hızı",
     settings: "Ayarlar",
-    sound: "Ses",
-    soundOn: "Açık",
-    soundOff: "Kapalı",
+    volume: "Ses düzeyi",
   },
   en: {
     videos: "Videos",
@@ -159,9 +156,7 @@ const WORDS: Record<Lang, VideoWords> = {
     subtitlesOff: "Off",
     speed: "Playback speed",
     settings: "Settings",
-    sound: "Sound",
-    soundOn: "On",
-    soundOff: "Off",
+    volume: "Volume",
   },
   ar: {
     videos: "الفيديوهات",
@@ -191,9 +186,7 @@ const WORDS: Record<Lang, VideoWords> = {
     subtitlesOff: "إيقاف",
     speed: "سرعة التشغيل",
     settings: "الإعدادات",
-    sound: "الصوت",
-    soundOn: "مُفعّل",
-    soundOff: "مُتوقّف",
+    volume: "مستوى الصوت",
   },
   fr: {
     videos: "Vidéos",
@@ -223,9 +216,7 @@ const WORDS: Record<Lang, VideoWords> = {
     subtitlesOff: "Désactivés",
     speed: "Vitesse de lecture",
     settings: "Réglages",
-    sound: "Son",
-    soundOn: "Activé",
-    soundOff: "Coupé",
+    volume: "Volume",
   },
   es: {
     videos: "Vídeos",
@@ -255,9 +246,7 @@ const WORDS: Record<Lang, VideoWords> = {
     subtitlesOff: "Desactivados",
     speed: "Velocidad",
     settings: "Ajustes",
-    sound: "Sonido",
-    soundOn: "Activado",
-    soundOff: "Silenciado",
+    volume: "Volumen",
   },
 };
 

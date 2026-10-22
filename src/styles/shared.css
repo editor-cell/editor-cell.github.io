@@ -1396,6 +1396,7 @@ button.play-disc:active {
 }
 
 .film-bar .film-seek,
+.film-bar .film-vol-line,
 .film-bar .film-key,
 .film-bar .film-word,
 .film-bar .film-menu {
@@ -1403,6 +1404,7 @@ button.play-disc:active {
 }
 
 .film.is-quiet .film-bar .film-seek,
+.film.is-quiet .film-bar .film-vol-line,
 .film.is-quiet .film-bar .film-key,
 .film.is-quiet .film-bar .film-word,
 .film.is-quiet .film-bar .film-menu {
@@ -1474,6 +1476,42 @@ button.play-disc:active {
 .film-menu-item:focus-visible,
 .film-set:focus-visible,
 .film-seek:has(input:focus-visible) {
+  outline: 1px solid #f4efe6;
+  outline-offset: 2px;
+}
+
+/* The sound: the speaker, then a short line with its ball, as the seek line. */
+.film-vol {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  margin-inline-end: 0.6rem;
+}
+
+.film-vol-line {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 4.5rem;
+  height: 1.6rem;
+  margin-inline-start: -0.1rem;
+}
+
+.film-vol-line input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.film-vol-line:hover .film-rule {
+  height: 4px;
+}
+
+.film-vol-line:has(input:focus-visible) {
   outline: 1px solid #f4efe6;
   outline-offset: 2px;
 }
