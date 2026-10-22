@@ -13,16 +13,13 @@ Turkish-Turkish (two Turkish wordings linked as the same sentence).
                                                  NOT_SUPPORTS
 build(n_paws, n_tatoeba, cache) -> rows in the labels/*.jsonl shape (kind "human")."""
 import bz2
-import csv
-import io
 import os
 import random
 import re
-import tarfile
 import urllib.request
 
 TATOEBA = "https://downloads.tatoeba.org/exports/per_language/"
-PAWS_TGZ = "https://storage.googleapis.com/paws/english/paws_wiki_labeled_final.tar.gz"
+PAWS = "https://huggingface.co/datasets/google-research-datasets/paws/resolve/main/labeled_final/train-00000-of-00001.parquet"
 
 
 def get(url, cache):
@@ -34,14 +31,9 @@ def get(url, cache):
 
 
 def paws(cache):
-    rows = []
-    with tarfile.open(get(PAWS_TGZ, cache)) as tf:
-        for m in tf.getmembers():
-            if m.name.endswith("train.tsv"):
-                text = tf.extractfile(m).read().decode("utf-8")
-                for r in csv.DictReader(io.StringIO(text), delimiter="\t", quoting=csv.QUOTE_NONE):
-                    rows.append((r["sentence1"].strip(), r["sentence2"].strip(), r["label"].strip() == "1"))
-    return rows
+    import pandas as pd
+    df = pd.read_parquet(get(PAWS, cache))
+    return [(str(a).strip(), str(b).strip(), int(l) == 1) for a, b, l in zip(df["sentence1"], df["sentence2"], df["label"])]
 
 
 def sentences(lang, cache):
