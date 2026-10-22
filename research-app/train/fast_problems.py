@@ -51,6 +51,14 @@ if os.path.exists(os.path.join(inp, "round.txt")):
     note("files of run " + open(os.path.join(inp, "round.txt")).read().strip())
 if os.path.exists(os.path.join(inp, "focus.txt")):
     FOCUS = open(os.path.join(inp, "focus.txt")).read().strip() or FOCUS
+# Rounds of a fixed length (Yavuz, 22 Oct 2026: fifteen minutes a round, one on top of another): training
+# stops when MINUTES have passed since the start, whatever epoch it is in, and the scores are taken then.
+MINUTES = 0.0
+if os.path.exists(os.path.join(inp, "minutes.txt")):
+    try:
+        MINUTES = float(open(os.path.join(inp, "minutes.txt")).read().strip() or 0)
+    except ValueError:
+        MINUTES = 0.0
 BASE = START if os.path.exists(os.path.join(START, "config.json")) else "MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7"
 
 subprocess.run([sys.executable, "-m", "pip", "install", "--quiet", "transformers", "sentencepiece", "protobuf", "tiktoken"], check=False)
@@ -67,19 +75,24 @@ pool = {p["id"]: p for p in json.load(open(os.path.join(inp, "pool.json"), encod
 labels = [json.loads(l) for f in sorted(glob.glob(os.path.join(inp, "labels__*.jsonl")))
           for l in open(f, encoding="utf-8") if l.strip()]
 labels = [e for e in labels if e.get("kind") != "human"]
+if FOCUS == "sudoku":
+    sys.path.insert(0, inp)
+    subprocess.run([sys.executable, "-m", "pip", "install", "--quiet", "huggingface_hub"], check=False)
+    import sudoku  # noqa: E402
+    labels += sudoku.build(2000, 200, os.path.join(WORK, "sudoku-cache"))
 seen = collections.Counter()
 examples = []
 for e in labels:
-    key = (e.get("premise", "") if e.get("kind") in ("puzzle", "meaning", "words", "human", "problem", "logic") else "", e["en"] or e["tr"])
+    key = (e.get("premise", "") if e.get("kind") in ("puzzle", "meaning", "words", "human", "problem", "logic", "sudoku") else "", e["en"] or e["tr"])
     seen[key] += 1
     if seen[key] <= 3:
         examples.append(e)
-LATER = ("words", "human", "problem", "logic")
+LATER = ("words", "human", "problem", "logic", "sudoku")
 ids = sorted({e["id"] for e in examples if e.get("kind") not in LATER})
 random.shuffle(ids)
 dev_ids = set(ids[: len(ids) // 6])
 dev_ids |= {e["id"] for e in examples if e.get("kind") in ("words", "human") and e["id"] % 6 == 0}
-dev_ids |= {e["id"] for e in examples if e.get("kind") in ("problem", "logic") and e.get("dev")}
+dev_ids |= {e["id"] for e in examples if e.get("kind") in ("problem", "logic", "sudoku") and e.get("dev")}
 train = [e for e in examples if e["id"] not in dev_ids]
 dev = [e for e in examples if e["id"] in dev_ids]
 
@@ -90,9 +103,10 @@ def pairs(rows, langs=("en", "tr")):
 
 dev_prob = [e for e in dev if e.get("kind") == FOCUS]
 dev_wp = [e for e in dev if e.get("kind") == "problem" and e.get("premise_lang") != "tr"]
+dev_logic = [e for e in dev if e.get("kind") == "logic"]
 dev_prob_en = [e for e in dev_prob if e.get("premise_lang") != "tr"]
 dev_prob_tr = [e for e in dev_prob if e.get("premise_lang") == "tr"]
-dev_par = [e for e in dev if e.get("kind") not in ("puzzle", "meaning", "words", "human", "problem", "logic")]
+dev_par = [e for e in dev if e.get("kind") not in ("puzzle", "meaning", "words", "human", "problem", "logic", "sudoku")]
 dev_puz = [e for e in dev if e.get("kind") == "puzzle"]
 trial = json.load(open(os.path.join(inp, "cases.json"), encoding="utf-8"))
 trial_rows = [((c["text"] if c["want"] != "KEPT OUT" else c["before"] + " " + c["text"] + " " + c["after"]),
@@ -105,6 +119,10 @@ if FOCUS == "logic":
     random.shuffle(wp)
     others += wp[: len(wp) // 3]
     probs = probs * (2 if len(probs) < 8000 else 1)
+if FOCUS == "sudoku":
+    # A sample of everything else comes along, so fifteen minutes go mostly to the sudoku.
+    random.shuffle(others)
+    others = others[:4000]
 note(f"training pairs an epoch: {len(probs)} from {FOCUS}, {len(others)} from our other examples; "
      f"held-out ({FOCUS}): {len(dev_prob_en)} claims, {len(dev_par)} paragraph claims, {len(dev_puz)} puzzle statements")
 
@@ -150,11 +168,20 @@ def card(when):
     par, par_wrong = right(pairs(dev_par, ("en",)))
     tri, tri_wrong = right(trial_rows)
     puz, _ = right(pairs(dev_puz, ("en",)))
-    lines = [f"{when}: {'word problems' if FOCUS == 'problem' else 'levelled logic puzzles'} held-out {acc:.1f}% ({ok}/{len(rows)}); with the Turkish claim "
+    name = {"problem": "word problems", "logic": "levelled logic puzzles", "sudoku": "sudoku"}.get(FOCUS, FOCUS)
+    lines = [f"{when}: {name} held-out {acc:.1f}% ({ok}/{len(rows)}); with the Turkish claim "
              f"{100 * tr_c / max(1, len(rows)):.1f}%" + (f"; Turkish text {100 * tr_t / len(pairs(dev_prob_tr, ('tr',))):.1f}%" if dev_prob_tr else ""),
              f"{when}: by level " + ", ".join(by),
              f"{when}: paragraphs held-out {par}/{len(dev_par)} ({par_wrong} wrong findings); first 26 paragraphs "
              f"{tri}/{len(trial_rows)} ({tri_wrong} wrong findings); earlier puzzles {puz}/{len(dev_puz)}"]
+    if FOCUS == "sudoku" and dev_logic:
+        lr = pairs(dev_logic, ("en",))
+        k, _ = right(lr)
+        by = []
+        for lv in sorted({e.get("level", 0) for e in dev_logic}):
+            r = pairs([e for e in dev_logic if e.get("level", 0) == lv], ("en",))
+            by.append(f"{lv}: {100 * right(r)[0] / len(r):.0f}%")
+        lines.append(f"{when}: LOGIC EXAM (20 levels, 300 puzzles) {100 * k / len(lr):.1f}% ({k}/{len(lr)}); by level " + ", ".join(by))
     if FOCUS != "problem" and dev_wp:
         wr = pairs(dev_wp, ("en",))
         lines.append(f"{when}: word problems held-out {100 * right(wr)[0] / len(wr):.1f}%")
@@ -213,6 +240,7 @@ def loss_of(half):
 
 t0 = time.time()
 best_acc = card("before training")
+t_train = time.time()
 best_epoch = 0
 out_dir = os.path.join(WORK, "out")
 model.save_pretrained(out_dir)
@@ -223,9 +251,15 @@ opt = torch.optim.AdamW(model.parameters(), lr=LR, weight_decay=0.01)
 sched = torch.optim.lr_scheduler.LambdaLR(opt, lambda s: min(1.0, (s + 1) / max(1, 0.06 * total_steps)) * max(0.05, 1 - s / total_steps))
 scaler = torch.amp.GradScaler(enabled=DEVICE == "cuda")
 model.train()
+out_of_time = False
 for epoch in range(1, EPOCHS + 1):
+    if out_of_time:
+        break
     losses, skipped = [], 0
     for batch in (first_epoch() if epoch == 1 else mixed()):
+        if MINUTES and time.time() - t0 > MINUTES * 60:
+            out_of_time = True
+            break
         total, broken = 0.0, False
         for half in (batch[:8], batch[8:]):
             if not half:
@@ -247,7 +281,8 @@ for epoch in range(1, EPOCHS + 1):
         sched.step()
         opt.zero_grad()
         losses.append(total)
-    note(f"epoch {epoch}: mean loss {sum(losses) / max(1, len(losses)):.3f}, {skipped} broken steps skipped, "
+    note(f"epoch {epoch}{' (stopped at the time limit, ' + str(len(losses)) + ' batches in)' if out_of_time else ''}: "
+         f"mean loss {sum(losses) / max(1, len(losses)):.3f}, {skipped} broken steps skipped, "
          f"{(time.time() - t0) / 60:.0f} minutes so far")
     acc = card(f"after epoch {epoch}")
     if acc > best_acc:

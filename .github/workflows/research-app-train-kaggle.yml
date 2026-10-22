@@ -36,6 +36,9 @@ on:
       focus:
         description: "for fast_problems.py: problem or logic"
         default: "problem"
+      minutes:
+        description: "for fast_problems.py: stop training after this many minutes (empty = no limit)"
+        default: ""
       start:
         description: "start from this earlier round's private Hugging Face model (e.g. orbis-nli-mdeberta-quran); empty = the original model"
         default: ""
@@ -62,7 +65,7 @@ jobs:
       - name: Gather the training files (flat, as Kaggle keeps them)
         run: |
           mkdir -p kd
-          cp research-app/train/{train_nli.py,pool.json,quran.py,human.py,kaggle_read.py,fast_problems.py} kd/
+          cp research-app/train/{train_nli.py,pool.json,quran.py,human.py,kaggle_read.py,fast_problems.py,sudoku.py} kd/
           [ -f research-app/train/labels/agreed.json ] && cp research-app/train/labels/agreed.json kd/labels__agreed.json || true
           for f in research-app/train/labels/*.jsonl; do cp "$f" "kd/labels__$(basename "$f")"; done
           cp research-app/nli-trial/cases.json kd/
@@ -73,6 +76,8 @@ jobs:
         run: |
           pip install --quiet torch --index-url https://download.pytorch.org/whl/cpu && pip install --quiet pandas pyarrow
           cd kd
+          pip install --quiet huggingface_hub
+          python sudoku.py 2> err.txt | sed 's/^/::notice title=Sudoku::/' || { echo "::error title=Sudoku::$(tail -c 1500 err.txt | tr '\n' '|' | sed 's/|/%0A/g')"; exit 1; }
           SMOKE=1 READINGS=2 python kaggle_read.py 2> err.txt || { echo "::error title=Trial::$(tail -c 1500 err.txt | tr '\n' '|' | sed 's/|/%0A/g')"; exit 1; }
           echo "::notice title=Trial::$(tr '\n' '|' < work/notes.txt | sed 's/|/%0A/g')"
           python -c "import human; r = human.build(40, 30, 'work/human-cache'); print(len(r), r[:3])" 2> err.txt || { echo "::error title=Human::$(tail -c 1500 err.txt | tr '\n' '|' | sed 's/|/%0A/g')"; exit 1; }
@@ -134,6 +139,7 @@ jobs:
           # A mark of this run: the round on Kaggle checks it has this run's files, not an older version.
           echo "${{ github.run_id }} start=${{ inputs.start }}" > kd/round.txt
           echo "${{ inputs.focus }}" > kd/focus.txt
+          echo "${{ inputs.minutes }}" > kd/minutes.txt
           printf '{"title": "%s", "id": "%s/%s", "licenses": [{"name": "other"}]}' "$DATASET" "$KAGGLE_USERNAME" "$DATASET" > kd/dataset-metadata.json
           if kaggle datasets status "$KAGGLE_USERNAME/$DATASET" > /dev/null 2>&1; then
             kaggle datasets version -p kd -m "update" -q
