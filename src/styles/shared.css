@@ -1402,7 +1402,6 @@ button.play-disc:active {
   pointer-events: auto;
 }
 
-
 .film.is-quiet .film-bar .film-seek,
 .film.is-quiet .film-bar .film-key,
 .film.is-quiet .film-bar .film-word,
