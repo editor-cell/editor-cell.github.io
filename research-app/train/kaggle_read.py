@@ -63,6 +63,14 @@ from transformers import AutoModelForSequenceClassification, AutoTokenizer  # no
 
 if os.path.exists(os.path.join(START, "config.json")):
     BASE_MODEL = START
+# The workflow marks the files it sent (round.txt: its run and the model the round should start from).
+# A round that finds another run's files, or misses the model it should start from, stops here.
+_round = os.path.join(inp, "round.txt")
+if os.path.exists(_round):
+    mark = open(_round).read().strip()
+    note(f"files of run {mark}")
+    if not mark.endswith("start=") and BASE_MODEL != START:
+        raise SystemExit("the round should start from an earlier model, but its files are not here")
 
 random.seed(7)
 torch.manual_seed(7)

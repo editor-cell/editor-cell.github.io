@@ -125,18 +125,26 @@ jobs:
           EOF
             ls -la kd | grep start__
           fi
+          # A mark of this run: the round on Kaggle checks it has this run's files, not an older version.
+          echo "${{ github.run_id }} start=${{ inputs.start }}" > kd/round.txt
           printf '{"title": "%s", "id": "%s/%s", "licenses": [{"name": "other"}]}' "$DATASET" "$KAGGLE_USERNAME" "$DATASET" > kd/dataset-metadata.json
           if kaggle datasets status "$KAGGLE_USERNAME/$DATASET" > /dev/null 2>&1; then
             kaggle datasets version -p kd -m "update" -q
           else
             kaggle datasets create -p kd -q
           fi
-          for i in $(seq 1 40); do
-            s=$(kaggle datasets status "$KAGGLE_USERNAME/$DATASET" 2>&1 || true)
-            echo "dataset: $s"
-            echo "$s" | grep -qi ready && break
-            sleep 15
+          # "ready" can still describe the previous version; wait until Kaggle serves this run's mark.
+          ok=0
+          for i in $(seq 1 60); do
+            sleep 20
+            mkdir -p chk && rm -f chk/round.txt
+            kaggle datasets download "$KAGGLE_USERNAME/$DATASET" -f round.txt -p chk -q --force > /dev/null 2>&1 || true
+            [ -f chk/round.txt.zip ] && (cd chk && unzip -o -q round.txt.zip) || true
+            if [ -f chk/round.txt ] && grep -q "^${{ github.run_id }} " chk/round.txt; then ok=1; echo "dataset version of this run is ready"; break; fi
+            echo "waiting for the new dataset version ($i)"
           done
+          if [ "$ok" != 1 ]; then echo "::error title=Kaggle::the new dataset version did not appear in 20 minutes"; exit 1; fi
+          sleep 30
           mkdir -p kk
           sed -e 's/os.environ.get("READINGS", "11")/os.environ.get("READINGS", "${{ inputs.readings || '11' }}")/' \
               -e 's/os.environ.get("HOURS", "7")/os.environ.get("HOURS", "${{ inputs.hours || '7' }}")/' \
