@@ -26,14 +26,18 @@ random.seed(13)
 torch.manual_seed(13)
 
 pool = {p["id"]: p for p in json.load(open(os.path.join(HERE, "pool.json"), encoding="utf-8"))}
+# A claim that a second teacher (hoca.py) labelled differently from us is left out until it is settled.
+_agreed = os.path.join(HERE, "labels", "agreed.json")
+DIFFER = set(json.load(open(_agreed))["differ"]) if os.path.exists(_agreed) else set()
 labels = [json.loads(l) for f in sorted(glob.glob(os.path.join(HERE, "labels", "*.jsonl")))
-          for l in open(f, encoding="utf-8") if l.strip()]
+          for n, l in enumerate(open(f, encoding="utf-8"))
+          if l.strip() and f"{os.path.basename(f)[:-6]}-{n + 1:04d}" not in DIFFER]
 seen = collections.Counter()
 examples = []
 for e in labels:
     # A claim that recurs is kept at most three times; a puzzle or form-meaning statement counts with
     # its own premise.
-    key = (e.get("premise", "") if e.get("kind") in ("puzzle", "meaning", "words") else "", e["en"])
+    key = (e.get("premise", "") if e.get("kind") in ("puzzle", "meaning", "words", "human") else "", e["en"])
     seen[key] += 1
     if seen[key] <= 3:
         examples.append(e)
@@ -48,7 +52,8 @@ dev = [e for e in examples if e["id"] in dev_ids]
 dev_puzzles = [e for e in dev if e.get("kind") == "puzzle"]
 dev_meaning = [e for e in dev if e.get("kind") == "meaning"]
 dev_words = [e for e in dev if e.get("kind") == "words"]
-dev = [e for e in dev if e.get("kind") not in ("puzzle", "meaning", "words")]
+dev_human = [e for e in dev if e.get("kind") == "human"]
+dev = [e for e in dev if e.get("kind") not in ("puzzle", "meaning", "words", "human")]
 
 tok = AutoTokenizer.from_pretrained(MODEL)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL)
@@ -68,7 +73,8 @@ FROM_NLI = {v: k for k, v in TO_NLI.items()}
 def pairs(rows, langs=("en", "tr")):
     # A logic example may bring its own short text (a view set out and then rejected, say) in place
     # of the pooled paragraph it is filed under.
-    return [(e.get("premise") or pool[e["id"]]["text"], e[lang], e["label"]) for e in rows for lang in langs]
+    # Human-made pairs (PAWS, Tatoeba) may carry a claim in one language only.
+    return [(e.get("premise") or pool[e["id"]]["text"], e[lang], e["label"]) for e in rows for lang in langs if e.get(lang)]
 
 
 def predict(items):
@@ -85,9 +91,10 @@ def predict(items):
 def score(rows, title):
     got = predict([(p, h) for p, h, _ in rows])
     want = [w for _, _, w in rows]
-    ok = sum(g == w for g, w in zip(got, want))
-    wrong_finding = sum(g != "UNRELATED" and g != w for g, w in zip(got, want))
-    missed = sum(g == "UNRELATED" and w != "UNRELATED" for g, w in zip(got, want))
+    right = [g == w or (w == "NOT_SUPPORTS" and g != "SUPPORTS") for g, w in zip(got, want)]
+    ok = sum(right)
+    wrong_finding = sum(g != "UNRELATED" and not r for g, r in zip(got, right))
+    missed = sum(g == "UNRELATED" and not r for g, r in zip(got, right))
     return f"{title}: {ok}/{len(rows)} right, {wrong_finding} wrong findings (a paragraph put on the wrong side or brought in for nothing), {missed} missed", got
 
 
@@ -109,6 +116,8 @@ if dev_meaning:
     notes.append(score(pairs(dev_meaning, ("tr",)), "form and meaning held-out with the Turkish claim, before")[0])
 if dev_words:
     notes.append(score(pairs(dev_words, ("tr",)), "synonyms and homonyms held-out with the Turkish claim, before")[0])
+if dev_human:
+    notes.append(score(pairs(dev_human), "human-made pairs held-out (PAWS, Tatoeba), before")[0])
 print("\n".join(notes), flush=True)
 print("::notice title=Before training::" + "%0A".join(notes), flush=True)
 
@@ -130,7 +139,7 @@ def dev_key(rows):
 
 model.train()
 with torch.no_grad():
-    p0, h0, w0 = pairs(train[:1], ("en",))[0]
+    p0, h0, w0 = pairs([e for e in train if e["label"] in TO_NLI and e.get("en")][:1], ("en",))[0]
     e0 = tok(p0, h0, truncation="only_first", max_length=384, return_tensors="pt").to(DEVICE)
     l_train = model(**e0, labels=torch.tensor([name_to_id[TO_NLI[w0]]]).to(DEVICE)).loss.item()
     model.eval()
@@ -153,8 +162,14 @@ for epoch in range(EPOCHS):
         total, good = 0.0, 0
         for p, h, w in batch:
             enc = tok(p, h, truncation="only_first", max_length=384, return_tensors="pt").to(DEVICE)
-            y = torch.tensor([name_to_id[TO_NLI[w]]]).to(DEVICE)
-            loss = model(**enc, labels=y).loss
+            if w == "NOT_SUPPORTS":
+                # "Not the same judgment" may be a contradiction or only something else: teach only
+                # that it is not support (the chance of support goes down), not which of the two.
+                logp = torch.log_softmax(model(**enc).logits[0].float(), -1)
+                loss = -torch.logsumexp(logp[[i for i in range(logp.shape[0]) if i != name_to_id["entailment"]]], 0)
+            else:
+                y = torch.tensor([name_to_id[TO_NLI[w]]]).to(DEVICE)
+                loss = model(**enc, labels=y).loss
             if not torch.isfinite(loss):
                 skipped += 1
                 continue
@@ -199,6 +214,8 @@ if dev_meaning:
     notes.append(score(pairs(dev_meaning, ("tr",)), "form and meaning held-out with the Turkish claim, after")[0])
 if dev_words:
     notes.append(score(pairs(dev_words, ("tr",)), "synonyms and homonyms held-out with the Turkish claim, after")[0])
+if dev_human:
+    notes.append(score(pairs(dev_human), "human-made pairs held-out (PAWS, Tatoeba), after")[0])
 notes.append(f"training took {time.time() - t0:.0f}s")
 for c, g, (_, _, w) in zip(trial["cases"], got, trial_rows):
     notes.append(("ok" if g == w else "WRONG") + f" | {c['label']}: {g}, right {w}")

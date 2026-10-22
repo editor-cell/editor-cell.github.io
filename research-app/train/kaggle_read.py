@@ -6,7 +6,8 @@ research-app-train-kaggle.yml) under /kaggle/input; the Quran texts are fetched 
 reading runs, and never stored. Everything the run leaves (the trained model in out/, notes.txt)
 is collected by the same workflow, which keeps the model in a separate private Hugging Face
 repository: the model the app uses is not touched.
-Environment: READINGS (default 11), HOURS (stop reading after this many hours, default 7)."""
+Environment: READINGS (default 11), HOURS (stop reading after this many hours, default 7), HUMAN=1 to
+add the human-made pairs of human.py (N_PAWS, N_TATOEBA)."""
 import glob
 import json
 import os
@@ -165,6 +166,15 @@ torch.cuda.empty_cache()
 # the model that read the Quran. Its score card says whether the reading helped.
 if SMOKE:
     sys.exit(0)
+# Human-made pairs (PAWS, Tatoeba) and the rest of labels/ go into the same round.
+if os.environ.get("HUMAN", "0") == "1":
+    import human  # noqa: E402
+    rows = human.build(int(os.environ.get("N_PAWS", "4000")), int(os.environ.get("N_TATOEBA", "3000")),
+                       os.path.join(WORK, "human-cache"))
+    with open(os.path.join(SRC, "train", "labels", "human.jsonl"), "w", encoding="utf-8") as f:
+        for r in rows:
+            f.write(json.dumps(r, ensure_ascii=False) + "\n")
+    note(f"human-made pairs: {len(rows)} ({sum(r['label'] == 'SUPPORTS' for r in rows)} same judgment)")
 env = dict(os.environ, BASE_MODEL=read_dir, OUT_DIR=os.path.join(WORK, "out"))
 env.pop("HF_TOKEN", None)
 proc = subprocess.run([sys.executable, os.path.join(SRC, "train", "train_nli.py"), "3", "1e-5"],
@@ -177,5 +187,6 @@ if proc.returncode != 0:
     note("paragraph training failed:\n" + proc.stderr[-3000:])
 shutil.rmtree(read_dir, ignore_errors=True)
 shutil.rmtree(os.path.join(WORK, "quran-cache"), ignore_errors=True)
+shutil.rmtree(os.path.join(WORK, "human-cache"), ignore_errors=True)
 shutil.rmtree(SRC, ignore_errors=True)
 json.dump({"readings": done, "ok": proc.returncode == 0}, open(os.path.join(WORK, "status.json"), "w"))
