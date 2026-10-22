@@ -35,6 +35,12 @@ for _u in UNITS:
 for _i in range(81):
     PEERS[_i].discard(_i)
 LEVELS = 11
+
+
+def out_level(k):
+    """The number a step's level carries: -3 digit in a line, -2 ruled out by a line, -1 only square left (from the grid),
+    0 one line with one square empty, then the technique levels 1.. after them."""
+    return {-3: 2, -2: 3, -1: 4, 0: 1}.get(k, k + 4)
 RULE = "Each row, each column and each box holds every digit from 1 to 9 exactly once."
 
 
@@ -460,6 +466,58 @@ def line_instance(st, rnd):
     return [(text, lab, c) for lab, c in out]
 
 
+def present(st, d, u):
+    return d in st.unit_digits(u)
+
+
+def scan_instances(st, rnd):
+    """From a drawn grid: -3 a digit stands in a row, column or box (or does not); -2 so a square cannot hold it;
+    -1 the only square left in a unit for a digit (all read from the grid alone)."""
+    out = {}
+    text = RULE + "\n" + grid_text(st.g)
+    # -3
+    items = []
+    for want in (True, True, False, False):
+        for _ in range(30):
+            u, d = rnd.randrange(27), rnd.randint(1, 9)
+            if present(st, d, u) == want:
+                nm = unit_name(u)
+                num = u % 9 + 1
+                en = f"A {d} already stands in {nm}."
+                tr = f"{d} rakamı {num}. " + ("satırda" if u < 9 else "sütunda" if u < 18 else "kutuda") + " zaten var."
+                items.append((text, "SUPPORTS" if want else "CONTRADICTS", ("raw", en, tr)))
+                break
+    out[-3] = items
+    # -2
+    blanks = [i for i in range(81) if not st.g[i]]
+    items = []
+    rnd.shuffle(blanks)
+    for i in blanks[:30]:
+        seen = sorted({st.g[j] for j in PEERS[i] if st.g[j]})
+        if seen and len(items) < 4:
+            d = rnd.choice(seen)
+            items.append((text, "SUPPORTS", ("cannot", i, d)))
+            items.append((text, "CONTRADICTS", ("holds", i, d)))
+    out[-2] = items
+    # -1
+    for u in rnd.sample(range(27), 27):
+        have = st.unit_digits(u)
+        for d in rnd.sample(range(1, 10), 9):
+            if d in have:
+                continue
+            cells = [i for i in UNITS[u] if not st.g[i] and d not in {st.g[j] for j in PEERS[i] if st.g[j]}]
+            if len(cells) == 1:
+                i = cells[0]
+                others = [j for j in UNITS[u] if not st.g[j] and j != i]
+                if not others:
+                    continue
+                j = rnd.choice(others)
+                out[-1] = [(text, "SUPPORTS", ("holds", i, d)), (text, "CONTRADICTS", ("cannot", i, d)),
+                           (text, "SUPPORTS", ("cannot", j, d)), (text, "CONTRADICTS", ("holds", j, d))]
+                return out
+    return out
+
+
 def scan_rows(st, found, level, rnd):
     i, d = found["cell"], found["digit"]
     seen_r = sorted({st.g[j] for j in ROWS[i // 9] if st.g[j]})
@@ -516,6 +574,13 @@ def collect(puzzle, solution, rnd, quota, per_level=2, rare=6):
     for i in blanks[: int(len(blanks) * rnd.uniform(0.8, 0.97))]:
         g[i] = sol[i]
     add(0, line_instance(State(g), rnd))
+    g = to_digits(puzzle)
+    blanks = [i for i in range(81) if not g[i]]
+    rnd.shuffle(blanks)
+    for i in blanks[: int(len(blanks) * rnd.uniform(0.3, 0.7))]:
+        g[i] = sol[i]
+    for lv, items in scan_instances(State(g), rnd).items():
+        add(lv, items)
     # the puzzle as published, walked by the easiest technique that applies
     st = State(to_digits(puzzle))
     for _ in range(80):
@@ -555,8 +620,8 @@ def collect(puzzle, solution, rnd, quota, per_level=2, rare=6):
 
 def build_from(samples, n_train=120, n_dev=15, seed=5, budget=240, weights=None):
     rnd = random.Random(seed)
-    quota_train = {lv: int(n_train * (weights or {}).get(lv + 1, 1)) for lv in range(0, LEVELS + 1)}
-    quota_dev = {lv: n_dev for lv in range(0, LEVELS + 1)}
+    quota_train = {lv: int(n_train * (weights or {}).get(out_level(lv), 1)) for lv in range(-3, LEVELS + 1)}
+    quota_dev = {lv: n_dev for lv in range(-3, LEVELS + 1)}
     rows, pid = [], 90000
     t0 = time.time()
     used = 0
@@ -572,14 +637,14 @@ def build_from(samples, n_train=120, n_dev=15, seed=5, budget=240, weights=None)
         used += 1
         for level, items in collect(puzzle, solution, rnd, quota):
             quota[level] -= 1
-            for text, lab, (form, cell, d) in items:
-                e, t = claim(form, cell, d)
-                row = {"id": pid, "kind": "sudoku", "level": level + 1, "premise": text, "en": e, "tr": t, "label": lab}
+            for text, lab, c in items:
+                e, t = (c[1], c[2]) if c[0] == "raw" else claim(*c)
+                row = {"id": pid, "kind": "sudoku", "level": out_level(level), "premise": text, "en": e, "tr": t, "label": lab}
                 if held:
                     row["dev"] = True
                 rows.append(row)
             pid += 1
-    build_from.stats = (used, {lv + 1: (int(n_train * (weights or {}).get(lv + 1, 1)) - quota_train[lv], n_dev - quota_dev[lv]) for lv in quota_train})
+    build_from.stats = (used, {out_level(lv): (int(n_train * (weights or {}).get(out_level(lv), 1)) - quota_train[lv], n_dev - quota_dev[lv]) for lv in quota_train})
     return rows
 
 
