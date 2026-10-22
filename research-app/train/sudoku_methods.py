@@ -463,13 +463,13 @@ def to_digits(p):
     return [0 if ch in "._0" else int(ch) for ch in p]
 
 
-def collect(puzzle, solution, rnd, quota, per_level=2):
+def collect(puzzle, solution, rnd, quota, per_level=2, rare=6):
     """-> [(level, premise, [(label, (form, cell, digit))])] for one puzzle"""
     out, got = [], {}
     sol = to_digits(solution)
 
     def add(level, items):
-        if items and got.get(level, 0) < per_level and quota.get(level, 0) > 0:
+        if items and got.get(level, 0) < (rare if level >= 8 else per_level) and quota.get(level, 0) > 0:
             got[level] = got.get(level, 0) + 1
             out.append((level, items))
 
