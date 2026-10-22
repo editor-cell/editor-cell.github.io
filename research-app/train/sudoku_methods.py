@@ -521,9 +521,9 @@ def collect(puzzle, solution, rnd, quota, per_level=2, rare=6):
     return out
 
 
-def build_from(samples, n_train=120, n_dev=15, seed=5, budget=240):
+def build_from(samples, n_train=120, n_dev=15, seed=5, budget=240, weights=None):
     rnd = random.Random(seed)
-    quota_train = {lv: n_train for lv in range(1, LEVELS + 1)}
+    quota_train = {lv: int(n_train * (weights or {}).get(lv, 1)) for lv in range(1, LEVELS + 1)}
     quota_dev = {lv: n_dev for lv in range(1, LEVELS + 1)}
     rows, pid = [], 90000
     t0 = time.time()
@@ -547,15 +547,15 @@ def build_from(samples, n_train=120, n_dev=15, seed=5, budget=240):
                     row["dev"] = True
                 rows.append(row)
             pid += 1
-    build_from.stats = (used, {lv: (n_train - quota_train[lv], n_dev - quota_dev[lv]) for lv in quota_train})
+    build_from.stats = (used, {lv: (int(n_train * (weights or {}).get(lv, 1)) - quota_train[lv], n_dev - quota_dev[lv]) for lv in quota_train})
     return rows
 
 
-def build(n_train=120, n_dev=15, cache="sudoku-cache", seed=5, limit=6000):
+def build(n_train=120, n_dev=15, cache="sudoku-cache", seed=5, limit=6000, weights=None):
     import sudoku
     rnd = random.Random(seed)
     sample, _ = sudoku.grids(sudoku.fetch(cache), limit, rnd)
-    return build_from([(p, s) for p, s, _ in sample], n_train, n_dev, seed)
+    return build_from([(p, s) for p, s, _ in sample], n_train, n_dev, seed, weights=weights)
 
 
 # ---- a quick local test with puzzles made here ----------------------------------------------------------

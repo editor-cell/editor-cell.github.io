@@ -75,11 +75,15 @@ pool = {p["id"]: p for p in json.load(open(os.path.join(inp, "pool.json"), encod
 labels = [json.loads(l) for f in sorted(glob.glob(os.path.join(inp, "labels__*.jsonl")))
           for l in open(f, encoding="utf-8") if l.strip()]
 labels = [e for e in labels if e.get("kind") != "human"]
+# a weights.txt like "2:4,1:0.5" says how many times the usual number of training steps a level gets
+SUDOKU_WEIGHTS = {}
+if os.path.exists(os.path.join(inp, "weights.txt")):
+    SUDOKU_WEIGHTS = {int(a): float(b) for a, b in (kv.split(":") for kv in open(os.path.join(inp, "weights.txt")).read().strip().split(",") if kv)}
 if FOCUS == "sudoku":
     sys.path.insert(0, inp)
     subprocess.run([sys.executable, "-m", "pip", "install", "--quiet", "huggingface_hub"], check=False)
     import sudoku_methods  # noqa: E402  (the human techniques, step by step; sudoku.py fetches the published puzzles)
-    labels += sudoku_methods.build(120, 15, os.path.join(WORK, "sudoku-cache"))
+    labels += sudoku_methods.build(120, 15, os.path.join(WORK, "sudoku-cache"), weights=SUDOKU_WEIGHTS)
     note("sudoku steps made (training, held-out) by level: " + str(sudoku_methods.build_from.stats))
 seen = collections.Counter()
 examples = []
