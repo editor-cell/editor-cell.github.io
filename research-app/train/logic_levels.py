@@ -132,3 +132,24 @@ with open(os.path.join(HERE, "labels", "logic_levels.jsonl"), "w", encoding="utf
         f.write(json.dumps(r, ensure_ascii=False) + "\n")
 print(f"{pid - 70000} puzzles (250 training, 100 held-out), {len(rows)} statements:",
       {l: sum(r["label"] == l for r in rows) for l in ("SUPPORTS", "CONTRADICTS", "UNRELATED")})
+
+# A second set (Yavuz, 22 Oct 2026): 30 more training puzzles a level, none the same as a held-out one;
+# the held-out puzzles above stay the test.
+held_texts = {r["premise"] for r in rows if r.get("dev")}
+known = {r["premise"] for r in rows}
+rows2, pid = [], 71000
+for level in range(1, 11):
+    made = 0
+    while made < 30:
+        text, claims = make(level)
+        if text in known:
+            continue
+        known.add(text)
+        for e, t, l in claims:
+            rows2.append({"id": pid, "kind": "logic", "level": level, "premise": text, "en": e, "tr": t, "label": l})
+        pid += 1
+        made += 1
+with open(os.path.join(HERE, "labels", "logic_levels2.jsonl"), "w", encoding="utf-8") as f:
+    for r in rows2:
+        f.write(json.dumps(r, ensure_ascii=False) + "\n")
+print(f"second set: {pid - 71000} training puzzles, {len(rows2)} statements")
