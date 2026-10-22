@@ -1,0 +1,125 @@
+{"id":260,"tr":"AB'nin sera gazı emisyonları 2023'ten 2024'e azalmadı.","en":"EU greenhouse gas emissions did not fall between 2023 and 2024.","label":"CONTRADICTS"}
+{"id":260,"tr":"AB'nin sera gazı emisyonları 2023'ten 2024'e arttı.","en":"EU greenhouse gas emissions rose between 2023 and 2024.","label":"CONTRADICTS"}
+{"id":260,"tr":"AB'nin emisyonları 1990 seviyesinin yaklaşık yüzde 40 altında.","en":"EU emissions are about 40% below 1990 levels.","label":"SUPPORTS"}
+{"id":260,"tr":"AB'nin emisyonları 1990'a göre yüzde 10 azaldı.","en":"EU emissions have fallen by 10% compared with 1990.","label":"CONTRADICTS"}
+{"id":260,"tr":"AB emisyonlarındaki düşüşün nedeni ekonomik durgunluktu.","en":"The fall in EU emissions was caused by an economic downturn.","label":"UNRELATED"}
+{"id":273,"tr":"İrlanda'da sahte ödemeler 2025'te artmadı.","en":"Fraudulent payments in Ireland did not rise in 2025.","label":"CONTRADICTS"}
+{"id":273,"tr":"İrlanda'da sahte ödemeler 2025'te 2024'e göre daha düşüktü.","en":"Fraudulent payments in Ireland were lower in 2025 than in 2024.","label":"CONTRADICTS"}
+{"id":273,"tr":"İrlanda'da 2025'te sahte ödemelerin tutarı 179 milyon euro oldu.","en":"Fraudulent payments in Ireland totalled €179 million in 2025.","label":"SUPPORTS"}
+{"id":273,"tr":"İrlanda'da sahte ödemeler 2026'da yüzde 27 arttı.","en":"Fraudulent payments in Ireland rose by 27 per cent in 2026.","label":"UNRELATED"}
+{"id":291,"tr":"Kazakistan'da ticari krediler bireysel kredilerden daha yavaş büyüdü.","en":"Business loans in Kazakhstan grew more slowly than retail loans.","label":"CONTRADICTS"}
+{"id":291,"tr":"Kazakistan'da vergi farkı getirildikten sonra bireysel krediler büyümedi.","en":"Retail loans in Kazakhstan did not grow after the tax difference was introduced.","label":"CONTRADICTS"}
+{"id":291,"tr":"Kazakistan'da bankalar bireysel kredi gelirleri için daha yüksek kurumlar vergisi ödüyor.","en":"Banks in Kazakhstan pay a higher corporate tax rate on retail lending income.","label":"SUPPORTS"}
+{"id":359,"tr":"Avrupa Merkez Bankası'nın faiz artırımından sonra şirketlerin banka kredisi faizleri değişmedi.","en":"After the ECB rate rise, bank lending rates for firms did not change.","label":"CONTRADICTS"}
+{"id":359,"tr":"Avrupa Merkez Bankası'nın faiz artırımına rağmen şirket kredilerinin büyümesi hızlandı.","en":"Despite the ECB rate rise, growth in lending to firms picked up.","label":"SUPPORTS"}
+{"id":359,"tr":"Faiz artırımından sonra konut kredisi faizleri yerinde saydı.","en":"Mortgage rates stayed unchanged after the rate rise.","label":"SUPPORTS"}
+{"id":359,"tr":"Faiz artırımından sonra konut kredisi büyümesi hızlandı.","en":"Mortgage lending growth sped up after the rate rise.","label":"CONTRADICTS"}
+{"id":359,"tr":"Faiz artırımından sonra konut kredisi büyümesi biraz yavaşladı.","en":"Mortgage lending growth softened slightly after the rate rise.","label":"SUPPORTS"}
+{"id":359,"tr":"Faiz artırımı euro bölgesini durgunluğa soktu.","en":"The rate rise pushed the euro area into a recession.","label":"UNRELATED"}
+{"id":125,"tr":"2025'te AB'de yeni hafif ticari araç kayıtları arttı.","en":"New van registrations in the EU rose in 2025.","label":"CONTRADICTS"}
+{"id":125,"tr":"2025'te tam elektrikli hafif ticari araçların filodaki payı düştü.","en":"The fleet share of fully electric vans fell in 2025.","label":"CONTRADICTS"}
+{"id":125,"tr":"2025'te tam elektrikli hafif ticari araçların payı yüzde 6,2'den yüzde 10,3'e çıktı.","en":"In 2025 the share of fully electric vans rose from 6.2% to 10.3%.","label":"SUPPORTS"}
+{"id":125,"tr":"Elektrikli hafif ticari araç payının artması emisyonları düşürdü.","en":"The rise in the share of electric vans brought emissions down.","label":"UNRELATED"}
+{"id":204,"tr":"HFC emisyonları 1990'dan beri sürekli azaldı.","en":"HFC emissions have fallen continuously since 1990.","label":"CONTRADICTS"}
+{"id":204,"tr":"HFC emisyonları 1990-2014 arasında hızla arttı.","en":"HFC emissions surged between 1990 and 2014.","label":"SUPPORTS"}
+{"id":204,"tr":"F-gaz kısıtlamaları HFC emisyonlarındaki düşüşte rol oynadı.","en":"F-gas restrictions played a part in the decline of HFC emissions.","label":"SUPPORTS"}
+{"id":204,"tr":"F-gaz kısıtlamalarının HFC emisyonlarına bir etkisi olmadı.","en":"F-gas restrictions had no effect on HFC emissions.","label":"CONTRADICTS"}
+{"id":15,"tr":"Hava kirliliği ruh sağlığı bozukluklarına yol açar.","en":"Air pollution causes mental health disorders.","label":"UNRELATED"}
+{"id":15,"tr":"Kirliliğin ruh sağlığı sorunlarının nedeni olduğu henüz kesin olarak kanıtlanmadı.","en":"It has not yet been firmly established that pollution causes mental health problems.","label":"SUPPORTS"}
+{"id":15,"tr":"Kirlilik ile ruh sağlığı arasında hiçbir ilişki bulunmadı.","en":"No link has been found between pollution and mental health.","label":"CONTRADICTS"}
+{"id":27,"tr":"Enerji fiyatlarındaki artış gıda fiyatlarına yansıyabilir.","en":"Rising energy prices could feed into food prices.","label":"SUPPORTS"}
+{"id":27,"tr":"Enerji fiyatlarındaki artış gıda fiyatlarına yansıdı.","en":"Rising energy prices have fed into food prices.","label":"UNRELATED"}
+{"id":27,"tr":"Gübre fiyatlarının yükselmesi gıda emtia fiyatlarını yukarı itebilir.","en":"Higher fertiliser prices could push up food commodity prices.","label":"SUPPORTS"}
+{"id":92,"tr":"Güney Amerika'da açlık arttı.","en":"Hunger in South America rose.","label":"CONTRADICTS"}
+{"id":92,"tr":"Güney Amerika'daki açlık azalmasında gıda enflasyonunun yavaşlaması bir etkendi.","en":"Easing food inflation was one of the drivers of the fall in hunger in South America.","label":"SUPPORTS"}
+{"id":92,"tr":"Sosyal korumanın genişlemesi Güney Amerika'da açlığın azalmasına katkı yapmadı.","en":"Expanding social protection did not contribute to the fall in hunger in South America.","label":"CONTRADICTS"}
+{"id":92,"tr":"Açlık en çok Afrika'da azaldı.","en":"Hunger fell most in Africa.","label":"CONTRADICTS"}
+{"id":104,"tr":"Afrika'da çocuklarda bodurluk azalmıyor.","en":"Child stunting is not declining in Africa.","label":"CONTRADICTS"}
+{"id":104,"tr":"Asya 2030 bodurluk hedefine ulaşma yolunda.","en":"Asia is on track to meet the 2030 stunting target.","label":"SUPPORTS"}
+{"id":104,"tr":"Sadece anne sütüyle besleme oranları verisi olan bütün bölgelerde iyileşiyor.","en":"Exclusive breastfeeding rates are improving in all regions with data.","label":"SUPPORTS"}
+{"id":104,"tr":"Sadece anne sütüyle besleme oranları bazı bölgelerde geriliyor.","en":"Exclusive breastfeeding rates are falling in some regions.","label":"CONTRADICTS"}
+{"id":149,"tr":"Yüksek enerji fiyatları enerji tüketimini azaltmadı.","en":"Higher energy prices did not reduce energy consumption.","label":"CONTRADICTS"}
+{"id":149,"tr":"AB'de yenilenebilir enerjinin elektrikteki payı 2021'de yüzde 40'ın altındaydı.","en":"Renewables were just below 40% of EU electricity consumption in 2021.","label":"SUPPORTS"}
+{"id":149,"tr":"AB'de yenilenebilir enerjinin elektrikteki payı 2025 sonunda yüzde 70'e ulaştı.","en":"Renewables reached 70% of EU electricity consumption at the end of 2025.","label":"CONTRADICTS"}
+{"id":149,"tr":"Gaz fiyatlarındaki bir artışın euro bölgesine etkisi 2022'dekinden muhtemelen daha küçük olur.","en":"A rise in gas prices would probably hurt the euro area less than in 2022.","label":"SUPPORTS"}
+{"id":149,"tr":"Gaz fiyatlarındaki bir artış euro bölgesini 2022'dekinden daha sert vurur.","en":"A rise in gas prices would hit the euro area harder than in 2022.","label":"CONTRADICTS"}
+{"id":188,"tr":"Filipinler'de petrol fiyatlarının artması gıda fiyatlarını düşürdü.","en":"In the Philippines higher oil prices lowered food prices.","label":"CONTRADICTS"}
+{"id":188,"tr":"Ukrayna'daki savaşın başlamasından sonra enflasyon sert yükseldi.","en":"Inflation surged after the war in Ukraine began.","label":"SUPPORTS"}
+{"id":188,"tr":"Ukrayna'daki savaştan sonra enflasyon yükselmedi.","en":"Inflation did not rise after the war in Ukraine began.","label":"CONTRADICTS"}
+{"id":206,"tr":"Enerji fiyatlarındaki sert artış euro bölgesi ekonomisini çökertmedi.","en":"The sharp rise in energy prices did not bring down the euro area economy.","label":"SUPPORTS"}
+{"id":206,"tr":"Euro bölgesi ekonomisi enerji şoku karşısında dayanıksız çıktı.","en":"The euro area economy proved fragile in the face of the energy shock.","label":"CONTRADICTS"}
+{"id":211,"tr":"2024'te bazı AB üye devletleri hava kirleticisi taahhütlerini karşılayamadı.","en":"In 2024 some EU Member States failed to meet their air pollutant commitments.","label":"SUPPORTS"}
+{"id":211,"tr":"2024'te hiçbir AB üye devleti hava kirleticisi taahhütlerinde başarısız olmadı.","en":"In 2024 no EU Member State failed its air pollutant commitments.","label":"CONTRADICTS"}
+{"id":211,"tr":"2024'te AB üye devletlerinin çoğu beş kirleticinin hepsinde taahhütlerini karşıladı.","en":"In 2024 most EU Member States met their commitments for all five pollutants.","label":"SUPPORTS"}
+{"id":223,"tr":"Kazakistan zorunlu karşılıkları artırınca fazla likidite piyasada kaldı.","en":"When Kazakhstan raised reserve requirements, the excess liquidity stayed in the market.","label":"CONTRADICTS"}
+{"id":223,"tr":"Zorunlu karşılık mekanizmasıyla 4,3 trilyon tenge likidite çekildi.","en":"4.3 trillion tenge of liquidity was absorbed through the reserve requirement mechanism.","label":"SUPPORTS"}
+{"id":254,"tr":"Yakın geçmişte yüksek enflasyon yaşayan ülkelerde enflasyon beklentileri yükseldi.","en":"Inflation expectations rose in countries with a recent history of high inflation.","label":"UNRELATED"}
+{"id":254,"tr":"Geçmişteki yüksek enflasyon insanların daha fazla enflasyon beklemesine neden olabilir.","en":"Past high inflation can make people expect more inflation.","label":"SUPPORTS"}
+{"id":295,"tr":"Euro bölgesinde ikinci çeyrekte yatırımlar beklenenden zayıf kaldı.","en":"Investment in the euro area remained sluggish in the second quarter.","label":"SUPPORTS"}
+{"id":295,"tr":"Euro bölgesinde büyüme yalnızca birkaç ülkede yoğunlaştı.","en":"Euro area growth was concentrated in only a few countries.","label":"CONTRADICTS"}
+{"id":295,"tr":"Almanya'nın mali genişlemesi ikinci çeyrekte ekonomiyi destekledi.","en":"Germany's fiscal expansion supported the economy in the second quarter.","label":"SUPPORTS"}
+{"id":295,"tr":"Tüketici güveni ikinci çeyrekte düşük seviyelere geriledi.","en":"Consumer confidence fell to low levels in the second quarter.","label":"CONTRADICTS"}
+{"id":345,"tr":"Çin'in sınır ötesi işlemlerinin yarısından azı renminbi ile yapılıyor.","en":"Less than half of China's cross-border transactions are settled in renminbi.","label":"CONTRADICTS"}
+{"id":345,"tr":"Renminbi ile ödeme yapılması firmaların kur riskini azaltıyor.","en":"Settling in renminbi reduces exchange-rate risk for firms.","label":"SUPPORTS"}
+{"id":360,"tr":"Euro bölgesinde yapay zekâ yatırımları artmıyor.","en":"AI investment in the euro area is not picking up.","label":"CONTRADICTS"}
+{"id":360,"tr":"İkinci çeyrekte euro bölgesinde özel yatırımlar beklenenden kötü geldi.","en":"Private investment in the euro area surprised to the downside in the second quarter.","label":"SUPPORTS"}
+{"id":360,"tr":"Enflasyon görünümünün kötüleşmesi tüketimin yavaşlamasına yol açtı.","en":"The worsening inflation outlook caused consumption to slow.","label":"UNRELATED"}
+{"id":360,"tr":"Enflasyon görünümünün kötüleşmesi önümüzdeki çeyreklerde tüketimi yavaşlatabilir.","en":"The worsening inflation outlook will probably slow consumption in coming quarters.","label":"SUPPORTS"}
+{"id":364,"tr":"Daha yüksek faizler enflasyonu hedefe döndürdü.","en":"Higher interest rates brought inflation back to target.","label":"UNRELATED"}
+{"id":364,"tr":"Enflasyonun 2027 sonuna doğru hedef civarına dönmesi bekleniyor.","en":"Inflation is expected to return to around target towards the end of 2027.","label":"SUPPORTS"}
+{"id":364,"tr":"Mevcut enflasyon artışı 2021-22 dalgasından daha sert.","en":"The current inflation rise is more dramatic than the 2021-22 surge.","label":"CONTRADICTS"}
+{"id":399,"tr":"1990-2024 arasında termik santrallerin doğal gaz kullanımı arttı.","en":"Thermal power stations' natural gas use rose between 1990 and 2024.","label":"SUPPORTS"}
+{"id":399,"tr":"2022'den beri doğal gazdan kaynaklanan emisyonlar arttı.","en":"Emissions from gas have risen since 2022.","label":"CONTRADICTS"}
+{"id":399,"tr":"1990'da kömür tüketimi 2024'tekinin üç katından fazlaydı.","en":"Coal consumption in 1990 was more than three times its 2024 level.","label":"SUPPORTS"}
+{"id":406,"tr":"Küresel açlık 2025'te azalmadı.","en":"Global hunger did not decline in 2025.","label":"CONTRADICTS"}
+{"id":406,"tr":"Açlıktaki iyileşme bütün bölgelere eşit dağıldı.","en":"Improvements in hunger were evenly spread across regions.","label":"CONTRADICTS"}
+{"id":412,"tr":"AB'de emisyon düşüşüne neredeyse bütün üye devletler katkıda bulundu.","en":"Almost all EU Member States contributed to the fall in emissions.","label":"SUPPORTS"}
+{"id":412,"tr":"Enerji verimliliğindeki iyileşmenin AB emisyonlarındaki düşüşte payı yoktu.","en":"Better energy efficiency played no part in the fall in EU emissions.","label":"CONTRADICTS"}
+{"id":450,"tr":"Hipertansiyonu olanların beşte biri yeterli tedavi görmüyor.","en":"One in five people with hypertension is not adequately treated.","label":"CONTRADICTS"}
+{"id":450,"tr":"Tedavi kapsamı genişletilirse 2050'ye kadar milyonlarca ölüm önlenebilir.","en":"Scaling up treatment could avert millions of deaths by 2050.","label":"SUPPORTS"}
+{"id":450,"tr":"Tedavi kapsamını genişleten ülkelerde 76 milyon ölüm önlendi.","en":"76 million deaths were averted in countries that scaled up treatment.","label":"UNRELATED"}
+{"id":471,"tr":"Uzun vadeli tahvil faizlerinin yükselmesi ekonomik faaliyeti artırır.","en":"A rise in long-term bond yields increases economic activity.","label":"CONTRADICTS"}
+{"id":471,"tr":"Euro bölgesinde uzun vadeli faizlerin yükselmesi 2026'da büyümeyi düşürdü.","en":"Higher long-term yields lowered euro area growth in 2026.","label":"UNRELATED"}
+{"id":494,"tr":"Ouaddai'de yetersiz beslenme nedeniyle hastaneye yatan çocuk sayısı Sudan çatışmasından sonra azaldı.","en":"Hospital admissions of malnourished children in Ouaddai fell after the Sudan conflict began.","label":"CONTRADICTS"}
+{"id":494,"tr":"Çad'daki mülteci ailelere önerilen içme suyunun yalnızca üçte biri sağlanıyor.","en":"Refugee families in Chad receive only a third of the recommended drinking water.","label":"SUPPORTS"}
+{"id":499,"tr":"2025'te Avrupa'da yeni otomobillerin ortalama CO2 emisyonu azalmadı.","en":"Average CO2 emissions from new cars in Europe did not fall in 2025.","label":"CONTRADICTS"}
+{"id":499,"tr":"Avrupa'da yeni otomobillerin CO2 emisyonu 2025 verilerine göre kesinleşmiş olarak düştü.","en":"Final 2025 data confirm that CO2 emissions from new cars in Europe fell.","label":"UNRELATED"}
+{"id":508,"tr":"Enerji yoğun sanayilerin emisyonlarındaki düşüş son yıllarda hızlandı.","en":"The fall in emissions from energy-intensive industries has sped up recently.","label":"CONTRADICTS"}
+{"id":508,"tr":"Enerji yoğun sanayilerin emisyonları son yirmi yılda arttı.","en":"Emissions from energy-intensive industries rose over the past two decades.","label":"CONTRADICTS"}
+{"id":559,"tr":"Büyük belediyelerin yüzde 28'inin iklim uyum eylem planı var.","en":"28% of larger municipalities have climate adaptation action plans.","label":"SUPPORTS"}
+{"id":559,"tr":"Küçük belediyeler kaynak kısıtlarına rağmen iklim risklerine karşı harekete geçiyor.","en":"Small municipalities are acting on climate risks despite limited resources.","label":"SUPPORTS"}
+{"id":559,"tr":"Küçük belediyeler iklim risklerine karşı hiçbir şey yapmıyor.","en":"Small municipalities are doing nothing about climate risks.","label":"CONTRADICTS"}
+{"id":578,"tr":"İstilacı türlere karşı yok etme eylemlerinin çoğu başarısız oldu.","en":"Most eradication actions against invasive species failed.","label":"CONTRADICTS"}
+{"id":578,"tr":"Yok etme eylemlerine rağmen istilacı türler yayılmaya devam ediyor.","en":"Despite eradication actions, invasive species continue to spread.","label":"SUPPORTS"}
+{"id":600,"tr":"Ruh sağlığı bozuklukları 2023'te AB'de ölümlerin en sık sekizinci nedeniydi.","en":"Mental health disorders were the eighth most common cause of death in the EU in 2023.","label":"SUPPORTS"}
+{"id":600,"tr":"Ruh sağlığı bozuklukları AB'de hastalık yükünde ilk sırada.","en":"Mental health disorders are the largest burden of disease in the EU.","label":"CONTRADICTS"}
+{"id":619,"tr":"Hipertansiyonla yaşayanların sayısı 1990'dan 2019'a azaldı.","en":"The number of people living with hypertension fell from 1990 to 2019.","label":"CONTRADICTS"}
+{"id":619,"tr":"Hipertansiyonu olan yetişkinlerin dörtte üçünden fazlası düşük ve orta gelirli ülkelerde yaşıyor.","en":"More than three quarters of adults with hypertension live in low- and middle-income countries.","label":"SUPPORTS"}
+{"id":624,"tr":"Asya'da açlık çeken insan sayısı Afrika'dakinden fazla.","en":"Asia has more hungry people than Africa.","label":"CONTRADICTS"}
+{"id":624,"tr":"Afrika'da açlık çeken nüfusun payı 2024'ten 2025'e biraz azaldı.","en":"The share of Africa's population facing hunger fell slightly from 2024 to 2025.","label":"SUPPORTS"}
+{"id":624,"tr":"Afrika'da açlık çeken insan sayısı azaldı.","en":"The number of hungry people in Africa fell.","label":"UNRELATED"}
+{"id":631,"tr":"Doğu Timor'da sıtma vakaları 2006'da zirve yaptı.","en":"Malaria cases in Timor-Leste peaked in 2006.","label":"SUPPORTS"}
+{"id":631,"tr":"Doğu Timor'da 2021'den sonra da yerel sıtma vakaları görüldü.","en":"Timor-Leste still had indigenous malaria cases after 2021.","label":"CONTRADICTS"}
+{"id":646,"tr":"Kanada ve Güney Kore'de hipertansiyonlu yetişkinlerin çoğunda tansiyon kontrol altında değil.","en":"In Canada and South Korea most adults with hypertension do not have their blood pressure under control.","label":"CONTRADICTS"}
+{"id":646,"tr":"Tansiyon kontrolü her gelir düzeyindeki ülkede sağlanabilir.","en":"Blood pressure control can be achieved in countries of all income levels.","label":"SUPPORTS"}
+{"id":662,"tr":"AB'de yakıt fiyatlarındaki yıllık artış Temmuz'dan Eylül'e hızlandı.","en":"The annual rise in EU fuel prices sped up from July to September.","label":"SUPPORTS"}
+{"id":662,"tr":"AB'de yakıt fiyatlarındaki yıllık artış Temmuz'dan Eylül'e yavaşladı.","en":"The annual rise in EU fuel prices slowed from July to September.","label":"CONTRADICTS"}
+{"id":670,"tr":"Projede yaratılan işlerin yarısından fazlası kadınlara gitti.","en":"More than half the jobs created under the project went to women.","label":"SUPPORTS"}
+{"id":670,"tr":"Projede yaratılan işlerin yüzde 30'u gençlere gitti.","en":"30 per cent of the jobs created under the project went to young people.","label":"SUPPORTS"}
+{"id":178,"tr":"Uzun vadeli faizlerin yükselmesi enflasyonu düşürmez.","en":"Higher long-term interest rates do not lower inflation.","label":"CONTRADICTS"}
+{"id":178,"tr":"Uzun vadeli faizlerin yükselmesi Avrupa ekonomisini hızlandırır.","en":"Higher long-term interest rates speed up the European economy.","label":"CONTRADICTS"}
+{"id":65,"tr":"Faiz artırımı döneminde euro bölgesinde şirket borcunun milli gelire oranı arttı.","en":"During the rate-hiking cycle, corporate debt-to-GDP in the euro area rose.","label":"CONTRADICTS"}
+{"id":65,"tr":"Euro bölgesinde şirket borcunun milli gelire oranı yaklaşık yüzde 66'da sabitlendi.","en":"The euro area corporate debt-to-GDP ratio has stabilised at around 66 per cent.","label":"SUPPORTS"}
+{"id":331,"tr":"Eylül'de çekirdek enflasyon geriledi.","en":"Core inflation fell in September.","label":"CONTRADICTS"}
+{"id":331,"tr":"Ücretler enerji şokuna şu ana kadar kayda değer bir tepki vermedi.","en":"Wages have so far shown no material response to the energy shock.","label":"SUPPORTS"}
+{"id":539,"tr":"2025'in son çeyreğinde euro bölgesinde enerji enflasyonu pozitifti.","en":"Energy inflation in the euro area was positive in the last quarter of 2025.","label":"CONTRADICTS"}
+{"id":539,"tr":"Eylül'de enerji dışı enflasyon şok öncesi seviyenin biraz altındaydı.","en":"Non-energy inflation in September was slightly below its pre-shock level.","label":"SUPPORTS"}
+{"id":141,"tr":"Sahte e-para ödemeleri yüzde 57,7 azaldı.","en":"Fraudulent e-money payments fell by 57.7 per cent.","label":"CONTRADICTS"}
+{"id":141,"tr":"Değer olarak dolandırıcılık artışının en büyük kaynağı sahte kredi transferleriydi.","en":"In value terms, fraudulent credit transfers were the largest driver of the increase.","label":"SUPPORTS"}
+{"id":74,"tr":"Geçen yıl Kigali borsasında en az bir halka arz yapıldı.","en":"At least one IPO took place on the Kigali exchange last year.","label":"CONTRADICTS"}
+{"id":74,"tr":"Şirketler giderek daha çok özel sermaye yoluyla para topluyor.","en":"Companies are increasingly raising money privately.","label":"SUPPORTS"}
+{"id":87,"tr":"Ders kitabı yaklaşımına göre fiyat seviyesindeki tek seferlik bir artışa faizle karşılık verilmemeli.","en":"The textbook response is to look through a one-off rise in the price level.","label":"SUPPORTS"}
+{"id":87,"tr":"Faiz artırımları petrol ve gaz arzını artırabilir.","en":"Raising interest rates can increase the supply of oil and gas.","label":"CONTRADICTS"}
+{"id":87,"tr":"Enflasyon beklentileri çapalanmamışsa şoka faizle karşılık vermemek mümkün değildir.","en":"Looking through a shock is only possible if inflation expectations stay anchored.","label":"SUPPORTS"}
+{"id":436,"tr":"Euro bölgesinde hane kredisi büyümesi gelir artışını aştı.","en":"Household credit growth in the euro area has outpaced income growth.","label":"CONTRADICTS"}
+{"id":436,"tr":"Euro bölgesinde hane borcunun gelire oranı 2004'ten beri ortalamasına yakın.","en":"The euro area household debt-to-income ratio is close to its average since 2004.","label":"SUPPORTS"}

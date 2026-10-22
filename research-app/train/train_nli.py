@@ -57,7 +57,9 @@ FROM_NLI = {v: k for k, v in TO_NLI.items()}
 
 
 def pairs(rows, langs=("en", "tr")):
-    return [(pool[e["id"]]["text"], e[lang], e["label"]) for e in rows for lang in langs]
+    # A logic example may bring its own short text (a view set out and then rejected, say) in place
+    # of the pooled paragraph it is filed under.
+    return [(e.get("premise") or pool[e["id"]]["text"], e[lang], e["label"]) for e in rows for lang in langs]
 
 
 def predict(items):
