@@ -1,10 +1,13 @@
 import {
+  Captions,
   ChevronsLeft,
   ChevronsRight,
+  Gauge,
   Maximize,
   Minimize,
   Pause,
   Play,
+  Settings,
   Volume2,
   VolumeX,
 } from "lucide-react";
@@ -93,9 +96,11 @@ export function Film({
   const run = useRef<{ side: Side; until: number } | null>(null);
   const jumpTimer = useRef<number | undefined>(undefined);
   const barShown = useRef(false);
-  // The film's two menus, the subtitles chosen (none, or a language), the line shown now,
-  // and the playing speed.
-  const [menu, setMenu] = useState<"subtitles" | "speed" | null>(null);
+  // The settings panel behind the gear, the one of its lists opened in it (speed or
+  // subtitles), the subtitles chosen (none, or a language), the line shown now, and the
+  // playing speed.
+  const [menu, setMenu] = useState<"settings" | null>(null);
+  const [sub, setSub] = useState<"subtitles" | "speed" | null>(null);
   const [cc, setCc] = useState<Lang | null>(null);
   const [cue, setCue] = useState("");
   const [rate, setRate] = useState(1);
@@ -143,9 +148,14 @@ export function Film({
     el.playbackRate = rate;
   }, [rate]);
 
+  function closeMenu() {
+    setMenu(null);
+    setSub(null);
+  }
+
   function chooseCaptions(lang: Lang | null) {
     setCc(lang);
-    setMenu(null);
+    closeMenu();
     wake();
     try {
       if (lang) localStorage.setItem(CAPTIONS_KEY, lang);
@@ -185,7 +195,7 @@ export function Film({
     if (!stay)
       timer.current = window.setTimeout(() => {
         setShown(false);
-        setMenu(null);
+        closeMenu();
       }, HIDE_AFTER);
   }
 
@@ -230,10 +240,25 @@ export function Film({
   function hide() {
     window.clearTimeout(timer.current);
     setShown(false);
-    setMenu(null);
+    closeMenu();
+  }
+
+  /** Back or ahead TAP_STEP seconds from the settings panel. */
+  function stepBy(side: Side) {
+    const el = film.current;
+    if (!el) return;
+    const end = duration || el.currentTime + TAP_STEP;
+    seek(Math.max(0, Math.min(el.currentTime + (side === "back" ? -TAP_STEP : TAP_STEP), end)));
+    wake(true);
   }
 
   function onSurface(event: React.MouseEvent<HTMLVideoElement>) {
+    // With the settings open, a tap on the picture only puts them away.
+    if (menu) {
+      closeMenu();
+      wake();
+      return;
+    }
     if (pointer.current === "mouse") {
       void toggle();
       return;
@@ -433,13 +458,44 @@ export function Film({
         <div className="film-bar" aria-hidden={!bar}>
           <div className="film-glass">
             {menu ? (
-              <div
-                role="menu"
-                aria-label={menu === "speed" ? words.speed : words.subtitles}
-                className="film-menu"
-              >
-                {menu === "speed"
-                  ? RATES.map((value) => (
+              <div role="menu" aria-label={words.settings} className="film-menu">
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    toggleSound();
+                    wake(true);
+                  }}
+                  className="film-set"
+                >
+                  {muted ? (
+                    <VolumeX className="size-[18px]" strokeWidth={1.25} aria-hidden="true" />
+                  ) : (
+                    <Volume2 className="size-[18px]" strokeWidth={1.25} aria-hidden="true" />
+                  )}
+                  <span className="film-set-label">{words.sound}</span>
+                  <span className="film-set-value">{muted ? words.soundOff : words.soundOn}</span>
+                </button>
+                <button
+                  type="button"
+                  role="menuitem"
+                  aria-haspopup="menu"
+                  aria-expanded={sub === "speed"}
+                  onClick={() => {
+                    setSub(sub === "speed" ? null : "speed");
+                    wake(true);
+                  }}
+                  className="film-set"
+                >
+                  <Gauge className="size-[18px]" strokeWidth={1.25} aria-hidden="true" />
+                  <span className="film-set-label">{words.speed}</span>
+                  <span dir="ltr" className="film-set-value tabular-nums">
+                    {rate}×
+                  </span>
+                </button>
+                {sub === "speed" ? (
+                  <div role="group" aria-label={words.speed} className="film-sub">
+                    {RATES.map((value) => (
                       <button
                         key={value}
                         type="button"
@@ -447,8 +503,8 @@ export function Film({
                         aria-checked={rate === value}
                         onClick={() => {
                           setRate(value);
-                          setMenu(null);
-                          wake();
+                          setSub(null);
+                          wake(true);
                         }}
                         className="film-menu-item"
                       >
@@ -456,8 +512,31 @@ export function Film({
                           {value}×
                         </span>
                       </button>
-                    ))
-                  : [null, ...captions.map((c) => c.lang)].map((lang) => (
+                    ))}
+                  </div>
+                ) : null}
+                {captions.length ? (
+                  <button
+                    type="button"
+                    role="menuitem"
+                    aria-haspopup="menu"
+                    aria-expanded={sub === "subtitles"}
+                    onClick={() => {
+                      setSub(sub === "subtitles" ? null : "subtitles");
+                      wake(true);
+                    }}
+                    className="film-set"
+                  >
+                    <Captions className="size-[18px]" strokeWidth={1.25} aria-hidden="true" />
+                    <span className="film-set-label">{words.subtitles}</span>
+                    <span className="film-set-value">
+                      {cc ? captions.find((c) => c.lang === cc)?.label : words.subtitlesOff}
+                    </span>
+                  </button>
+                ) : null}
+                {sub === "subtitles" ? (
+                  <div role="group" aria-label={words.subtitles} className="film-sub">
+                    {[null, ...captions.map((c) => c.lang)].map((lang) => (
                       <button
                         key={lang ?? "off"}
                         type="button"
@@ -469,6 +548,52 @@ export function Film({
                         {lang ? captions.find((c) => c.lang === lang)?.label : words.subtitlesOff}
                       </button>
                     ))}
+                  </div>
+                ) : null}
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    closeMenu();
+                    toggleFull();
+                  }}
+                  className="film-set"
+                >
+                  {full ? (
+                    <Minimize className="size-[18px]" strokeWidth={1.25} aria-hidden="true" />
+                  ) : (
+                    <Maximize className="size-[18px]" strokeWidth={1.25} aria-hidden="true" />
+                  )}
+                  <span className="film-set-label">
+                    {full ? words.exitFullscreen : words.fullscreen}
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => stepBy("back")}
+                  className="film-set"
+                >
+                  <ChevronsLeft
+                    className="size-[18px] rtl:-scale-x-100"
+                    strokeWidth={1.25}
+                    aria-hidden="true"
+                  />
+                  <span className="film-set-label">{words.stepBack}</span>
+                </button>
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => stepBy("ahead")}
+                  className="film-set"
+                >
+                  <ChevronsRight
+                    className="size-[18px] rtl:-scale-x-100"
+                    strokeWidth={1.25}
+                    aria-hidden="true"
+                  />
+                  <span className="film-set-label">{words.stepAhead}</span>
+                </button>
               </div>
             ) : null}
             <div className="film-seek">
@@ -522,63 +647,20 @@ export function Film({
                 {fmt(duration)}
               </span>
               <span className="flex-1" />
-              {captions.length ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMenu(menu === "subtitles" ? null : "subtitles");
-                    wake(true);
-                  }}
-                  aria-label={words.subtitles}
-                  aria-haspopup="menu"
-                  aria-expanded={menu === "subtitles"}
-                  tabIndex={bar ? 0 : -1}
-                  className={`film-word ${cc ? "is-on" : ""}`}
-                >
-                  CC
-                </button>
-              ) : null}
               <button
                 type="button"
                 onClick={() => {
-                  setMenu(menu === "speed" ? null : "speed");
+                  if (menu) closeMenu();
+                  else setMenu("settings");
                   wake(true);
                 }}
-                aria-label={`${words.speed}: ${rate}×`}
+                aria-label={words.settings}
                 aria-haspopup="menu"
-                aria-expanded={menu === "speed"}
+                aria-expanded={menu === "settings"}
                 tabIndex={bar ? 0 : -1}
-                className={`film-word ${rate !== 1 ? "is-on" : ""}`}
+                className={`film-key ${menu ? "is-on" : ""}`}
               >
-                <span dir="ltr" className="tabular-nums">
-                  {rate}×
-                </span>
-              </button>
-              <button
-                type="button"
-                onClick={toggleSound}
-                aria-label={muted ? words.unmute : words.mute}
-                tabIndex={bar ? 0 : -1}
-                className="film-key"
-              >
-                {muted ? (
-                  <VolumeX className="size-[18px]" strokeWidth={1.25} aria-hidden="true" />
-                ) : (
-                  <Volume2 className="size-[18px]" strokeWidth={1.25} aria-hidden="true" />
-                )}
-              </button>
-              <button
-                type="button"
-                onClick={toggleFull}
-                aria-label={full ? words.exitFullscreen : words.fullscreen}
-                tabIndex={bar ? 0 : -1}
-                className="film-key"
-              >
-                {full ? (
-                  <Minimize className="size-[18px]" strokeWidth={1.25} aria-hidden="true" />
-                ) : (
-                  <Maximize className="size-[18px]" strokeWidth={1.25} aria-hidden="true" />
-                )}
+                <Settings className="size-[19px]" strokeWidth={1.25} aria-hidden="true" />
               </button>
             </div>
           </div>

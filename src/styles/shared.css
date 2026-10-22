@@ -1395,6 +1395,11 @@ button.play-disc:active {
   pointer-events: auto;
 }
 
+.film-key.is-on {
+  color: #fff;
+  background: rgb(255 255 255 / 0.1);
+}
+
 .film.is-quiet .film-bar .film-seek,
 .film.is-quiet .film-bar .film-key,
 .film.is-quiet .film-bar .film-word,
@@ -1479,6 +1484,7 @@ button.play-disc:active {
 .film-key:focus-visible,
 .film-word:focus-visible,
 .film-menu-item:focus-visible,
+.film-set:focus-visible,
 .film-seek:has(input:focus-visible) {
   outline: 1px solid #f4efe6;
   outline-offset: 2px;
@@ -1603,6 +1609,58 @@ button.play-disc:active {
 
 .film-menu-item[aria-checked="true"]::before {
   background: #f4efe6;
+}
+
+/* The settings panel behind the gear: one line per setting, its icon, its name and, at the
+   end, what it is set to now; speed and subtitles open their choices under their line. */
+.film:not(.film-still) {
+  container-type: size;
+}
+
+.film-menu {
+  min-width: 13.5rem;
+  max-height: calc(100cqh - 5.5rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.film-set {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  flex-shrink: 0;
+  padding: 0.45rem 0.7rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  text-align: start;
+  color: rgb(244 239 230 / 0.9);
+}
+
+.film-set:hover {
+  background: rgb(255 255 255 / 0.07);
+  color: #fff;
+}
+
+.film-set > svg {
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.film-set-label {
+  flex: 1;
+}
+
+.film-set-value {
+  font-size: 0.75rem;
+  color: #a8a39a;
+}
+
+.film-sub {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  padding: 0 0 0.25rem 1.9rem;
 }
 
 /* The subtitle line, in the site's type on a dark band, kept clear of the bar. */
