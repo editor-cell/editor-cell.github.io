@@ -1,0 +1,26 @@
+name: Peek at the human-made logic sets
+on:
+  push:
+    paths:
+      - research-app/train/peek_logic.py
+      - .github/workflows/peek-logic-data.yml
+permissions:
+  contents: read
+jobs:
+  peek:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install --quiet huggingface_hub pandas pyarrow
+      - name: Look
+        working-directory: research-app/train
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          python peek_logic.py > peek.txt 2> err.txt || true
+          cat peek.txt
+          echo "::notice title=Peek::$(head -c 9000 peek.txt | tr '\n' '|' | sed 's/|/%0A/g')"
+          tail -c 800 err.txt || true
