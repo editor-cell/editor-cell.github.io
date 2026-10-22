@@ -26,14 +26,15 @@ def hypothesis(question, option):
     return q.replace("_", o) if "_" in q else f"{q} {o}"
 
 
-def race_rows(cache, rnd, per_level, dev_per_level):
+def race_rows(cache, rnd, per_level, dev_per_level, train_seed):
     import pandas as pd
     rows = []
     for level, cfg in ((1, "middle"), (2, "high")):
         for split, n in (("train", per_level), ("validation", dev_per_level)):
             df = pd.read_parquet(fetch("ehovy/race", f"{cfg}/{split}-00000-of-00001.parquet", cache))
             idx = list(range(len(df)))
-            rnd.shuffle(idx)
+            # the held-out questions are always the same ones; the training ones change with train_seed
+            random.Random(3 if split == "validation" else train_seed).shuffle(idx)
             for k in idx[:n]:
                 r = df.iloc[k]
                 options = list(r["options"])
@@ -62,9 +63,8 @@ def belebele_rows(cache):
     return rows
 
 
-def build(cache="reading-cache", race_per_level=1000, race_dev_per_level=150, seed=3):
-    rnd = random.Random(seed)
-    raw = race_rows(cache, rnd, race_per_level, race_dev_per_level) + belebele_rows(cache)
+def build(cache="reading-cache", race_per_level=1000, race_dev_per_level=150, train_seed=3):
+    raw = race_rows(cache, None, race_per_level, race_dev_per_level, train_seed) + belebele_rows(cache)
     rows = []
     for k, r in enumerate(raw):
         row = {"id": 200000 + k, "kind": "readhuman", "level": r["level"], "qid": r["qid"], "premise": r["premise"],

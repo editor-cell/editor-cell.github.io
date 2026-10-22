@@ -39,6 +39,9 @@ on:
       minutes:
         description: "for fast_problems.py: stop training after this many minutes (empty = no limit)"
         default: ""
+      seed:
+        description: "for focus readhuman: which part of RACE's training questions to use (a number; default 3)"
+        default: ""
       weights:
         description: "for focus sudoku: how many times the usual number of steps each level gets, like 2:4,1:0.5"
         default: ""
@@ -145,6 +148,7 @@ jobs:
           echo "${{ inputs.focus }}" > kd/focus.txt
           echo "${{ inputs.minutes }}" > kd/minutes.txt
           echo "${{ inputs.weights }}" > kd/weights.txt
+          echo "${{ inputs.seed }}" > kd/seed.txt
           printf '{"title": "%s", "id": "%s/%s", "licenses": [{"name": "other"}]}' "$DATASET" "$KAGGLE_USERNAME" "$DATASET" > kd/dataset-metadata.json
           if kaggle datasets status "$KAGGLE_USERNAME/$DATASET" > /dev/null 2>&1; then
             kaggle datasets version -p kd -m "update" -q

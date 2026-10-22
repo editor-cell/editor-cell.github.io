@@ -84,7 +84,8 @@ if FOCUS == "readhuman":
     sys.path.insert(0, inp)
     subprocess.run([sys.executable, "-m", "pip", "install", "--quiet", "huggingface_hub", "pandas", "pyarrow"], check=False)
     import reading_human  # noqa: E402  (reading questions people wrote: RACE and Belebele)
-    labels += reading_human.build(os.path.join(WORK, "reading-cache"))
+    SEED = int(open(os.path.join(inp, "seed.txt")).read().strip() or 3) if os.path.exists(os.path.join(inp, "seed.txt")) else 3
+    labels += reading_human.build(os.path.join(WORK, "reading-cache"), train_seed=SEED)
     note("human-made reading questions (training / held-out) by level: " + str(reading_human.build.stats))
 if FOCUS == "humanlogic":
     EPOCHS = max(EPOCHS, 6)
