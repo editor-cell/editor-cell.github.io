@@ -67,7 +67,12 @@ jobs:
           SMOKE=1 READINGS=2 python kaggle_read.py 2> err.txt || { echo "::error title=Trial::$(tail -c 1500 err.txt | tr '\n' '|' | sed 's/|/%0A/g')"; exit 1; }
           echo "::notice title=Trial::$(tr '\n' '|' < work/notes.txt | sed 's/|/%0A/g')"
           python -c "import human; r = human.build(40, 30, 'work/human-cache'); print(len(r), r[:3])" 2> err.txt || { echo "::error title=Human::$(tail -c 1500 err.txt | tr '\n' '|' | sed 's/|/%0A/g')"; exit 1; }
-          echo "::notice title=Human::the human-made pairs were fetched and built"
+          python -c "
+          import human, random
+          r = human.build(60, 300, 'work/human-cache')
+          rows = [x for x in r if x['tr']][:14] + [x for x in r if x['en']][:6]
+          print('::notice title=Human::' + '%0A'.join(x['label'] + ' | ' + x['premise'][:120] + ' => ' + (x['tr'] or x['en'])[:120] for x in rows))
+          "
 
       - name: Kaggle key
         if: (inputs.mode || 'smoke') != 'smoke'
