@@ -50,6 +50,7 @@ open(NOTES, "w").close()
 
 subprocess.run([sys.executable, "-m", "pip", "install", "--quiet", "transformers", "sentencepiece",
                 "protobuf", "tiktoken"], check=False)
+os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 import torch  # noqa: E402
 from transformers import AutoModelForSequenceClassification, AutoTokenizer  # noqa: E402
 
@@ -85,7 +86,8 @@ def score(rows):
             part = rows[i:i + 32]
             enc = tok([p for p, _, _ in part], [h for _, h, _ in part], truncation="longest_first",
                       max_length=384, padding=True, return_tensors="pt").to(DEVICE)
-            got = model(**enc).logits.argmax(-1).tolist()
+            with torch.autocast(DEVICE, dtype=torch.float16, enabled=DEVICE == "cuda"):
+                got = model(**enc).logits.argmax(-1).tolist()
             ok += sum(g == name_to_id[TO_NLI[w]] for g, (_, _, w) in zip(got, part))
     model.train()
     return f"{ok}/{len(rows)}"
@@ -108,27 +110,42 @@ steps_total = READINGS * ((len(first) + 15) // 16)
 opt = torch.optim.AdamW(model.parameters(), lr=1e-5, weight_decay=0.01)
 sched = torch.optim.lr_scheduler.LambdaLR(
     opt, lambda s: min(1.0, (s + 1) / (0.06 * steps_total)) * max(0.05, 1 - s / steps_total))
+scaler = torch.amp.GradScaler(enabled=DEVICE == "cuda")
 t0 = time.time()
 done = 0
 model.train()
 for n in range(1, READINGS + 1):
     rows = first if n == 1 or SMOKE else quran.reading(n, *texts)
     losses, skipped = [], 0
+    # Sixteen pairs an update, fed in halves of eight; the arithmetic in half precision on the card
+    # (the weights stay in full precision, and the scaler skips a step that overflows). A T4 has
+    # 16 GB: sixteen long pairs at once in full precision did not fit.
     for batch in batches(rows):
-        enc = tok([p for p, _, _ in batch], [h for _, h, _ in batch], truncation="longest_first",
-                  max_length=384, padding=True, return_tensors="pt").to(DEVICE)
-        labels = torch.tensor([name_to_id[TO_NLI[w]] for _, _, w in batch]).to(DEVICE)
-        loss = model(**enc, labels=labels).loss
-        if not torch.isfinite(loss):
+        total = None
+        for half in (batch[:8], batch[8:]):
+            if not half:
+                continue
+            enc = tok([p for p, _, _ in half], [h for _, h, _ in half], truncation="longest_first",
+                      max_length=384, padding=True, return_tensors="pt").to(DEVICE)
+            labels = torch.tensor([name_to_id[TO_NLI[w]] for _, _, w in half]).to(DEVICE)
+            with torch.autocast(DEVICE, dtype=torch.float16, enabled=DEVICE == "cuda"):
+                loss = model(**enc, labels=labels).loss * len(half) / len(batch)
+            if not torch.isfinite(loss):
+                total = None
+                break
+            scaler.scale(loss).backward()
+            total = (total or 0.0) + loss.item()
+        if total is None:
             skipped += 1
             opt.zero_grad()
             continue
-        loss.backward()
+        scaler.unscale_(opt)
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
-        opt.step()
+        scaler.step(opt)
+        scaler.update()
         sched.step()
         opt.zero_grad()
-        losses.append(loss.item())
+        losses.append(total)
     done = n
     hours = (time.time() - t0) / 3600
     note(f"reading {n}: mean loss {sum(losses) / max(1, len(losses)):.3f}, {skipped} broken steps skipped, "
