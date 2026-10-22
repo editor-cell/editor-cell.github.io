@@ -29,8 +29,9 @@ export type FilmClip = {
  * time, seek line, subtitles, speed, sound, full screen; taps and double taps as on
  * YouTube). Under the screen the transcript opens behind one button, as on the page; open,
  * the screen moves up to leave the words the rest of the window, and they follow the film.
- * The cross, a tap on the dark around the screen or Escape rolls the screen up and brings
- * the page back; the film waits where it was stopped.
+ * Only the cross or Escape rolls the screen up and brings the page back (a tap on the dark
+ * around the screen does nothing: the owner, 22 Oct 2026); the film waits where it was
+ * stopped.
  *
  * The screen and its video element are on the page from the start, hidden, so the reader's
  * tap can start the sound at once on a phone. What follows the still on the page (its
@@ -147,12 +148,6 @@ export function VideoStart({
               aria-hidden={open ? undefined : true}
               inert={!open}
               className={`theater no-print ${open ? "is-on" : ""} ${reading && clip.transcript?.length ? "is-reading" : ""}`}
-              onClick={(event) => {
-                // A tap on the dark (around the screen, not on it or its words) closes.
-                const target = event.target as HTMLElement;
-                if (target === event.currentTarget || target.classList.contains("theater-frame"))
-                  stop();
-              }}
             >
               <div className="theater-frame">
                 <div className="theater-head">
