@@ -64,7 +64,23 @@ jobs:
           pip install --quiet --upgrade kaggle "huggingface_hub>=0.34"
           [ -n "$KAGGLE_KEY" ] || unset KAGGLE_KEY
           [ -n "$KAGGLE_API_TOKEN" ] || unset KAGGLE_API_TOKEN
-          if [ -z "$KAGGLE_USERNAME" ]; then echo "::error title=Kaggle::KAGGLE_USERNAME is missing"; exit 1; fi
+          if [ -z "$KAGGLE_USERNAME" ]; then
+            # The new kind of key carries the account: ask Kaggle whose it is.
+            unset KAGGLE_USERNAME
+            python - > who.txt 2> who-err.txt <<'EOF'
+          from kaggle.api.kaggle_api_extended import KaggleApi
+          api = KaggleApi()
+          api.authenticate()
+          print(api.config_values.get("username") or getattr(api, "username", "") or "")
+          EOF
+            name=$(tr -d '[:space:]' < who.txt)
+            if [ -z "$name" ]; then
+              kaggle config view 2>&1 | head -20
+              echo "::error title=Kaggle::could not find the user name from the key: $(tail -c 400 who-err.txt | tr '\n' ' ')"; exit 1
+            fi
+            echo "KAGGLE_USERNAME=$name" >> "$GITHUB_ENV"
+            export KAGGLE_USERNAME="$name"
+          fi
           if ! kaggle datasets list --mine > /dev/null 2>err.txt; then
             echo "::error title=Kaggle::the Kaggle key did not work: $(tail -c 400 err.txt | tr '\n' ' ')"; exit 1
           fi
