@@ -9,6 +9,8 @@ the four shapes (English and Turkish). The label follows from the meanings alone
   premise rose          -> rose: SUPPORTS, did not rise: CONTRADICTS, fell: CONTRADICTS, did not fall: SUPPORTS
   premise did not rise  -> rose: CONTRADICTS, did not rise: SUPPORTS, fell / did not fall: UNRELATED (could be flat)
   "more than doubled"   -> after rose: UNRELATED, after anything that rules out a rise: CONTRADICTS
+  premise "more than doubled" -> every claim that follows from a rise is SUPPORTED (a strong text
+                         carries a weaker claim; a weak text does not carry a stronger one)
 
 Writes labels/meaning.jsonl. Usage: meaning.py [count]"""
 import json
@@ -94,6 +96,10 @@ for _ in range(COUNT):
     pd, ph = random.choice(["up", "down"]), random.random() < 0.5
     pshape = random.choice(["PP", "NP"] if ph else ["NN", "PN"])
     premise = premise_en(s, e, pd, ph, pshape)
+    strong = ph and pd == "up" and random.random() < 0.3
+    if strong:  # the premise says more than a plain rise: every weaker claim follows from it
+        pshape = "PP2"
+        premise = f"{cap(s)} more than doubled {e}."
     options = [(cd, ch, sh) for cd in ("up", "down") for ch in (True, False)
                for sh in (["PP", "NP"] if ch else ["NN", "PN"])]
     random.shuffle(options)
@@ -102,7 +108,9 @@ for _ in range(COUNT):
     for cd, ch, sh in picked:
         en, tr = claim(s, st, e, et, cd, ch, sh)
         out.append((en, tr, label(pd, ph, cd, ch), sh))
-    if random.random() < 0.4:  # a claim that says more than the premise
+    if strong:
+        out.append((f"{cap(s)} rose {e}.", f"{cap(et)} {st} yükseldi.", "SUPPORTS", "PP"))
+    elif random.random() < 0.4:  # a claim that says more than the premise
         lab = "UNRELATED" if (pd == "up" and ph) else "CONTRADICTS" if (pd == "down" and ph) or (pd == "up" and not ph) else "UNRELATED"
         out.append((f"{cap(s)} more than doubled {e}.", f"{cap(et)} {st} iki katından fazla arttı.", lab, "PP"))
     for en, tr, lab, sh in out:
