@@ -31,8 +31,10 @@ labels = [json.loads(l) for f in sorted(glob.glob(os.path.join(HERE, "labels", "
 seen = collections.Counter()
 examples = []
 for e in labels:
-    seen[e["en"]] += 1
-    if seen[e["en"]] <= 3:
+    # A claim that recurs is kept at most three times; a puzzle statement counts with its puzzle.
+    key = (e.get("premise", "") if e.get("kind") == "puzzle" else "", e["en"])
+    seen[key] += 1
+    if seen[key] <= 3:
         examples.append(e)
 
 ids = sorted({e["id"] for e in examples})
@@ -40,6 +42,10 @@ random.shuffle(ids)
 dev_ids = set(ids[: len(ids) // 6])
 train = [e for e in examples if e["id"] not in dev_ids]
 dev = [e for e in examples if e["id"] in dev_ids]
+# Held-out puzzles are scored on their own; the model is chosen on the paragraphs alone, so the
+# puzzles can teach but cannot buy a model that reads paragraphs worse.
+dev_puzzles = [e for e in dev if e.get("kind") == "puzzle"]
+dev = [e for e in dev if e.get("kind") != "puzzle"]
 
 tok = AutoTokenizer.from_pretrained(MODEL)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL)
@@ -93,6 +99,8 @@ notes = [f"{len(train)} training claims on {len({e['id'] for e in train})} parag
 before_dev, _ = score(pairs(dev, ("en",)), "held-out, before")
 before_trial, _ = score(trial_rows, "first 26 paragraphs, before")
 notes += [before_dev, before_trial]
+if dev_puzzles:
+    notes.append(score(pairs(dev_puzzles, ("en",)), "puzzles held-out, before")[0])
 print("\n".join(notes), flush=True)
 print("::notice title=Before training::" + "%0A".join(notes), flush=True)
 
@@ -174,7 +182,11 @@ notes.append(f"kept the model after epoch {best_epoch} (0 = as it came, untraine
 after_dev, _ = score(pairs(dev, ("en",)), "held-out, after")
 after_dev_tr, _ = score(pairs(dev, ("tr",)), "held-out with the Turkish claim, after")
 after_trial, got = score(trial_rows, "first 26 paragraphs, after")
-notes += [after_dev, after_dev_tr, after_trial, f"training took {time.time() - t0:.0f}s"]
+notes += [after_dev, after_dev_tr, after_trial]
+if dev_puzzles:
+    notes.append(score(pairs(dev_puzzles, ("en",)), "puzzles held-out, after")[0])
+    notes.append(score(pairs(dev_puzzles, ("tr",)), "puzzles held-out with the Turkish statement, after")[0])
+notes.append(f"training took {time.time() - t0:.0f}s")
 for c, g, (_, _, w) in zip(trial["cases"], got, trial_rows):
     notes.append(("ok" if g == w else "WRONG") + f" | {c['label']}: {g}, right {w}")
 print("\n".join(notes))
@@ -184,6 +196,6 @@ model.save_pretrained(OUT)
 tok.save_pretrained(OUT)
 if os.environ.get("HUB_REPO") and os.environ.get("HF_TOKEN") and best_epoch > 0:
     # Kept in a private model repository on the owner's Hugging Face account, for the phone to fetch later.
-    model.push_to_hub(os.environ["HUB_REPO"], private=True, commit_message=notes[-len(trial_rows) - 2])
+    model.push_to_hub(os.environ["HUB_REPO"], private=True, commit_message=(after_dev + "; " + after_trial)[:250])
     tok.push_to_hub(os.environ["HUB_REPO"], private=True)
     print(f"::notice title=Saved::model saved to the private repository {os.environ['HUB_REPO']}")
