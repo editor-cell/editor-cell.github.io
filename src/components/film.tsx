@@ -53,8 +53,6 @@ const ICON = {
   exitFull: [
     "M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3",
   ],
-  back: ["M11 19l-7-7 7-7", "M18 19l-7-7 7-7"],
-  ahead: ["M13 5l7 7-7 7", "M6 5l7 7-7 7"],
 };
 
 const PLAYER = "film";
@@ -282,15 +280,6 @@ export function Film({
     window.clearTimeout(timer.current);
     setShown(false);
     closeMenu();
-  }
-
-  /** Back or ahead TAP_STEP seconds from the settings panel. */
-  function stepBy(side: Side) {
-    const el = film.current;
-    if (!el) return;
-    const end = duration || el.currentTime + TAP_STEP;
-    seek(Math.max(0, Math.min(el.currentTime + (side === "back" ? -TAP_STEP : TAP_STEP), end)));
-    wake(true);
   }
 
   function onSurface(event: React.MouseEvent<HTMLVideoElement>) {
@@ -587,38 +576,6 @@ export function Film({
                     ))}
                   </div>
                 ) : null}
-                <button
-                  type="button"
-                  role="menuitem"
-                  onClick={() => {
-                    closeMenu();
-                    toggleFull();
-                  }}
-                  className="film-set"
-                >
-                  {full ? <Icon d={ICON.exitFull} /> : <Icon d={ICON.full} />}
-                  <span className="film-set-label">
-                    {full ? words.exitFullscreen : words.fullscreen}
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  role="menuitem"
-                  onClick={() => stepBy("back")}
-                  className="film-set"
-                >
-                  <Icon d={ICON.back} className="film-ico rtl:-scale-x-100" />
-                  <span className="film-set-label">{words.stepBack}</span>
-                </button>
-                <button
-                  type="button"
-                  role="menuitem"
-                  onClick={() => stepBy("ahead")}
-                  className="film-set"
-                >
-                  <Icon d={ICON.ahead} className="film-ico rtl:-scale-x-100" />
-                  <span className="film-set-label">{words.stepAhead}</span>
-                </button>
               </div>
             ) : null}
             <div className="film-seek">
@@ -676,6 +633,18 @@ export function Film({
                 className={`film-key ${menu ? "is-on" : ""}`}
               >
                 <Icon d={ICON.gear} className="film-ico-bar" />
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  closeMenu();
+                  toggleFull();
+                }}
+                aria-label={full ? words.exitFullscreen : words.fullscreen}
+                tabIndex={bar ? 0 : -1}
+                className="film-key"
+              >
+                <Icon d={full ? ICON.exitFull : ICON.full} className="film-ico-bar" />
               </button>
             </div>
           </div>

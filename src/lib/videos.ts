@@ -96,8 +96,6 @@ export type VideoWords = {
   sound: string;
   soundOn: string;
   soundOff: string;
-  stepBack: string;
-  stepAhead: string;
 };
 
 const WORDS: Record<Lang, VideoWords> = {
@@ -132,8 +130,6 @@ const WORDS: Record<Lang, VideoWords> = {
     sound: "Ses",
     soundOn: "Açık",
     soundOff: "Kapalı",
-    stepBack: "10 sn geri",
-    stepAhead: "10 sn ileri",
   },
   en: {
     videos: "Videos",
@@ -166,8 +162,6 @@ const WORDS: Record<Lang, VideoWords> = {
     sound: "Sound",
     soundOn: "On",
     soundOff: "Off",
-    stepBack: "Back 10 s",
-    stepAhead: "Ahead 10 s",
   },
   ar: {
     videos: "الفيديوهات",
@@ -200,8 +194,6 @@ const WORDS: Record<Lang, VideoWords> = {
     sound: "الصوت",
     soundOn: "مُفعّل",
     soundOff: "مُتوقّف",
-    stepBack: "رجوع 10 ث",
-    stepAhead: "تقدّم 10 ث",
   },
   fr: {
     videos: "Vidéos",
@@ -234,8 +226,6 @@ const WORDS: Record<Lang, VideoWords> = {
     sound: "Son",
     soundOn: "Activé",
     soundOff: "Coupé",
-    stepBack: "Reculer de 10 s",
-    stepAhead: "Avancer de 10 s",
   },
   es: {
     videos: "Vídeos",
@@ -268,8 +258,6 @@ const WORDS: Record<Lang, VideoWords> = {
     sound: "Sonido",
     soundOn: "Activado",
     soundOff: "Silenciado",
-    stepBack: "Atrás 10 s",
-    stepAhead: "Adelante 10 s",
   },
 };
 
