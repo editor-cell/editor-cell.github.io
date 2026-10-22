@@ -1,20 +1,61 @@
-import {
-  Captions,
-  ChevronsLeft,
-  ChevronsRight,
-  Gauge,
-  Maximize,
-  Minimize,
-  Pause,
-  Play,
-  Settings,
-  Volume2,
-  VolumeX,
-} from "lucide-react";
+import { ChevronsLeft, ChevronsRight, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { AUDIO_EVENT, RATES, announceStart, fmt } from "@/lib/listen";
 import type { Lang } from "@/lib/types";
 import { videoWords } from "@/lib/videos";
+
+/** The bar's and the settings panel's own icons: thin ivory lines, drawn here rather than
+ * taken from the icon set, after the owner's chosen design (22 Oct 2026). */
+function Icon({
+  d,
+  fill = false,
+  className = "film-ico",
+}: {
+  d: string[];
+  fill?: boolean;
+  className?: string;
+}) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill={fill ? "currentColor" : "none"}
+      stroke={fill ? "none" : "currentColor"}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={className}
+    >
+      {d.map((path) => (
+        <path key={path} d={path} />
+      ))}
+    </svg>
+  );
+}
+
+const ICON = {
+  play: ["M8 5v14l11-7z"],
+  pause: ["M6 4h4v16H6z", "M14 4h4v16h-4z"],
+  gear: [
+    "M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z",
+    "M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z",
+  ],
+  sound: ["M11 5L6 9H2v6h4l5 4V5z", "M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"],
+  muted: ["M11 5L6 9H2v6h4l5 4V5z", "M16 9l6 6M22 9l-6 6"],
+  speed: ["M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0z", "M12 6v6l4 2"],
+  subtitles: [
+    "M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z",
+    "M7 15h4M13 15h4M7 11h10",
+  ],
+  full: [
+    "M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3",
+  ],
+  exitFull: [
+    "M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3",
+  ],
+  back: ["M11 19l-7-7 7-7", "M18 19l-7-7 7-7"],
+  ahead: ["M13 5l7 7-7 7", "M6 5l7 7-7 7"],
+};
 
 const PLAYER = "film";
 /** How long the controls stay after the last touch or pointer move while the film plays. */
@@ -468,11 +509,7 @@ export function Film({
                   }}
                   className="film-set"
                 >
-                  {muted ? (
-                    <VolumeX className="size-[18px]" strokeWidth={1.25} aria-hidden="true" />
-                  ) : (
-                    <Volume2 className="size-[18px]" strokeWidth={1.25} aria-hidden="true" />
-                  )}
+                  {muted ? <Icon d={ICON.muted} /> : <Icon d={ICON.sound} />}
                   <span className="film-set-label">{words.sound}</span>
                   <span className="film-set-value">{muted ? words.soundOff : words.soundOn}</span>
                 </button>
@@ -487,7 +524,7 @@ export function Film({
                   }}
                   className="film-set"
                 >
-                  <Gauge className="size-[18px]" strokeWidth={1.25} aria-hidden="true" />
+                  <Icon d={ICON.speed} />
                   <span className="film-set-label">{words.speed}</span>
                   <span dir="ltr" className="film-set-value tabular-nums">
                     {rate}×
@@ -527,7 +564,7 @@ export function Film({
                     }}
                     className="film-set"
                   >
-                    <Captions className="size-[18px]" strokeWidth={1.25} aria-hidden="true" />
+                    <Icon d={ICON.subtitles} />
                     <span className="film-set-label">{words.subtitles}</span>
                     <span className="film-set-value">
                       {cc ? captions.find((c) => c.lang === cc)?.label : words.subtitlesOff}
@@ -559,11 +596,7 @@ export function Film({
                   }}
                   className="film-set"
                 >
-                  {full ? (
-                    <Minimize className="size-[18px]" strokeWidth={1.25} aria-hidden="true" />
-                  ) : (
-                    <Maximize className="size-[18px]" strokeWidth={1.25} aria-hidden="true" />
-                  )}
+                  {full ? <Icon d={ICON.exitFull} /> : <Icon d={ICON.full} />}
                   <span className="film-set-label">
                     {full ? words.exitFullscreen : words.fullscreen}
                   </span>
@@ -574,11 +607,7 @@ export function Film({
                   onClick={() => stepBy("back")}
                   className="film-set"
                 >
-                  <ChevronsLeft
-                    className="size-[18px] rtl:-scale-x-100"
-                    strokeWidth={1.25}
-                    aria-hidden="true"
-                  />
+                  <Icon d={ICON.back} className="film-ico rtl:-scale-x-100" />
                   <span className="film-set-label">{words.stepBack}</span>
                 </button>
                 <button
@@ -587,11 +616,7 @@ export function Film({
                   onClick={() => stepBy("ahead")}
                   className="film-set"
                 >
-                  <ChevronsRight
-                    className="size-[18px] rtl:-scale-x-100"
-                    strokeWidth={1.25}
-                    aria-hidden="true"
-                  />
+                  <Icon d={ICON.ahead} className="film-ico rtl:-scale-x-100" />
                   <span className="film-set-label">{words.stepAhead}</span>
                 </button>
               </div>
@@ -624,19 +649,9 @@ export function Film({
                 className="film-key film-key-main"
               >
                 {playing ? (
-                  <Pause
-                    className="size-4"
-                    fill="currentColor"
-                    strokeWidth={0}
-                    aria-hidden="true"
-                  />
+                  <Icon d={ICON.pause} fill className="film-ico-bar" />
                 ) : (
-                  <Play
-                    className="ms-0.5 size-4 rtl:-scale-x-100"
-                    fill="currentColor"
-                    strokeWidth={0}
-                    aria-hidden="true"
-                  />
+                  <Icon d={ICON.play} fill className="film-ico-bar rtl:-scale-x-100" />
                 )}
               </button>
               <span dir="ltr" className="film-time">
@@ -660,7 +675,7 @@ export function Film({
                 tabIndex={bar ? 0 : -1}
                 className={`film-key ${menu ? "is-on" : ""}`}
               >
-                <Settings className="size-[19px]" strokeWidth={1.25} aria-hidden="true" />
+                <Icon d={ICON.gear} className="film-ico-bar" />
               </button>
             </div>
           </div>
