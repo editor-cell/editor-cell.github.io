@@ -63,9 +63,11 @@ jobs:
         if: (inputs.mode || 'smoke') == 'smoke'
         run: |
           pip install --quiet torch --index-url https://download.pytorch.org/whl/cpu
-          cd kd && SMOKE=1 READINGS=2 python kaggle_read.py
-          python -c "import human; r = human.build(40, 30, 'work/human-cache'); print(len(r), r[:3])"
+          cd kd
+          SMOKE=1 READINGS=2 python kaggle_read.py 2> err.txt || { echo "::error title=Trial::$(tail -c 1500 err.txt | tr '\n' '|' | sed 's/|/%0A/g')"; exit 1; }
           echo "::notice title=Trial::$(tr '\n' '|' < work/notes.txt | sed 's/|/%0A/g')"
+          python -c "import human; r = human.build(40, 30, 'work/human-cache'); print(len(r), r[:3])" 2> err.txt || { echo "::error title=Human::$(tail -c 1500 err.txt | tr '\n' '|' | sed 's/|/%0A/g')"; exit 1; }
+          echo "::notice title=Human::the human-made pairs were fetched and built"
 
       - name: Kaggle key
         if: (inputs.mode || 'smoke') != 'smoke'
