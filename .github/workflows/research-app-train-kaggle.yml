@@ -33,6 +33,9 @@ on:
       program:
         description: "kaggle_read.py (Quran and full round) or fast_problems.py (quick word-problem round)"
         default: "kaggle_read.py"
+      focus:
+        description: "for fast_problems.py: problem or logic"
+        default: "problem"
       start:
         description: "start from this earlier round's private Hugging Face model (e.g. orbis-nli-mdeberta-quran); empty = the original model"
         default: ""
@@ -130,6 +133,7 @@ jobs:
           fi
           # A mark of this run: the round on Kaggle checks it has this run's files, not an older version.
           echo "${{ github.run_id }} start=${{ inputs.start }}" > kd/round.txt
+          echo "${{ inputs.focus }}" > kd/focus.txt
           printf '{"title": "%s", "id": "%s/%s", "licenses": [{"name": "other"}]}' "$DATASET" "$KAGGLE_USERNAME" "$DATASET" > kd/dataset-metadata.json
           if kaggle datasets status "$KAGGLE_USERNAME/$DATASET" > /dev/null 2>&1; then
             kaggle datasets version -p kd -m "update" -q

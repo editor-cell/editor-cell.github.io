@@ -27,6 +27,10 @@ WORK = "/kaggle/working" if os.path.isdir("/kaggle/working") else os.path.abspat
 os.makedirs(WORK, exist_ok=True)
 NOTES = os.path.join(WORK, "notes.txt")
 EPOCHS = int(os.environ.get("EPOCHS", "3"))
+# What the round is for: "problem" (word problems) or "logic" (logic_levels.py). The other kinds come along
+# so they are not forgotten; with logic, a third of the word problems come along, and the logic puzzles,
+# far fewer, are read three times an epoch.
+FOCUS = os.environ.get("FOCUS", "problem")
 LR = float(os.environ.get("LR", "2e-5"))
 open(NOTES, "w").close()
 
@@ -45,6 +49,8 @@ for path in glob.glob(os.path.join(inp, "start__*")):
     shutil.copy(path, os.path.join(START, os.path.basename(path)[len("start__"):]))
 if os.path.exists(os.path.join(inp, "round.txt")):
     note("files of run " + open(os.path.join(inp, "round.txt")).read().strip())
+if os.path.exists(os.path.join(inp, "focus.txt")):
+    FOCUS = open(os.path.join(inp, "focus.txt")).read().strip() or FOCUS
 BASE = START if os.path.exists(os.path.join(START, "config.json")) else "MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7"
 
 subprocess.run([sys.executable, "-m", "pip", "install", "--quiet", "transformers", "sentencepiece", "protobuf", "tiktoken"], check=False)
@@ -64,16 +70,16 @@ labels = [e for e in labels if e.get("kind") != "human"]
 seen = collections.Counter()
 examples = []
 for e in labels:
-    key = (e.get("premise", "") if e.get("kind") in ("puzzle", "meaning", "words", "human", "problem") else "", e["en"] or e["tr"])
+    key = (e.get("premise", "") if e.get("kind") in ("puzzle", "meaning", "words", "human", "problem", "logic") else "", e["en"] or e["tr"])
     seen[key] += 1
     if seen[key] <= 3:
         examples.append(e)
-LATER = ("words", "human", "problem")
+LATER = ("words", "human", "problem", "logic")
 ids = sorted({e["id"] for e in examples if e.get("kind") not in LATER})
 random.shuffle(ids)
 dev_ids = set(ids[: len(ids) // 6])
 dev_ids |= {e["id"] for e in examples if e.get("kind") in ("words", "human") and e["id"] % 6 == 0}
-dev_ids |= {e["id"] for e in examples if e.get("kind") == "problem" and e.get("dev")}
+dev_ids |= {e["id"] for e in examples if e.get("kind") in ("problem", "logic") and e.get("dev")}
 train = [e for e in examples if e["id"] not in dev_ids]
 dev = [e for e in examples if e["id"] in dev_ids]
 
@@ -82,19 +88,25 @@ def pairs(rows, langs=("en", "tr")):
     return [(e.get("premise") or pool[e["id"]]["text"], e[lang], e["label"]) for e in rows for lang in langs if e.get(lang)]
 
 
-dev_prob = [e for e in dev if e.get("kind") == "problem"]
+dev_prob = [e for e in dev if e.get("kind") == FOCUS]
+dev_wp = [e for e in dev if e.get("kind") == "problem" and e.get("premise_lang") != "tr"]
 dev_prob_en = [e for e in dev_prob if e.get("premise_lang") != "tr"]
 dev_prob_tr = [e for e in dev_prob if e.get("premise_lang") == "tr"]
-dev_par = [e for e in dev if e.get("kind") not in ("puzzle", "meaning", "words", "human", "problem")]
+dev_par = [e for e in dev if e.get("kind") not in ("puzzle", "meaning", "words", "human", "problem", "logic")]
 dev_puz = [e for e in dev if e.get("kind") == "puzzle"]
 trial = json.load(open(os.path.join(inp, "cases.json"), encoding="utf-8"))
 trial_rows = [((c["text"] if c["want"] != "KEPT OUT" else c["before"] + " " + c["text"] + " " + c["after"]),
                trial["claims"][c["claim"]]["en"], "UNRELATED" if c["want"] == "KEPT OUT" else c["want"]) for c in trial["cases"]]
 
-probs = [(e.get("level", 0), x) for e in train if e.get("kind") == "problem" for x in pairs([e])]
-others = pairs([e for e in train if e.get("kind") != "problem"])
-note(f"training pairs an epoch: {len(probs)} from word problems, {len(others)} from our other examples; "
-     f"held-out: {len(dev_prob_en)} problem claims, {len(dev_par)} paragraph claims, {len(dev_puz)} puzzle statements")
+probs = [(e.get("level", 0), x) for e in train if e.get("kind") == FOCUS for x in pairs([e])]
+others = pairs([e for e in train if e.get("kind") != FOCUS and not (FOCUS == "logic" and e.get("kind") == "problem")])
+if FOCUS == "logic":
+    wp = pairs([e for e in train if e.get("kind") == "problem"])
+    random.shuffle(wp)
+    others += wp[: len(wp) // 3]
+    probs = probs * 3
+note(f"training pairs an epoch: {len(probs)} from {FOCUS}, {len(others)} from our other examples; "
+     f"held-out ({FOCUS}): {len(dev_prob_en)} claims, {len(dev_par)} paragraph claims, {len(dev_puz)} puzzle statements")
 
 tok = AutoTokenizer.from_pretrained(BASE)
 model = AutoModelForSequenceClassification.from_pretrained(BASE).float().to(DEVICE)
@@ -138,11 +150,14 @@ def card(when):
     par, par_wrong = right(pairs(dev_par, ("en",)))
     tri, tri_wrong = right(trial_rows)
     puz, _ = right(pairs(dev_puz, ("en",)))
-    lines = [f"{when}: word problems held-out {acc:.1f}% ({ok}/{len(rows)}); with the Turkish claim "
-             f"{100 * tr_c / max(1, len(rows)):.1f}%; Turkish text {100 * tr_t / max(1, len(pairs(dev_prob_tr, ('tr',)))):.1f}%",
+    lines = [f"{when}: {'word problems' if FOCUS == 'problem' else 'levelled logic puzzles'} held-out {acc:.1f}% ({ok}/{len(rows)}); with the Turkish claim "
+             f"{100 * tr_c / max(1, len(rows)):.1f}%" + (f"; Turkish text {100 * tr_t / len(pairs(dev_prob_tr, ('tr',))):.1f}%" if dev_prob_tr else ""),
              f"{when}: by level " + ", ".join(by),
              f"{when}: paragraphs held-out {par}/{len(dev_par)} ({par_wrong} wrong findings); first 26 paragraphs "
-             f"{tri}/{len(trial_rows)} ({tri_wrong} wrong findings); puzzles {puz}/{len(dev_puz)}"]
+             f"{tri}/{len(trial_rows)} ({tri_wrong} wrong findings); earlier puzzles {puz}/{len(dev_puz)}"]
+    if FOCUS != "problem" and dev_wp:
+        wr = pairs(dev_wp, ("en",))
+        lines.append(f"{when}: word problems held-out {100 * right(wr)[0] / len(wr):.1f}%")
     for l in lines:
         note(l)
     return acc
@@ -239,7 +254,7 @@ for epoch in range(1, EPOCHS + 1):
         best_acc, best_epoch = acc, epoch
         model.save_pretrained(out_dir)
         tok.save_pretrained(out_dir)
-note(f"kept the model after epoch {best_epoch} (0 = as it came): word problems held-out {best_acc:.1f}%; "
+note(f"kept the model after epoch {best_epoch} (0 = as it came): {FOCUS} held-out {best_acc:.1f}%; "
      f"{(time.time() - t0) / 60:.0f} minutes in all")
 shutil.rmtree(START, ignore_errors=True)
 json.dump({"readings": 0, "ok": True, "epoch": best_epoch}, open(os.path.join(WORK, "status.json"), "w"))

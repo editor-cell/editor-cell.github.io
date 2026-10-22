@@ -37,7 +37,7 @@ examples = []
 for e in labels:
     # A claim that recurs is kept at most three times; a puzzle or form-meaning statement counts with
     # its own premise.
-    key = (e.get("premise", "") if e.get("kind") in ("puzzle", "meaning", "words", "human", "problem") else "",
+    key = (e.get("premise", "") if e.get("kind") in ("puzzle", "meaning", "words", "human", "problem", "logic") else "",
            e["en"] or e["tr"])
     seen[key] += 1
     if seen[key] <= 3:
@@ -47,12 +47,12 @@ for e in labels:
 # from those kinds alone, so later kinds cannot change them and rounds stay comparable. Synonyms and
 # human-made pairs hold out every sixth id; word problems hold out what problems.py marked
 # (its own wording and numbers, never seen in training).
-LATER = ("words", "human", "problem")
+LATER = ("words", "human", "problem", "logic")
 ids = sorted({e["id"] for e in examples if e.get("kind") not in LATER})
 random.shuffle(ids)
 dev_ids = set(ids[: len(ids) // 6])
 dev_ids |= {e["id"] for e in examples if e.get("kind") in ("words", "human") and e["id"] % 6 == 0}
-dev_ids |= {e["id"] for e in examples if e.get("kind") == "problem" and e.get("dev")}
+dev_ids |= {e["id"] for e in examples if e.get("kind") in ("problem", "logic") and e.get("dev")}
 train = [e for e in examples if e["id"] not in dev_ids]
 dev = [e for e in examples if e["id"] in dev_ids]
 # Held-out puzzles are scored on their own; the model is chosen on the paragraphs alone, so the
