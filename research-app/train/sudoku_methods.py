@@ -10,7 +10,8 @@ hold) and statements about one square. Every label is worked out by trying all t
 (not by the technique code), so a label is exactly what the premise says: SUPPORTS if it follows, CONTRADICTS
 if it is ruled out, UNRELATED if it stays open.
 
-Eleven levels, the order of the tutorials:
+Twelve levels (1 is new: a row, column or box drawn as lines with one square empty), the order of the tutorials, each
+number below one higher in the output:
   1 the only digit left in a square, the digits of its row, column and box spelled out
   2 the same, from the whole grid alone
   3 hidden single: the only square left in a unit for a digit
@@ -430,8 +431,33 @@ def claims_for(text, model, main, rnd):
 
 # ---- the first two levels: the only digit left, read from the grid ------------------------------------
 def grid_text(g):
-    rows = [" ".join(str(x) if x else "_" for x in g[r * 9:(r + 1) * 9]) for r in range(9)]
-    return "A sudoku grid, row by row, with _ for an empty square. " + " ".join(f"Row {r + 1}: {x}." for r, x in enumerate(rows))
+    """The grid drawn as nine lines of nine squares, top to bottom, "_" for an empty square (no words)."""
+    return "\n".join(" ".join(str(x) if x else "_" for x in g[r * 9:(r + 1) * 9]) for r in range(9))
+
+
+def draw_unit(g, u):
+    """One row (a line), column (a line going down) or box (three lines), drawn the same way, under its name."""
+    cell = lambda i: str(g[i]) if g[i] else "_"
+    if u < 9:
+        return f"Row {u + 1}\n" + " ".join(cell(i) for i in UNITS[u])
+    if u < 18:
+        return f"Column {u - 8}\n" + "\n".join(cell(i) for i in UNITS[u])
+    return f"Box {u - 17}\n" + "\n".join(" ".join(cell(i) for i in UNITS[u][k:k + 3]) for k in (0, 3, 6))
+
+
+def line_instance(st, rnd):
+    """A row, column or box with one empty square, drawn: the digit that is missing goes there."""
+    units = [u for u in range(27) if sum(1 for i in UNITS[u] if not st.g[i]) == 1]
+    if not units:
+        return []
+    u = rnd.choice(units)
+    i = next(i for i in UNITS[u] if not st.g[i])
+    d = (set(range(1, 10)) - st.unit_digits(u)).pop()
+    seen = sorted(st.unit_digits(u))
+    text = RULE + " " + draw_unit(st.g, u)
+    out = [("SUPPORTS", ("holds", i, d)), ("CONTRADICTS", ("cannot", i, d)),
+           ("SUPPORTS", ("cannot", i, rnd.choice(seen))), ("CONTRADICTS", ("holds", i, rnd.choice(seen)))]
+    return [(text, lab, c) for lab, c in out]
 
 
 def scan_rows(st, found, level, rnd):
@@ -484,6 +510,12 @@ def collect(puzzle, solution, rnd, quota, per_level=2, rare=6):
     if f and f["scan"]:
         for lv in (1, 2):
             add(lv, [(t, lab, c) for t, lab, c in scan_rows(st, f, lv, rnd)])
+    g = to_digits(puzzle)
+    blanks = [i for i in range(81) if not g[i]]
+    rnd.shuffle(blanks)
+    for i in blanks[: int(len(blanks) * rnd.uniform(0.8, 0.97))]:
+        g[i] = sol[i]
+    add(0, line_instance(State(g), rnd))
     # the puzzle as published, walked by the easiest technique that applies
     st = State(to_digits(puzzle))
     for _ in range(80):
@@ -523,8 +555,8 @@ def collect(puzzle, solution, rnd, quota, per_level=2, rare=6):
 
 def build_from(samples, n_train=120, n_dev=15, seed=5, budget=240, weights=None):
     rnd = random.Random(seed)
-    quota_train = {lv: int(n_train * (weights or {}).get(lv, 1)) for lv in range(1, LEVELS + 1)}
-    quota_dev = {lv: n_dev for lv in range(1, LEVELS + 1)}
+    quota_train = {lv: int(n_train * (weights or {}).get(lv + 1, 1)) for lv in range(0, LEVELS + 1)}
+    quota_dev = {lv: n_dev for lv in range(0, LEVELS + 1)}
     rows, pid = [], 90000
     t0 = time.time()
     used = 0
@@ -542,12 +574,12 @@ def build_from(samples, n_train=120, n_dev=15, seed=5, budget=240, weights=None)
             quota[level] -= 1
             for text, lab, (form, cell, d) in items:
                 e, t = claim(form, cell, d)
-                row = {"id": pid, "kind": "sudoku", "level": level, "premise": text, "en": e, "tr": t, "label": lab}
+                row = {"id": pid, "kind": "sudoku", "level": level + 1, "premise": text, "en": e, "tr": t, "label": lab}
                 if held:
                     row["dev"] = True
                 rows.append(row)
             pid += 1
-    build_from.stats = (used, {lv: (int(n_train * (weights or {}).get(lv, 1)) - quota_train[lv], n_dev - quota_dev[lv]) for lv in quota_train})
+    build_from.stats = (used, {lv + 1: (int(n_train * (weights or {}).get(lv + 1, 1)) - quota_train[lv], n_dev - quota_dev[lv]) for lv in quota_train})
     return rows
 
 
