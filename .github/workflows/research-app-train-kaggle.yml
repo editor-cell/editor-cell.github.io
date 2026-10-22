@@ -30,6 +30,9 @@ on:
       kernel:
         description: "Kaggle notebook name; a new name for a round that must not replace a running one"
         default: "orbis-kuran-okuma"
+      start:
+        description: "start from this earlier round's private Hugging Face model (e.g. orbis-nli-mdeberta-quran); empty = the original model"
+        default: ""
 
 permissions:
   contents: read
@@ -107,6 +110,21 @@ jobs:
         run: |
           [ -n "$KAGGLE_KEY" ] || unset KAGGLE_KEY
           [ -n "$KAGGLE_API_TOKEN" ] || unset KAGGLE_API_TOKEN
+          if [ -n "${{ inputs.start }}" ]; then
+            # The earlier model is private: fetched here with the Hugging Face key and handed to Kaggle
+            # in the private dataset, so the key never goes to Kaggle.
+            python - <<'EOF'
+          import os, shutil
+          from huggingface_hub import HfApi, snapshot_download
+          repo = HfApi().whoami()["name"] + "/" + "${{ inputs.start }}"
+          d = snapshot_download(repo, local_dir="start-model")
+          for f in os.listdir(d):
+              if os.path.isfile(os.path.join(d, f)) and not f.startswith("."):
+                  shutil.copy(os.path.join(d, f), os.path.join("kd", "start__" + f))
+          print(f"::notice title=Start::the round starts from {repo}")
+          EOF
+            ls -la kd | grep start__
+          fi
           printf '{"title": "%s", "id": "%s/%s", "licenses": [{"name": "other"}]}' "$DATASET" "$KAGGLE_USERNAME" "$DATASET" > kd/dataset-metadata.json
           if kaggle datasets status "$KAGGLE_USERNAME/$DATASET" > /dev/null 2>&1; then
             kaggle datasets version -p kd -m "update" -q

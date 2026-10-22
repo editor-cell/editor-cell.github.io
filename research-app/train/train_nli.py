@@ -37,14 +37,22 @@ examples = []
 for e in labels:
     # A claim that recurs is kept at most three times; a puzzle or form-meaning statement counts with
     # its own premise.
-    key = (e.get("premise", "") if e.get("kind") in ("puzzle", "meaning", "words", "human") else "", e["en"])
+    key = (e.get("premise", "") if e.get("kind") in ("puzzle", "meaning", "words", "human", "problem") else "",
+           e["en"] or e["tr"])
     seen[key] += 1
     if seen[key] <= 3:
         examples.append(e)
 
-ids = sorted({e["id"] for e in examples})
+# The held-out paragraphs, puzzles and form-and-meaning examples are drawn as in every earlier round,
+# from those kinds alone, so later kinds cannot change them and rounds stay comparable. Synonyms and
+# human-made pairs hold out every sixth id; word problems hold out what problems.py marked
+# (its own wording and numbers, never seen in training).
+LATER = ("words", "human", "problem")
+ids = sorted({e["id"] for e in examples if e.get("kind") not in LATER})
 random.shuffle(ids)
 dev_ids = set(ids[: len(ids) // 6])
+dev_ids |= {e["id"] for e in examples if e.get("kind") in ("words", "human") and e["id"] % 6 == 0}
+dev_ids |= {e["id"] for e in examples if e.get("kind") == "problem" and e.get("dev")}
 train = [e for e in examples if e["id"] not in dev_ids]
 dev = [e for e in examples if e["id"] in dev_ids]
 # Held-out puzzles are scored on their own; the model is chosen on the paragraphs alone, so the
@@ -53,7 +61,16 @@ dev_puzzles = [e for e in dev if e.get("kind") == "puzzle"]
 dev_meaning = [e for e in dev if e.get("kind") == "meaning"]
 dev_words = [e for e in dev if e.get("kind") == "words"]
 dev_human = [e for e in dev if e.get("kind") == "human"]
-dev = [e for e in dev if e.get("kind") not in ("puzzle", "meaning", "words", "human")]
+dev_problems = [e for e in dev if e.get("kind") == "problem"]
+dev = [e for e in dev if e.get("kind") not in ("puzzle", "meaning", "words", "human", "problem")]
+
+
+def problem_scores(when):
+    en_prem = [e for e in dev_problems if e.get("premise_lang") != "tr"]
+    tr_prem = [e for e in dev_problems if e.get("premise_lang") == "tr"]
+    return [score(pairs(en_prem, ("en",)), f"word problems held-out, English text and claim, {when}")[0],
+            score(pairs(en_prem, ("tr",)), f"word problems held-out, English text and Turkish claim, {when}")[0],
+            score(pairs(tr_prem, ("tr",)), f"word problems held-out, Turkish text and claim, {when}")[0]]
 
 tok = AutoTokenizer.from_pretrained(MODEL)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL)
@@ -118,6 +135,8 @@ if dev_words:
     notes.append(score(pairs(dev_words, ("tr",)), "synonyms and homonyms held-out with the Turkish claim, before")[0])
 if dev_human:
     notes.append(score(pairs(dev_human), "human-made pairs held-out (PAWS, Tatoeba), before")[0])
+if dev_problems:
+    notes += problem_scores("before")
 print("\n".join(notes), flush=True)
 print("::notice title=Before training::" + "%0A".join(notes), flush=True)
 
@@ -216,6 +235,8 @@ if dev_words:
     notes.append(score(pairs(dev_words, ("tr",)), "synonyms and homonyms held-out with the Turkish claim, after")[0])
 if dev_human:
     notes.append(score(pairs(dev_human), "human-made pairs held-out (PAWS, Tatoeba), after")[0])
+if dev_problems:
+    notes += problem_scores("after")
 notes.append(f"training took {time.time() - t0:.0f}s")
 for c, g, (_, _, w) in zip(trial["cases"], got, trial_rows):
     notes.append(("ok" if g == w else "WRONG") + f" | {c['label']}: {g}, right {w}")
