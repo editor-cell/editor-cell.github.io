@@ -79,6 +79,13 @@ labels = [e for e in labels if e.get("kind") != "human"]
 SUDOKU_WEIGHTS = {}
 if os.path.exists(os.path.join(inp, "weights.txt")):
     SUDOKU_WEIGHTS = {int(a): float(b) for a, b in (kv.split(":") for kv in open(os.path.join(inp, "weights.txt")).read().strip().split(",") if kv)}
+if FOCUS == "readhuman":
+    EPOCHS = max(EPOCHS, 4)
+    sys.path.insert(0, inp)
+    subprocess.run([sys.executable, "-m", "pip", "install", "--quiet", "huggingface_hub", "pandas", "pyarrow"], check=False)
+    import reading_human  # noqa: E402  (reading questions people wrote: RACE and Belebele)
+    labels += reading_human.build(os.path.join(WORK, "reading-cache"))
+    note("human-made reading questions (training / held-out) by level: " + str(reading_human.build.stats))
 if FOCUS == "humanlogic":
     EPOCHS = max(EPOCHS, 6)
     sys.path.insert(0, inp)
@@ -95,16 +102,16 @@ if FOCUS == "sudoku":
 seen = collections.Counter()
 examples = []
 for e in labels:
-    key = (e.get("premise", "") if e.get("kind") in ("puzzle", "meaning", "words", "human", "problem", "logic", "sudoku", "humanlogic") else "", e["en"] or e["tr"])
+    key = (e.get("premise", "") if e.get("kind") in ("puzzle", "meaning", "words", "human", "problem", "logic", "sudoku", "humanlogic", "readhuman") else "", e["en"] or e["tr"])
     seen[key] += 1
     if seen[key] <= 3:
         examples.append(e)
-LATER = ("words", "human", "problem", "logic", "sudoku", "humanlogic")
+LATER = ("words", "human", "problem", "logic", "sudoku", "humanlogic", "readhuman")
 ids = sorted({e["id"] for e in examples if e.get("kind") not in LATER})
 random.shuffle(ids)
 dev_ids = set(ids[: len(ids) // 6])
 dev_ids |= {e["id"] for e in examples if e.get("kind") in ("words", "human") and e["id"] % 6 == 0}
-dev_ids |= {e["id"] for e in examples if e.get("kind") in ("problem", "logic", "sudoku", "humanlogic") and e.get("dev")}
+dev_ids |= {e["id"] for e in examples if e.get("kind") in ("problem", "logic", "sudoku", "humanlogic", "readhuman") and e.get("dev")}
 train = [e for e in examples if e["id"] not in dev_ids]
 dev = [e for e in examples if e["id"] in dev_ids]
 
@@ -118,7 +125,7 @@ dev_wp = [e for e in dev if e.get("kind") == "problem" and e.get("premise_lang")
 dev_logic = [e for e in dev if e.get("kind") == "logic"]
 dev_prob_en = [e for e in dev_prob if e.get("premise_lang") != "tr"]
 dev_prob_tr = [e for e in dev_prob if e.get("premise_lang") == "tr"]
-dev_par = [e for e in dev if e.get("kind") not in ("puzzle", "meaning", "words", "human", "problem", "logic", "sudoku", "humanlogic")]
+dev_par = [e for e in dev if e.get("kind") not in ("puzzle", "meaning", "words", "human", "problem", "logic", "sudoku", "humanlogic", "readhuman")]
 dev_puz = [e for e in dev if e.get("kind") == "puzzle"]
 trial = json.load(open(os.path.join(inp, "cases.json"), encoding="utf-8"))
 trial_rows = [((c["text"] if c["want"] != "KEPT OUT" else c["before"] + " " + c["text"] + " " + c["after"]),
@@ -126,19 +133,21 @@ trial_rows = [((c["text"] if c["want"] != "KEPT OUT" else c["before"] + " " + c[
 
 probs = [(e.get("level", 0), x) for e in train if e.get("kind") == FOCUS for x in pairs([e])]
 others = pairs([e for e in train if e.get("kind") != FOCUS and not (FOCUS == "logic" and e.get("kind") == "problem")
-                and not (FOCUS == "humanlogic" and e.get("kind") == "logic")])  # my own puzzles stay out of a human-made round
+                and not (FOCUS == "humanlogic" and e.get("kind") == "logic")
+                and not (FOCUS == "readhuman" and e.get("kind") not in ("puzzle", "meaning", "words", "human", "problem"))])  # my own puzzles stay out of a human-made round
 if FOCUS == "logic":
     wp = pairs([e for e in train if e.get("kind") == "problem"])
     random.shuffle(wp)
     others += wp[: len(wp) // 3]
     probs = probs * (2 if len(probs) < 8000 else 1)
-if FOCUS in ("sudoku", "humanlogic"):
+if FOCUS in ("sudoku", "humanlogic", "readhuman"):
     # A sample of everything else comes along, so fifteen minutes go mostly to the sudoku.
     random.shuffle(others)
     others = others[:3000]
 note(f"training pairs an epoch: {len(probs)} from {FOCUS}, {len(others)} from our other examples; "
      f"held-out ({FOCUS}): {len(dev_prob_en)} claims, {len(dev_par)} paragraph claims, {len(dev_puz)} puzzle statements")
 
+MAXLEN = 512 if FOCUS == "readhuman" else 384
 tok = AutoTokenizer.from_pretrained(BASE)
 model = AutoModelForSequenceClassification.from_pretrained(BASE).float().to(DEVICE)
 name_to_id = {n.lower(): i for i, n in model.config.id2label.items()}
@@ -153,7 +162,7 @@ def predict(rows):
         for i in range(0, len(rows), 32):
             part = rows[i:i + 32]
             enc = tok([p for p, _, _ in part], [h for _, h, _ in part], truncation="only_first",
-                      max_length=384, padding=True, return_tensors="pt").to(DEVICE)
+                      max_length=MAXLEN, padding=True, return_tensors="pt").to(DEVICE)
             with torch.autocast(DEVICE, dtype=torch.float16, enabled=DEVICE == "cuda"):
                 out += [ID_TO[g] for g in model(**enc).logits.argmax(-1).tolist()]
     model.train()
@@ -165,6 +174,31 @@ def right(rows):
     ok = [g == w or (w == "NOT_SUPPORTS" and g != "SUPPORTS") for g, (_, _, w) in zip(got, rows)]
     wrong = sum(g != "UNRELATED" and not r for g, r in zip(got, ok))
     return sum(ok), wrong
+
+
+def exam(rows_dev):
+    """Multiple-choice score: of the answers to a question, the most entailed one is the choice. -> (right, total, by level)"""
+    model.eval()
+    ps = []
+    with torch.no_grad():
+        for i in range(0, len(rows_dev), 16):
+            part = rows_dev[i:i + 16]
+            enc = tok([e["premise"] for e in part], [e["en"] for e in part], truncation="only_first", max_length=MAXLEN,
+                      padding=True, return_tensors="pt").to(DEVICE)
+            with torch.autocast(DEVICE, dtype=torch.float16, enabled=DEVICE == "cuda"):
+                ps += torch.softmax(model(**enc).logits.float(), -1)[:, name_to_id["entailment"]].tolist()
+    model.train()
+    groups = collections.defaultdict(list)
+    for e, p in zip(rows_dev, ps):
+        groups[e["qid"]].append((p, e["label"] == "SUPPORTS", e.get("level", 0)))
+    res = collections.defaultdict(lambda: [0, 0])
+    for g in groups.values():
+        lv = g[0][2]
+        res[lv][1] += 1
+        res[lv][0] += max(g)[1]
+        res[0][1] += 1
+        res[0][0] += max(g)[1]
+    return res
 
 
 def card(when):
@@ -181,13 +215,13 @@ def card(when):
     par, par_wrong = right(pairs(dev_par, ("en",)))
     tri, tri_wrong = right(trial_rows)
     puz, _ = right(pairs(dev_puz, ("en",)))
-    name = {"problem": "word problems", "logic": "levelled logic puzzles", "sudoku": "sudoku", "humanlogic": "human-made logic questions"}.get(FOCUS, FOCUS)
+    name = {"problem": "word problems", "logic": "levelled logic puzzles", "sudoku": "sudoku", "humanlogic": "human-made logic questions", "readhuman": "human-made reading questions"}.get(FOCUS, FOCUS)
     lines = [f"{when}: {name} held-out {acc:.1f}% ({ok}/{len(rows)}); with the Turkish claim "
              f"{100 * tr_c / max(1, len(rows)):.1f}%" + (f"; Turkish text {100 * tr_t / len(pairs(dev_prob_tr, ('tr',))):.1f}%" if dev_prob_tr else ""),
              f"{when}: by level " + ", ".join(by),
              f"{when}: paragraphs held-out {par}/{len(dev_par)} ({par_wrong} wrong findings); first 26 paragraphs "
              f"{tri}/{len(trial_rows)} ({tri_wrong} wrong findings); earlier puzzles {puz}/{len(dev_puz)}"]
-    if FOCUS in ("sudoku", "humanlogic") and dev_logic:
+    if FOCUS in ("sudoku", "humanlogic", "readhuman") and dev_logic:
         lr = pairs(dev_logic, ("en",))
         k, _ = right(lr)
         by = []
@@ -198,6 +232,12 @@ def card(when):
     if FOCUS != "problem" and dev_wp:
         wr = pairs(dev_wp, ("en",))
         lines.append(f"{when}: word problems held-out {100 * right(wr)[0] / len(wr):.1f}%")
+    if FOCUS == "readhuman":
+        res = exam(dev_prob_en)
+        names = {1: "RACE middle", 2: "RACE high", 3: "Belebele English", 4: "Belebele Turkish"}
+        lines.append(f"{when}: READING EXAM (the right answer picked among four, 25% by chance): {100 * res[0][0] / res[0][1]:.1f}% "
+                     f"({res[0][0]}/{res[0][1]} questions); " + ", ".join(f"{names[lv]} {100 * res[lv][0] / res[lv][1]:.0f}%" for lv in sorted(res) if lv))
+        acc = 100 * res[0][0] / res[0][1]
     for l in lines:
         note(l)
     return acc
@@ -237,7 +277,7 @@ def mixed():
 
 def loss_of(half):
     enc = tok([p for p, _, _ in half], [h for _, h, _ in half], truncation="only_first",
-              max_length=384, padding=True, return_tensors="pt").to(DEVICE)
+              max_length=MAXLEN, padding=True, return_tensors="pt").to(DEVICE)
     with torch.autocast(DEVICE, dtype=torch.float16, enabled=DEVICE == "cuda"):
         logits = model(**enc).logits.float()
     logp = torch.log_softmax(logits, -1)
