@@ -1,0 +1,38 @@
+name: Research app (export current trained model for Android)
+on:
+  push:
+    branches: [anlam-okuma]
+    paths:
+      - research-app/train/export_android.py
+      - .github/workflows/research-app-android-model.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  export:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[android-model-export]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install conversion tools
+        run: |
+          pip install --quiet torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu
+          pip install --quiet "transformers<5" "optimum-onnx[onnxruntime]" onnxruntime==1.23.2 "onnx<1.20" sentencepiece protobuf pymupdf "huggingface_hub<1"
+      - name: Export and verify only the current trained model
+        run: python research-app/train/export_android.py
+      - name: Record the verified private package for the app build
+        run: |
+          git config user.name "editor-cell"
+          git config user.email "editor@orbisreadingatlas.com"
+          git add research-app/app/src/main/assets/nli_model.json research-app/logic-test/src/test/resources/nli-tokenizer.tsv
+          git commit -m "[android-model-ready] Record the verified current-model Android package"
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
