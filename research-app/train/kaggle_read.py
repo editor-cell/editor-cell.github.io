@@ -25,7 +25,7 @@ NOTES = os.path.join(WORK, "notes.txt")
 READINGS = int(os.environ.get("READINGS", "11"))
 HOURS = float(os.environ.get("HOURS", "7"))
 SMOKE = os.environ.get("SMOKE")  # a quick trial here: a few pairs, no paragraph round
-BASE_MODEL = "MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7"
+BASE_MODEL = None  # A current trained checkpoint must be supplied.
 
 
 def note(line):
@@ -61,8 +61,9 @@ os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 import torch  # noqa: E402
 from transformers import AutoModelForSequenceClassification, AutoTokenizer  # noqa: E402
 
-if os.path.exists(os.path.join(START, "config.json")):
-    BASE_MODEL = START
+if not os.path.exists(os.path.join(START, "config.json")):
+    raise RuntimeError("The current trained checkpoint is required; base-model fallback is disabled")
+BASE_MODEL = START
 # The workflow marks the files it sent (round.txt: its run and the model the round should start from).
 # A round that finds another run's files, or misses the model it should start from, stops here.
 _round = os.path.join(inp, "round.txt")

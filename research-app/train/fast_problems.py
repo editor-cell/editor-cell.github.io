@@ -59,7 +59,9 @@ if os.path.exists(os.path.join(inp, "minutes.txt")):
         MINUTES = float(open(os.path.join(inp, "minutes.txt")).read().strip() or 0)
     except ValueError:
         MINUTES = 0.0
-BASE = START if os.path.exists(os.path.join(START, "config.json")) else "MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7"
+if not os.path.exists(os.path.join(START, "config.json")):
+    raise RuntimeError("The current trained checkpoint is required; base-model fallback is disabled")
+BASE = START
 PRACTICE = os.path.exists(os.path.join(inp, "paragraph-practice.json"))
 if PRACTICE and os.environ.get("PRACTICE_START"):
     BASE = os.environ["PRACTICE_START"]

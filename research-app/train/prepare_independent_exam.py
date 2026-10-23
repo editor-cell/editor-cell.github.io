@@ -25,6 +25,15 @@ def prior_texts(root, cache):
     import five_human
     for r in five_human.build(str(cache / "five")):
         yield r["premise"] + " " + r["en"]
+    # Include the completed 1000-question course in the overlap audit, too.
+    from paragraph_thousand import read_source
+    course_manifest = json.loads((root / "research-app/train/paragraph_thousand_manifest.json").read_text())
+    course_rows, source_hash = read_source("train", cache / "paragraph-course")
+    if source_hash != course_manifest["source_hashes"]["train"]:
+        raise ValueError("The completed course source changed")
+    for r in course_rows:
+        if r["id_string"] in course_manifest["train"]:
+            yield r["context"] + " " + r["question"]
     # Include every original Turkish stem, even if a later trainer removed it or
     # changed its passage splitter. An earlier round may still have seen it.
     for filename in list_repo_files("AYueksel/TurkishMMLU", repo_type="dataset"):
@@ -78,26 +87,25 @@ def main():
     audit["checked_sources"] = ["all repository labels and paragraph pool", "AGIEval LSAT including held-out questions",
                                 "TurkishMMLU used by the trainer", "all RACE train/validation/test articles",
                                 "Belebele English and Turkish", "FOLIO and LogiQA NLI train/validation"]
-    if len(rows) < 80 or len({q["id"] for q in rows}) != len(rows):
+    if {q["id"] for q in rows} != set(manifest["questions"]) - {"2023-tyt-18", "2024-tyt-39", "lsac-lr-1", "lsac-lr-9"}:
         raise ValueError("Too few independent questions remain; no silent replacement")
     print("Overlap audit: " + json.dumps(audit, ensure_ascii=False), flush=True)
     run_id = os.environ["GITHUB_RUN_ID"]
     api = HfApi()
-    namespace = api.whoami()["name"]
-    base_repo = "MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7"
-    base_sha = api.model_info(base_repo).sha
-    models = [{"name": "original", "repo": base_repo, "revision": base_sha}]
-    names = [("before-five-options", "orbis-nli-okuma-insan-1", True),
-             ("five-options-1", "orbis-nli-bes-sik-1", True),
-             ("five-options-2", "orbis-nli-bes-sik-2", False)]
+    from model_state import current_model
+    state = current_model()
+    # Evaluate only the newest trained checkpoint. Compare with recorded scores;
+    # never rerun the original or earlier checkpoints (Yavuz, 23 Oct 2026).
+    models = []
+    names = [("latest-trained", state["repo"], True)]
     for label, name, required in names:
-        repo = namespace + "/" + name
+        repo = name
         if not api.repo_exists(repo):
             if required:
                 raise ValueError("Required comparison model is unavailable: " + name)
             print("Second round not yet available; evaluate it in a later run.", flush=True)
             continue
-        revision = api.model_info(repo).sha
+        revision = state.get("revision") or api.model_info(repo).sha
         folder = pathlib.Path(snapshot_download(repo, revision=revision, local_dir=str(root / "exam-models" / label),
                                                allow_patterns=["*.json", "*.safetensors", "*.bin", "*.model", "tokenizer*", "vocab.*", "merges.txt"]))
         prefix = "model__" + label + "__"

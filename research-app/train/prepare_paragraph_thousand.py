@@ -37,10 +37,12 @@ def main():
     (target / "focus.txt").write_text("fivehuman")
     (target / "minutes.txt").write_text("15")
     # Only this private experiment is continued; the production model is untouched.
-    model = "orbisthereadingatlas/orbis-nli-bes-sik-1"
+    from model_state import current_model
+    state = current_model()
+    model = state["repo"]
     files = HfApi().list_repo_files(model)
     weights = "model.safetensors" if "model.safetensors" in files else "pytorch_model.bin"
-    source = pathlib.Path(snapshot_download(model, local_dir="practice-start-download",
+    source = pathlib.Path(snapshot_download(model, revision=state.get("revision"), local_dir="practice-start-download",
         allow_patterns=[weights, "config.json", "tokenizer.json", "tokenizer_config.json",
                         "special_tokens_map.json", "added_tokens.json", "spm.model"]))
     for f in source.iterdir():

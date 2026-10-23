@@ -18,7 +18,9 @@ import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-MODEL = os.environ.get("BASE_MODEL", "MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7")
+MODEL = os.environ.get("BASE_MODEL")
+if not MODEL or not os.path.isfile(os.path.join(MODEL, "config.json")):
+    raise RuntimeError("A local current trained checkpoint is required; base-model fallback is disabled")
 EPOCHS = int(sys.argv[1]) if len(sys.argv) > 1 else 2
 LR = float(sys.argv[2]) if len(sys.argv) > 2 else 1e-5
 OUT = os.environ.get("OUT_DIR", os.path.join(HERE, "out"))

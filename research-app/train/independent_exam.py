@@ -24,6 +24,8 @@ def run():
         raise ValueError("Exactly one private examination dataset is required")
     inp = candidates[0].parent
     exam = json.loads(candidates[0].read_text())
+    if len(exam["models"]) != 1 or not all(m.get("prefix") and m["repo"].startswith("orbisthereadingatlas/orbis-nli-") for m in exam["models"]):
+        raise ValueError("Only the current trained Orbis checkpoint may be evaluated")
     note(f"Independent exam: {len(exam['questions'])} human-written five-choice questions; fingerprint {exam['fingerprint']}")
     note("No optimizer, training, checkpoint selection or model upload. Lexical overlap screening cannot rule out pretraining exposure.")
     subprocess.run([sys.executable, "-m", "pip", "install", "--quiet", "transformers<5", "sentencepiece", "protobuf", "tiktoken"], check=True)

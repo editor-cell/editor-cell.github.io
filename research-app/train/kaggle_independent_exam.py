@@ -141,6 +141,8 @@ def main():
         repository = "orbisthereadingatlas/orbis-nli-paragraf-bin-" + run_id
         hf.create_repo(repository, private=True, exist_ok=False)
         hf.upload_folder(repo_id=repository, folder_path=str(res / "out"), commit_message="Human-written five-choice paragraph practice; separate experimental checkpoint")
+        from model_state import record_latest
+        record_latest(repository, hf.model_info(repository).sha)
         status["private_checkpoint"] = repository
         (report / "status.json").write_text(json.dumps(status, indent=2))
         counts = json.loads((report / "data-audit.json").read_text())["counts"]
