@@ -35,7 +35,9 @@ pub extern "system" fn Java_com_orbis_research_NativeTokenizer_encode(
         let p: String = env.get_string(&paragraph).map_err(|e| e.to_string())?.into();
         let h: String = env.get_string(&claim).map_err(|e| e.to_string())?.into();
         let tokenizer = unsafe { &*(handle as *const Tokenizer) };
-        let encoding = tokenizer.encode((p.as_str(), h.as_str()), true).map_err(|e| e.to_string())?;
+        // Transformers treats an empty text_pair as a single sequence; preserve that behavior.
+        let encoding = if h.is_empty() { tokenizer.encode(p.as_str(), true) }
+            else { tokenizer.encode((p.as_str(), h.as_str()), true) }.map_err(|e| e.to_string())?;
         let array = env.new_object_array(3, "[J", jni::objects::JObject::null()).map_err(|e| e.to_string())?;
         for (index, values) in [encoding.get_ids(), encoding.get_attention_mask(), encoding.get_type_ids()].iter().enumerate() {
             let values: Vec<i64> = values.iter().map(|&v| v as i64).collect();

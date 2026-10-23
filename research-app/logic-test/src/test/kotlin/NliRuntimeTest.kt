@@ -44,7 +44,9 @@ class NliRuntimeTest {
             for (row in rows) {
                 val p = row.split('\t')
                 val expected = p[2].split(',').map { it.toFloat() }
+                val started = System.nanoTime()
                 val actual = model.logits(text(p[0]), text(p[1]))
+                println("Current trained reader host inference: ${(System.nanoTime() - started) / 1_000_000} ms")
                 assertEquals(3, actual.size)
                 for (i in actual.indices) assertTrue(actual[i].isFinite() && abs(actual[i] - expected[i]) < 0.002f,
                     "Native phone-runtime parity failed for logit $i")

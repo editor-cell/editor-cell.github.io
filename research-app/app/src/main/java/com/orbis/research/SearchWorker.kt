@@ -42,6 +42,7 @@ class SearchWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
         }
         try { setForeground(foregroundInfo("Aranıyor…")) } catch (e: Exception) { }
         Nli.allow()
+        SearchState.changed()
         var modelAcquired = false
         SearchState.working.value = true
         try {

@@ -129,8 +129,11 @@ fun SearchScreen(goTo: (Int) -> Unit) {
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(version) {
-        val (r, f) = withContext(Dispatchers.IO) { db.run() to Search(ctx).findings() }
-        run = r; findings = f
+        val (r, f, compatible) = withContext(Dispatchers.IO) {
+            val compatible = ctx.getSharedPreferences("search-model", Context.MODE_PRIVATE).getString("current", null) == NliFiles.manifest(ctx).getString("sha256")
+            Triple(db.run(), if (compatible) Search(ctx).findings() else emptyList(), compatible)
+        }
+        run = r?.takeIf { compatible || it.state == Db.RUN_GOING }; findings = f
         if (s.claim.isEmpty() && r != null) s.claim = r.claim
         // A search the phone interrupted (the app was closed) goes on by itself.
         if (r?.state == Db.RUN_GOING && !s.working.value) SearchWorker.enqueue(ctx.applicationContext, ExistingWorkPolicy.KEEP)

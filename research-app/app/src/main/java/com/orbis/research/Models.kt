@@ -6,10 +6,7 @@ import android.content.Context
 import android.net.Uri
 import java.io.File
 
-/**
- * Free, open models (Apache 2.0) that run on a phone. They are fetched once from Hugging Face,
- * the only address outside the source list the app ever opens, and only when the owner asks.
- */
+/** Public meaning-search models. The private trained classifier is managed separately by NliFiles. */
 data class ModelInfo(val id: String, val title: String, val note: String, val url: String, val sizeMb: Int, val minRamGb: Int) {
     val fileName get() = url.substringAfterLast('/')
 }

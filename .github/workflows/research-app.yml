@@ -26,6 +26,8 @@ jobs:
           distribution: temurin
           java-version: 17
       - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -41,6 +43,14 @@ jobs:
             -DLLAMA_BUILD_EXAMPLES=OFF -DLLAMA_BUILD_SERVER=OFF -DLLAMA_BUILD_COMMON=OFF -DLLAMA_BUILD_APP=OFF \
             -DLLAMA_CURL=OFF -DLLAMA_OPENSSL=OFF > /dev/null
           cmake --build build-host -j4 --target orbisllm
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            research-app/tokenizer-native/target
+          key: tokenizer-${{ runner.os }}-${{ hashFiles('research-app/tokenizer-native/Cargo.toml', 'research-app/tokenizer-native/src/lib.rs') }}
+          restore-keys: tokenizer-${{ runner.os }}-
       - name: Build the exact trained tokenizer for host and Android
         run: |
           rustup target add aarch64-linux-android
