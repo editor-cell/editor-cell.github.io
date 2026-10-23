@@ -71,7 +71,7 @@ jobs:
       - name: Gather the training files (flat, as Kaggle keeps them)
         run: |
           mkdir -p kd
-          cp research-app/train/{train_nli.py,pool.json,quran.py,human.py,kaggle_read.py,fast_problems.py,sudoku.py,sudoku_methods.py,logic_human.py,reading_human.py} kd/
+          cp research-app/train/{train_nli.py,pool.json,quran.py,human.py,kaggle_read.py,fast_problems.py,sudoku.py,sudoku_methods.py,logic_human.py,reading_human.py,five_human.py} kd/
           [ -f research-app/train/labels/agreed.json ] && cp research-app/train/labels/agreed.json kd/labels__agreed.json || true
           for f in research-app/train/labels/*.jsonl; do cp "$f" "kd/labels__$(basename "$f")"; done
           cp research-app/nli-trial/cases.json kd/
