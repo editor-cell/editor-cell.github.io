@@ -5,16 +5,22 @@ import com.orbis.research.Verdict
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertNull
 
 class ReadingSafetyTest {
     private val labels = listOf("entailment", "neutral", "contradiction")
 
-    @Test fun ambiguousAndTiedScoresDoNotBecomeEvidence() {
-        for (scores in listOf(floatArrayOf(0f, 0f, 0f), floatArrayOf(0.8f, -0.2f, -1.46f))) {
+    @Test fun lowScoresAndSmallMarginsDoNotOverrideTheModel() {
+        for ((scores, expected) in listOf(
+            floatArrayOf(0.1f, 0f, 0f) to "SUPPORTS",
+            floatArrayOf(0f, 0.1f, 0f) to "UNRELATED",
+            floatArrayOf(0f, 0f, 0.1f) to "CONTRADICTS",
+            floatArrayOf(0.8f, -0.2f, -1.46f) to "SUPPORTS",
+            floatArrayOf(0f, 0f, 0f) to "SUPPORTS",
+        )) {
             val decision = EvidenceDecision.fromLogits(scores, labels)
-            assertEquals("UNCERTAIN", decision.verdict)
-            assertNull(Prompts.parseJudgement(decision.saved(), "Any original paragraph."))
+            assertEquals(expected, decision.verdict)
+            if (expected != "UNRELATED") assertEquals(expected,
+                Prompts.parseJudgement(decision.saved(), "Original paragraph.")?.verdict?.name)
         }
     }
 
@@ -25,13 +31,6 @@ class ReadingSafetyTest {
         assertEquals(Verdict.CONTRADICTS, Prompts.parseJudgement(no.saved(), "Original.")?.verdict)
         assertFailsWith<IllegalArgumentException> { EvidenceDecision.fromLogits(floatArrayOf(Float.NaN, 0f, 1f), labels) }
         assertFailsWith<IllegalArgumentException> { EvidenceDecision.fromLogits(floatArrayOf(0f, 0f, 1f), listOf("entailment", "entailment", "neutral")) }
-    }
-
-    @Test fun contextDisagreementCannotEnterTheEvidenceDocument() {
-        val yes = EvidenceDecision.fromLogits(floatArrayOf(7f, -6f, -5f), labels)
-        val no = EvidenceDecision.fromLogits(floatArrayOf(-6f, -5f, 7f), labels)
-        assertNull(Prompts.parseJudgement(EvidenceDecision.withContext(yes, no), "Some say X. However, X is not true."))
-        assertEquals(Verdict.SUPPORTS, Prompts.parseJudgement(EvidenceDecision.withContext(yes, yes), "Original.")?.verdict)
     }
 
     @Test fun sourcesDoNotStarveBehindTheFirstSourcesQueue() {

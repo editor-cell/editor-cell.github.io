@@ -10,11 +10,6 @@ Bu deneme, 1.000 insan yapımı paragraf sorusuyla çalıştırılan son eğitil
 Eski kaynaklarınız korunur. Önceki modelin arama sonuçları yeni sonuçlarla karıştırılmaz. Bu sürüm arm64 Android 9 ve üzeri içindir. Gerçek telefondaki hız ve bellek kullanımı henüz ölçülmemiştir.
 
 
-Bu güncellemede kısa cümleler, küçük harfle başlayan veya son noktalaması eksik metinler ve şekil açıklamaları sırf biçimleri nedeniyle elenmez. Eski yöntemle okunmuş belgeler web aramasında/toplamada tekrar okunmak üzere sıraya alınır; başarılı yeniden okuma öncesinde eski belge silinmez.
+Bu sürümde 0,80 puan eşiği, puan farkı şartı ve komşu paragraflarla aynı karara ulaşma koşulu kaldırıldı. Ön elemeden geçen paragraf ile yargı doğrudan modele verilir; modelin destekliyor, çürütüyor veya ilgisiz kararı ek eşiklerle elenmez. Eski kurallarla kaydedilmiş arama sonuçları yeniden kullanılmaz; güncellemeden sonra aramayı yeniden başlatın.
 
-Varsayılan arama 24 web belgesi ve 60 aday paragrafı kapsar. Kaynaklar sırayla değerlendirilir. Belirsiz model kararları ve komşu paragraflarla çelişen kararlar evraka alınmaz; belirsizlerin sayısı ekranda belirtilir. Güncelleme öncesi kararlar yeniden kullanılmaz.
-
-Gönderilen düşük kilolu çocuklar paragrafı, aynı Türkçe yargıyla gerçek model üzerinde kontrol edildi: bu sürüm onu destekleyici kanıt olarak dışa aktarmaz. Bu kontrol, modelin tüm anlamsal hatalarının çözüldüğü anlamına gelmez. Puan eşiği geçici bir çekimser kalma kuralıdır; doğruluk yüzdesi değildir. Model ağırlıkları değiştirilmedi, eğitim yapılmadı.
-
-
-Görünüm yenilendi: kırık beyaz zemin, koyu yeşil vurgular, okunaklı araştırma kartları ve sistemin açık/koyu görünümüne uyum. Arama filtreleri “Kaynak ve tarih seç” altında açılır. Kaynak listesi ve toplama/model ekranları aynı tasarıma kavuştu. Bu güncelleme arama kurallarını veya model ağırlıklarını değiştirmez.
+Kısa cümleleri biçimleri nedeniyle eleyen eski şartlar geri getirilmedi. Kaynaklar sırayla taranır; varsayılan sınırlar 24 web belgesi ve 60 aday paragraftır. Kırık beyaz/koyu yeşil görünüm, açık/koyu tema ve kaynak/tarih filtreleri korunur. Model ağırlıkları değiştirilmedi ve eğitim yapılmadı.

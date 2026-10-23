@@ -97,7 +97,7 @@ class Search(private val ctx: Context) {
     /** The trained NLI model reads the original paragraph and the claim directly. */
     suspend fun judge(claim: String, paraId: Long): String? {
         val p = db.paragraph(paraId) ?: return "UNRELATED"
-        return Nli.judge(p.text, claim, db.contextOf(paraId))
+        return Nli.judge(p.text, claim)
     }
 
     /**
