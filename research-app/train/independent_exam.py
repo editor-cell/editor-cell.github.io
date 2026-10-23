@@ -137,7 +137,7 @@ def run():
     result["completed"] = True
     save()
     (work / "status.json").write_text(json.dumps({"ok": True, "evaluation_only": True, "run_id": exam["run_id"]}))
-    note("Independent examination completed. Ten logical-reasoning questions are only a small diagnostic sample.")
+    note(f"Independent examination completed. {result['groups'].get('Logical reasoning', 0)} logical-reasoning questions are only a small diagnostic sample.")
 
 
 if __name__ == "__main__":

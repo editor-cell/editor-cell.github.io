@@ -19,10 +19,10 @@ def command(*args, check=True, capture=False):
 
 
 def main():
-    from kaggle.api.kaggle_api_extended import KaggleApi
     for key in ("KAGGLE_KEY", "KAGGLE_API_TOKEN", "KAGGLE_USERNAME"):
         if not os.environ.get(key):
             os.environ.pop(key, None)
+    from kaggle.api.kaggle_api_extended import KaggleApi
     api = KaggleApi()
     api.authenticate()
     username = os.environ.get("KAGGLE_USERNAME") or api.config_values.get("username") or getattr(api, "username", "")
@@ -59,7 +59,22 @@ def main():
         "language": "python", "kernel_type": "script", "is_private": True,
         "enable_gpu": True, "enable_internet": True, "machine_shape": "NvidiaTeslaT4",
         "dataset_sources": [dataset], "competition_sources": [], "kernel_sources": []}))
-    command("kaggle", "kernels", "push", "-p", str(kk))
+    try:
+        pushed = api.kernels_push(str(kk))
+    except Exception as exc:
+        response = getattr(exc, "response", None)
+        detail = getattr(response, "text", "") or str(exc)
+        # Show the server's error body, never request headers or credentials.
+        for env_key, value in os.environ.items():
+            if value and len(value) >= 8 and any(t in env_key for t in ("TOKEN", "KEY", "SECRET")):
+                detail = detail.replace(value, "[redacted]")
+        print("Kaggle notebook submission failed: " + detail[:2500], flush=True)
+        raise RuntimeError("Kaggle rejected the examination notebook") from None
+    if pushed is None or pushed.error:
+        raise RuntimeError("Kaggle notebook submission error: " + str(getattr(pushed, "error", "empty response")))
+    invalid = list(getattr(pushed, "invalidDatasetSources", []) or [])
+    if invalid:
+        raise RuntimeError("Kaggle rejected the private examination dataset source")
     print("::notice title=Independent exam::Sent to the free Kaggle GPU: " + kernel, flush=True)
     end = time.monotonic() + 85 * 60
     final_status = ""
@@ -97,7 +112,7 @@ def main():
         for model in result["models"]:
             for group, score in model["summary"].items():
                 f.write(f"- {model['name']} / {group}: {score['correct']}/{score['total']} (%{score['accuracy']:.1f}); metinsiz kontrol: {score['without_passage_correct']}/{score['total']}\n")
-        f.write("- Mantık bölümü yalnız 10 soruluk küçük bir ölçümdür. Eğitim öncesi model maruziyeti dışlanamaz.\n")
+        f.write("- Mantık bölümü küçük bir örneklemdir. Eğitim öncesi model maruziyeti dışlanamaz.\n")
 
 
 if __name__ == "__main__":
