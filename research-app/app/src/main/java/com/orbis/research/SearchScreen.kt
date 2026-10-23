@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.AlertDialog
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -125,14 +126,16 @@ fun SearchScreen(goTo: (Int) -> Unit) {
     val status by s.status.collectAsState()
     var run by remember { mutableStateOf<SearchRun?>(null) }
     var findings by remember { mutableStateOf(emptyList<Finding>()) }
+    var uncertain by remember { mutableIntStateOf(0) }
     var making by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(version) {
         val (r, f, compatible) = withContext(Dispatchers.IO) {
-            val compatible = ctx.getSharedPreferences("search-model", Context.MODE_PRIVATE).getString("current", null) == NliFiles.manifest(ctx).getString("sha256")
+            val compatible = ctx.getSharedPreferences("search-model", Context.MODE_PRIVATE).getString("current", null) == NliFiles.manifest(ctx).getString("sha256") + EvidenceDecision.VERSION
             Triple(db.run(), if (compatible) Search(ctx).findings() else emptyList(), compatible)
         }
+        uncertain = if (compatible) withContext(Dispatchers.IO) { db.answers().count { it.second?.startsWith("UNCERTAIN") == true } } else 0
         run = r?.takeIf { compatible || it.state == Db.RUN_GOING }; findings = f
         if (s.claim.isEmpty() && r != null) s.claim = r.claim
         // A search the phone interrupted (the app was closed) goes on by itself.
@@ -223,17 +226,20 @@ fun SearchScreen(goTo: (Int) -> Unit) {
                         if (r.total == 0 && !r.concepts.isNullOrBlank()) "Yargının kavramlarını (${Concepts.names(Concepts.parse(r.concepts))}) " +
                             "birlikte anlatan paragraf, seçilen kaynaklarda ve tarihlerde bulunan belgelerde yok."
                         else if (r.total == 0) "Seçilen kaynaklarda ve tarihlerde anlam dizininde paragraf yok."
-                        else "Yargıya anlamca en yakın ${r.total} paragraf okundu; hiçbiri bu yargıyı desteklemiyor ya da çürütmüyor.",
+                        else "Yargıya anlamca en yakın ${r.total} paragraf okundu; evraka alınabilecek yeterince belirgin bir sonuç bulunamadı. Bu, kaynaklarda kanıt olmadığı anlamına gelmez.",
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }
             }
         }
         if (r != null && r.state == Db.RUN_DONE && findings.isNotEmpty()) item {
-            Text("${r.total} paragraf okundu, ${findings.size} tanesi yargıyla ilgili.", style = MaterialTheme.typography.bodySmall)
+            Text("${r.total} paragraf okundu, ${findings.size} tanesi model tarafından destekleyen veya karşı çıkan aday olarak seçildi.", style = MaterialTheme.typography.bodySmall)
         }
         if (r != null && r.state == Db.RUN_DONE && !r.concepts.isNullOrBlank()) item {
             Text("Aranan kavramlar: ${Concepts.names(Concepts.parse(r.concepts))}", style = MaterialTheme.typography.bodySmall)
+        }
+        if (uncertain > 0) item {
+            Text("$uncertain paragrafta karar belirsiz kaldı; bunlar destekleyen veya karşı çıkan olarak evraka alınmadı.", style = MaterialTheme.typography.bodySmall)
         }
         items(findings, key = { it.paragraph.id }) { f -> FindingCard(f) }
         if (r?.suggestion != null) item { SuggestionCard(r.suggestion) }

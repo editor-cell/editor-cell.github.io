@@ -26,18 +26,21 @@ object Nli {
         users++
     } }
 
-    suspend fun judge(paragraph: String, claim: String): String? = withContext(Dispatchers.IO) {
+    suspend fun judge(paragraph: String, claim: String, context: String? = null): String? = withContext(Dispatchers.IO) {
         if (stopped) return@withContext null
         val scores = try { engine?.logits(paragraph, claim) ?: error("Model yüklenmedi.") }
         catch (e: Exception) { if (stopped) return@withContext null else throw e }
         if (stopped) return@withContext null
         check(scores.size == 3 && scores.all { it.isFinite() }) { "Model geçerli bir sonuç üretmedi." }
-        when (labels[scores.indices.maxBy { scores[it] }]) {
-            "entailment" -> "SUPPORTS"
-            "contradiction" -> "CONTRADICTS"
-            "neutral" -> "UNRELATED"
-            else -> error("Model etiketleri tanınmıyor.")
+        val decision = EvidenceDecision.fromLogits(scores, labels)
+        if (context.isNullOrBlank() || context == paragraph || decision.verdict !in setOf("SUPPORTS", "CONTRADICTS")) {
+            return@withContext decision.saved()
         }
+        val contextScores = try { engine?.logits(context, claim) ?: error("Model yüklenmedi.") }
+        catch (e: Exception) { if (stopped) return@withContext null else throw e }
+        if (stopped) return@withContext null
+        val checked = EvidenceDecision.fromLogits(contextScores, labels)
+        EvidenceDecision.withContext(decision, checked)
     }
 
     suspend fun release() = withContext(Dispatchers.IO) { lock.withLock {

@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper
  * Everything the app keeps: the sources and their headings, the queue of addresses to read,
  * documents, their paragraphs and the meaning vector of each, and the search under way.
  */
-class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", null, 6) {
+class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", null, 7) {
 
     override fun onConfigure(db: SQLiteDatabase) {
         db.setForeignKeyConstraintsEnabled(true)
@@ -23,7 +23,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
             title TEXT NOT NULL DEFAULT '')""")
         db.execSQL("CREATE INDEX queue_pick ON queue(source_id, state, lastmod)")
         db.execSQL("""CREATE TABLE docs(id INTEGER PRIMARY KEY, source_id INTEGER NOT NULL REFERENCES sources(id) ON DELETE CASCADE,
-            url TEXT NOT NULL UNIQUE, title TEXT NOT NULL, date TEXT NOT NULL, fetched_at INTEGER NOT NULL)""")
+            url TEXT NOT NULL UNIQUE, title TEXT NOT NULL, date TEXT NOT NULL, fetched_at INTEGER NOT NULL, extraction_version INTEGER NOT NULL DEFAULT 0)""")
         db.execSQL("""CREATE TABLE paras(id INTEGER PRIMARY KEY, doc_id INTEGER NOT NULL REFERENCES docs(id) ON DELETE CASCADE,
             idx INTEGER NOT NULL, text TEXT NOT NULL)""")
         db.execSQL("CREATE INDEX paras_doc ON paras(doc_id)")
@@ -43,6 +43,11 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
             if (oldVersion < 6) db.execSQL("ALTER TABLE search_run ADD COLUMN concepts TEXT")
         }
         if (oldVersion < 5) db.execSQL("ALTER TABLE queue ADD COLUMN title TEXT NOT NULL DEFAULT ''")
+        if (oldVersion < 7) {
+            db.execSQL("ALTER TABLE docs ADD COLUMN extraction_version INTEGER NOT NULL DEFAULT 0")
+            // Revisit stored documents: text discarded by the older extractor is absent from the DB.
+            db.execSQL("UPDATE queue SET state = 0 WHERE url IN (SELECT url FROM docs)")
+        }
     }
 
     /**
@@ -231,17 +236,28 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
     // ---- documents ----
 
     fun hasDoc(url: String): Boolean = readableDatabase.rawQuery(
-        "SELECT 1 FROM docs WHERE url = ?", arrayOf(url),
+        "SELECT 1 FROM docs WHERE url = ? AND extraction_version = 1", arrayOf(url),
     ).use { it.moveToFirst() }
 
     fun saveDoc(sourceId: Long, url: String, title: String, date: String, paragraphs: List<String>) {
         val db = writableDatabase
         db.beginTransaction()
         try {
-            val docId = db.insertWithOnConflict("docs", null, ContentValues().apply {
+            var docId = db.insertWithOnConflict("docs", null, ContentValues().apply {
                 put("source_id", sourceId); put("url", url); put("title", title); put("date", date)
-                put("fetched_at", System.currentTimeMillis())
+                put("fetched_at", System.currentTimeMillis()); put("extraction_version", 1)
             }, SQLiteDatabase.CONFLICT_IGNORE)
+            if (docId < 0) {
+                // Replace only after a successful fetch/extraction. Never discard old text on failure.
+                docId = db.rawQuery("SELECT id FROM docs WHERE url = ? AND extraction_version < 1", arrayOf(url))
+                    .use { c -> if (c.moveToFirst()) c.getLong(0) else -1L }
+                if (docId > 0) {
+                    db.delete("paras", "doc_id = ?", arrayOf(docId.toString()))
+                    db.update("docs", ContentValues().apply {
+                        put("title", title); put("date", date); put("fetched_at", System.currentTimeMillis()); put("extraction_version", 1)
+                    }, "id = ?", arrayOf(docId.toString()))
+                }
+            }
             if (docId > 0) {
                 paragraphs.forEachIndexed { i, p ->
                     db.insert("paras", null, ContentValues().apply {
@@ -397,6 +413,25 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
            JOIN docs d ON d.id = p.doc_id JOIN sources s ON s.id = d.source_id WHERE p.id = ?""",
         arrayOf(id.toString()),
     ).use { c -> if (c.moveToFirst()) Paragraph(c.getLong(0), c.getString(1), c.getString(2), c.getString(3), c.getString(4), c.getString(5)) else null }
+
+    /** Preserve original wording and document order for the separate context check. */
+    fun contextOf(paraId: Long): String? = readableDatabase.rawQuery(
+        """SELECT p.text, p.idx, target.idx FROM paras p JOIN paras target ON p.doc_id = target.doc_id
+           WHERE target.id = ? AND p.idx BETWEEN target.idx - 1 AND target.idx + 1 ORDER BY p.idx""",
+        arrayOf(paraId.toString()),
+    ).use { c ->
+        val pieces = mutableListOf<String>()
+        while (c.moveToNext()) {
+            val text = c.getString(0)
+            // The candidate is always intact. Only neighbours are excerpted to fit the reader.
+            pieces += when {
+                c.getInt(1) < c.getInt(2) && text.length > 400 -> text.takeLast(400).substringAfter(' ', text)
+                c.getInt(1) > c.getInt(2) && text.length > 400 -> text.take(400).substringBeforeLast(' ', text)
+                else -> text
+            }
+        }
+        pieces.joinToString("\n\n").ifBlank { null }
+    }
 
     companion object {
         const val RUN_GOING = 0

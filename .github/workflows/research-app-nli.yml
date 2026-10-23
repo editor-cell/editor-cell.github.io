@@ -3,11 +3,6 @@ name: Research app (NLI models, trial)
 # A trial only: models made to compare two texts (NLI) on the paragraphs the language models were
 # tried on. Builds no APK and puts nothing on the release page.
 on:
-  push:
-    branches: [anlam-okuma]
-    paths:
-      - .github/workflows/research-app-nli.yml
-      - research-app/nli-trial/**
   workflow_dispatch:
 
 permissions:

@@ -27,7 +27,7 @@ class SearchWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
             SearchState.changed()
             return Result.success()
         }
-        val marker = NliFiles.manifest(ctx).getString("sha256")
+        val marker = NliFiles.manifest(ctx).getString("sha256") + EvidenceDecision.VERSION
         val prefs = ctx.getSharedPreferences("search-model", Context.MODE_PRIVATE)
         val run = if (prefs.getString("current", null) != marker) {
             // Saved answers from a previous model are never mixed with this trial.

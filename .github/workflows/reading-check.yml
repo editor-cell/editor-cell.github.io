@@ -4,7 +4,7 @@ on:
     branches: [anlam-okuma]
     paths:
       - .github/workflows/reading-check.yml
-      - research-app/nli-trial/diagnose.py
+      - research-app/train/reading_diagnosis.py
   workflow_dispatch:
 permissions:
   contents: read
@@ -24,7 +24,7 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: python research-app/train/fetch_android_test_model.py "$RUNNER_TEMP/orbis-nli"
       - name: Measure real paragraph decisions without training
-        run: python research-app/nli-trial/diagnose.py "$RUNNER_TEMP/orbis-nli/model"
+        run: python research-app/train/reading_diagnosis.py "$RUNNER_TEMP/orbis-nli/model"
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -11,7 +11,7 @@ class Listing(val docs: List<Pair<String, String>>, val sitemaps: List<String>, 
 
 /** Reads documents and listings into plain parts. The words of a paragraph are never changed. */
 object Extract {
-    private const val MIN_CHARS = 60
+    private const val MIN_CHARS = 12
     private const val MAX_CHARS = 1500
 
     fun html(url: String, html: String): Page {
@@ -27,6 +27,7 @@ object Extract {
         val body = doc.body() ?: return Page(title, date, emptyList(), links, pdfLinks)
         body.select("script, style, noscript, nav, header, footer, aside, form, svg, button, [role=navigation], [aria-hidden=true]").remove()
         val main = body.selectFirst("main, article, [role=main]") ?: body
+        main.select("h1, h2, h3, h4, h5, h6").remove()
 
         val seen = HashSet<String>()
         val out = ArrayList<String>()
@@ -34,7 +35,7 @@ object Extract {
             val text = t.trim()
             if (isProse(text) && seen.add(text)) out += splitLong(text)
         }
-        for (el in main.select("p, li, blockquote, dd")) {
+        for (el in main.select("p, li, blockquote, dd, figcaption")) {
             // A list item or quote that holds paragraphs is read through those paragraphs.
             if (el.tagName() != "p" && el.select("p, li").any { it !== el }) continue
             take(el.text())
@@ -77,25 +78,21 @@ object Extract {
             "acknowledge the use of|views expressed (?:here|in this)|do(?:es)? not necessarily (?:reflect|represent)|" +
             "grant no\\.?)|[\\w.+-]+@[\\w-]+\\.[\\w.-]+",
     )
-    // The note under a figure or table: "Note: The figure displays …", "Source: …".
-    private val FIGURE_NOTE = Regex("^(?:Notes?|Sources?|Legend)\\s*:")
-    private val SENTENCE_END = Regex("[.!?…][\"”’')\\]]*\\d{0,3}$")
+
     private val REFERENCE = Regex("^\\p{Lu}[\\p{L}'’-]+,\\s+(\\p{Lu}\\.\\s*)+")
     // "Board of Governors (2023): “Financial Stability”" — a source named with its year, then its title.
     private val CITED_YEAR = Regex("^[^.!?]{0,80}\\((19|20)\\d\\d[a-z]?\\)\\s*[:.]\\s*[\"“\\p{Lu}]")
 
     /**
-     * A paragraph worth reading: running text of at least one finished sentence. Titles, captions,
-     * reference entries, copyright notices and pieces cut from the middle of a sentence (a PDF's
-     * columns and page breaks) are not. Nothing is changed; such parts are only left out.
+     * Candidate text, not a verdict about evidence. Short findings, lower-case text, figure notes
+     * and unpunctuated PDF fragments must reach the reader. HTML navigation/headings are removed
+     * structurally; recognisable copyright, acknowledgements and references are excluded here.
      */
     fun isProse(text: String): Boolean {
         val t = text.trim()
-        if (t.length < MIN_CHARS || t.count { it == ' ' } < 9) return false
-        if (t.first().isLowerCase()) return false
-        if (!SENTENCE_END.containsMatchIn(t)) return false
+        if (t.length < MIN_CHARS || t.count { it.isLetter() } < 4 || t.split(Regex("\\s+")).size < 3) return false
         if (NOTICE.containsMatchIn(t)) return false
-        if (AUTHOR_NOTE.containsMatchIn(t) || FIGURE_NOTE.containsMatchIn(t)) return false
+        if (AUTHOR_NOTE.containsMatchIn(t)) return false
         if (REFERENCE.containsMatchIn(t) || CITED_YEAR.containsMatchIn(t)) return false
         return true
     }

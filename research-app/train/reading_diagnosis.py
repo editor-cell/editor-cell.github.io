@@ -35,6 +35,16 @@ for name, paragraph in paragraphs.items():
         probabilities /= probabilities.sum()
         row = {'case': name, 'claim': claim, 'paragraph': paragraph, 'logits': scores.tolist(),
                'probabilities': dict(zip(labels, probabilities.tolist())), 'winner': labels[int(scores.argmax())]}
+        gold = 'entailment' if name.startswith('direct_support') else 'contradiction' if name in ('direct_opposite','opposite_tr') else 'neutral'
+        order = np.argsort(-probabilities)
+        best = int(order[0])
+        decision = labels[best]
+        if decision != 'neutral' and (float(probabilities[best]) < 0.8 or float(probabilities[best] - probabilities[int(order[1])]) < 0.2):
+            decision = 'uncertain'
+        row.update(expected=gold, filtered_decision=decision,
+                   false_evidence=gold == 'neutral' and decision in ('entailment','contradiction'))
         results.append(row)
         print(json.dumps(row, ensure_ascii=False), flush=True)
 Path('reading-diagnosis.json').write_text(json.dumps(results, ensure_ascii=False, indent=2))
+
+print('Known false evidence remaining in this small diagnostic sample:', sum(x['false_evidence'] for x in results), flush=True)

@@ -10,7 +10,7 @@ object Settings {
     fun setPerSource(ctx: Context, v: Int) = prefs(ctx).edit().putInt("perSource", v).apply()
 
     /** How many of the best-matching paragraphs the model reads for one claim. */
-    fun candidates(ctx: Context) = prefs(ctx).getInt("candidates", 20)
+    fun candidates(ctx: Context) = prefs(ctx).getInt("candidates", 60)
     fun setCandidates(ctx: Context, v: Int) = prefs(ctx).edit().putInt("candidates", v).apply()
 
     fun daily(ctx: Context) = prefs(ctx).getBoolean("daily", false)
@@ -31,7 +31,7 @@ object Settings {
     fun setLive(ctx: Context, v: Boolean) = prefs(ctx).edit().putBoolean("live", v).apply()
 
     /** How many documents a search opens live. */
-    fun liveRead(ctx: Context) = prefs(ctx).getInt("liveRead", 12)
+    fun liveRead(ctx: Context) = prefs(ctx).getInt("liveRead", 24)
     fun setLiveRead(ctx: Context, v: Int) = prefs(ctx).edit().putInt("liveRead", v).apply()
 
     /** When a source's document list was last fetched live (milliseconds), 0 if never. */

@@ -143,28 +143,21 @@ class ExtractTest {
         assertEquals(listOf("Taxes on sugar-sweetened beverages were followed by a 21% fall in purchases of taxed drinks, according to the house-hold survey of 2018."), p)
     }
 
-    /** What the phone showed as "supporting" on 21 Oct 2026: none of it is a paragraph. */
-    @Test fun onlyRunningTextIsKept() {
-        val junk = listOf(
+    @Test fun metadataIsExcludedButCandidateTextIsNotJudgedByTypography() {
+        for (j in listOf(
             "© Bank for International Settlements 2026. All rights reserved. Brief excerpts may be",
-            "the level of consumption expenditure (level of affluence in EU societies);",
-            "Leveraging trade in environmental goods and services to tackle climate change - Policy brief 7",
-            "requires hard assets as collateral; and distressed-debt investing, which focuses on",
-            "Presentation by World Bank on Global Fuel Subsidies-Price Control Measures Platform",
             "Board of Governors of the Federal Reserve System (2023): “Financial Stability Report”, October, Washington.",
             "Rajan, R. G. and L. Zingales (1998): “Financial Dependence and Growth,” American Economic Review, 88(3), 559–86.",
-            "withstand the downturn. If financial institutions fail a test, they must adjust their",
-            "ment that partly overlaps the likely target borrowers of private credit funds (Ivashina",
-            "rising unemployment and falling house prices. For each scenario, an internal model",
-        )
-        for (j in junk) assertFalse(Extract.isProse(j), j)
-        val prose = listOf(
-            long1, long2,
-            "This makes it more difficult to allocate capital efficiently and to reap economies of scale. The diverse and complex regulatory requirements across European countries add to these structural inefficiencies.9",
-            "As Card and Krueger (1994) showed, employment in fast-food restaurants did not fall after New Jersey raised its minimum wage.",
-            "Türkiye'de enflasyon 2022'de yüzde 85'i aştı; Merkez Bankası faizi 2023 ortasından itibaren hızla yükseltti.",
-        )
-        for (p in prose) assertTrue(Extract.isProse(p), p)
+        )) assertFalse(Extract.isProse(j), j)
+        for (p in listOf(long1, long2,
+            "Obesity increases the risk of heart attacks.",
+            "Obezite kalp krizi ihtimalini artırır.",
+            "obesity increases the risk of heart attacks",
+            "Risk was lower in the intervention group",
+            "Note: The intervention reduced purchases by 12%.",
+        )) assertTrue(Extract.isProse(p), p)
+        val html = "<main><h2>Obesity increases the risk of heart attacks</h2><p>Risk was lower in the intervention group</p></main>"
+        assertEquals(listOf("Risk was lower in the intervention group"), Extract.html("https://example.org/report", html).paragraphs)
     }
 
     @Test fun longParagraphSplitBetweenSentences() {

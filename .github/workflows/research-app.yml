@@ -72,7 +72,7 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          python -m pip install 'huggingface_hub<1'
+          python -m pip install 'huggingface_hub<1' 'onnxruntime==1.23.2' tokenizers numpy
           python train/fetch_android_test_model.py "$RUNNER_TEMP/orbis-nli"
       - name: Test reading logic, meaning search, exact tokenizer and trained model parity
         run: |
@@ -88,7 +88,20 @@ jobs:
           root=ET.parse(p).getroot()
           assert int(root.attrib['tests']) == 2 and int(root.attrib.get('skipped',0)) == 0
           assert int(root.attrib.get('failures',0)) == 0 and int(root.attrib.get('errors',0)) == 0
+          regression=ET.parse('logic-test/build/test-results/test/TEST-ReadingRegressionTest.xml').getroot()
+          assert int(regression.attrib['tests']) == 1 and int(regression.attrib.get('skipped',0)) == 0
+          assert int(regression.attrib.get('failures',0)) == 0 and int(regression.attrib.get('errors',0)) == 0
           PY
+      - name: Record current reader limitations without training
+        run: python train/reading_diagnosis.py "$RUNNER_TEMP/orbis-nli/model"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reading-checks
+          path: |
+            research-app/logic-test/build/test-results/test/
+            research-app/reading-diagnosis.json
+          if-no-files-found: ignore
       - name: Publish the model for direct in-app GitHub downloads
         env:
           GH_TOKEN: ${{ github.token }}

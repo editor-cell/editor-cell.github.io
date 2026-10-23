@@ -62,16 +62,18 @@ class Search(private val ctx: Context) {
         say("Canlı: belge başlıkları yargıyla karşılaştırılıyor…")
         val deadline = System.currentTimeMillis() + TITLE_BUDGET_MS
         val scored = ArrayList<Triple<Float, Source, String>>()
-        for (s in sources) {
-            for ((url, title, _) in db.liveCandidates(s.id, run.range, TITLES_PER_SOURCE)) {
-                if (stopped() || System.currentTimeMillis() > deadline) break
-                val text = title.ifEmpty { Extract.slugText(url) }
-                if (text.length < 8) continue
-                val v = Embedder.embed(Vectors.docText(path, text)) ?: continue
-                scored += Triple(Vectors.score(Vectors.toBytes(v), q), s, url)
-            }
+        val groups = sources.map { source ->
+            db.liveCandidates(source.id, run.range, TITLES_PER_SOURCE).map { source to it }
         }
-        val top = scored.sortedByDescending { it.first }.take(Settings.liveRead(ctx))
+        for ((source, candidate) in SearchSelection.roundRobin(groups)) {
+            if (stopped() || System.currentTimeMillis() > deadline) break
+            val (url, title, _) = candidate
+            val text = title.ifEmpty { Extract.slugText(url) }
+            if (text.length < 8) continue
+            val v = Embedder.embed(Vectors.docText(path, text)) ?: continue
+            scored += Triple(Vectors.score(Vectors.toBytes(v), q), source, url)
+        }
+        val top = SearchSelection.diverse(scored.sortedByDescending { it.first }, Settings.liveRead(ctx)) { it.second.id }
 
         // 3. Open them, read them, and give their paragraphs meaning vectors at once.
         for ((n, t) in top.withIndex()) {
@@ -95,7 +97,7 @@ class Search(private val ctx: Context) {
     /** The trained NLI model reads the original paragraph and the claim directly. */
     suspend fun judge(claim: String, paraId: Long): String? {
         val p = db.paragraph(paraId) ?: return "UNRELATED"
-        return Nli.judge(p.text, claim)
+        return Nli.judge(p.text, claim, db.contextOf(paraId))
     }
 
     /**
@@ -114,7 +116,7 @@ class Search(private val ctx: Context) {
         /** A source's document list is fetched live again after this long. */
         const val REFRESH_MS = 6L * 60 * 60 * 1000
         /** At most this many of a source's newest unread addresses are compared with the claim. */
-        const val TITLES_PER_SOURCE = 120
+        const val TITLES_PER_SOURCE = 360
         /** The comparison of titles stops after this long, however many are left. */
         const val TITLE_BUDGET_MS = 150_000L
         const val NO_EMBEDDER = "Önce Model sekmesinden anlam modelini indirin."
