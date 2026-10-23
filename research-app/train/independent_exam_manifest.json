@@ -1,0 +1,612 @@
+{
+  "version": 1,
+  "expected_source_hashes": {
+    "2023-tyt": "0dc9541d881211c8fa0b27524a061b37e61838c13d3f7bf4feceee549e45d1ff",
+    "2024-tyt": "5b517eba3f596ed1e9d2073e84023696c40a1f6a2347d7db0aa8c20ece63b64e",
+    "2022-ydt": "901df45af4f2feba0d2eca3671cdb1ac178d1c181bd5e68f33498ff76bf25839",
+    "2023-ydt": "ed425253df0b82bacca8d33bce359a2002d654a53343e1b0c586b78555491f2e",
+    "2024-ydt": "ba4245cfbbdb9d3e441ceae65bb019ccfc814541e414a00dd75a182aefe2cdfd"
+  },
+  "questions": {
+    "2023-tyt-19": {
+      "sha256": "0e9ee93c79108cb7d5b89dcec5a04762a4d7ad09f699fd86d4ab13bbb59ce422",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_tyt_2023_kitapcik_T23ky.pdf",
+      "source_question": 19,
+      "page": 7
+    },
+    "2023-tyt-20": {
+      "sha256": "1d1bc1f538155cc1ced92ea8d9046751202291f4bb6db4f563ed0faa0efd0623",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_tyt_2023_kitapcik_T23ky.pdf",
+      "source_question": 20,
+      "page": 7
+    },
+    "2023-tyt-21": {
+      "sha256": "a1da0746c17765d08f1c58cc93a21c0feb42fb377d85371a8bf086892c782830",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_tyt_2023_kitapcik_T23ky.pdf",
+      "source_question": 21,
+      "page": 8
+    },
+    "2023-tyt-22": {
+      "sha256": "780760d0550a3eff4707f7490e731315f448308108b00c827897b4e494527819",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_tyt_2023_kitapcik_T23ky.pdf",
+      "source_question": 22,
+      "page": 8
+    },
+    "2023-tyt-23": {
+      "sha256": "a6837584bd016649f3d93ebf34162538b3ca45bc48ae7ae92b16a81cc0999baa",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_tyt_2023_kitapcik_T23ky.pdf",
+      "source_question": 23,
+      "page": 8
+    },
+    "2023-tyt-24": {
+      "sha256": "603f1c02081a80f34ae4d7c172ccee67e65cbc37393bab01b4550e043044afd4",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_tyt_2023_kitapcik_T23ky.pdf",
+      "source_question": 24,
+      "page": 9
+    },
+    "2023-tyt-25": {
+      "sha256": "de3110239a96047cd8365bf3e5ccaf255cae9971c3f895c3e0b2ad2115ef9b31",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_tyt_2023_kitapcik_T23ky.pdf",
+      "source_question": 25,
+      "page": 9
+    },
+    "2023-tyt-26": {
+      "sha256": "e4c28362431810df3fa37ffce58ae702b2d2e9dda2b83aa166f3ad9738bac6eb",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_tyt_2023_kitapcik_T23ky.pdf",
+      "source_question": 26,
+      "page": 9
+    },
+    "2023-tyt-27": {
+      "sha256": "ad60354fed79ea359f3d21c838f7913661626cd596a0d5dec99a15b710aeb40a",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_tyt_2023_kitapcik_T23ky.pdf",
+      "source_question": 27,
+      "page": 9
+    },
+    "2023-tyt-28": {
+      "sha256": "847636b6ddadc67c4dd4febe773c55fc8b0b7b7703656b2b69f8af2ee5be7571",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_tyt_2023_kitapcik_T23ky.pdf",
+      "source_question": 28,
+      "page": 10
+    },
+    "2023-tyt-29": {
+      "sha256": "c3cae5ffe53ba4f9f36fc2391882dca9d28e95890235c15151c3d48cdd3d29f2",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_tyt_2023_kitapcik_T23ky.pdf",
+      "source_question": 29,
+      "page": 10
+    },
+    "2023-tyt-30": {
+      "sha256": "f69727aa76f16b6134ec7059a51ffca67d5c4439f55311c65e95052ebbb47e6b",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_tyt_2023_kitapcik_T23ky.pdf",
+      "source_question": 30,
+      "page": 11
+    },
+    "2023-tyt-31": {
+      "sha256": "d63ad77e02daacedfb0a1763dea99db1770a6a1e43d7eaeaeec7d4b9c0260795",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_tyt_2023_kitapcik_T23ky.pdf",
+      "source_question": 31,
+      "page": 11
+    },
+    "2023-tyt-32": {
+      "sha256": "acd936bc074278bffb64125ea53a35d4f993699b9188c3b4726a971f5820e73d",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_tyt_2023_kitapcik_T23ky.pdf",
+      "source_question": 32,
+      "page": 11
+    },
+    "2023-tyt-33": {
+      "sha256": "72d5ff32969808239e0324aa8487d8e94ddf8170f6104f0c9577ad0c9fca4d93",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_tyt_2023_kitapcik_T23ky.pdf",
+      "source_question": 33,
+      "page": 12
+    },
+    "2023-tyt-34": {
+      "sha256": "fba2e022f8275cb70ca8639631fb401e3c463e120ff41a072c523f1394c2882e",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_tyt_2023_kitapcik_T23ky.pdf",
+      "source_question": 34,
+      "page": 12
+    },
+    "2023-tyt-35": {
+      "sha256": "c47cae834116092badbb6ef603e269f2f916c2133833e4d16d1cad7826488ecb",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_tyt_2023_kitapcik_T23ky.pdf",
+      "source_question": 35,
+      "page": 13
+    },
+    "2023-tyt-36": {
+      "sha256": "bb9ec0ba1db8e754e206358ddf636963619c65368045f4c3d210b091883c8dde",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_tyt_2023_kitapcik_T23ky.pdf",
+      "source_question": 36,
+      "page": 13
+    },
+    "2023-tyt-37": {
+      "sha256": "8412f97d4b1e70264b4bdd0011d92fd85271c7c09687781646bf19ea7fbd61a5",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_tyt_2023_kitapcik_T23ky.pdf",
+      "source_question": 37,
+      "page": 14
+    },
+    "2023-tyt-38": {
+      "sha256": "5acfcc4814a2e69d34c59e6f6a067aed3dafc5d838cd59f763dfda2b43160ec6",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_tyt_2023_kitapcik_T23ky.pdf",
+      "source_question": 38,
+      "page": 14
+    },
+    "2023-tyt-39": {
+      "sha256": "c2d701cbd6b8cbf8dca1e5d581e7d9e1bd094dcecda89c7d132ce38bf446eb6c",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_tyt_2023_kitapcik_T23ky.pdf",
+      "source_question": 39,
+      "page": 15
+    },
+    "2023-tyt-40": {
+      "sha256": "6642c5acb29f7e557a9a3ebbe092b0ccdfa64c9701e1a460a0e9d740160b0fa6",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_tyt_2023_kitapcik_T23ky.pdf",
+      "source_question": 40,
+      "page": 15
+    },
+    "2024-tyt-18": {
+      "sha256": "8f68f2618afb8590b2e8dc00af7a79a6e4b9a48bbd11c2b1a845d4f269b995d1",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_tyt_2024_kitapcik_T24kt.pdf",
+      "source_question": 18,
+      "page": 7
+    },
+    "2024-tyt-19": {
+      "sha256": "9ceafdea6e831b470943dd53aadf7454fa99746584806ed54a50f57f0ba76515",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_tyt_2024_kitapcik_T24kt.pdf",
+      "source_question": 19,
+      "page": 8
+    },
+    "2024-tyt-20": {
+      "sha256": "48bee285fa6b2bec6b92f4082f2e00ef555f3b6eb6b458cd5c4f795a501a694e",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_tyt_2024_kitapcik_T24kt.pdf",
+      "source_question": 20,
+      "page": 8
+    },
+    "2024-tyt-21": {
+      "sha256": "834cdad132850df5e3cdd9903703c88f61fa01d749cbc53675446068185f990d",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_tyt_2024_kitapcik_T24kt.pdf",
+      "source_question": 21,
+      "page": 8
+    },
+    "2024-tyt-22": {
+      "sha256": "c18403dc0596f51058903a40eb8e771761ac1e23f8830136dd5c402379430c96",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_tyt_2024_kitapcik_T24kt.pdf",
+      "source_question": 22,
+      "page": 8
+    },
+    "2024-tyt-23": {
+      "sha256": "e1d7da28efa4a9a6238136cbe7c7030ad64d72b48e56455d3d6474ea5e4753f9",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_tyt_2024_kitapcik_T24kt.pdf",
+      "source_question": 23,
+      "page": 9
+    },
+    "2024-tyt-24": {
+      "sha256": "0d5ab96c3c3b16864ecd5dbe7a392b36e72260e5d51c3322424861aa418f4586",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_tyt_2024_kitapcik_T24kt.pdf",
+      "source_question": 24,
+      "page": 9
+    },
+    "2024-tyt-25": {
+      "sha256": "3970bf113528e99c18fbc26ff9f2abdedd963743f6179c4ed6ed611c5caae3c4",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_tyt_2024_kitapcik_T24kt.pdf",
+      "source_question": 25,
+      "page": 9
+    },
+    "2024-tyt-26": {
+      "sha256": "1175a135d1aa0e99d9829c24b081c4ed9c81a3607eedbed629e5fb3a1e0e7d83",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_tyt_2024_kitapcik_T24kt.pdf",
+      "source_question": 26,
+      "page": 10
+    },
+    "2024-tyt-27": {
+      "sha256": "aabde22acf68cf1d7cff7a067d63c8340f27abca33122ed77962834fa7007396",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_tyt_2024_kitapcik_T24kt.pdf",
+      "source_question": 27,
+      "page": 10
+    },
+    "2024-tyt-28": {
+      "sha256": "d53e49c687c053dc163659513805d7cd9b298fbac1a7f77048ec19b1aefacd8f",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_tyt_2024_kitapcik_T24kt.pdf",
+      "source_question": 28,
+      "page": 11
+    },
+    "2024-tyt-29": {
+      "sha256": "af099cf95e06e0b1570f1c1f794f99f71010048e134f1e5d2680e397c62a32ef",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_tyt_2024_kitapcik_T24kt.pdf",
+      "source_question": 29,
+      "page": 11
+    },
+    "2024-tyt-30": {
+      "sha256": "ca750b78e7f19bb6625aa5bed544c863cf2e21e6584440d70f70954853ca7527",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_tyt_2024_kitapcik_T24kt.pdf",
+      "source_question": 30,
+      "page": 11
+    },
+    "2024-tyt-31": {
+      "sha256": "569cfa347458fc47dd7fd8341124953bcb044f17e7424b26fba3905a84adcd0e",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_tyt_2024_kitapcik_T24kt.pdf",
+      "source_question": 31,
+      "page": 11
+    },
+    "2024-tyt-32": {
+      "sha256": "e4006fd5e36aabfbf05383a8f07d24be27c3b765a955a474a54f379fa8f7f840",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_tyt_2024_kitapcik_T24kt.pdf",
+      "source_question": 32,
+      "page": 12
+    },
+    "2024-tyt-33": {
+      "sha256": "cb4981b32e46e824f3908214e8a12eb2b3b336d8997362f5a9521c8c26a7e5be",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_tyt_2024_kitapcik_T24kt.pdf",
+      "source_question": 33,
+      "page": 12
+    },
+    "2024-tyt-34": {
+      "sha256": "25a6960e34a589e348254699eed97a48ea0caee27a3cacfa08434e9899d7ec1d",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_tyt_2024_kitapcik_T24kt.pdf",
+      "source_question": 34,
+      "page": 13
+    },
+    "2024-tyt-35": {
+      "sha256": "62982129ac9f448b45fa628c564bdd94572b53fcee722aa260e2f1e94322a1a1",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_tyt_2024_kitapcik_T24kt.pdf",
+      "source_question": 35,
+      "page": 13
+    },
+    "2024-tyt-36": {
+      "sha256": "3a4749b26436f565cb9b65cf509ea3adae46e83a9fa5f43dcfcc426b120aabe0",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_tyt_2024_kitapcik_T24kt.pdf",
+      "source_question": 36,
+      "page": 13
+    },
+    "2024-tyt-37": {
+      "sha256": "430b1a9b333f2fb40a14f421ab42fdf843d3b28133dacbc91f8cee184a1a6b31",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_tyt_2024_kitapcik_T24kt.pdf",
+      "source_question": 37,
+      "page": 14
+    },
+    "2024-tyt-38": {
+      "sha256": "68c897a71ea75f8d2ab57910332fb4ec0b6f6e2d4f187c07521f018b2016eb30",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_tyt_2024_kitapcik_T24kt.pdf",
+      "source_question": 38,
+      "page": 14
+    },
+    "2024-tyt-39": {
+      "sha256": "7b447b1a04eec358e07a9d3ed80e5a871f587a9e920a2d5437cb650ced2b0a69",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_tyt_2024_kitapcik_T24kt.pdf",
+      "source_question": 39,
+      "page": 15
+    },
+    "2024-tyt-40": {
+      "sha256": "cdd15164301eb3e905c8f19b48b4260f65a2ae99f6d426e60db4a559b8bc5396",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_tyt_2024_kitapcik_T24kt.pdf",
+      "source_question": 40,
+      "page": 15
+    },
+    "2022-ydt-29": {
+      "sha256": "ea47ce8738bdda9a432d09ebe4eac14009d39f256f47f585c34e9ae65b9016b3",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2022/YKS/TSK/yks_2022_ydt_ingilizce.pdf",
+      "source_question": 29,
+      "page": 9
+    },
+    "2022-ydt-30": {
+      "sha256": "2f191f6d429948128899996eee955bd9a0230eeea68366163c89958335b81228",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2022/YKS/TSK/yks_2022_ydt_ingilizce.pdf",
+      "source_question": 30,
+      "page": 9
+    },
+    "2022-ydt-31": {
+      "sha256": "7ea3a539ead3c277c728511c44ffca81cb9e4055581825b1d931d2bc17f32a12",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2022/YKS/TSK/yks_2022_ydt_ingilizce.pdf",
+      "source_question": 31,
+      "page": 9
+    },
+    "2022-ydt-32": {
+      "sha256": "8c38ce4697d07d0f9a85904107ad95c07a0cca08354850cc553f295d29514941",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2022/YKS/TSK/yks_2022_ydt_ingilizce.pdf",
+      "source_question": 32,
+      "page": 10
+    },
+    "2022-ydt-33": {
+      "sha256": "eda2ce1cb1cdcdf0d927fc6aee16ed6b9b71981b3609e9b0923219159d6bfb17",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2022/YKS/TSK/yks_2022_ydt_ingilizce.pdf",
+      "source_question": 33,
+      "page": 10
+    },
+    "2022-ydt-34": {
+      "sha256": "f439a9fc6adbbfa7d030c8597c68cef6b88d8e4c800f5e3bea545a4965210546",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2022/YKS/TSK/yks_2022_ydt_ingilizce.pdf",
+      "source_question": 34,
+      "page": 10
+    },
+    "2022-ydt-35": {
+      "sha256": "9988beeb0a53cdcee0c31bdf6c0b12b74e6645fb6f7d0ae83730b94dc9e73106",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2022/YKS/TSK/yks_2022_ydt_ingilizce.pdf",
+      "source_question": 35,
+      "page": 11
+    },
+    "2022-ydt-36": {
+      "sha256": "724b7aa8666e0b742afc1500df4362a7bdd5fffb3f009be087d9d2f7597c1242",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2022/YKS/TSK/yks_2022_ydt_ingilizce.pdf",
+      "source_question": 36,
+      "page": 11
+    },
+    "2022-ydt-37": {
+      "sha256": "be82206f78614102448a2c05b526f11ae34a7b469a9b80449bd8c18f90889941",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2022/YKS/TSK/yks_2022_ydt_ingilizce.pdf",
+      "source_question": 37,
+      "page": 11
+    },
+    "2022-ydt-38": {
+      "sha256": "036b307c9f673354e71da47741e9e39baa94186f37f05e0f2f7b957156845cb6",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2022/YKS/TSK/yks_2022_ydt_ingilizce.pdf",
+      "source_question": 38,
+      "page": 12
+    },
+    "2022-ydt-39": {
+      "sha256": "f5aebca44fbd6a51e4827279e289b28c45a68ebc13ad771d3ad026ac1c164dc2",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2022/YKS/TSK/yks_2022_ydt_ingilizce.pdf",
+      "source_question": 39,
+      "page": 12
+    },
+    "2022-ydt-40": {
+      "sha256": "ae9724251db99705eb674376f8dd03c331431b46dc4a2a9127e04873fc7fa692",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2022/YKS/TSK/yks_2022_ydt_ingilizce.pdf",
+      "source_question": 40,
+      "page": 12
+    },
+    "2022-ydt-41": {
+      "sha256": "6076cafe0c543aafdff9a852d37c220b32083520c3c258cc55ccfc6a0f635bc7",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2022/YKS/TSK/yks_2022_ydt_ingilizce.pdf",
+      "source_question": 41,
+      "page": 13
+    },
+    "2022-ydt-42": {
+      "sha256": "2d0a1a707012b29bbea80072cb9703a5d623de52063de87bd184db1ef8c9b383",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2022/YKS/TSK/yks_2022_ydt_ingilizce.pdf",
+      "source_question": 42,
+      "page": 13
+    },
+    "2022-ydt-43": {
+      "sha256": "96a76556b752648710f384c7e0b344f6ae631aa33a9357c8df67ed859f82eb7c",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2022/YKS/TSK/yks_2022_ydt_ingilizce.pdf",
+      "source_question": 43,
+      "page": 13
+    },
+    "2023-ydt-29": {
+      "sha256": "b4746b8ae5af62092e7a208f3ba73fb6bdacd5c3f0a22686bfb799dd338de08e",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_ydt_ing_2023_kitapcik_Sp72a.pdf",
+      "source_question": 29,
+      "page": 9
+    },
+    "2023-ydt-30": {
+      "sha256": "2cfe1b7bfe67b9c9f568bae29df827046731920dde91273c37d556a591e62bbb",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_ydt_ing_2023_kitapcik_Sp72a.pdf",
+      "source_question": 30,
+      "page": 9
+    },
+    "2023-ydt-31": {
+      "sha256": "12afbf5893eef1ea7ea8f529c86140f79c3edb13d3d429468f15156b3de6553e",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_ydt_ing_2023_kitapcik_Sp72a.pdf",
+      "source_question": 31,
+      "page": 9
+    },
+    "2023-ydt-32": {
+      "sha256": "a1d863096111cb4b8b41bc896e585113029489130393de176b93af44e0f72dc7",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_ydt_ing_2023_kitapcik_Sp72a.pdf",
+      "source_question": 32,
+      "page": 10
+    },
+    "2023-ydt-33": {
+      "sha256": "92107c61830deb102e7c92812259b05b27e097b0d83d3577d58908d54901f014",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_ydt_ing_2023_kitapcik_Sp72a.pdf",
+      "source_question": 33,
+      "page": 10
+    },
+    "2023-ydt-34": {
+      "sha256": "2867427b58cd83ac82707e0f68b62c96798466878024bdb426133c45c449ffb1",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_ydt_ing_2023_kitapcik_Sp72a.pdf",
+      "source_question": 34,
+      "page": 10
+    },
+    "2023-ydt-35": {
+      "sha256": "10088cd7f93db35749d5b02a34e68f1b955bca7e0ebd895ff173d5e7ca09d762",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_ydt_ing_2023_kitapcik_Sp72a.pdf",
+      "source_question": 35,
+      "page": 11
+    },
+    "2023-ydt-36": {
+      "sha256": "13da20a6b3ba39d03eb7d66492b6f5f74d0e523b923a96a1f5d2ad5a907473bf",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_ydt_ing_2023_kitapcik_Sp72a.pdf",
+      "source_question": 36,
+      "page": 11
+    },
+    "2023-ydt-37": {
+      "sha256": "3add7357c808405c363f0c6f862a7e6efbcc3310b9d5311d2189c71eb3ded522",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_ydt_ing_2023_kitapcik_Sp72a.pdf",
+      "source_question": 37,
+      "page": 11
+    },
+    "2023-ydt-38": {
+      "sha256": "5252bf44596cb2ee6decfbad43978580d8e822c11d0f1dfbf0f91252a57dcf21",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_ydt_ing_2023_kitapcik_Sp72a.pdf",
+      "source_question": 38,
+      "page": 12
+    },
+    "2023-ydt-39": {
+      "sha256": "157698c0c6b7b12464ae5a954781710218f5d64c3db846d8988c458f50b9b193",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_ydt_ing_2023_kitapcik_Sp72a.pdf",
+      "source_question": 39,
+      "page": 12
+    },
+    "2023-ydt-40": {
+      "sha256": "8387fe50129fdf7ebfceea8248169b32d6f5f032d4bf7efba3cb1c924a5b3708",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_ydt_ing_2023_kitapcik_Sp72a.pdf",
+      "source_question": 40,
+      "page": 12
+    },
+    "2023-ydt-41": {
+      "sha256": "af7d11816eafc681e7426c6bb7fd23f161e296698b1549cbc492c067fc641515",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_ydt_ing_2023_kitapcik_Sp72a.pdf",
+      "source_question": 41,
+      "page": 13
+    },
+    "2023-ydt-42": {
+      "sha256": "47abbee02aa46507f890df8bb2175715f0cd7a465ae079735515358e744f5a99",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_ydt_ing_2023_kitapcik_Sp72a.pdf",
+      "source_question": 42,
+      "page": 13
+    },
+    "2023-ydt-43": {
+      "sha256": "f351bcde269d78e4f8c2b9bd1275626e138205fc3c5007542504b40a09284e15",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2023/YKS/TSK/yks_ydt_ing_2023_kitapcik_Sp72a.pdf",
+      "source_question": 43,
+      "page": 13
+    },
+    "2024-ydt-29": {
+      "sha256": "468958f4d71b2ce297699ae4a0ca61b44714800beaeaa6e73ca8a9e215d79133",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_ydt_ing_2024_kitapcik_Sp865a.pdf",
+      "source_question": 29,
+      "page": 9
+    },
+    "2024-ydt-30": {
+      "sha256": "8dcf60891e0beb2a09e261d83b2b5ac2908e679cc4ec16105548884c09831ee3",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_ydt_ing_2024_kitapcik_Sp865a.pdf",
+      "source_question": 30,
+      "page": 9
+    },
+    "2024-ydt-31": {
+      "sha256": "bbbff1ef39cc5fd26a3dbaf92564e3b69fa2183afb0f368a04801cb6051924d6",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_ydt_ing_2024_kitapcik_Sp865a.pdf",
+      "source_question": 31,
+      "page": 9
+    },
+    "2024-ydt-32": {
+      "sha256": "95bad66a48046ef145fffb96592184889951d8bec9c2923058f7f7d45238e045",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_ydt_ing_2024_kitapcik_Sp865a.pdf",
+      "source_question": 32,
+      "page": 10
+    },
+    "2024-ydt-33": {
+      "sha256": "13f84148db532d6a25c075a9c1a4b4f7ab4dd79236e9cd16c12f0a3eb7646bad",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_ydt_ing_2024_kitapcik_Sp865a.pdf",
+      "source_question": 33,
+      "page": 10
+    },
+    "2024-ydt-34": {
+      "sha256": "d3eab0b59001bb2b7eb0a452847f6fa3c91091a14bd390afb51eef4ee92715a4",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_ydt_ing_2024_kitapcik_Sp865a.pdf",
+      "source_question": 34,
+      "page": 10
+    },
+    "2024-ydt-35": {
+      "sha256": "c160026b6b3d4c862d1b1e4dfc305cc99e462fbd316787431fbfe6234f3d9a7f",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_ydt_ing_2024_kitapcik_Sp865a.pdf",
+      "source_question": 35,
+      "page": 11
+    },
+    "2024-ydt-36": {
+      "sha256": "50ed42f404c7d55e5389f61ac00eb40ae915e89969dc5a607b04a3cf8f74123f",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_ydt_ing_2024_kitapcik_Sp865a.pdf",
+      "source_question": 36,
+      "page": 11
+    },
+    "2024-ydt-37": {
+      "sha256": "d3b01edee7317b0f6edd242c62fb71bd0b6ac63de06559ab89f7b40c2a33a2b4",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_ydt_ing_2024_kitapcik_Sp865a.pdf",
+      "source_question": 37,
+      "page": 11
+    },
+    "2024-ydt-38": {
+      "sha256": "4a54c59bdf3999f782d4e5058db33726aa3b212c4f1a34a41258722f9072f8e0",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_ydt_ing_2024_kitapcik_Sp865a.pdf",
+      "source_question": 38,
+      "page": 12
+    },
+    "2024-ydt-39": {
+      "sha256": "31a954ee3a93c6c851a8d2a03139c203864960e5431a9c8587df2fdfde9490c4",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_ydt_ing_2024_kitapcik_Sp865a.pdf",
+      "source_question": 39,
+      "page": 12
+    },
+    "2024-ydt-40": {
+      "sha256": "e210448a46318a46c0cf504f139dfa49c68c247d7dea8fba333c68902e416a32",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_ydt_ing_2024_kitapcik_Sp865a.pdf",
+      "source_question": 40,
+      "page": 12
+    },
+    "2024-ydt-41": {
+      "sha256": "8221f0c162dee5a31c6089efb353f90170e592b83a20555cd1e00292a4251e15",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_ydt_ing_2024_kitapcik_Sp865a.pdf",
+      "source_question": 41,
+      "page": 13
+    },
+    "2024-ydt-42": {
+      "sha256": "9330aafcf6a3d4928d742acbf798a6118d1ed2542c42b9c9f81f7bf142396cd0",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_ydt_ing_2024_kitapcik_Sp865a.pdf",
+      "source_question": 42,
+      "page": 13
+    },
+    "2024-ydt-43": {
+      "sha256": "9ea95e64b8e6d3151bdfae57d04d38b48cbf794b335d32e7d21bf0843ff00e03",
+      "source": "https://dokuman.osym.gov.tr/pdfdokuman/2024/YKS/TSK/yks_ydt_ing_2024_kitapcik_Sp865a.pdf",
+      "source_question": 43,
+      "page": 13
+    },
+    "lsac-lr-1": {
+      "sha256": "4ed1aadbaf44a0d41043568b252e68c3520c63f37383bd2a9298591dd13ffec3",
+      "source": "https://www.lsac.org/lsat/taking-lsat/test-format/logical-reasoning/logical-reasoning-sample-questions",
+      "source_question": 1,
+      "page": null
+    },
+    "lsac-lr-2": {
+      "sha256": "3c794b3a1bd2c21a2353ad1ee509e6b92fcbe5bf4f3bab1f8be22d88d405665e",
+      "source": "https://www.lsac.org/lsat/taking-lsat/test-format/logical-reasoning/logical-reasoning-sample-questions",
+      "source_question": 2,
+      "page": null
+    },
+    "lsac-lr-3": {
+      "sha256": "6e86fc8e0cddcd6c8ab7da625be324afc2c509492d2e50e1a4701768903d06ac",
+      "source": "https://www.lsac.org/lsat/taking-lsat/test-format/logical-reasoning/logical-reasoning-sample-questions",
+      "source_question": 3,
+      "page": null
+    },
+    "lsac-lr-4": {
+      "sha256": "2115c860e9a6fc56a5e03b0a50c228ffae54b9a9ca152297c8cb44e1e7ca9a9e",
+      "source": "https://www.lsac.org/lsat/taking-lsat/test-format/logical-reasoning/logical-reasoning-sample-questions",
+      "source_question": 4,
+      "page": null
+    },
+    "lsac-lr-5": {
+      "sha256": "bf37f7bf4a00e176f84ded9aa0225afb595537a327be9a85b1b194e67ca5139e",
+      "source": "https://www.lsac.org/lsat/taking-lsat/test-format/logical-reasoning/logical-reasoning-sample-questions",
+      "source_question": 5,
+      "page": null
+    },
+    "lsac-lr-6": {
+      "sha256": "fb4a0b9d64709defaaca9cac6d96706a65b60da897de39bf0e214eb162053f97",
+      "source": "https://www.lsac.org/lsat/taking-lsat/test-format/logical-reasoning/logical-reasoning-sample-questions",
+      "source_question": 6,
+      "page": null
+    },
+    "lsac-lr-7": {
+      "sha256": "2bc4fd2fb4a434c621b950dd79ec38315c0b155f42058b84dfbe404a1eb96739",
+      "source": "https://www.lsac.org/lsat/taking-lsat/test-format/logical-reasoning/logical-reasoning-sample-questions",
+      "source_question": 7,
+      "page": null
+    },
+    "lsac-lr-8": {
+      "sha256": "12776afc4d29004a448b40359a138b6758360ab1802447ff2223c165214aabb6",
+      "source": "https://www.lsac.org/lsat/taking-lsat/test-format/logical-reasoning/logical-reasoning-sample-questions",
+      "source_question": 8,
+      "page": null
+    },
+    "lsac-lr-9": {
+      "sha256": "4f5f6e1675b1778b04b376f90d898489755d1dfe7e571d13091e217696903bc5",
+      "source": "https://www.lsac.org/lsat/taking-lsat/test-format/logical-reasoning/logical-reasoning-sample-questions",
+      "source_question": 9,
+      "page": null
+    },
+    "lsac-lr-10": {
+      "sha256": "435b05b97ba954c8dd3c55368bf3830a84082f13c10364bc786fa7d00933e032",
+      "source": "https://www.lsac.org/lsat/taking-lsat/test-format/logical-reasoning/logical-reasoning-sample-questions",
+      "source_question": 10,
+      "page": null
+    }
+  }
+}

@@ -16,9 +16,15 @@ on:
       - research-app/train/kaggle_read.py
       - research-app/train/quran.py
       - research-app/train/human.py
+      - research-app/train/independent_exam.py
+      - research-app/train/independent_exam_data.py
+      - research-app/train/independent_exam_manifest.json
+      - research-app/train/prepare_independent_exam.py
+      - research-app/train/kaggle_independent_exam.py
   workflow_dispatch:
     inputs:
       mode:
+        description: "smoke, start, collect, or exam (independent evaluation only)"
         default: "smoke"
       readings:
         default: "11"
@@ -54,6 +60,7 @@ permissions:
 
 jobs:
   read:
+    if: inputs.mode != 'exam' && !(github.event_name == 'push' && contains(github.event.head_commit.message, '[independent-exam]'))
     runs-on: ubuntu-24.04
     timeout-minutes: 350
     env:
@@ -110,6 +117,7 @@ jobs:
           api.authenticate()
           print(api.config_values.get("username") or getattr(api, "username", "") or "")
           EOF
+
             name=$(tr -d '[:space:]' < who.txt)
             if [ -z "$name" ]; then
               kaggle config view 2>&1 | head -20
@@ -233,3 +241,34 @@ jobs:
               api.upload_folder(repo_id=repo, folder_path="res/out", commit_message=f"read the Quran {status['readings']} times, then our examples")
               print(f"::notice title=Saved::kept in the private repository {repo}")
           EOF
+
+  independent-exam:
+    if: inputs.mode == 'exam' || (github.event_name == 'push' && contains(github.event.head_commit.message, '[independent-exam]'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 140
+    concurrency:
+      group: orbis-independent-exam
+      cancel-in-progress: false
+    env:
+      KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+      KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+      KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install examination readers and existing service clients
+        run: pip install --quiet kaggle "huggingface_hub>=0.34,<1" pandas pyarrow pymupdf
+      - name: Prepare published questions and exclude overlap with known training sources
+        run: python research-app/train/prepare_independent_exam.py
+      - name: Evaluate on the free Kaggle GPU (no training)
+        run: python research-app/train/kaggle_independent_exam.py
+      - name: Keep examination scores and provenance (no question texts or weights)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: independent-exam-${{ github.run_id }}
+          path: exam-report/
+          if-no-files-found: ignore
