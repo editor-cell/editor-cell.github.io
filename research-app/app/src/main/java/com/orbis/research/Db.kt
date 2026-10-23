@@ -243,6 +243,12 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
         val db = writableDatabase
         db.beginTransaction()
         try {
+            // Paragraph IDs referenced by a running/saved search must never identify different text
+            // after a refresh, even when SQLite would otherwise recycle the deleted highest ID.
+            var nextParagraphId = db.rawQuery(
+                "SELECT MAX(n) FROM (SELECT COALESCE(MAX(id), 0) n FROM paras UNION ALL SELECT COALESCE(MAX(para_id), 0) n FROM search_items)", null,
+            ).use { c -> c.moveToFirst(); c.getLong(0) + 1 }
+            val oldIds = HashMap<String, Long>()
             var docId = db.insertWithOnConflict("docs", null, ContentValues().apply {
                 put("source_id", sourceId); put("url", url); put("title", title); put("date", date)
                 put("fetched_at", System.currentTimeMillis()); put("extraction_version", 1)
@@ -252,7 +258,9 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
                 docId = db.rawQuery("SELECT id FROM docs WHERE url = ? AND extraction_version < 1", arrayOf(url))
                     .use { c -> if (c.moveToFirst()) c.getLong(0) else -1L }
                 if (docId > 0) {
-                    db.delete("paras", "doc_id = ?", arrayOf(docId.toString()))
+                    db.rawQuery("SELECT id, text FROM paras WHERE doc_id = ?", arrayOf(docId.toString())).use { c ->
+                        while (c.moveToNext()) oldIds[c.getString(1)] = c.getLong(0)
+                    }
                     db.update("docs", ContentValues().apply {
                         put("title", title); put("date", date); put("fetched_at", System.currentTimeMillis()); put("extraction_version", 1)
                     }, "id = ?", arrayOf(docId.toString()))
@@ -260,11 +268,17 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
             }
             if (docId > 0) {
                 paragraphs.forEachIndexed { i, p ->
-                    db.insert("paras", null, ContentValues().apply {
-                        put("doc_id", docId); put("idx", i); put("text", p)
-                    })
+                    val keptId = oldIds.remove(p)
+                    if (keptId != null) {
+                        db.update("paras", ContentValues().apply { put("idx", i) }, "id = ?", arrayOf(keptId.toString()))
+                    } else {
+                        db.insertOrThrow("paras", null, ContentValues().apply {
+                            put("id", nextParagraphId++); put("doc_id", docId); put("idx", i); put("text", p)
+                        })
+                    }
                 }
             }
+            for (id in oldIds.values) db.delete("paras", "id = ?", arrayOf(id.toString()))
             db.setTransactionSuccessful()
         } finally { db.endTransaction() }
     }
