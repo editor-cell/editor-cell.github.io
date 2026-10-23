@@ -7,7 +7,7 @@ on:
       - .github/workflows/research-app.yml
   workflow_dispatch:
 concurrency:
-  group: research-app-${{ github.ref }}
+  group: research-app-${{ github.ref }}-${{ (github.event_name == 'workflow_dispatch' || github.ref_name != 'anlam-okuma' || contains(github.event.head_commit.message, '[android-latest-build]')) && 'build' || github.run_id }}
   cancel-in-progress: true
 permissions:
   contents: write
