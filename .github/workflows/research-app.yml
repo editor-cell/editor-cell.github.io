@@ -1,26 +1,21 @@
 name: Research app (APK)
-
-# Builds the Orbis Araştırma Android app and puts the APK on a release page the owner can open
-# from the phone. It never touches the site: the site is published only by "Publish site".
 on:
   push:
-    branches: [main, ccr-b3ffb058-472a31]
+    branches: [main, ccr-b3ffb058-472a31, anlam-okuma]
     paths:
       - research-app/**
       - .github/workflows/research-app.yml
-      - .github/scripts/**
   workflow_dispatch:
-
 concurrency:
   group: research-app-${{ github.ref }}
   cancel-in-progress: true
-
 permissions:
   contents: write
-
 jobs:
   apk:
+    if: github.event_name == 'workflow_dispatch' || github.ref_name != 'anlam-okuma' || contains(github.event.head_commit.message, '[android-latest-build]')
     runs-on: ubuntu-24.04
+    timeout-minutes: 60
     defaults:
       run:
         working-directory: research-app
@@ -31,117 +26,84 @@ jobs:
           distribution: temurin
           java-version: 17
       - uses: gradle/actions/setup-gradle@v4
-
-      # Every model the app offers must still be downloadable where the app looks for it.
-      - name: Check the model addresses
-        run: |
-          grep -oE 'https://(huggingface\.co|github\.com)/[^"]+\.gguf' app/src/main/java/com/orbis/research/Models.kt | while read -r url; do
-            code=$(curl -s -o /dev/null -I -L -w '%{http_code}' "$url")
-            echo "$code $url"
-            [ "$code" = "200" ] || exit 1
-          done
-
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - name: Install the Android build tools
         run: |
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "ndk;29.0.13113456" "cmake;3.31.6" "platforms;android-36" > /dev/null
-
-      - name: Fetch the language model engine (llama.cpp)
-        run: ./fetch-llama.sh
-
-      # The app's bridge to llama.cpp, built for this machine, so the tests can run the real model.
-      - name: Build the model bridge for the tests
+      - name: Fetch and build the meaning-search engine for host checks
         run: |
+          ./fetch-llama.sh
           cmake -S app/src/main/cpp -B build-host -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF \
             -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_TOOLS=OFF \
             -DLLAMA_BUILD_EXAMPLES=OFF -DLLAMA_BUILD_SERVER=OFF -DLLAMA_BUILD_COMMON=OFF -DLLAMA_BUILD_APP=OFF \
             -DLLAMA_CURL=OFF -DLLAMA_OPENSSL=OFF > /dev/null
           cmake --build build-host -j4 --target orbisllm
-
-      - uses: actions/cache@v4
-        with:
-          path: ~/test-model
-          key: test-models-qwen3-4b-q4_k_m-e5-small-q8_0
-
-      # The small model the phone runs on 4 GB of memory, kept apart so the big one's cache stays valid.
-      - uses: actions/cache@v4
-        with:
-          path: ~/test-model-small
-          key: test-model-qwen3-1.7b-q4_k_m
-
-      - name: Fetch the models for the tests
+      - name: Build the exact trained tokenizer for host and Android
         run: |
-          mkdir -p ~/test-model
-          f=~/test-model/Qwen3-4B-Q4_K_M.gguf
-          [ -s "$f" ] || curl -fsSL -o "$f" https://huggingface.co/Qwen/Qwen3-4B-GGUF/resolve/main/Qwen3-4B-Q4_K_M.gguf
-          e=~/test-model/multilingual-e5-small-q8_0.gguf
+          rustup target add aarch64-linux-android
+          cargo build --manifest-path tokenizer-native/Cargo.toml --release
+          export CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER="$ANDROID_HOME/ndk/29.0.13113456/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android28-clang"
+          RUSTFLAGS='-C link-arg=-Wl,-z,max-page-size=16384' cargo build --manifest-path tokenizer-native/Cargo.toml --target aarch64-linux-android --release --locked
+          mkdir -p app/src/main/jniLibs/arm64-v8a
+          cp tokenizer-native/target/aarch64-linux-android/release/liborbistokenizer.so app/src/main/jniLibs/arm64-v8a/
+      - uses: actions/cache@v4
+        with:
+          path: ~/test-embed
+          key: test-embed-e5-small-q8_0
+      - name: Fetch the public meaning-search model
+        run: |
+          mkdir -p ~/test-embed
+          e=~/test-embed/multilingual-e5-small-q8_0.gguf
           [ -s "$e" ] || curl -fsSL -o "$e" https://github.com/editor-cell/editor-cell.github.io/releases/download/models-1/multilingual-e5-small-q8_0.gguf
-          ls -la ~/test-model
-          mkdir -p ~/test-model-small
-          f=~/test-model-small/Qwen3-1.7B-Q4_K_M.gguf
-          [ -s "$f" ] || curl -fsSL -o "$f" https://huggingface.co/unsloth/Qwen3-1.7B-GGUF/resolve/main/Qwen3-1.7B-Q4_K_M.gguf
-          ls -la ~/test-model-small
-
-      # Source lists, robots.txt, reading pages and PDFs; then the app's prompts on the big model
-      # (paragraphs labelled right, a stop within a second, a digit-free direction) and the meaning
-      # model (English paragraphs that say what a Turkish claim says, in other words, rank first).
-      - name: Test the reading logic and the models
-        run: |
-          export ORBIS_LIB="$PWD/build-host/liborbisllm.so" ORBIS_MODEL=~/test-model/Qwen3-4B-Q4_K_M.gguf
-          export ORBIS_EMBED=~/test-model/multilingual-e5-small-q8_0.gguf
-          status=0
-          ./gradlew -p logic-test test --no-daemon || status=$?
-          # The score card is also left as notes on the run, readable without the log.
-          python3 ../.github/scripts/model-score.py logic-test/build/test-results/test | tee score.txt || true
-          grep -E '^(FAIL|SCORE)' score.txt | head -40 | while IFS= read -r line; do echo "::warning::$line"; done || true
-          python3 - <<'PY' || true
-          import glob, xml.etree.ElementTree as ET
-          for p in glob.glob("logic-test/build/test-results/test/TEST-*.xml"):
-              for c in ET.parse(p).getroot().iter("testcase"):
-                  f = c.find("failure")
-                  if f is not None:
-                      msg = (f.get("message") or "").replace("\n", " ")[:300]
-                      print(f"::error::{c.get('classname')} {c.get('name')[:80]}: {msg}")
-          PY
-          python3 ../.github/scripts/gate-notes.py logic-test/build/test-results/test "Concept gate, Qwen3 4B" || true
-          exit $status
-
-      # The phone's own model. Paragraphs that have nothing to do with the claim (thanks to the authors,
-      # a figure note, a bank speech, a page about the Basel Process) must not become findings on it,
-      # and clear findings must still reach it. A failure here stops the build, so no release goes out;
-      # close and subtle cases, synonyms and Turkish sources are only reported.
-      - name: Test the concept gate on the small model
-        if: always()
-        run: |
-          export ORBIS_LIB="$PWD/build-host/liborbisllm.so" ORBIS_MODEL=~/test-model-small/Qwen3-1.7B-Q4_K_M.gguf
-          export ORBIS_EMBED=~/test-model/multilingual-e5-small-q8_0.gguf
-          status=0
-          ./gradlew -p logic-test cleanTest test --tests ConceptGateTest --no-daemon || status=$?
-          python3 ../.github/scripts/model-score.py logic-test/build/test-results/test | tee score-small.txt || true
-          grep -E '^(FAIL|SCORE)' score-small.txt | head -20 | while IFS= read -r line; do echo "::warning title=Qwen3 1.7B::$line"; done || true
-          python3 ../.github/scripts/gate-notes.py logic-test/build/test-results/test "Concept gate, Qwen3 1.7B" || true
-          exit $status
-
-      - name: Build the APK
+      - name: Fetch and verify only the current private trained model
         env:
-          BUILD_NUMBER: ${{ github.run_number }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
+          python -m pip install 'huggingface_hub<1'
+          python train/fetch_android_test_model.py "$RUNNER_TEMP/orbis-nli"
+      - name: Test reading logic, meaning search, exact tokenizer and trained model parity
+        run: |
+          export ORBIS_LIB="$PWD/build-host/liborbisllm.so"
+          export ORBIS_EMBED=~/test-embed/multilingual-e5-small-q8_0.gguf
+          export ORBIS_TOKENIZER_LIB="$PWD/tokenizer-native/target/release/liborbistokenizer.so"
+          export ORBIS_NLI_MODEL="$RUNNER_TEMP/orbis-nli/model"
+          ./gradlew -p logic-test test --no-daemon
+          python - <<'PY'
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+          p=Path('logic-test/build/test-results/test/TEST-NliRuntimeTest.xml')
+          root=ET.parse(p).getroot()
+          assert int(root.attrib['tests']) == 2 and int(root.attrib.get('skipped',0)) == 0
+          assert int(root.attrib.get('failures',0)) == 0 and int(root.attrib.get('errors',0)) == 0
+          PY
+      - name: Build and inspect the signed APK
+        run: |
+          export BUILD_NUMBER=$((1000 + ${{ github.run_number }}))
+          echo "BUILD_NUMBER=$BUILD_NUMBER" >> "$GITHUB_ENV"
           ./gradlew assembleRelease --no-daemon
           cp app/build/outputs/apk/release/app-release.apk orbis-arastirma.apk
-          ls -la orbis-arastirma.apk
-          unzip -l orbis-arastirma.apk | grep -E '\.so$'
-
+          python - <<'PY'
+          import zipfile
+          with zipfile.ZipFile('orbis-arastirma.apk') as z:
+              names=set(z.namelist())
+              assert 'assets/nli_model.json' in names
+              assert 'lib/arm64-v8a/liborbistokenizer.so' in names
+              assert 'lib/arm64-v8a/libonnxruntime.so' in names
+              assert not any(n.endswith(('.onnx','.gguf','.safetensors')) for n in names)
+          PY
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose orbis-arastirma.apk
       - uses: actions/upload-artifact@v4
         with:
           name: orbis-arastirma-apk
           path: research-app/orbis-arastirma.apk
-
-      - name: Put the APK on the release page
+      - name: Publish the APK for the phone
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          tag="arastirma-v0.1.${{ github.run_number }}"
-          gh release create "$tag" orbis-arastirma.apk \
-            --target "${{ github.sha }}" \
-            --title "Orbis Araştırma 0.1.${{ github.run_number }}" \
-            --notes "Telefona kurmak için aşağıdaki orbis-arastirma.apk dosyasına dokunun."
+          tag="arastirma-v0.1.$BUILD_NUMBER"
+          gh release create "$tag" orbis-arastirma.apk --target "${{ github.sha }}" \
+            --title "Orbis Araştırma 0.1.$BUILD_NUMBER · son eğitilmiş model" \
+            --notes-file ANDROID-TRIAL.md --latest

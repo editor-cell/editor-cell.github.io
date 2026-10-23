@@ -93,7 +93,7 @@ object SearchState {
     fun stop(ctx: Context) {
         Db.get(ctx).setRun(state = Db.RUN_STOPPED, message = "Durduruldu.")
         WorkManager.getInstance(ctx).cancelUniqueWork(SearchWorker.NAME)
-        Llm.abortNow()
+        Nli.abortNow()
         say("")
         changed()
     }
@@ -119,6 +119,7 @@ fun SearchScreen(goTo: (Int) -> Unit) {
     val totals = remember { db.totals() }
     val vectors = remember { db.vectorCounts() }
     val hasEmbedder = remember { Models.embedderPath(ctx) != null }
+    val hasReader = remember { NliFiles.ready(ctx) }
     val s = SearchState
     val version by s.version.collectAsState()
     val status by s.status.collectAsState()
@@ -138,14 +139,12 @@ fun SearchScreen(goTo: (Int) -> Unit) {
 
     LazyColumn(Modifier.fillMaxSize().padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         item {
-            Text("Yargı, soru ya da kavram yazın", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.padding(top = 16.dp))
+            Text("Türkçe veya İngilizce bir iddia yazın", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.padding(top = 16.dp))
             Text(
-                "Araç, yazdığınıza anlamca en yakın paragrafları bulur, okur ve destekleyen ya da çürüten paragrafı belgeden " +
-                    "aynen getirir. Bir yargı, bir soru ya da bir kavram yazabilirsiniz: soruyu cevaplayan ya da kavram hakkında " +
-                    "somut bilgi veren paragraflar da DESTEKLİYOR diye gelir. Türkçe yazabilirsiniz; başka kelimelerle ya da " +
-                    "İngilizce yazılmış paragrafları da bulur.\n" +
-                    "Telefonda arat: telefona toplanmış ${totals.first} belgede arar, internete çıkmaz.\n" +
-                    "Webde arat: ayrıca kaynak listenizdeki sitelere o an girip henüz toplanmamış yeni belgeleri de okur.",
+                "Araç, iddianıza anlamca en yakın paragrafları bulur. Son eğitilmiş model her paragrafı iddiayla karşılaştırır; " +
+                    "destekleyen ya da çürüten paragraflar belgedeki sözleriyle gösterilir.\n" +
+                    "Telefonda arat: telefona toplanmış ${totals.first} belgede arar.\n" +
+                    "Webde arat: kaynak listenizdeki sitelerden yeni belgeler de alır.",
                 style = MaterialTheme.typography.bodySmall,
             )
         }
@@ -159,7 +158,7 @@ fun SearchScreen(goTo: (Int) -> Unit) {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
                 if (going) OutlinedButton(onClick = { s.stop(ctx.applicationContext) }) { Text("Durdur") }
                 else {
-                    val can = s.claim.isNotBlank() && hasEmbedder
+                    val can = s.claim.isNotBlank() && hasEmbedder && hasReader
                     Button(onClick = { s.start(ctx.applicationContext, web = false) }, enabled = can) { Text("Telefonda arat") }
                     Button(onClick = { s.start(ctx.applicationContext, web = true) }, enabled = can) { Text("Webde arat") }
                 }
@@ -196,6 +195,7 @@ fun SearchScreen(goTo: (Int) -> Unit) {
                 }) { Text(if (making) "Evrak hazırlanıyor…" else "Evrak oluştur") }
             }
         }
+        if (!hasReader) item { Notice("Önce son eğitilmiş paragraf modelini yükleyin.", "Model sekmesine git") { goTo(3) } }
         if (!hasEmbedder) item { Notice(Search.NO_EMBEDDER, "Model sekmesine git") { goTo(3) } }
         else if (totals.first == 0) item { Notice("Telefonda henüz belge yok. Önce kaynak ekleyip belge toplayın.", "Kaynaklara git") { goTo(1) } }
         else if (vectors.second > 0) item {
@@ -225,13 +225,6 @@ fun SearchScreen(goTo: (Int) -> Unit) {
                     )
                 }
             }
-        }
-        if (r != null && r.state == Db.RUN_DONE && findings.none { !it.judgement.indirect } && !Models.canReasonByAnalogy(Settings.modelPath(ctx))) item {
-            Text(
-                "Kıyas yapılmadı: bu telefondaki dil modeli denemelerde kıyası ters yönde kurdu. Kıyas için büyük model " +
-                    "(Qwen3 4B, 6 GB ve üstü bellekli telefon) gerekir.",
-                style = MaterialTheme.typography.bodySmall,
-            )
         }
         if (r != null && r.state == Db.RUN_DONE && findings.isNotEmpty()) item {
             Text("${r.total} paragraf okundu, ${findings.size} tanesi yargıyla ilgili.", style = MaterialTheme.typography.bodySmall)

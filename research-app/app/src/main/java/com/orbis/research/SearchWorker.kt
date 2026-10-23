@@ -20,15 +20,29 @@ class SearchWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
     override suspend fun doWork(): Result {
         val ctx = applicationContext
         val db = Db.get(ctx)
-        val run = db.run() ?: return Result.success()
-        if (run.state != Db.RUN_GOING) return Result.success()
+        val previous = db.run() ?: return Result.success()
+        if (previous.state != Db.RUN_GOING) return Result.success()
+        if (!NliFiles.ready(ctx)) {
+            db.setRun(state = Db.RUN_FAILED, message = "Önce Model sekmesinden son eğitilmiş modeli yükleyin.")
+            SearchState.changed()
+            return Result.success()
+        }
+        val marker = NliFiles.manifest(ctx).getString("sha256")
+        val prefs = ctx.getSharedPreferences("search-model", Context.MODE_PRIVATE)
+        val run = if (prefs.getString("current", null) != marker) {
+            // Saved answers from a previous model are never mixed with this trial.
+            db.newRun(previous.claim, previous.range, previous.sourceIds)
+            prefs.edit().putString("current", marker).apply()
+            db.run() ?: return Result.success()
+        } else previous
         fun current() = db.run()?.let { it.startedAt == run.startedAt && it.state == Db.RUN_GOING } == true
         suspend fun say(text: String) {
             SearchState.say(text)
             try { setForeground(foregroundInfo(text)) } catch (e: Exception) { }
         }
         try { setForeground(foregroundInfo("Aranıyor…")) } catch (e: Exception) { }
-        Llm.allow()
+        Nli.allow()
+        var modelAcquired = false
         SearchState.working.value = true
         try {
             val search = Search(ctx)
@@ -36,73 +50,29 @@ class SearchWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
                 if (!search.prepare(run, { say(it) }, { isStopped || !current() })) return Result.success()
                 SearchState.changed()
             }
-            // The language model reads the paragraphs, and writes the suggestion when none bears on
-            // the claim, so it is loaded even when there is nothing left to read.
-            val path = Settings.modelPath(ctx)
-            if (path == null || !File(path).exists()) {
-                db.setRun(state = Db.RUN_FAILED, message = "Önce Model sekmesinden bir dil modeli indirin.")
-                return Result.success()
-            }
-            say("Model yükleniyor…")
-            if (!Llm.ensure(ctx, path)) {
-                db.setRun(state = Db.RUN_FAILED, message = "Model açılamadı; dosya bozuk olabilir. Model sekmesinden yeniden indirin.")
-                return Result.success()
-            }
-            var pending = db.pendingItems()
-            if (pending.isNotEmpty()) {
-                var english = db.run()?.english
-                if (english == null) {
-                    say("Yargı İngilizceye çevriliyor…")
-                    english = search.translate(run.claim) ?: return Result.success()
-                    db.setRun(english = english)
-                }
-                // The claim's key concepts: of the paragraphs closest in meaning, the model reads only
-                // those that speak of them (a search under way before this existed is left as it is).
-                if (db.run()?.concepts == null && (db.run()?.done ?: 0) == 0) {
-                    say("Yargının ana kavramları çıkarılıyor…")
-                    val found = search.concepts(run.claim, english) ?: return Result.success()
-                    search.gate(found)
-                    SearchState.changed()
-                    pending = db.pendingItems()
-                }
-                val total = db.run()?.total ?: pending.size
-                val started = System.currentTimeMillis()
-                for ((n, item) in pending.withIndex()) {
-                    if (isStopped || !current()) break
-                    // After the first few paragraphs the phone's own pace gives an honest estimate.
-                    val left = if (n >= 2) ((System.currentTimeMillis() - started) / n * (pending.size - n) / 1000).toInt() else -1
-                    say("Paragraf ${total - pending.size + n + 1}/$total okunuyor…" + if (left >= 0) " (yaklaşık ${duration(left)} kaldı)" else "")
-                    val answer = search.judge(run.claim, english, item.second)
-                    if (answer == null && (isStopped || !current())) break
-                    db.saveAnswer(item.first, answer, run.startedAt)
-                    SearchState.changed()
-                }
+            say("Son eğitilmiş model yükleniyor…")
+            Nli.ensure(ctx)
+            modelAcquired = true
+            val pending = db.pendingItems()
+            val total = db.run()?.total ?: pending.size
+            val started = System.currentTimeMillis()
+            for ((n, item) in pending.withIndex()) {
+                if (isStopped || !current()) break
+                val left = if (n >= 2) ((System.currentTimeMillis() - started) / n * (pending.size - n) / 1000).toInt() else -1
+                say("Paragraf ${total - pending.size + n + 1}/$total okunuyor…" + if (left >= 0) " (yaklaşık ${duration(left)} kaldı)" else "")
+                val answer = search.judge(run.claim, item.second)
+                if (answer == null || isStopped || !current()) break
+                db.saveAnswer(item.first, answer, run.startedAt)
+                SearchState.changed()
             }
             if (isStopped || !current()) return Result.success()
-            // No paragraph says it outright: as in kıyas, reason from comparable cases among the
-            // closest paragraphs the model found unrelated, then suggest where else to look.
-            if (search.findings().none { !it.judgement.indirect }) {
-                val judged = if (Models.canReasonByAnalogy(path)) db.judgedItems() else emptyList()
-                val tried = judged.count { it.third?.startsWith("UNRELATED\n") == true }
-                val toTry = judged.filter { it.third?.trim() == "UNRELATED" }.take(maxOf(0, Search.ANALOGY_TRIES - tried))
-                val english = db.run()?.english
-                for ((n, item) in toTry.withIndex()) {
-                    if (isStopped || !current()) return Result.success()
-                    say("Kıyas için benzer durumlar inceleniyor (${n + 1}/${toTry.size})…")
-                    val a = search.analogy(run.claim, english, item.second) ?: return Result.success()
-                    db.saveAnswer(item.first, a, run.startedAt)
-                    SearchState.changed()
-                }
-                if (isStopped || !current()) return Result.success()
-                say("Araştırma için bir yön önerisi hazırlanıyor…")
-                search.suggest(run.claim)?.let { if (current()) db.setRun(suggestion = it) }
-            }
             if (current()) db.setRun(state = Db.RUN_DONE)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Throwable) {
             if (current()) db.setRun(state = Db.RUN_FAILED, message = "Bir hata oldu: ${e.message}")
         } finally {
+            if (modelAcquired) kotlinx.coroutines.withContext(kotlinx.coroutines.NonCancellable) { Nli.release() }
             SearchState.working.value = false
             SearchState.say("")
             SearchState.changed()

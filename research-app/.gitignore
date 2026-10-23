@@ -6,3 +6,6 @@ app/build/
 app/.cxx/
 app/src/main/cpp/llama.cpp
 build-host/
+
+tokenizer-native/target/
+app/src/main/jniLibs/

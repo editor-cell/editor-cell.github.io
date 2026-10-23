@@ -15,23 +15,6 @@ data class ModelInfo(val id: String, val title: String, val note: String, val ur
 }
 
 object Models {
-    // Chosen by the comparison workflow (research-app-models.yml): the app's own prompts on five
-    // Turkish claims and eight paragraphs: 4B 15/15, 1.7B 14/15. Not offered: Qwen2.5 1.5B
-    // (mistranslated Turkish) and Qwen3 0.6B (8/15, called almost every paragraph supporting).
-    // The app suggests the largest one the phone's memory holds; the owner can pick any.
-    val all = listOf(
-        ModelInfo(
-            "qwen3-4b", "Qwen3 4B (büyük)", "En isabetlisi: denemelerde her çeviriyi ve her paragrafı doğru yaptı. " +
-                "6 GB ve üstü bellekli telefonlar için; bir paragrafı okuması birkaç saniye sürer.",
-            "https://huggingface.co/Qwen/Qwen3-4B-GGUF/resolve/main/Qwen3-4B-Q4_K_M.gguf", 2500, 6,
-        ),
-        ModelInfo(
-            "qwen3-1.7b", "Qwen3 1.7B (orta)", "4 GB bellekli telefonlar için (ör. Redmi Note 8). Türkçeyi doğru " +
-                "çeviriyor; denemelerde 15 kontrolün 14'ünü doğru yaptı, bir çürüten paragrafı destekliyor sandı.",
-            "https://huggingface.co/unsloth/Qwen3-1.7B-GGUF/resolve/main/Qwen3-1.7B-Q4_K_M.gguf", 1100, 3,
-        ),
-    )
-
     fun ramGb(ctx: Context): Double {
         val mi = ActivityManager.MemoryInfo()
         ctx.getSystemService(ActivityManager::class.java).getMemoryInfo(mi)
@@ -64,12 +47,6 @@ object Models {
     /** The meaning model the owner chose, or the one this phone's memory suggests. */
     fun embedder(ctx: Context): ModelInfo = embedders.firstOrNull { it.id == Settings.embedderId(ctx) } ?: recommendedEmbedder(ctx)
 
-    /**
-     * Whether the language model at [path] may reason by analogy (kıyas). In the comparison
-     * workflow only Qwen3 4B built analogies in the right direction; 1.7B turned one around.
-     */
-    fun canReasonByAnalogy(path: String?): Boolean = path != null && path.endsWith(all[0].fileName)
-
     /** A model file that is fully downloaded. */
     fun ready(ctx: Context, m: ModelInfo): Boolean {
         val f = file(ctx, m)
@@ -78,19 +55,9 @@ object Models {
 
     fun embedderPath(ctx: Context): String? = embedder(ctx).let { if (ready(ctx, it)) file(ctx, it).path else null }
 
-    /** The largest model this phone holds comfortably; a "4 GB" phone reports about 3.6 GB. */
-    fun recommended(ctx: Context): ModelInfo {
-        val ram = ramGb(ctx)
-        return if (ram >= 5.5) all[0] else all[1]
-    }
-
     fun dir(ctx: Context): File = File(ctx.getExternalFilesDir(null) ?: ctx.filesDir, "models").apply { mkdirs() }
 
     fun file(ctx: Context, m: ModelInfo) = File(dir(ctx), m.fileName)
-
-    /** Language model files on the phone (the meaning model is not one of them). */
-    fun installed(ctx: Context): List<File> =
-        dir(ctx).listFiles { f -> f.name.endsWith(".gguf") && embedders.none { it.fileName == f.name } }?.sortedBy { it.name } ?: emptyList()
 
     fun download(ctx: Context, m: ModelInfo): Long {
         val target = file(ctx, m)
@@ -111,7 +78,7 @@ object Models {
     private fun prefs(ctx: Context) = ctx.getSharedPreferences("downloads", Context.MODE_PRIVATE)
 
     /** Downloads started earlier that are still running, by model id; survives leaving the screen. */
-    fun pending(ctx: Context): Map<String, Long> = (all + embedders).mapNotNull { m ->
+    fun pending(ctx: Context): Map<String, Long> = embedders.mapNotNull { m ->
         val id = prefs(ctx).getLong(m.id, -1L)
         val st = if (id >= 0) status(ctx, id)?.third else null
         if (st == DownloadManager.STATUS_RUNNING || st == DownloadManager.STATUS_PENDING || st == DownloadManager.STATUS_PAUSED) m.id to id else null

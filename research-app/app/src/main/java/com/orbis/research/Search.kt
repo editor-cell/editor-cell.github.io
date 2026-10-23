@@ -8,17 +8,7 @@ import kotlinx.coroutines.withContext
 
 class Finding(val paragraph: Paragraph, val judgement: Judgement)
 
-/**
- * One search, step by step, each step saved so an interrupted search goes on where it stopped:
- * 1. the meaning model picks the paragraphs closest in meaning to the claim (in any wording or
- *    language) within the chosen dates and sources;
- * 2. the language model puts the claim into English once (it judges English paragraphs better
- *    with it), then reads the paragraphs one by one and labels each; the words shown are always
- *    the paragraph as it was read from the document;
- * 3. if nothing bears on the claim outright, the model looks among the closest paragraphs for a
- *    comparable case to reason from by analogy (kıyas), shown apart from the evidence, and offers
- *    one line on where else to look.
- */
+/** Finds candidate paragraphs by meaning, then classifies each with the latest trained NLI model. */
 class Search(private val ctx: Context) {
     private val db = Db.get(ctx)
 
@@ -43,9 +33,7 @@ class Search(private val ctx: Context) {
             }
             if (stopped()) return false
             say("Yargıya anlamca en yakın paragraflar bulunuyor…")
-            // A wide pool: the language model reads only those of them that speak of the claim's concepts
-            // (see [gate]), so the closest few alone could all be turned away.
-            db.setItems(db.closest(q, Settings.candidates(ctx) * POOL, run.range, run.sourceIds))
+            db.setItems(db.closest(q, Settings.candidates(ctx), run.range, run.sourceIds))
             db.setRun(prepared = true)
         } finally {
             Embedder.release()
@@ -104,78 +92,11 @@ class Search(private val ctx: Context) {
         }
     }
 
-    /**
-     * Step 2 for one paragraph: the model's answers as saved (the verdict, and for a paragraph that
-     * bears on the claim, on the next line, whether it says so outright and why not), or null if
-     * the search was stopped.
-     */
-    suspend fun judge(claim: String, english: String?, paraId: Long): String? {
+    /** The trained NLI model reads the original paragraph and the claim directly. */
+    suspend fun judge(claim: String, paraId: Long): String? {
         val p = db.paragraph(paraId) ?: return "UNRELATED"
-        val v = Llm.generate(Prompts.JUDGE_SYSTEM, Prompts.judge(claim, english, p), Prompts.JUDGE_GRAMMAR, maxTokens = 8)?.trim() ?: return null
-        val verdict = when (v) { "SUPPORTS" -> Verdict.SUPPORTS; "CONTRADICTS" -> Verdict.CONTRADICTS; else -> return v }
-        run {
-            // The paragraph alone may be a view its document goes on to refute ("some say the tax had no
-            // effect; it did"), whichever way it points; read it with its neighbours.
-            val doc = db.paragraphsOfDoc(p.docUrl)
-            val i = doc.indexOfFirst { it.first == p.id }
-            val before = if (i > 0) doc[i - 1].second else null
-            val after = if (i >= 0 && i < doc.size - 1) doc[i + 1].second else null
-            val stance = Llm.generate(Prompts.JUDGE_SYSTEM, Prompts.stance(p, before, after), Prompts.STANCE_GRAMMAR, maxTokens = 8)?.trim() ?: return null
-            if (stance == "REFUTED") return Prompts.REFUTED
-        }
-        val how = Llm.generate(Prompts.JUDGE_SYSTEM, Prompts.how(claim, english, p, verdict), Prompts.HOW_GRAMMAR, maxTokens = 100)?.trim() ?: return null
-        return "$v\n$how"
+        return Nli.judge(p.text, claim)
     }
-
-    /**
-     * Step four for one paragraph that step one called unrelated: the answer as saved, with the
-     * model's kıyas if it found one, or null if the search was stopped.
-     */
-    suspend fun analogy(claim: String, english: String?, paraId: Long): String? {
-        val p = db.paragraph(paraId) ?: return Prompts.withAnalogy(null)
-        val a = Llm.generate(Prompts.JUDGE_SYSTEM, Prompts.analogy(claim, english, p), Prompts.ANALOGY_GRAMMAR, maxTokens = 180) ?: return null
-        return Prompts.withAnalogy(a)
-    }
-
-    /**
-     * The claim's key concepts with their English words, once per search, as saved text (see
-     * [Concepts.format]); empty when the model gave none that fit; null if the search was stopped.
-     */
-    suspend fun concepts(claim: String, english: String?): String? {
-        val raw = Llm.generate(Concepts.SYSTEM, Concepts.prompt(claim, english), Concepts.GRAMMAR, maxTokens = 300) ?: return null
-        return Concepts.format(Concepts.parse(raw))
-    }
-
-    /**
-     * Step 1b: of the paragraphs closest in meaning, keeps those that speak of the claim's concepts
-     * (most of them, in any form of the words, or with the paragraph before or after to make up the
-     * rest) and hands the closest of these to the model; the rest are never read. With none left,
-     * the search ends in "Bulamadım". With no concepts, the closest ones are kept as they are.
-     * Saved together with the concepts.
-     */
-    fun gate(conceptsText: String) {
-        val concepts = Concepts.parse(conceptsText)
-        val pool = db.pendingItems().map { it.second }
-        val docs = HashMap<String, List<Pair<Long, String>>>()
-        val kept = if (concepts.isEmpty()) pool else pool.filter { id ->
-            val p = db.paragraph(id) ?: return@filter false
-            Concepts.passes(p.text, concepts) || run {
-                val doc = docs.getOrPut(p.docUrl) { db.paragraphsOfDoc(p.docUrl) }
-                val i = doc.indexOfFirst { it.first == p.id }
-                val near = if (i < 0) "" else listOfNotNull(doc.getOrNull(i - 1)?.second, doc.getOrNull(i + 1)?.second).joinToString(" ")
-                Concepts.passes(p.text, concepts, near)
-            }
-        }
-        db.setItemsAndConcepts(kept.take(Settings.candidates(ctx)), conceptsText)
-    }
-
-    /** The claim in English, once per search; null if the search was stopped. */
-    suspend fun translate(claim: String): String? =
-        Llm.generate(Prompts.TRANSLATE_SYSTEM, Prompts.translate(claim), maxTokens = 60)?.let { Prompts.firstLine(it) ?: "" }
-
-    /** Step 3. */
-    suspend fun suggest(claim: String): String? =
-        Llm.generate(Prompts.SUGGEST_SYSTEM, Prompts.suggest(claim), Prompts.SUGGEST_GRAMMAR, maxTokens = 70)?.trim()?.ifEmpty { null }
 
     /**
      * The paragraphs found so far: outright findings first, then indirect ones, then the model's
@@ -190,16 +111,12 @@ class Search(private val ctx: Context) {
     }
 
     companion object {
-        /** How many times the number of paragraphs to read is taken into the pool the concepts are checked on. */
-        const val POOL = 10
         /** A source's document list is fetched live again after this long. */
         const val REFRESH_MS = 6L * 60 * 60 * 1000
         /** At most this many of a source's newest unread addresses are compared with the claim. */
         const val TITLES_PER_SOURCE = 120
         /** The comparison of titles stops after this long, however many are left. */
         const val TITLE_BUDGET_MS = 150_000L
-        /** How many of the closest unrelated paragraphs are tried for a kıyas. */
-        const val ANALOGY_TRIES = 5
         const val NO_EMBEDDER = "Önce Model sekmesinden anlam modelini indirin."
     }
 }

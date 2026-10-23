@@ -112,41 +112,34 @@ fun CollectScreen() {
 fun ModelScreen() {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
-    val ram = remember { Models.ramGb(ctx) }
-    val rec = remember { Models.recommended(ctx) }
-    var current by remember { mutableStateOf(Settings.modelPath(ctx)) }
-    var installed by remember { mutableStateOf(Models.installed(ctx)) }
+    val working by SearchState.working.collectAsState()
+    val metadata = remember { NliFiles.manifest(ctx) }
+    var haveModel by remember { mutableStateOf(NliFiles.ready(ctx)) }
+    var nliDownload by remember { mutableStateOf(NliFiles.downloadId(ctx)) }
+    var nliProgress by remember { mutableFloatStateOf(0f) }
+    var nliMessage by remember { mutableStateOf("") }
+    var busy by remember { mutableStateOf(false) }
+    var key by remember { mutableStateOf("") }
+    var savedKey by remember { mutableStateOf(NliFiles.hasToken(ctx)) }
     var downloads by remember { mutableStateOf(Models.pending(ctx)) }
-    // Meaning models fully on the phone, and the one in use.
+    var progress by remember { mutableStateOf(mapOf<String, Float>()) }
     var haveEmb by remember { mutableStateOf(Models.embedders.filter { Models.ready(ctx, it) }.map { it.id }.toSet()) }
     var chosenEmb by remember { mutableStateOf(Models.embedder(ctx).id) }
     val recEmb = remember { Models.recommendedEmbedder(ctx) }
-    var progress by remember { mutableStateOf(mapOf<String, Float>()) }
 
-    // Follow running downloads; a finished file becomes the chosen model if none is chosen yet.
     LaunchedEffect(downloads) {
         while (downloads.isNotEmpty()) {
-            val next = HashMap<String, Float>()
             val still = HashMap<String, Long>()
-            for ((id, dl) in downloads) {
-                val st = Models.status(ctx, dl)
-                when (if (st == null) DownloadManager.STATUS_FAILED else st.third) {
+            val next = HashMap<String, Float>()
+            for ((id, download) in downloads) {
+                val state = Models.status(ctx, download)
+                when (state?.third) {
                     DownloadManager.STATUS_SUCCESSFUL -> {
-                        installed = Models.installed(ctx)
-                        if (Models.embedders.any { it.id == id }) {
-                            haveEmb = haveEmb + id
-                            if (id == chosenEmb) {
-                                // Paragraphs already on the phone get their meaning vectors straight away.
-                                CollectWorker.index(ctx)
-                                Toast.makeText(ctx, "Anlam modeli indi; paragrafların anlam dizini oluşturuluyor (Topla sekmesi).", Toast.LENGTH_LONG).show()
-                            }
-                        } else {
-                            val m = Models.all.first { it.id == id }
-                            if (current == null) { current = Models.file(ctx, m).path; Settings.setModelPath(ctx, current) }
-                        }
+                        haveEmb = haveEmb + id
+                        if (id == chosenEmb) CollectWorker.index(ctx)
                     }
-                    DownloadManager.STATUS_FAILED -> Toast.makeText(ctx, "İndirme yarım kaldı; yeniden deneyin.", Toast.LENGTH_LONG).show()
-                    else -> { still[id] = dl; next[id] = if (st!!.second > 0) st.first.toFloat() / st.second else 0f }
+                    DownloadManager.STATUS_FAILED, null -> Toast.makeText(ctx, "Anlam modeli indirilemedi; yeniden deneyin.", Toast.LENGTH_LONG).show()
+                    else -> { still[id] = download; next[id] = if (state != null && state.second > 0) state.first.toFloat() / state.second else 0f }
                 }
             }
             progress = next
@@ -155,107 +148,118 @@ fun ModelScreen() {
         }
     }
 
-    LaunchedEffect(Unit) {
-        if (current == null || !File(current!!).exists()) {
-            val first = Models.all.map { Models.file(ctx, it) to it }.firstOrNull { (f, m) -> f.length() > m.sizeMb * 1024L * 1024L * 85 / 100 }
-            current = first?.first?.path
-            Settings.setModelPath(ctx, current)
+    LaunchedEffect(nliDownload) {
+        val id = nliDownload ?: return@LaunchedEffect
+        while (true) {
+            val state = Models.status(ctx, id)
+            when (state?.third) {
+                DownloadManager.STATUS_SUCCESSFUL -> {
+                    busy = true; nliMessage = "Model dosyası doğrulanıp kuruluyor…"
+                    try {
+                        withContext(Dispatchers.IO) { NliFiles.finishDownload(ctx) }
+                        haveModel = NliFiles.ready(ctx); nliMessage = "Son eğitilmiş model kullanıma hazır."
+                    } catch (e: Exception) { nliMessage = e.message ?: "Model kurulamadı."; NliFiles.cancelDownload(ctx) }
+                    busy = false; nliDownload = null; break
+                }
+                DownloadManager.STATUS_FAILED, null -> {
+                    nliMessage = "İndirme tamamlanamadı. Bağlantıyı ve Hugging Face okuma iznini kontrol edin; dosyadan yüklemeyi de kullanabilirsiniz."
+                    NliFiles.cancelDownload(ctx); nliDownload = null; break
+                }
+                else -> {
+                    nliProgress = if (state != null && state.second > 0) state.first.toFloat() / state.second else 0f
+                    nliMessage = "Model indiriliyor: %${(nliProgress * 100).toInt()}"
+                }
+            }
+            delay(1000)
         }
     }
 
     val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) scope.launch {
-            Toast.makeText(ctx, "Dosya kopyalanıyor…", Toast.LENGTH_SHORT).show()
-            val ok = withContext(Dispatchers.IO) {
-                try {
-                    val name = (uri.lastPathSegment ?: "model").substringAfterLast('/').substringAfterLast(':')
-                        .let { if (it.endsWith(".gguf")) it else "$it.gguf" }
-                    val out = File(Models.dir(ctx), name)
-                    ctx.contentResolver.openInputStream(uri)?.use { i -> out.outputStream().use { o -> i.copyTo(o, 1 shl 20) } }
-                    out.path
-                } catch (e: Exception) { null }
-            }
-            if (ok == null) Toast.makeText(ctx, "Dosya alınamadı.", Toast.LENGTH_LONG).show()
-            else { installed = Models.installed(ctx); current = ok; Settings.setModelPath(ctx, ok); Llm.release() }
+            busy = true; nliMessage = "Model paketi doğrulanıp kuruluyor…"
+            try {
+                withContext(Dispatchers.IO) {
+                    val temp = File(ctx.cacheDir, "import-trained-nli.zip")
+                    try {
+                        val maximum = metadata.getLong("bytes")
+                        ctx.contentResolver.openInputStream(uri)?.use { input ->
+                            temp.outputStream().buffered().use { output ->
+                                val buffer = ByteArray(1 shl 20); var total = 0L
+                                while (true) { val n = input.read(buffer); if (n < 0) break; total += n; require(total <= maximum) { "Bu dosya beklenen model paketi değil." }; output.write(buffer, 0, n) }
+                            }
+                        } ?: error("Dosya okunamadı.")
+                        NliFiles.install(ctx, temp)
+                    } finally { temp.delete() }
+                }
+                haveModel = NliFiles.ready(ctx); nliMessage = "Son eğitilmiş model kullanıma hazır."
+            } catch (e: Exception) { nliMessage = e.message ?: "Dosya yüklenemedi." }
+            busy = false
         }
     }
 
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text("Yapay zekâ modeli", style = MaterialTheme.typography.headlineSmall)
-        Text(
-            "Model telefonun içinde çalışır; internete, bir hizmete ya da ücrete ihtiyaç duymaz. " +
-                "Bir kez indirilir (Wi-Fi önerilir). Bu telefonda %.1f GB bellek var; önerilen: %s.".format(ram, rec.title),
-            style = MaterialTheme.typography.bodySmall,
-        )
-        Text("1. Anlam modeli (paragrafları anlamına göre bulur)", style = MaterialTheme.typography.titleMedium)
+        Text("Araştırma modelleri", style = MaterialTheme.typography.headlineSmall)
+        Text("Modeller bir kez indirildikten sonra telefonun içinde çalışır. Paragraflar bir yapay zekâ hizmetine gönderilmez.", style = MaterialTheme.typography.bodySmall)
+        Text("1. Paragrafları bul", style = MaterialTheme.typography.titleMedium)
         for (emb in Models.embedders) {
-            val embFile = Models.file(ctx, emb)
             val have = emb.id in haveEmb
             Card(Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(14.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        RadioButton(selected = chosenEmb == emb.id, onClick = {
-                            if (chosenEmb != emb.id) {
-                                chosenEmb = emb.id; Settings.setEmbedderId(ctx, emb.id)
-                                // Vectors from different models do not compare; the index is made again.
-                                if (have) {
-                                    CollectWorker.index(ctx)
-                                    Toast.makeText(ctx, "Anlam dizini bu modelle yeniden oluşturuluyor (Topla sekmesi).", Toast.LENGTH_LONG).show()
-                                }
-                            }
+                        RadioButton(selected = chosenEmb == emb.id, enabled = !working, onClick = {
+                            if (chosenEmb != emb.id) { chosenEmb = emb.id; Settings.setEmbedderId(ctx, emb.id); if (have) CollectWorker.index(ctx) }
                         })
                         Column(Modifier.weight(1f)) {
-                            Text(emb.title + if (emb == recEmb) " · bu telefon için önerilen" else "", style = MaterialTheme.typography.titleMedium)
+                            Text(emb.title + if (emb == recEmb) " · önerilen" else "", style = MaterialTheme.typography.titleMedium)
                             Text("${emb.note} Yaklaşık ${emb.sizeMb} MB.", style = MaterialTheme.typography.bodySmall)
                         }
                     }
-                    progress[emb.id]?.let { p -> LinearProgressIndicator(progress = { p }, modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp)) }
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    progress[emb.id]?.let { LinearProgressIndicator(progress = { it }, modifier = Modifier.fillMaxWidth()) }
+                    Row {
                         if (!have && emb.id !in downloads) TextButton(onClick = { downloads = downloads + (emb.id to Models.download(ctx, emb)) }) { Text("İndir") }
-                        if (have) TextButton(onClick = { embFile.delete(); haveEmb = haveEmb - emb.id }) {
-                            Text("Sil", color = MaterialTheme.colorScheme.error)
-                        }
+                        if (have) TextButton(enabled = !working, onClick = { Models.file(ctx, emb).delete(); haveEmb = haveEmb - emb.id }) { Text("Sil") }
                     }
                 }
             }
         }
-        Text("2. Dil modeli (paragrafları okuyup değerlendirir)", style = MaterialTheme.typography.titleMedium)
-        for (m in Models.all) {
-            val file = Models.file(ctx, m)
-            // A file still being written is not counted until it reaches its full size.
-            val have = installed.any { it.path == file.path } && m.id !in downloads && file.length() > m.sizeMb * 1024L * 1024L * 85 / 100
-            Card(Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(14.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        RadioButton(selected = current == file.path, enabled = have, onClick = {
-                            current = file.path; Settings.setModelPath(ctx, file.path); scope.launch { Llm.release() }
-                        })
-                        Column(Modifier.weight(1f)) {
-                            Text(m.title + if (m == rec) " · bu telefon için önerilen" else "", style = MaterialTheme.typography.titleMedium)
-                            Text("${m.note} Yaklaşık ${m.sizeMb} MB.", style = MaterialTheme.typography.bodySmall)
-                            if (ram < m.minRamGb - 0.6) Text("Bu telefonun belleği bu model için az olabilir.", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+        Text("2. Paragrafları değerlendir", style = MaterialTheme.typography.titleMedium)
+        Card(Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text(metadata.getString("title"), style = MaterialTheme.typography.titleMedium)
+                Text("1.000 soruluk eğitimden çıkan paragraf okuyucu. Türkçe veya İngilizce iddiayı paragrafla karşılaştırıp destekliyor, çürütüyor veya ilgisiz diye sınıflandırır.", style = MaterialTheme.typography.bodySmall)
+                Text("İndirme: yaklaşık ${metadata.getLong("bytes") / (1024 * 1024)} MB. Kurulum için en az 3 GB boş alan ayırın.", style = MaterialTheme.typography.bodySmall)
+                if (haveModel) {
+                    Text("Son eğitilmiş model kurulu ve seçili.")
+                    TextButton(enabled = !working && !busy, onClick = { scope.launch { Nli.release(); withContext(Dispatchers.IO) { NliFiles.remove(ctx) }; haveModel = false } }) { Text("Modeli sil") }
+                } else {
+                    Text("Model özel depoda tutuluyor. Okuma anahtarıyla indirin veya tarayıcıdan indirip dosyadan yükleyin.", style = MaterialTheme.typography.bodySmall)
+                    androidx.compose.material3.OutlinedTextField(value = key, onValueChange = { key = it }, label = { Text("Hugging Face okuma anahtarı") }, singleLine = true,
+                        visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth())
+                    if (savedKey) Text("Okuma anahtarı telefonda şifreli olarak kayıtlı.", style = MaterialTheme.typography.bodySmall)
+                    Button(enabled = !busy && nliDownload == null, onClick = {
+                        scope.launch {
+                            try {
+                                if (key.isNotBlank()) { withContext(Dispatchers.IO) { NliFiles.saveToken(ctx, key) }; key = ""; savedKey = true }
+                                nliDownload = NliFiles.download(ctx)
+                            } catch (e: Exception) { nliMessage = e.message ?: "İndirme başlatılamadı." }
                         }
-                    }
-                    progress[m.id]?.let { p -> LinearProgressIndicator(progress = { p }, modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp)) }
+                    }) { Text("Son modeli indir") }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        if (!have && m.id !in downloads) TextButton(onClick = { downloads = downloads + (m.id to Models.download(ctx, m)) }) { Text("İndir") }
-                        if (have) TextButton(onClick = {
-                            scope.launch { Llm.release() }
-                            file.delete(); installed = Models.installed(ctx)
-                            if (current == file.path) { current = null; Settings.setModelPath(ctx, null) }
-                        }) { Text("Sil", color = MaterialTheme.colorScheme.error) }
+                        TextButton(onClick = {
+                            val url = metadata.getString("url").replace("/resolve/", "/blob/")
+                            ctx.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url)))
+                        }) { Text("Tarayıcıdan indir") }
+                        TextButton(enabled = !working && !busy && nliDownload == null, onClick = { pick.launch(arrayOf("application/zip", "application/octet-stream")) }) { Text("Dosyadan yükle") }
                     }
                 }
+                if (nliDownload != null) {
+                    LinearProgressIndicator(progress = { nliProgress }, modifier = Modifier.fillMaxWidth())
+                    TextButton(onClick = { NliFiles.cancelDownload(ctx); nliDownload = null; nliMessage = "İndirme durduruldu." }) { Text("İndirmeyi durdur") }
+                }
+                if (busy) LinearProgressIndicator(Modifier.fillMaxWidth())
+                if (nliMessage.isNotEmpty()) Text(nliMessage, style = MaterialTheme.typography.bodySmall)
+                if (savedKey) TextButton(onClick = { NliFiles.forgetToken(ctx); savedKey = false }) { Text("Kayıtlı anahtarı sil") }
             }
         }
-        val others = installed.filter { f -> Models.all.none { Models.file(ctx, it).path == f.path } }
-        for (f in others) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                RadioButton(selected = current == f.path, onClick = { current = f.path; Settings.setModelPath(ctx, f.path); scope.launch { Llm.release() } })
-                Text(f.name, Modifier.weight(1f))
-                TextButton(onClick = { f.delete(); installed = Models.installed(ctx); if (current == f.path) { current = null; Settings.setModelPath(ctx, null) } }) { Text("Sil") }
-            }
-        }
-        OutlinedButton(onClick = { pick.launch(arrayOf("*/*")) }) { Text("Telefondaki bir model dosyasını seç (.gguf)") }
     }
 }
