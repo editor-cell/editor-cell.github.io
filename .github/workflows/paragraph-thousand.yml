@@ -1,0 +1,48 @@
+name: Paragraph practice (1000 human-written five-choice questions)
+
+on:
+  push:
+    branches: [anlam-okuma]
+    paths:
+      - .github/workflows/paragraph-thousand.yml
+      - research-app/train/paragraph_thousand.py
+      - research-app/train/paragraph_thousand_manifest.json
+      - research-app/train/prepare_paragraph_thousand.py
+      - research-app/train/paragraph_practice.py
+      - research-app/train/fast_problems.py
+      - research-app/train/kaggle_independent_exam.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  practice:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[paragraph-1000]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    env:
+      KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+      KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+      KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      PARAGRAPH_PRACTICE: "1"
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install existing training transport and source readers
+        run: pip install --quiet kaggle "huggingface_hub>=0.34,<1" pandas pyarrow pymupdf sentencepiece
+      - name: Verify 1000 published questions and fetch the earlier private model
+        run: python research-app/train/prepare_paragraph_thousand.py
+      - name: Train in fifteen-minute rounds on the free Kaggle GPU
+        run: python research-app/train/kaggle_independent_exam.py
+      - name: Save the question counts and training notes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: paragraph-practice-report
+          path: practice-report/
+          if-no-files-found: ignore
+          retention-days: 14

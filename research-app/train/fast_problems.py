@@ -60,8 +60,13 @@ if os.path.exists(os.path.join(inp, "minutes.txt")):
     except ValueError:
         MINUTES = 0.0
 BASE = START if os.path.exists(os.path.join(START, "config.json")) else "MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7"
+PRACTICE = os.path.exists(os.path.join(inp, "paragraph-practice.json"))
+if PRACTICE and os.environ.get("PRACTICE_START"):
+    BASE = os.environ["PRACTICE_START"]
+SEEN_FILE = os.path.join(WORK, "practice-seen.json")
+practice_seen = set(json.load(open(SEEN_FILE))) if PRACTICE and os.path.exists(SEEN_FILE) else set()
 
-subprocess.run([sys.executable, "-m", "pip", "install", "--quiet", "transformers", "sentencepiece", "protobuf", "tiktoken"], check=False)
+subprocess.run([sys.executable, "-m", "pip", "install", "--quiet", "transformers<5", "sentencepiece", "protobuf", "tiktoken"], check=False)
 import torch  # noqa: E402
 from transformers import AutoModelForSequenceClassification, AutoTokenizer  # noqa: E402
 
@@ -75,11 +80,16 @@ pool = {p["id"]: p for p in json.load(open(os.path.join(inp, "pool.json"), encod
 labels = [json.loads(l) for f in sorted(glob.glob(os.path.join(inp, "labels__*.jsonl")))
           for l in open(f, encoding="utf-8") if l.strip()]
 labels = [e for e in labels if e.get("kind") != "human"]
+if PRACTICE:
+    # This explicit profile contains only published five-choice reading items.
+    profile = json.load(open(os.path.join(inp, "paragraph-practice.json")))
+    labels = profile["labels"]
+    FOCUS = "fivehuman"
 # a weights.txt like "2:4,1:0.5" says how many times the usual number of training steps a level gets
 SUDOKU_WEIGHTS = {}
 if os.path.exists(os.path.join(inp, "weights.txt")):
     SUDOKU_WEIGHTS = {int(a): float(b) for a, b in (kv.split(":") for kv in open(os.path.join(inp, "weights.txt")).read().strip().split(",") if kv)}
-if FOCUS == "fivehuman":
+if FOCUS == "fivehuman" and not PRACTICE:
     EPOCHS = max(EPOCHS, 4)
     sys.path.insert(0, inp)
     subprocess.run([sys.executable, "-m", "pip", "install", "--quiet", "huggingface_hub", "pandas", "pyarrow"], check=False)
@@ -149,6 +159,9 @@ if FOCUS == "fivehuman":
         if e.get("kind") == FOCUS:
             by_q[e["qid"]].append(e)
     groups = [(g[0]["level"], [(e["premise"], e["en"], e["label"]) for e in g]) for g in by_q.values() if len(g) == 5]
+    practice_qids = {(g[0]["premise"], g[0]["en"]): qid for qid, g in by_q.items()}
+    if PRACTICE and len(groups) != 1000:
+        raise ValueError("The paragraph profile must contain exactly 1000 training questions")
 others = pairs([e for e in train if e.get("kind") != FOCUS and not (FOCUS == "logic" and e.get("kind") == "problem")
                 and not (FOCUS == "humanlogic" and e.get("kind") == "logic")
                 and not (FOCUS in ("readhuman", "fivehuman") and e.get("kind") not in ("words", "human", "problem"))])  # my own puzzles stay out of a human-made round
@@ -166,6 +179,13 @@ note(f"training pairs an epoch: {len(probs)} from {FOCUS}, {len(others)} from ou
 
 MAXLEN = 1024 if FOCUS == "fivehuman" else 512 if FOCUS == "readhuman" else 384
 tok = AutoTokenizer.from_pretrained(BASE)
+if PRACTICE:
+    # Confirm against the checkpoint's actual tokenizer as well as the source
+    # screening tokenizer. No partial reading passage is accepted for practice.
+    for _, g in groups:
+        encoded = tok([p for p, _, _ in g], [h for _, h, _ in g], truncation=False)
+        if max(map(len, encoded["input_ids"])) > MAXLEN:
+            raise ValueError("A paragraph would be truncated by the actual model tokenizer")
 model = AutoModelForSequenceClassification.from_pretrained(BASE).float().to(DEVICE)
 name_to_id = {n.lower(): i for i, n in model.config.id2label.items()}
 TO_NLI = {"SUPPORTS": "entailment", "CONTRADICTS": "contradiction", "UNRELATED": "neutral"}
@@ -214,9 +234,9 @@ def exam(rows_dev):
     for g in groups.values():
         lv = g[0][2]
         res[lv][1] += 1
-        res[lv][0] += max(g)[1]
+        res[lv][0] += max(g, key=lambda item: item[0])[1]
         res[0][1] += 1
-        res[0][0] += max(g)[1]
+        res[0][0] += max(g, key=lambda item: item[0])[1]
     return res
 
 
@@ -334,6 +354,9 @@ def five_batches(epoch):
     random.shuffle(gs)
     if epoch == 1:
         gs.sort(key=lambda g: g[0])
+    if PRACTICE:
+        # A new fifteen-minute round starts with questions not yet attempted.
+        gs.sort(key=lambda g: practice_qids[g[1][0][:2]] in practice_seen)
     rest = others[:]
     random.shuffle(rest)
     out, k = [], 0
@@ -364,7 +387,7 @@ for epoch in range(1, EPOCHS + 1):
         break
     losses, skipped = [], 0
     for kind_b, batch in (five_batches(epoch) if FOCUS == "fivehuman" else [("pairs", b) for b in (first_epoch() if epoch == 1 else mixed())]):
-        if MINUTES and time.time() - t0 > MINUTES * 60:
+        if (MINUTES and time.time() - (t_train if PRACTICE else t0) > MINUTES * 60) or (PRACTICE and len(practice_seen) >= 1000):
             out_of_time = True
             break
         total, broken = 0.0, False
@@ -388,6 +411,9 @@ for epoch in range(1, EPOCHS + 1):
         sched.step()
         opt.zero_grad()
         losses.append(total)
+        if PRACTICE and kind_b == "five":
+            practice_seen.update(practice_qids[g[0][:2]] for g in batch)
+            json.dump(sorted(practice_seen), open(SEEN_FILE, "w"))
     note(f"epoch {epoch}{' (stopped at the time limit, ' + str(len(losses)) + ' batches in)' if out_of_time else ''}: "
          f"mean loss {sum(losses) / max(1, len(losses)):.3f}, {skipped} broken steps skipped, "
          f"{(time.time() - t0) / 60:.0f} minutes so far")
@@ -401,5 +427,7 @@ if FINAL:
     note(f"the kept model on the FINAL EXAM: {100 * fin[0][0] / fin[0][1]:.1f}% ({fin[0][0]}/{fin[0][1]})")
 note(f"kept the model after epoch {best_epoch} (0 = as it came): {FOCUS} held-out {best_acc:.1f}%; "
      f"{(time.time() - t0) / 60:.0f} minutes in all")
+if PRACTICE:
+    note(f"PARAGRAPH PRACTICE COVERAGE: {len(practice_seen)}/1000 different training questions attempted; no generated replay examples")
 shutil.rmtree(START, ignore_errors=True)
 json.dump({"readings": 0, "ok": True, "epoch": best_epoch}, open(os.path.join(WORK, "status.json"), "w"))
