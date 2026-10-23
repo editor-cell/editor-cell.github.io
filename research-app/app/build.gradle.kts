@@ -5,6 +5,11 @@ plugins {
 }
 
 // The workflow passes the run number so every APK installs over the previous one.
+// UI-review APKs omit inference binaries and use a separate app ID. Never publish them.
+val uiReview = providers.gradleProperty("uiReview").orNull == "true"
+if (uiReview) gradle.taskGraph.whenReady {
+    require(allTasks.none { it.name.contains("Release", ignoreCase = true) }) { "UI-review builds must never be released" }
+}
 val buildNumber = (System.getenv("BUILD_NUMBER") ?: "1").toInt()
 
 android {
@@ -19,7 +24,7 @@ android {
         versionCode = buildNumber
         versionName = "0.1.$buildNumber"
         ndk { abiFilters += listOf("arm64-v8a") }
-        externalNativeBuild {
+        if (!uiReview) externalNativeBuild {
             cmake {
                 arguments += listOf(
                     "-DCMAKE_BUILD_TYPE=Release",
@@ -57,11 +62,12 @@ android {
             signingConfig = signingConfigs.getByName("orbis")
         }
         debug {
+            if (uiReview) applicationIdSuffix = ".ui"
             signingConfig = signingConfigs.getByName("orbis")
         }
     }
 
-    externalNativeBuild {
+    if (!uiReview) externalNativeBuild {
         cmake {
             path("src/main/cpp/CMakeLists.txt")
             version = "3.31.6"
@@ -76,7 +82,10 @@ android {
     packaging {
         resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" }
         // llama.cpp looks for its CPU variants in the library folder, so they must be unpacked on install.
-        jniLibs { useLegacyPackaging = true }
+        jniLibs {
+            useLegacyPackaging = true
+            if (uiReview) excludes += "**/*.so"
+        }
     }
 }
 

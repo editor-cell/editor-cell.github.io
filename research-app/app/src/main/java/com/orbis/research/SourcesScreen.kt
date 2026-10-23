@@ -5,6 +5,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -105,23 +106,31 @@ fun SourcesScreen() {
             }
     }
 
-    Column(Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
-        Text("Kaynaklar (${list.size})", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.padding(top = 16.dp))
-        Text(
-            "Araç yalnız bu sitelerin içinde arar. Bir site, alt adresleriyle birlikte sayılır.",
-            style = MaterialTheme.typography.bodySmall,
-        )
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(vertical = 8.dp)) {
-            Button(onClick = { dialog = Dialog.ONE }) { Text("Tek ekle") }
-            Button(onClick = { dialog = Dialog.MANY }) { Text("Toplu ekle") }
-            OutlinedButton(onClick = { importFile.launch(arrayOf("text/*", "application/*")) }) { Text("Dosyadan ekle") }
-            OutlinedButton(onClick = { exportFile.launch("orbis-kaynaklar.txt") }, enabled = list.isNotEmpty()) { Text("Dosyaya kaydet") }
+    LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+      item {
+        ScreenIntro("02 / KAYNAKLAR", "Araştırmanın dayanağı.", "Güvendiğin yayınları bir araya getir. Araştırmaların yalnız seçtiğin kaynaklarda yürüsün.")
+      }
+      item {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SmallTag("${list.size} kaynak")
+            SmallTag("${groups.size} başlık")
+        }
+      }
+      item {
+       PaperCard {
+        SectionLabel("KAYNAK LİSTEN")
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(onClick = { dialog = Dialog.ONE }, shape = MaterialTheme.shapes.small) { Text("Kaynak ekle") }
+            OutlinedButton(onClick = { dialog = Dialog.MANY }, shape = MaterialTheme.shapes.small) { Text("Toplu ekle") }
+            TextButton(onClick = { importFile.launch(arrayOf("text/*", "application/*")) }) { Text("Dosyadan ekle") }
+            TextButton(onClick = { exportFile.launch("orbis-kaynaklar.txt") }, enabled = list.isNotEmpty()) { Text("Dışa aktar") }
         }
         if (list.size > 8) {
-            OutlinedTextField(filter, { filter = it }, label = { Text("Listede bul") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(filter, { filter = it }, label = { Text("Listede bul") }, singleLine = true,
+                shape = MaterialTheme.shapes.medium, modifier = Modifier.fillMaxWidth())
         }
         if (groups.isNotEmpty()) {
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.padding(top = 6.dp)) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 FilterChip(heading == null, onClick = { heading = null }, label = { Text("Tümü (${list.size})") })
                 for (g in groups) FilterChip(heading == g.id, onClick = { heading = g.id }, label = { Text("${g.name} (${g.sourceCount})") })
                 val loose = list.count { it.groups.isEmpty() }
@@ -129,51 +138,47 @@ fun SourcesScreen() {
                 TextButton(onClick = { dialog = Dialog.HEADINGS }) { Text("Başlıkları düzenle") }
             }
         }
-
-        Surface(tonalElevation = 2.dp, modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(4.dp)) {
+       }
+      }
+      if (list.isEmpty()) item {
+        PaperCard {
+            SectionLabel("İLK ADIM")
+            Text("Kaynak listen burada büyüyecek.", style = MaterialTheme.typography.titleLarge)
+            Text("Bir site adresi ekleyebilir, adres listesini yapıştırabilir veya Feedly OPML dosyanı içe aktarabilirsin.", style = MaterialTheme.typography.bodyMedium)
+        }
+      }
+      if (shown.isNotEmpty()) item {
+        Column {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 val allShownSelected = shown.isNotEmpty() && shown.all { it.id in selected }
                 Checkbox(allShownSelected, onCheckedChange = {
                     selected = if (allShownSelected) selected - shown.map { it.id }.toSet() else selected + shown.map { it.id }
                 })
-                Text(if (selected.isEmpty()) "Tümünü seç" else "${selected.size} seçili", Modifier.weight(1f))
-                if (selected.isNotEmpty()) {
-                    TextButton(onClick = { dialog = Dialog.HEADING }) { Text("Başlık") }
-                    TextButton(onClick = { CollectWorker.start(ctx, selected); Toast.makeText(ctx, "Seçilenlerden belge toplanıyor.", Toast.LENGTH_SHORT).show() }) { Text("Topla") }
-                    TextButton(onClick = { dialog = Dialog.REMOVE }) { Text("Çıkar", color = MaterialTheme.colorScheme.error) }
-                }
+                Text(if (selected.isEmpty()) "${shown.size} kaynak · tümünü seç" else "${selected.size} kaynak seçili", style = MaterialTheme.typography.labelLarge)
+            }
+            if (selected.isNotEmpty()) FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                TextButton(onClick = { dialog = Dialog.HEADING }) { Text("Başlık") }
+                TextButton(onClick = { CollectWorker.start(ctx, selected); Toast.makeText(ctx, "Seçilenlerden belge toplanıyor.", Toast.LENGTH_SHORT).show() }) { Text("Topla") }
+                TextButton(onClick = { dialog = Dialog.REMOVE }) { Text("Çıkar", color = MaterialTheme.colorScheme.error) }
             }
         }
-
-        if (list.isEmpty()) {
-            Text(
-                "Henüz kaynak yok. Bir adres ekleyin, bir listeyi yapıştırın ya da bir dosya seçin " +
-                    "(her satırda bir adres; \"Ad, adres, Başlık\" biçimi ve Feedly'den alınan OPML dosyası da olur, " +
-                    "Feedly klasörleri başlık olur).",
-                modifier = Modifier.padding(top = 16.dp),
-            )
-        }
-        LazyColumn(Modifier.fillMaxSize()) {
-            items(shown, key = { it.id }) { s ->
-                val on = s.id in selected
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth().clickable { selected = if (on) selected - s.id else selected + s.id }.padding(vertical = 4.dp),
-                ) {
-                    Checkbox(on, onCheckedChange = { selected = if (on) selected - s.id else selected + s.id })
-                    Column(Modifier.weight(1f)) {
-                        Text(s.name, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        Text(s.url, style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        if (s.groups.isNotEmpty()) {
-                            Text(s.groups.joinToString(" · "), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
-                        }
-                        Text("${s.docCount} belge okundu", style = MaterialTheme.typography.labelSmall)
-                    }
-                    TextButton(onClick = { renaming = s; dialog = Dialog.RENAME }) { Text("Ad") }
+      }
+      items(shown, key = { it.id }) { source ->
+        val on = source.id in selected
+        PaperCard(Modifier.clickable { selected = if (on) selected - source.id else selected + source.id }) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Checkbox(on, onCheckedChange = { selected = if (on) selected - source.id else selected + source.id })
+                Column(Modifier.weight(1f)) {
+                    Text(source.name, style = MaterialTheme.typography.titleSmall, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                    Text(source.url, style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    if (source.groups.isNotEmpty()) Text(source.groups.joinToString(" · "), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+                    Text("${source.docCount} belge", style = MaterialTheme.typography.labelSmall)
                 }
-                HorizontalDivider()
+                TextButton(onClick = { renaming = source; dialog = Dialog.RENAME }) { Text("Ad") }
             }
         }
+      }
+      item { Spacer(Modifier.height(8.dp)) }
     }
 
     when (dialog) {

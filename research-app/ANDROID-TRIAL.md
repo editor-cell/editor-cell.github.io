@@ -15,3 +15,6 @@ Bu güncellemede kısa cümleler, küçük harfle başlayan veya son noktalamas�
 Varsayılan arama 24 web belgesi ve 60 aday paragrafı kapsar. Kaynaklar sırayla değerlendirilir. Belirsiz model kararları ve komşu paragraflarla çelişen kararlar evraka alınmaz; belirsizlerin sayısı ekranda belirtilir. Güncelleme öncesi kararlar yeniden kullanılmaz.
 
 Gönderilen düşük kilolu çocuklar paragrafı, aynı Türkçe yargıyla gerçek model üzerinde kontrol edildi: bu sürüm onu destekleyici kanıt olarak dışa aktarmaz. Bu kontrol, modelin tüm anlamsal hatalarının çözüldüğü anlamına gelmez. Puan eşiği geçici bir çekimser kalma kuralıdır; doğruluk yüzdesi değildir. Model ağırlıkları değiştirilmedi, eğitim yapılmadı.
+
+
+Görünüm yenilendi: kırık beyaz zemin, koyu yeşil vurgular, okunaklı araştırma kartları ve sistemin açık/koyu görünümüne uyum. Arama filtreleri “Kaynak ve tarih seç” altında açılır. Kaynak listesi ve toplama/model ekranları aynı tasarıma kavuştu. Bu güncelleme arama kurallarını veya model ağırlıklarını değiştirmez.

@@ -2,6 +2,8 @@ package com.orbis.research
 
 import android.app.DownloadManager
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.material3.CardDefaults
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -58,16 +60,12 @@ fun CollectScreen() {
         withContext(Dispatchers.IO) { totals = db.totals(); vectors = db.vectorCounts(); sourceCount = db.sources().size }
     }
 
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text("Belge toplama", style = MaterialTheme.typography.headlineSmall)
-        Text(
-            "Uygulama $sourceCount kaynağın yayın akışlarına, site haritalarına ve ana sayfalarına bakar; " +
-                "yeni ve eski belgeleri, en yeniden başlayarak telefona alır. Listede olmayan hiçbir siteye gitmez.",
-            style = MaterialTheme.typography.bodySmall,
-        )
-        Card(Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(14.dp)) {
-                Text("Telefonda ${totals.first} belge, ${totals.second} paragraf var.", style = MaterialTheme.typography.titleMedium)
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
+        ScreenIntro("03 / KÜTÜPHANE", "Bilgiyi bir araya getir.", "$sourceCount kaynaktan belgeleri topla, kişisel araştırma arşivini oluştur.")
+        Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface), border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)) {
+            Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                SectionLabel("KİŞİSEL ARŞİVİN")
+                LibraryStats(totals.first, totals.second)
                 Text(
                     if (!hasEmbedder) "Anlam modeli indirilmedi; Model sekmesinden indirin, paragraflar ondan sonra aranabilir."
                     else "Anlam dizininde ${vectors.first} paragraf" + if (vectors.second > 0) ", ${vectors.second} paragraf sırada." else "; hepsi aranabilir.",
@@ -84,6 +82,8 @@ fun CollectScreen() {
         if (hasEmbedder && vectors.second > 0) {
             OutlinedButton(onClick = { CollectWorker.index(ctx) }, enabled = !running) { Text("Anlam dizinini tamamla (${vectors.second} paragraf)") }
         }
+        PaperCard {
+        SectionLabel("TOPLAMA VE ARAMA AYARLARI")
         Text("Her toplamada kaynak başına en çok ${perSource.toInt()} belge okunur. Sıradakiler bir sonraki toplamada gelir.")
         Slider(perSource, { perSource = it }, valueRange = 10f..300f, steps = 28,
             onValueChangeFinished = { Settings.setPerSource(ctx, perSource.toInt()) })
@@ -102,6 +102,7 @@ fun CollectScreen() {
         Text("Bir aramada model, yargıya anlamca en yakın ${candidates.toInt()} paragrafı okur. Daha çok paragraf daha uzun sürer.")
         Slider(candidates, { candidates = it }, valueRange = 10f..100f, steps = 17,
             onValueChangeFinished = { Settings.setCandidates(ctx, candidates.toInt()) })
+        }
     }
 }
 
@@ -169,14 +170,13 @@ fun ModelScreen() {
         }
     }
 
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text("Araştırma modelleri", style = MaterialTheme.typography.headlineSmall)
-        Text("Modeller bir kez indirildikten sonra telefonun içinde çalışır. Paragraflar bir yapay zekâ hizmetine gönderilmez.", style = MaterialTheme.typography.bodySmall)
-        Text("1. Paragrafları bul", style = MaterialTheme.typography.titleMedium)
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
+        ScreenIntro("04 / MODELLER", "Araştırmanın motoru.", "Modellerini bir kez indir, belgelerin telefonunda işlensin.")
+        SectionLabel("01 / PARAGRAFLARI BUL")
         for (emb in Models.embedders) {
             val have = emb.id in haveEmb
-            Card(Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(14.dp)) {
+            Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface), border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)) {
+                Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(selected = chosenEmb == emb.id, enabled = !working, onClick = {
                             if (chosenEmb != emb.id) { chosenEmb = emb.id; Settings.setEmbedderId(ctx, emb.id); if (have) CollectWorker.index(ctx) }
@@ -194,9 +194,9 @@ fun ModelScreen() {
                 }
             }
         }
-        Text("2. Paragrafları değerlendir", style = MaterialTheme.typography.titleMedium)
-        Card(Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        SectionLabel("02 / PARAGRAFLARI DEĞERLENDİR")
+        Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface), border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)) {
+            Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text(metadata.getString("title"), style = MaterialTheme.typography.titleMedium)
                 Text("1.000 soruluk eğitimden çıkan paragraf okuyucu. Türkçe veya İngilizce iddiayı paragrafla karşılaştırıp destekliyor, çürütüyor veya ilgisiz diye sınıflandırır.", style = MaterialTheme.typography.bodySmall)
                 Text("İndirme: yaklaşık ${metadata.getLong("bytes") / (1024 * 1024)} MB. Kurulum için en az 3 GB boş alan ayırın.", style = MaterialTheme.typography.bodySmall)

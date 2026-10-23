@@ -21,6 +21,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.ui.Alignment
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -48,6 +50,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Dispatchers
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.text.font.FontStyle
@@ -57,6 +60,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.launch
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.rememberCoroutineScope
 
 /**
@@ -143,30 +147,32 @@ fun SearchScreen(goTo: (Int) -> Unit) {
     }
     val going = run?.state == Db.RUN_GOING
 
-    LazyColumn(Modifier.fillMaxSize().padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(horizontal = 20.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         item {
-            Text("Türkçe veya İngilizce bir iddia yazın", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.padding(top = 16.dp))
-            Text(
-                "Araç, iddianıza anlamca en yakın paragrafları bulur. Son eğitilmiş model her paragrafı iddiayla karşılaştırır; " +
-                    "destekleyen ya da çürüten paragraflar belgedeki sözleriyle gösterilir.\n" +
-                    "Telefonda arat: telefona toplanmış ${totals.first} belgede arar.\n" +
-                    "Webde arat: kaynak listenizdeki sitelerden yeni belgeler de alır.",
-                style = MaterialTheme.typography.bodySmall,
-            )
+            ScreenIntro("01 / ARAŞTIR", "Bir yargının izini sür.", "İlgili paragrafları bul, kaynaklarıyla birlikte evraka dönüştür.")
         }
+        item { LibraryStats(totals.first, totals.second) }
         item {
+          PaperCard {
+            SectionLabel("ARAŞTIRMA YARGISI")
             OutlinedTextField(
-                s.claim, { s.claim = it }, modifier = Modifier.fillMaxWidth(), minLines = 3,
+                s.claim, { s.claim = it }, modifier = Modifier.fillMaxWidth(), minLines = 3, shape = MaterialTheme.shapes.medium,
                 placeholder = { Text("ör. Şeker vergisi koyan ülkelerde gazlı içecek tüketimi düştü.") },
             )
-            WhereRow(db, enabled = !going)
-            DateRangeRow(db, s.range, s.sourceIds(db), enabled = !going) { s.range = it }
+            var filtersOpen by rememberSaveable { mutableStateOf(false) }
+            TextButton(onClick = { filtersOpen = !filtersOpen }, contentPadding = PaddingValues(0.dp)) {
+                Text((if (filtersOpen) "Filtreleri gizle" else "Kaynak ve tarih seç") + " · " + whereLabel(db))
+            }
+            if (filtersOpen) {
+                WhereRow(db, enabled = !going)
+                DateRangeRow(db, s.range, s.sourceIds(db), enabled = !going) { s.range = it }
+            }
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
                 if (going) OutlinedButton(onClick = { s.stop(ctx.applicationContext) }) { Text("Durdur") }
                 else {
                     val can = s.claim.isNotBlank() && hasEmbedder && hasReader
-                    Button(onClick = { s.start(ctx.applicationContext, web = false) }, enabled = can) { Text("Telefonda arat") }
-                    Button(onClick = { s.start(ctx.applicationContext, web = true) }, enabled = can) { Text("Webde arat") }
+                    OutlinedButton(onClick = { s.start(ctx.applicationContext, web = false) }, enabled = can, shape = MaterialTheme.shapes.small) { Text("Telefonda arat") }
+                    Button(onClick = { s.start(ctx.applicationContext, web = true) }, enabled = can, shape = MaterialTheme.shapes.small) { Text("Webde arat") }
                 }
                 if (run?.state == Db.RUN_STOPPED && (run?.done ?: 0) < (run?.total ?: 0) && run?.claim == s.claim.trim()) {
                     OutlinedButton(onClick = { s.resume(ctx.applicationContext) }) { Text("Kaldığı yerden devam et") }
@@ -200,6 +206,8 @@ fun SearchScreen(goTo: (Int) -> Unit) {
                     }
                 }) { Text(if (making) "Evrak hazırlanıyor…" else "Evrak oluştur") }
             }
+            Text("Telefonda arat: kayıtlı belgelerinde. Webde arat: seçili kaynaklardan yeni belgeler de alır.", style = MaterialTheme.typography.bodySmall)
+          }
         }
         if (!hasReader) item { Notice("Önce son eğitilmiş paragraf modelini yükleyin.", "Model sekmesine git") { goTo(3) } }
         if (!hasEmbedder) item { Notice(Search.NO_EMBEDDER, "Model sekmesine git") { goTo(3) } }
@@ -249,9 +257,10 @@ fun SearchScreen(goTo: (Int) -> Unit) {
 
 @Composable
 private fun Notice(text: String, action: String, onAction: () -> Unit) {
-    Card {
-        Column(Modifier.padding(12.dp)) {
-            Text(text)
+    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)) {
+        Column(Modifier.padding(16.dp)) {
+            Text(text, style = MaterialTheme.typography.bodyMedium)
             TextButton(onClick = onAction) { Text(action) }
         }
     }
@@ -276,16 +285,20 @@ private fun FindingCard(f: Finding) {
     val supports = j.verdict == Verdict.SUPPORTS
     val an = j.analogy
     Card(
-        colors = CardDefaults.cardColors(
-            containerColor = when {
-                an != null -> MaterialTheme.colorScheme.tertiaryContainer
-                supports -> MaterialTheme.colorScheme.secondaryContainer
-                else -> MaterialTheme.colorScheme.errorContainer
-            },
-        ),
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        shape = MaterialTheme.shapes.large,
     ) {
-        Column(Modifier.padding(14.dp)) {
-            Text(label(j), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
+        Column(Modifier.padding(18.dp)) {
+            androidx.compose.material3.Surface(
+                color = if (an != null) MaterialTheme.colorScheme.tertiaryContainer else if (supports) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.errorContainer,
+                shape = MaterialTheme.shapes.extraSmall,
+            ) {
+                Text(label(j), Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                    color = if (an != null) MaterialTheme.colorScheme.onTertiaryContainer else if (supports) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onErrorContainer,
+                    style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold)
+            }
             if (an != null) {
                 // The model's kıyas comes first and is marked as its own reasoning; the paragraph it
                 // rests on follows, word for word.
@@ -295,7 +308,7 @@ private fun FindingCard(f: Finding) {
                 }
                 Text("Dayandığı paragraf:", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(top = 8.dp))
             }
-            SelectionContainer { Text("“${p.text}”", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(vertical = 8.dp)) }
+            SelectionContainer { Text("“${p.text}”", style = MaterialTheme.typography.bodyLarge.copy(fontFamily = androidx.compose.ui.text.font.FontFamily.Serif, fontSize = 17.sp, lineHeight = 28.sp), modifier = Modifier.padding(vertical = 8.dp)) }
             if (j.indirect && an == null) {
                 // The model's own words, set apart from the quote and never mistaken for it.
                 Text(
