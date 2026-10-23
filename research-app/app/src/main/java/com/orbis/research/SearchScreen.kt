@@ -174,7 +174,7 @@ fun SearchScreen(goTo: (Int) -> Unit) {
                     OutlinedButton(onClick = { s.start(ctx.applicationContext, web = false) }, enabled = can, shape = MaterialTheme.shapes.small) { Text("Telefonda arat") }
                     Button(onClick = { s.start(ctx.applicationContext, web = true) }, enabled = can, shape = MaterialTheme.shapes.small) { Text("Webde arat") }
                 }
-                if (run?.state == Db.RUN_STOPPED && (run?.done ?: 0) < (run?.total ?: 0) && run?.claim == s.claim.trim()) {
+                if (run?.state in setOf(Db.RUN_STOPPED, Db.RUN_FAILED) && (run?.done ?: 0) < (run?.total ?: 0) && run?.claim == s.claim.trim()) {
                     OutlinedButton(onClick = { s.resume(ctx.applicationContext) }) { Text("Kaldığı yerden devam et") }
                 }
                 if (findings.isNotEmpty()) OutlinedButton(onClick = { copyAll(ctx, run?.claim ?: s.claim, findings) }) { Text("Tümünü kopyala") }

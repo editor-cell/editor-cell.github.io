@@ -61,6 +61,7 @@ jobs:
         run: |
           export ORBIS_LIB="$PWD/build-host/liborbisllm.so"
           export ORBIS_EMBED=~/test-embed/multilingual-e5-small-q8_0.gguf
+          export ORBIS_CLOUD_SMOKE=1
           ./gradlew -p logic-test test --no-daemon
       - name: Check the deployed DeepSeek service with fresh paragraphs
         run: python cloud-reader/smoke.py
