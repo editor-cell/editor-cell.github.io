@@ -22,12 +22,7 @@ class SearchWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
         val db = Db.get(ctx)
         val previous = db.run() ?: return Result.success()
         if (previous.state != Db.RUN_GOING) return Result.success()
-        if (!NliFiles.ready(ctx)) {
-            db.setRun(state = Db.RUN_FAILED, message = "Önce Model sekmesinden son eğitilmiş modeli yükleyin.")
-            SearchState.changed()
-            return Result.success()
-        }
-        val marker = NliFiles.manifest(ctx).getString("sha256") + EvidenceDecision.VERSION
+        val marker = Nli.MODEL_ID
         val prefs = ctx.getSharedPreferences("search-model", Context.MODE_PRIVATE)
         val run = if (prefs.getString("current", null) != marker) {
             // Saved answers from a previous model are never mixed with this trial.
@@ -46,21 +41,21 @@ class SearchWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
         var modelAcquired = false
         SearchState.working.value = true
         try {
+            say("Cloudflare üzerinden DeepSeek'e bağlanılıyor…")
+            Nli.ensure(ctx)
+            modelAcquired = true
             val search = Search(ctx)
             if (!run.prepared) {
                 if (!search.prepare(run, { say(it) }, { isStopped || !current() })) return Result.success()
                 SearchState.changed()
             }
-            say("Son eğitilmiş model yükleniyor…")
-            Nli.ensure(ctx)
-            modelAcquired = true
             val pending = db.pendingItems()
             val total = db.run()?.total ?: pending.size
             val started = System.currentTimeMillis()
             for ((n, item) in pending.withIndex()) {
                 if (isStopped || !current()) break
                 val left = if (n >= 2) ((System.currentTimeMillis() - started) / n * (pending.size - n) / 1000).toInt() else -1
-                say("Paragraf ${total - pending.size + n + 1}/$total okunuyor…" + if (left >= 0) " (yaklaşık ${duration(left)} kaldı)" else "")
+                say("DeepSeek: paragraf ${total - pending.size + n + 1}/$total okunuyor…" + if (left >= 0) " (yaklaşık ${duration(left)} kaldı)" else "")
                 val answer = search.judge(run.claim, item.second)
                 if (answer == null || isStopped || !current()) break
                 db.saveAnswer(item.first, answer, run.startedAt)

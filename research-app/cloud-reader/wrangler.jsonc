@@ -1,0 +1,9 @@
+{
+  "name": "orbis-deepseek-trial",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-10-23",
+  "compatibility_flags": ["nodejs_compat"],
+  "ai": { "binding": "AI" },
+  "ratelimits": [{ "name": "REQUEST_LIMIT", "namespace_id": "102310", "simple": { "limit": 60, "period": 60 } }],
+  "observability": { "enabled": true, "head_sampling_rate": 1 }
+}

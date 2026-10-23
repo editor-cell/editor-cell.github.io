@@ -124,7 +124,6 @@ fun SearchScreen(goTo: (Int) -> Unit) {
     val totals = remember { db.totals() }
     val vectors = remember { db.vectorCounts() }
     val hasEmbedder = remember { Models.embedderPath(ctx) != null }
-    val hasReader = remember { NliFiles.ready(ctx) }
     val s = SearchState
     val version by s.version.collectAsState()
     val status by s.status.collectAsState()
@@ -136,7 +135,7 @@ fun SearchScreen(goTo: (Int) -> Unit) {
 
     LaunchedEffect(version) {
         val (r, f, compatible) = withContext(Dispatchers.IO) {
-            val compatible = ctx.getSharedPreferences("search-model", Context.MODE_PRIVATE).getString("current", null) == NliFiles.manifest(ctx).getString("sha256") + EvidenceDecision.VERSION
+            val compatible = ctx.getSharedPreferences("search-model", Context.MODE_PRIVATE).getString("current", null) == Nli.MODEL_ID
             Triple(db.run(), if (compatible) Search(ctx).findings() else emptyList(), compatible)
         }
         uncertain = if (compatible) withContext(Dispatchers.IO) { db.answers().count { it.second?.startsWith("UNCERTAIN") == true } } else 0
@@ -171,7 +170,7 @@ fun SearchScreen(goTo: (Int) -> Unit) {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
                 if (going) OutlinedButton(onClick = { s.stop(ctx.applicationContext) }) { Text("Durdur") }
                 else {
-                    val can = s.claim.isNotBlank() && hasEmbedder && hasReader
+                    val can = s.claim.isNotBlank() && hasEmbedder
                     OutlinedButton(onClick = { s.start(ctx.applicationContext, web = false) }, enabled = can, shape = MaterialTheme.shapes.small) { Text("Telefonda arat") }
                     Button(onClick = { s.start(ctx.applicationContext, web = true) }, enabled = can, shape = MaterialTheme.shapes.small) { Text("Webde arat") }
                 }
@@ -208,9 +207,9 @@ fun SearchScreen(goTo: (Int) -> Unit) {
                 }) { Text(if (making) "Evrak hazırlanıyor…" else "Evrak oluştur") }
             }
             Text("Telefonda arat: kayıtlı belgelerinde. Webde arat: seçili kaynaklardan yeni belgeler de alır.", style = MaterialTheme.typography.bodySmall)
+            Text("Paragrafları DeepSeek, Cloudflare üzerinde okur. Her iki arama için internet gerekir; sorgu ve aday paragraflar servise gönderilir.", style = MaterialTheme.typography.bodySmall)
           }
         }
-        if (!hasReader) item { Notice("Önce son eğitilmiş paragraf modelini yükleyin.", "Model sekmesine git") { goTo(3) } }
         if (!hasEmbedder) item { Notice(Search.NO_EMBEDDER, "Model sekmesine git") { goTo(3) } }
         else if (totals.first == 0) item { Notice("Telefonda henüz belge yok. Önce kaynak ekleyip belge toplayın.", "Kaynaklara git") { goTo(1) } }
         else if (vectors.second > 0) item {

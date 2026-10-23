@@ -45,22 +45,6 @@ jobs:
           cmake --build build-host -j4 --target orbisllm
       - uses: actions/cache@v4
         with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            research-app/tokenizer-native/target
-          key: tokenizer-${{ runner.os }}-${{ hashFiles('research-app/tokenizer-native/Cargo.toml', 'research-app/tokenizer-native/src/lib.rs') }}
-          restore-keys: tokenizer-${{ runner.os }}-
-      - name: Build the exact trained tokenizer for host and Android
-        run: |
-          rustup target add aarch64-linux-android
-          cargo build --manifest-path tokenizer-native/Cargo.toml --release
-          export CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER="$ANDROID_HOME/ndk/29.0.13113456/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android28-clang"
-          RUSTFLAGS='-C link-arg=-Wl,-z,max-page-size=16384' cargo build --manifest-path tokenizer-native/Cargo.toml --target aarch64-linux-android --release --locked
-          mkdir -p app/src/main/jniLibs/arm64-v8a
-          cp tokenizer-native/target/aarch64-linux-android/release/liborbistokenizer.so app/src/main/jniLibs/arm64-v8a/
-      - uses: actions/cache@v4
-        with:
           path: ~/test-embed
           key: test-embed-e5-small-q8_0
       - name: Fetch the public meaning-search model
@@ -68,44 +52,26 @@ jobs:
           mkdir -p ~/test-embed
           e=~/test-embed/multilingual-e5-small-q8_0.gguf
           [ -s "$e" ] || curl -fsSL -o "$e" https://github.com/editor-cell/editor-cell.github.io/releases/download/models-1/multilingual-e5-small-q8_0.gguf
-      - name: Fetch and verify only the current trained model source package
-        env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: |
-          python -m pip install 'huggingface_hub<1' 'onnxruntime==1.23.2' tokenizers numpy
-          python train/fetch_android_test_model.py "$RUNNER_TEMP/orbis-nli"
-      - name: Test reading logic, meaning search, exact tokenizer and trained model parity
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test cloud reader routing and response validation
+        run: node --test cloud-reader/worker.test.mjs
+      - name: Test reading logic, meaning search and compile cloud client
         run: |
           export ORBIS_LIB="$PWD/build-host/liborbisllm.so"
           export ORBIS_EMBED=~/test-embed/multilingual-e5-small-q8_0.gguf
-          export ORBIS_TOKENIZER_LIB="$PWD/tokenizer-native/target/release/liborbistokenizer.so"
-          export ORBIS_NLI_MODEL="$RUNNER_TEMP/orbis-nli/model"
           ./gradlew -p logic-test test --no-daemon
-          python - <<'PY'
-          import xml.etree.ElementTree as ET
-          from pathlib import Path
-          p=Path('logic-test/build/test-results/test/TEST-NliRuntimeTest.xml')
-          root=ET.parse(p).getroot()
-          assert int(root.attrib['tests']) == 2 and int(root.attrib.get('skipped',0)) == 0
-          assert int(root.attrib.get('failures',0)) == 0 and int(root.attrib.get('errors',0)) == 0
-          regression=ET.parse('logic-test/build/test-results/test/TEST-ReadingRegressionTest.xml').getroot()
-          assert int(regression.attrib['tests']) == 1 and int(regression.attrib.get('skipped',0)) == 0
-          assert int(regression.attrib.get('failures',0)) == 0 and int(regression.attrib.get('errors',0)) == 0
-          PY
-      - name: Record current reader limitations without training
-        run: python train/reading_diagnosis.py "$RUNNER_TEMP/orbis-nli/model"
+      - name: Check the deployed DeepSeek service with fresh paragraphs
+        run: python cloud-reader/smoke.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: reading-checks
+          name: cloud-reading-checks
           path: |
             research-app/logic-test/build/test-results/test/
-            research-app/reading-diagnosis.json
+            research-app/cloud-reader/smoke-result.json
           if-no-files-found: ignore
-      - name: Publish the model for direct in-app GitHub downloads
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: python train/publish_android_package.py "$RUNNER_TEMP/orbis-nli"
       - name: Build and inspect the signed APK
         run: |
           export BUILD_NUMBER=$((1000 + ${{ github.run_number }}))
@@ -117,7 +83,6 @@ jobs:
           with zipfile.ZipFile('orbis-arastirma.apk') as z:
               names=set(z.namelist())
               assert 'assets/nli_model.json' in names
-              assert 'lib/arm64-v8a/liborbistokenizer.so' in names
               assert 'lib/arm64-v8a/libonnxruntime.so' in names
               assert not any(n.endswith(('.onnx','.gguf','.safetensors')) for n in names)
           PY
@@ -132,5 +97,5 @@ jobs:
         run: |
           tag="arastirma-v0.1.$BUILD_NUMBER"
           gh release create "$tag" orbis-arastirma.apk --target "${{ github.sha }}" \
-            --title "Orbis Araştırma 0.1.$BUILD_NUMBER · son eğitilmiş model" \
+            --title "Orbis Araştırma 0.1.$BUILD_NUMBER · DeepSeek Cloudflare denemesi" \
             --notes-file ANDROID-TRIAL.md --latest

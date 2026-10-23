@@ -97,10 +97,10 @@ fun CollectScreen() {
                 "6 saatte bir yenilenir.",
             style = MaterialTheme.typography.bodySmall,
         )
-        Slider(liveRead, { liveRead = it }, valueRange = 0f..40f, steps = 39,
+        Slider(liveRead, { liveRead = it }, valueRange = 0f..24f, steps = 23,
             onValueChangeFinished = { Settings.setLiveRead(ctx, liveRead.toInt()) })
         Text("Bir aramada model, yargıya anlamca en yakın ${candidates.toInt()} paragrafı okur. Daha çok paragraf daha uzun sürer.")
-        Slider(candidates, { candidates = it }, valueRange = 10f..100f, steps = 17,
+        Slider(candidates, { candidates = it }, valueRange = 10f..60f, steps = 9,
             onValueChangeFinished = { Settings.setCandidates(ctx, candidates.toInt()) })
         }
     }
@@ -111,12 +111,8 @@ fun ModelScreen() {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
     val working by SearchState.working.collectAsState()
-    val metadata = remember { NliFiles.manifest(ctx) }
-    var haveModel by remember { mutableStateOf(NliFiles.ready(ctx)) }
-    var nliDownload by remember { mutableStateOf(NliFiles.downloadId(ctx)) }
-    var nliProgress by remember { mutableFloatStateOf(0f) }
-    var nliMessage by remember { mutableStateOf("") }
-    var busy by remember { mutableStateOf(false) }
+    var cloudMessage by remember { mutableStateOf("") }
+    var cloudChecking by remember { mutableStateOf(false) }
     var downloads by remember { mutableStateOf(Models.pending(ctx)) }
     var progress by remember { mutableStateOf(mapOf<String, Float>()) }
     var haveEmb by remember { mutableStateOf(Models.embedders.filter { Models.ready(ctx, it) }.map { it.id }.toSet()) }
@@ -144,34 +140,8 @@ fun ModelScreen() {
         }
     }
 
-    LaunchedEffect(nliDownload) {
-        val id = nliDownload ?: return@LaunchedEffect
-        while (true) {
-            val state = Models.status(ctx, id)
-            when (state?.third) {
-                DownloadManager.STATUS_SUCCESSFUL -> {
-                    busy = true; nliMessage = "Model dosyası doğrulanıp kuruluyor…"
-                    try {
-                        withContext(Dispatchers.IO) { NliFiles.finishDownload(ctx) }
-                        haveModel = NliFiles.ready(ctx); nliMessage = "Son eğitilmiş model kullanıma hazır."
-                    } catch (e: Exception) { nliMessage = e.message ?: "Model kurulamadı."; NliFiles.cancelDownload(ctx) }
-                    busy = false; nliDownload = null; break
-                }
-                DownloadManager.STATUS_FAILED, null -> {
-                    nliMessage = "İndirme tamamlanamadı. İnternet bağlantısını ve boş alanı kontrol edip yeniden deneyin."
-                    NliFiles.cancelDownload(ctx); nliDownload = null; break
-                }
-                else -> {
-                    nliProgress = if (state != null && state.second > 0) state.first.toFloat() / state.second else 0f
-                    nliMessage = "Model indiriliyor: %${(nliProgress * 100).toInt()}"
-                }
-            }
-            delay(1000)
-        }
-    }
-
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
-        ScreenIntro("04 / MODELLER", "Araştırmanın motoru.", "Modellerini bir kez indir, belgelerin telefonunda işlensin.")
+        ScreenIntro("04 / MODELLER", "Araştırmanın motoru.", "Paragrafları DeepSeek sunucuda okur. Telefona DeepSeek indirmen gerekmez.")
         SectionLabel("01 / PARAGRAFLARI BUL")
         for (emb in Models.embedders) {
             val have = emb.id in haveEmb
@@ -197,26 +167,21 @@ fun ModelScreen() {
         SectionLabel("02 / PARAGRAFLARI DEĞERLENDİR")
         Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface), border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)) {
             Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text(metadata.getString("title"), style = MaterialTheme.typography.titleMedium)
-                Text("1.000 soruluk eğitimden çıkan paragraf okuyucu. Türkçe veya İngilizce iddiayı paragrafla karşılaştırıp destekliyor, çürütüyor veya ilgisiz diye sınıflandırır.", style = MaterialTheme.typography.bodySmall)
-                Text("İndirme: yaklaşık ${metadata.getLong("bytes") / (1024 * 1024)} MB. Kurulum için en az 3 GB boş alan ayırın.", style = MaterialTheme.typography.bodySmall)
-                if (haveModel) {
-                    Text("Son eğitilmiş model kurulu ve seçili.")
-                    TextButton(enabled = !working && !busy, onClick = { scope.launch { Nli.release(); withContext(Dispatchers.IO) { NliFiles.remove(ctx) }; haveModel = false } }) { Text("Modeli sil") }
-                } else {
-                    TextButton(enabled = !working && !busy && nliDownload == null, onClick = {
-                        try {
-                            nliMessage = "İndirme başlatılıyor…"
-                            nliDownload = NliFiles.download(ctx)
-                        } catch (e: Exception) { nliMessage = e.message ?: "İndirme başlatılamadı." }
-                    }) { Text("İndir") }
-                }
-                if (nliDownload != null) {
-                    LinearProgressIndicator(progress = { nliProgress }, modifier = Modifier.fillMaxWidth())
-                    TextButton(onClick = { NliFiles.cancelDownload(ctx); nliDownload = null; nliMessage = "İndirme durduruldu." }) { Text("İndirmeyi durdur") }
-                }
-                if (busy) LinearProgressIndicator(Modifier.fillMaxWidth())
-                if (nliMessage.isNotEmpty()) Text(nliMessage, style = MaterialTheme.typography.bodySmall)
+                Text("DeepSeek R1 · 32B · Cloudflare", style = MaterialTheme.typography.titleMedium)
+                Text("Seçili paragraf okuyucu. Sorgu ve aday paragraflar internet üzerinden Cloudflare'e gönderilir; model telefona indirilmez.", style = MaterialTheme.typography.bodySmall)
+                Text("Paragraf bulma için yukarıdaki anlam modeli telefonunda çalışmaya devam eder. DeepSeek bağlantı hatası verirse arama durur; başka modele geçilmez.", style = MaterialTheme.typography.bodySmall)
+                Button(enabled = !working && !cloudChecking, onClick = {
+                    cloudChecking = true; cloudMessage = "DeepSeek deneniyor…"
+                    scope.launch {
+                        cloudMessage = try {
+                            val answer = CloudReader.judge("The survey found a higher prevalence of obesity in Country A than in Country B.", "Obezitenin daha sık görüldüğü ülkeler")
+                            check(answer.startsWith("SUPPORTS")) { "Model deneme paragrafını seçmedi." }
+                            "Bağlantı başarılı. DeepSeek deneme paragrafını okudu."
+                        } catch (e: Exception) { e.message ?: "DeepSeek'e bağlanılamadı." }
+                        cloudChecking = false
+                    }
+                }) { Text(if (cloudChecking) "Deneniyor…" else "DeepSeek'i dene") }
+                if (cloudMessage.isNotEmpty()) Text(cloudMessage, style = MaterialTheme.typography.bodySmall)
             }
         }
     }

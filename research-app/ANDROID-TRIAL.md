@@ -1,17 +1,9 @@
-Telefona kurmak için aşağıdaki **orbis-arastirma.apk** dosyasını indirin ve açın.
+# Orbis Araştırma · DeepSeek / Cloudflare denemesi
 
-Bu deneme, 1.000 insan yapımı paragraf sorusuyla çalıştırılan son eğitilmiş modeli kullanır. Eski başlangıç modeli seçeneği yoktur. Ayrı 97 soruluk sınavda 44 doğru (%45,4) alınmıştır; uygulamadaki kaynak tarama başarısı ayrıca denenmelidir.
+Paragraf değerlendirmesi Cloudflare üzerinde DeepSeek-R1-Distill-Qwen-32B ile yapılır. DeepSeek telefona indirilmez. Uygulamanın Model sekmesindeki “DeepSeek’i dene” düğmesi bağlantıyı gerçek bir paragrafla sınar.
 
-- **Model** sekmesinden E5 anlam modelini indirin veya mevcut E5 modelini kullanın.
-- Aynı sekmede son eğitilmiş modelin altındaki **İndir** düğmesine basın. Paket doğrudan GitHub’dan indirilir, doğrulanır ve kendiliğinden kurulur. İndirme yaklaşık 837 MiB (878 MB), açılmış dosyalar yaklaşık 1,13 GB; kurulum için en az 3 GB boş alan gerekir.
-- Model paketi GitHub sürümünde açıktır. Hesap, okuma anahtarı, tarayıcı veya dosya seçme işlemi gerekmez.
-- Kaynakları toplayın, ardından arama bölümüne Türkçe veya İngilizce bir **iddia** yazın. Model, paragrafları iddiayı destekliyor, çürütüyor veya ilgisiz olarak değerlendirir; yanıt metni üretmez.
+Sorgu ve aday paragraflar Cloudflare'e gönderilir. Hem kayıtlı belgelerde hem webde ararken internet gerekir. Daha önce indirilen anlam modeli, paragrafları bulmak için telefonda kullanılmaya devam eder; bu sürüm için yeni bir paragraf modeli indirmek gerekmez.
 
-Eski kaynaklarınız korunur. Önceki modelin arama sonuçları yeni sonuçlarla karıştırılmaz. Bu sürüm arm64 Android 9 ve üzeri içindir. Gerçek telefondaki hız ve bellek kullanımı henüz ölçülmemiştir.
+En çok 24 belge açılır ve 60 paragraf değerlendirilir. Önceki modelin sonuçları yeni denemeye karıştırılmaz. Bağlantı veya kota sorunu aramayı hata mesajıyla durdurur; hata ilgisiz sonuç sayılmaz. Kaldığı yerden devam edilebilir.
 
-
-Bu sürümde 0,80 puan eşiği, puan farkı şartı ve komşu paragraflarla aynı karara ulaşma koşulu kaldırıldı. Ön elemeden geçen paragraf ile yargı doğrudan modele verilir; modelin destekliyor, çürütüyor veya ilgisiz kararı ek eşiklerle elenmez. Eski kurallarla kaydedilmiş arama sonuçları yeniden kullanılmaz; güncellemeden sonra aramayı yeniden başlatın.
-
-Kısa cümleleri biçimleri nedeniyle eleyen eski şartlar geri getirilmedi. Kaynaklar sırayla taranır; varsayılan sınırlar 24 web belgesi ve 60 aday paragraftır. Kırık beyaz/koyu yeşil görünüm, açık/koyu tema ve kaynak/tarih filtreleri korunur. Model ağırlıkları değiştirilmedi ve eğitim yapılmadı.
-
-Bu güncellemede belge başlıklarının en az 8 karakter olması şartı kaldırıldı. “Obezite”, “Kanser” ve “HIV” gibi kısa başlıklar da anlam karşılaştırmasına katılır. Başlık boşsa belge adresinden alınan sözcükler kullanılır. Varsayılan 24 belge ve 60 paragraf sınırları korunur.
+Deneme servisi sabit model ve görevle çalışır; dakika başına istek sınırlaması vardır. Ücretli abonelik açılmaz. Kota biterse servis bunu hata olarak gösterir.
