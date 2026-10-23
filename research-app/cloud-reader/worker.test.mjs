@@ -7,7 +7,7 @@ function environment(answer = { verdict: 'SUPPORTS', query_kind: 'claim', reason
   return {
     get calls() { return calls; },
     REQUEST_LIMIT: { limit: async () => ({ success: true }) },
-    AI: { run: async (model, input) => { calls++; assert.equal(model, MODEL); assert.equal(input.temperature, 0); return { response: `<think>short reasoning</think>\n${JSON.stringify(answer)}` }; } },
+    AI: { run: async (model, input) => { calls++; assert.equal(model, MODEL); assert.equal(input.temperature, 0); assert.equal(input.response_format.type, 'json_schema'); return { response: `<think>short reasoning</think>\n${JSON.stringify(answer)}` }; } },
   };
 }
 const request = (body) => new Request('https://test/judge', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
@@ -52,4 +52,11 @@ test('provider errors remain recoverable server errors', async () => {
   const env = environment();
   env.AI.run = async () => { throw new Error('quota'); };
   assert.equal((await worker.fetch(request({ query: 'x', paragraph: 'y' }), env)).status, 502);
+});
+test('Cloudflare JSON mode object is validated and returned without parsing prose', async () => {
+  const env = environment();
+  env.AI.run = async () => ({ response: { verdict: 'CONTRADICTS', query_kind: 'claim', reason: 'Tersini bildiriyor.' } });
+  const response = await worker.fetch(request({ query: 'X', paragraph: 'Y' }), env);
+  assert.equal(response.status, 200);
+  assert.equal((await response.json()).verdict, 'CONTRADICTS');
 });

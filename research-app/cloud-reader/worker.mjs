@@ -5,6 +5,15 @@ For a claim: SUPPORTS if the paragraph provides evidence for it; CONTRADICTS if 
 For a question or topic: SUPPORTS if the paragraph answers it or provides concrete information requested; otherwise UNRELATED. Never use CONTRADICTS for a question or topic.
 A bare heading, country name or page navigation provides no evidence. Related vocabulary alone is insufficient. Do not require exact wording or neighboring-paragraph approval. Do not add external facts.
 Return one JSON object only: {"verdict":"SUPPORTS|CONTRADICTS|UNRELATED","query_kind":"claim|topic","reason":"one short Turkish sentence"}. Keep any reasoning brief.`;
+const RESPONSE_SCHEMA = {
+  type: 'object',
+  properties: {
+    verdict: { type: 'string', enum: ['SUPPORTS', 'CONTRADICTS', 'UNRELATED'] },
+    query_kind: { type: 'string', enum: ['claim', 'topic'] },
+    reason: { type: 'string' },
+  },
+  required: ['verdict', 'query_kind', 'reason'], additionalProperties: false,
+};
 
 export function validateInput(body) {
   if (!body || typeof body.query !== 'string' || typeof body.paragraph !== 'string' ||
@@ -15,10 +24,10 @@ export function validateInput(body) {
 }
 
 export function parseAnswer(raw) {
-  if (typeof raw !== 'string') throw new Error('Model boş yanıt verdi.');
-  const clean = raw.replace(/<think>[\s\S]*?<\/think>/g, '').trim().replace(/^```(?:json)?\s*/, '').replace(/\s*```$/, '');
-  const data = JSON.parse(clean);
-  if (!['SUPPORTS', 'CONTRADICTS', 'UNRELATED'].includes(data.verdict) ||
+  const data = typeof raw === 'string'
+    ? JSON.parse(raw.replace(/<think>[\s\S]*?<\/think>/g, '').trim().replace(/^```(?:json)?\s*/, '').replace(/\s*```$/, ''))
+    : raw;
+  if (!data || typeof data !== 'object' || !['SUPPORTS', 'CONTRADICTS', 'UNRELATED'].includes(data.verdict) ||
       !['claim', 'topic'].includes(data.query_kind) || typeof data.reason !== 'string') {
     throw new Error('Model yanıtı tamamlanamadı; yeniden deneyin.');
   }
@@ -62,6 +71,7 @@ export default {
       const response = await env.AI.run(MODEL, {
         messages: [{ role: 'system', content: SYSTEM }, { role: 'user', content: JSON.stringify(input) }],
         max_tokens: 1024, temperature: 0,
+        response_format: { type: 'json_schema', json_schema: RESPONSE_SCHEMA },
       });
       return json({ ...parseAnswer(response.response), model: MODEL, version: VERSION });
     } catch (error) {
