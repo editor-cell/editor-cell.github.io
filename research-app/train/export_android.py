@@ -33,7 +33,6 @@ def main():
     from transformers import AutoModelForSequenceClassification, AutoTokenizer
     from optimum.exporters.onnx import main_export
     import onnxruntime as ort
-    from onnxruntime.quantization import quantize_dynamic, QuantType
     torch.set_num_threads(4)
     root = pathlib.Path.cwd()
     state = current_model()
@@ -78,14 +77,14 @@ def main():
     main_export(str(source), output=out, task="text-classification", opset=17,
         device="cpu", do_validation=True, no_post_process=True, dynamo=False)
     float_model = out / "model.onnx"
-    quantize_dynamic(str(float_model), str(package / "model.onnx"), per_channel=True,
-        weight_type=QuantType.QInt8, op_types_to_quantize=["MatMul", "Gather"])
+    # This first phone trial preserves float32 weights: int8 changed the trained decisions.
+    shutil.copyfile(float_model, package / "model.onnx")
     gc.collect()
     opts = ort.SessionOptions()
     opts.intra_op_num_threads = 4
     opts.inter_op_num_threads = 1
     float_session = ort.InferenceSession(str(float_model), sess_options=opts, providers=["CPUExecutionProvider"])
-    quant_session = ort.InferenceSession(str(package / "model.onnx"), sess_options=opts, providers=["CPUExecutionProvider"])
+    phone_session = ort.InferenceSession(str(package / "model.onnx"), sess_options=opts, providers=["CPUExecutionProvider"])
     model = AutoModelForSequenceClassification.from_pretrained(source).eval()
     # Published questions are used only to check conversion, never to train or tune.
     import independent_exam_data as data
@@ -94,7 +93,7 @@ def main():
     sample = [q for q in questions if q["group"] == "Turkish reading"][:6] + [q for q in questions if q["group"] == "English reading"][:6]
     rows = [(q["passage"], q["question"].replace("_", o) if "_" in q["question"] else q["question"] + " " + o)
             for q in sample for o in q["options"]]
-    ref_logits, float_logits, quant_logits = [], [], []
+    ref_logits, float_logits, phone_logits = [], [], []
     for i in range(0, len(rows), 5):
         batch = rows[i:i + 5]
         inputs = tok([p for p, _ in batch], [h for _, h in batch], truncation="only_first", max_length=1024,
@@ -103,24 +102,24 @@ def main():
             ref_logits.extend(model(**inputs).logits.numpy())
         arrays = {k: v.numpy() for k, v in inputs.items()}
         float_logits.extend(float_session.run(None, {i.name: arrays[i.name] for i in float_session.get_inputs()})[0])
-        quant_logits.extend(quant_session.run(None, {i.name: arrays[i.name] for i in quant_session.get_inputs()})[0])
-    ref, floating, quant = map(np.asarray, (ref_logits, float_logits, quant_logits))
+        phone_logits.extend(phone_session.run(None, {i.name: arrays[i.name] for i in phone_session.get_inputs()})[0])
+    ref, floating, phone = map(np.asarray, (ref_logits, float_logits, phone_logits))
     delta_float = float(np.max(np.abs(ref - floating)))
-    agreement = float(np.mean(ref.argmax(-1) == quant.argmax(-1)))
-    delta_quant = float(np.max(np.abs(ref - quant)))
+    agreement = float(np.mean(ref.argmax(-1) == phone.argmax(-1)))
+    delta_phone = float(np.max(np.abs(ref - phone)))
     ent, con = labels.index("entailment"), labels.index("contradiction")
     before = (ref[:, ent] - ref[:, con]).reshape(-1, 5).argmax(-1)
-    after = (quant[:, ent] - quant[:, con]).reshape(-1, 5).argmax(-1)
+    after = (phone[:, ent] - phone[:, con]).reshape(-1, 5).argmax(-1)
     ranking_agreement = float(np.mean(before == after))
-    print(f"::notice title=Android parity::float max error {delta_float:.6f}; int8 label agreement {agreement:.3f}; question ranking agreement {ranking_agreement:.3f}; int8 max error {delta_quant:.4f}", flush=True)
-    if delta_float > 0.005 or agreement < 0.95 or ranking_agreement < 0.90 or delta_quant > 0.6:
+    print(f"::notice title=Android parity::float max error {delta_float:.6f}; phone label agreement {agreement:.3f}; question ranking agreement {ranking_agreement:.3f}; phone max error {delta_phone:.4f}", flush=True)
+    if delta_float > 0.005 or agreement < 0.95 or ranking_agreement < 0.90 or delta_phone > 0.6:
         raise ValueError("Converted phone model did not preserve the trained model closely enough")
     del model, float_session
     gc.collect()
     # Dynamic length must also work at the same 1024-token limit used in training.
     long = tok("reading research evidence " * 800, "Research needs evidence.", truncation="only_first",
                max_length=1024, return_tensors="np")
-    answer = quant_session.run(None, {i.name: long[i.name] for i in quant_session.get_inputs()})[0]
+    answer = phone_session.run(None, {i.name: long[i.name] for i in phone_session.get_inputs()})[0]
     if answer.shape != (1, 3) or not np.isfinite(answer).all():
         raise ValueError("Phone model failed the full-length check")
     # Record the phone-format model on the same frozen independent examination.
@@ -128,17 +127,17 @@ def main():
     for q in questions:
         hypotheses = [q["question"].replace("_", o) if "_" in q["question"] else q["question"] + " " + o for o in q["options"]]
         encoded = tok([q["passage"]] * 5, hypotheses, truncation="only_first", max_length=1024, padding=True, return_tensors="np")
-        lg = quant_session.run(None, {i.name: encoded[i.name] for i in quant_session.get_inputs()})[0]
+        lg = phone_session.run(None, {i.name: encoded[i.name] for i in phone_session.get_inputs()})[0]
         pick = int((lg[:, ent] - lg[:, con]).argmax())
         correct += "ABCDE"[pick] == q["answer"]
-    print(f"::notice title=Android exam::int8 current model: {correct}/{len(questions)} on the frozen independent examination", flush=True)
+    print(f"::notice title=Android exam::phone current model: {correct}/{len(questions)} on the frozen independent examination", flush=True)
     # Generic exact-runtime fixtures, with no invented semantic answer labels.
     runtime_vectors = []
     for p, h in [(texts[1], texts[2]), (texts[3], texts[4]), (texts[6], texts[7])]:
         encoded = tok(p, h, return_tensors="np")
-        lg = quant_session.run(None, {i.name: encoded[i.name] for i in quant_session.get_inputs()})[0][0]
+        lg = phone_session.run(None, {i.name: encoded[i.name] for i in phone_session.get_inputs()})[0][0]
         runtime_vectors.append("\t".join([base64.b64encode(p.encode()).decode(), base64.b64encode(h.encode()).decode(), ",".join(map(str, lg.tolist()))]))
-    del quant_session
+    del phone_session
     gc.collect()
     archive = pathlib.Path("android-nli.zip")
     with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=1) as z:
@@ -149,7 +148,7 @@ def main():
     if not api.model_info(android_repo).private:
         raise ValueError("The Android package repository must remain private")
     api.upload_file(path_or_fileobj=str(archive), path_in_repo="android-nli.zip", repo_id=android_repo,
-                    commit_message="Verified int8 Android export of the current trained NLI checkpoint")
+                    commit_message="Verified float32 Android export of the current trained NLI checkpoint")
     package_revision = api.model_info(android_repo).sha
     manifest = {"schema": 1, "title": "Orbis · son eğitilmiş model", "source_repo": state["repo"],
         "source_revision": revision, "package_repo": android_repo, "package_revision": package_revision,
@@ -158,7 +157,7 @@ def main():
             name: {"bytes": (package / name).stat().st_size, "sha256": sha(package / name)}
             for name in ("model.onnx", "tokenizer.json", "encoding.json")},
         "encoding": special, "parity": {"float_max_error": delta_float, "label_agreement": agreement,
-            "ranking_agreement": ranking_agreement, "quant_max_error": delta_quant}, "runtime_version": "1.23.2",
+            "ranking_agreement": ranking_agreement, "phone_max_error": delta_phone, "precision": "float32"}, "runtime_version": "1.23.2",
         "independent_exam": {"correct": correct, "total": len(questions)}}
     assets = root / "research-app/app/src/main/assets"
     assets.mkdir(parents=True, exist_ok=True)
