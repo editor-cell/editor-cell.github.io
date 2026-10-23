@@ -1,53 +1,34 @@
-# Büyük model: paragrafta anlama eğitimi (ChatGPT için devir notu)
+# Qwen3 4B: paragraf anlama çalışması
 
-Durum 23 Ekim 2026 itibarıyladır. Bu düzeneği Claude kurdu; turları bundan sonra ChatGPT yürütür.
+23 Ekim 2026. Kullanıcı, İngilizce kaynakları İngilizce taleplerle okuyacak büyük modeli paragraf anlama için eğitmemizi istedi.
 
-## Ne eğitiliyor, neden
+## Kurallar
 
-- Model: uygulamadaki büyük model, Qwen3 4B (Qwen/Qwen3-4B). Uygulama bu modeli paragrafın bir iddiayı destekleyip desteklemediğine karar vermek için kullanıyor.
-- Küçük NLI modeli (mDeBERTa) bırakıldı: 1.000 paragraf sorusuyla eğitildikten sonra paragraf sınavı yalnız 43'ten 45'e çıktı.
-- Yavuz'un kararı: büyük model yalnız paragrafta anlama eğitimi alacak. Başka konu (mantık, problem, sudoku) yok.
+- Model Qwen/Qwen3-4B; güncel başlangıç ve son eğitilmiş ek `qwen_latest.json` dosyasında tutulur. Sonraki tur yalnız buradaki en son ekten devam eder. Eksik ek varsa başlangıç modeline dönülmez.
+- İlk tur için 15 dakikalık İngilizce paragraf eğitimi, insan yapımı ve yayımlanmış cevap anahtarlı beş şıklı LSAT okuma sorularıyla yapılır. Yapay soru, çeviri veya etiket üretilmez. Diğer dersler, sudoku ve bağımsız mantık soruları eğitimde kullanılmaz.
+- Ücretsiz Kaggle GPU kullanılır; ücretli hesaplama açılmaz. Hugging Face yalnız özel model saklamak için kullanılır.
+- Kullanıcıya kısa, Türkçe ve madde işaretli bilgi verilir. Bilgisayarı olduğu varsayılmaz.
+- Modelin uygulamaya aktarılması ayrı iştir; bu çalışma uygulamanın mevcut modelini değiştirmez.
 
-## Yavuz'un kuralları
+## Sabit başlangıç sınavı
 
-- Yalnız insanların hazırladığı, cevabı yayımlanmış sorular. Claude'un ya da ChatGPT'nin ürettiği soru ve etiket hiç kullanılmaz. Gerekçesi: yapay zekânın okuma ölçüsü insanınkiyle aynı değil, modele dar okuma taşınmasın.
-- Sorular beş şıklı (sınav gibi). Dört şık ve tek tek doğru/yanlış eğitimi istenmiyor.
-- Turlar 15 dakika; turlar üst üste konur (her tur bir öncekinin ekinden devam eder). Saatler süren ağır tur yok.
-- Öğrenip öğrenmediği yaklaşık 100 soruluk, modelin görmediği bir sınavla ölçülür.
-- Eğitim bedava Kaggle kartında yapılır (haftada 30 saat). Hugging Face kredisi harcanmaz.
-- Sistem kurmadan önce Yavuz'la konuşulur.
-- Yavuz avukat, bilgisayarı yok, her şeyi telefondan yapıyor: ona Türkçe, kısa, madde işaretiyle yazın; dosya yolu ve kod göstermeyin.
+- Başlangıç sınavı tamamlandı: Actions 39944863880; Qwen revision `1cfa9a7208912126459214e8b04321603b3df60c`.
+- Sonuç 55/97; İngilizce paragraf 43/45, Türkçe paragraf 7/44, mantık 5/8.
+- Aynı soru metni, sırası, şıkları ve anahtarı `qwen_exam_reference.json` ile doğrulanır. Fingerprint: `400eaec90c90f516403691afede8403d86c4112641fdc0d2a72ae70acdead61b`.
+- Sınavdaki 8 mantık sorusu önceki 97 soruluk sınavla karşılaştırma içindir; eğitimde kullanılmaz. Eğitimden sonra hem 97 sorunun toplamı hem dil bölümleri raporlanır.
+- Başlangıç modeli tekrar sınanmaz. Kaydedilmiş başlangıç puanı, son eğitilmiş modelin yeni puanıyla karşılaştırılır.
 
-## Sorular
+## Etkin eğitim yolu
 
-- İngilizce: yayımlanmış LSAT okuma soruları (Wang ve ark., From LSAT, 2022; ChatGPT'nin küçük modelde kullandığı kaynakla aynı), yaklaşık 2.340 soru. Uzun paragraf, paragrafla ilgili soru, 5 şık.
-- Türkçe: Türkiye'deki sınav müfredatından öğretmen yazımı, paragraf içeren sorular (TurkishMMLU), 5 şık.
-- Paragrafların dörtte biri sınava ayrılır (paragrafın özetine göre); bir paragraf hem eğitimde hem sınavda olmaz. Sınav her turda aynı: 60 İngilizce + 60 Türkçe.
-- Model paragrafı, soruyu ve A-E şıklarını görür, tek harfle cevap verir (uygulamadaki gibi düşünme kapalı). Şans başarısı %20.
-- Eğitimde şıkların sırası her seferinde karıştırılır; model harfi değil cevabı öğrensin diye.
+- `.github/workflows/qwen-paragraph-training.yml`: `[qwen-paragraph]` işaretli, ilgili dosyaları değiştiren commit veya elle çalıştırma bir tur başlatır.
+- `qwen_paragraph_request.json`: 15 dakika, 1000 farklı eğitim soruluk havuz, ayrı 100 kontrol sorusu; ilk tur öğrenme hızı 1e-5.
+- `prepare_qwen_paragraph.py`: özgün LSAT train bölümünden seçim yapar. Özgün val/test paragrafları ile sabit 97 sorunun paragrafları eğitimden çıkarılır. Kaynak hashleri, soru yapısı ve metin örtüşmesi doğrulanır; 100 kontrol sorusu da ayrılır.
+- `qwen_paragraph_round.py`: yalnız son Qwen üzerinden küçük bir LoRA eki eğitir. Her soruda şık sırası değiştirilir. Süre bitince ek kaydedilir, aynı temel model ve aynı çıkarım ayarlarıyla yeniden yüklenir; önce ayrı kontrol, sonra sabit 97 soru sınanır. Sınavlar model seçimi veya eğitim adımı için kullanılmaz.
+- Önceki turlarda çalışılan soru kimlikleri tutulur; yeni tur havuzda henüz çalışılmamış sorulardan sürer. Havuz biterse sessizce tekrar edilmez.
+- `qwen_training_state.py`: tamamlanan eki özel Hugging Face deposuna kaydeder ve güncel model işaretçisini ancak önceki durum hâlâ aynıysa ilerletir.
+- Rapor `qwen-paragraph-<run>` artifactindedir: gerçek çalışılan farklı soru sayısı, güncelleme sayısı, süre, eski/yeni sınav puanları, özel model konumu. 1000 soruluk havuzun tamamı çalışılmadıysa tamamlanmış gibi raporlanmaz.
+- İngilizce puanı gerilerse yeni bir turu kendiliğinden başlatmayın; sonucu kullanıcıya bildirin. Tek sınavdaki değişim kesin öğrenme veya ezber kanıtı değildir.
 
-## Nasıl çalıştırılır
+## Önceki düzenek
 
-- GitHub'da "Research app (big model paragraph reading on a free Kaggle graphics card)" iş akışı, dal anlam-okuma. Elle başlatılır (Run workflow).
-- Girdiler:
-  - mode: smoke (soruları kurup sayar, Kaggle'a gitmez), start (turu Kaggle'a gönderir ve bekler), collect (bekleme süresini aşan turun sonucunu alır).
-  - minutes: eğitim süresi. 0 = yalnız sınav (başlangıç puanı). Varsayılan 15.
-  - start: devam edilecek önceki turun Hugging Face deposu (ör. orbis-qwen3-4b-buyuk-okuma-1). Boş = model yayımlandığı hâliyle.
-  - kernel: Kaggle defterinin adı; her tur için yeni bir ad (orbis-buyuk-okuma-1, -2, ...). Sonucun deposu bu addan çıkar: orbis-qwen3-4b-buyuk-okuma-N.
-  - seed: eğitim sorularının sırası.
-- Sonuçlar iş akışının kontrol notlarında, "Reading" başlığıyla: "EXAM before" ve "EXAM after" satırları, İngilizce ve Türkçe ayrı.
-- Yalnız küçük bir ek (LoRA) eğitilir ve özel bir Hugging Face deposuna yazılır. Uygulamanın indirdiği model dosyasına dokunulmaz.
-- Kaggle kuyruğu yüzünden 15 dakikalık tur 30-90 dakika sürebilir (modelin indirilmesi ve iki sınav dahil).
-
-## İlk adımlar
-
-1. mode=smoke: soruların kurulduğunu ve sayıları gör.
-2. mode=start, minutes=0, kernel=orbis-buyuk-okuma-0: hiç eğitilmemiş modelin başlangıç puanı. Kazanç buna göre ölçülür.
-3. mode=start, minutes=15, kernel=orbis-buyuk-okuma-1: ilk tur.
-4. Sonraki turlar: start=önceki turun deposu, kernel=yeni ad.
-5. Sınav düşmeye başlarsa (eğitim kaybı düşüyor ama sınav düşüyorsa) model ezberliyor demektir: dur, Yavuz'a sor. İnsan yapımı yeni beş şıklı paragraf seti bulunmadan aynı soruları tekrar tekrar vermek işe yaramaz.
-
-## Uygulamaya girmesi
-
-- Bu eğitim yalnız bir ek üretir; uygulama tek bir GGUF dosyası kullanıyor. Eki uygulamaya koymak için önce modelle birleştirilip GGUF'a (Q4_K_M) çevrilmesi gerekir. Bu adım henüz kurulmadı; Yavuz'la konuşmadan kurulmaz.
-- Uygulamaya girmeden önce uygulamanın kendi testlerinden (ConceptGateTest) geçmeli: paragraf okumayı öğrenip ilgisiz paragrafı ayırmayı ya da Türkçe çeviriyi bozmuş olabilir.
+`big_read.py` ve `research-app-train-big.yml` önceki taslaktır. Farklı 120 soruluk sınavı ve ders soruları içeren veri seçimi nedeniyle bu çalışma için kullanılmaz. Etkin yol yukarıdaki sabit 97 sorulu, İngilizce paragraf eğitimidir.

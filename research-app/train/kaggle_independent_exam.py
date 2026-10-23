@@ -24,8 +24,11 @@ def gpu_slots_full(message):
 
 def main():
     practice = os.environ.get("PARAGRAPH_PRACTICE") == "1"
-    title = "Paragraph practice" if practice else "Independent exam"
-    report_dir = "practice-report" if practice else "exam-report"
+    qwen = os.environ.get("QWEN_PRACTICE") == "1"
+    if practice and qwen:
+        raise ValueError("Only one training mode may run")
+    title = "Qwen paragraph training" if qwen else ("Paragraph practice" if practice else "Independent exam")
+    report_dir = "qwen-report" if qwen else ("practice-report" if practice else "exam-report")
     for key in ("KAGGLE_KEY", "KAGGLE_API_TOKEN", "KAGGLE_USERNAME"):
         if not os.environ.get(key):
             os.environ.pop(key, None)
@@ -37,11 +40,11 @@ def main():
         raise ValueError("Kaggle account name could not be resolved from the existing connection")
     os.environ["KAGGLE_USERNAME"] = username
     run_id = os.environ["GITHUB_RUN_ID"]
-    slug = ("orbis-paragraph-1000-" if practice else "orbis-independent-exam-") + run_id
+    slug = ("orbis-qwen-paragraph-" if qwen else ("orbis-paragraph-1000-" if practice else "orbis-independent-exam-")) + run_id
     dataset = username + "/" + slug
     kernel_slug = slug + "-run"
     kernel = username + "/" + kernel_slug
-    target = pathlib.Path("practice-private" if practice else "exam-private")
+    target = pathlib.Path("qwen-private" if qwen else ("practice-private" if practice else "exam-private"))
     (target / "dataset-metadata.json").write_text(json.dumps({"title": slug, "id": dataset, "licenses": [{"name": "other"}]}))
     # The upload endpoint occasionally returns an empty/non-JSON response.
     # Retrying the same private run is safe; never replace another run's data.
@@ -77,7 +80,7 @@ def main():
         raise TimeoutError("Private examination dataset did not become ready within 20 minutes")
     kk = pathlib.Path("exam-kernel")
     kk.mkdir(exist_ok=True)
-    program = "paragraph_practice.py" if practice else "independent_exam.py"
+    program = "qwen_paragraph_round.py" if qwen else ("paragraph_practice.py" if practice else "independent_exam.py")
     shutil.copyfile("research-app/train/" + program, kk / program)
     metadata = {"id": kernel, "title": kernel_slug, "code_file": program,
         "language": "python", "kernel_type": "script", "is_private": True,
@@ -121,7 +124,7 @@ def main():
         raise RuntimeError("Kaggle rejected the private examination dataset source")
     (pathlib.Path(report_dir) / "queue-status.json").write_text(json.dumps({"status": "submitted", "run_id": run_id, "kernel": kernel}))
     print(f"::notice title={title}::Sent to the free Kaggle GPU: " + kernel, flush=True)
-    end = time.monotonic() + (105 if practice else 30) * 60
+    end = time.monotonic() + (105 if practice or qwen else 30) * 60
     final_status = ""
     while time.monotonic() < end:
         state = command("kaggle", "kernels", "status", kernel, capture=True, check=False).stdout
@@ -142,6 +145,14 @@ def main():
         if (res / name).exists():
             shutil.copyfile(res / name, report / name)
     status = json.loads((res / "status.json").read_text()) if (res / "status.json").exists() else {}
+    if qwen:
+        if not status.get("ok"):
+            for path in res.glob("*.log"):
+                print(path.read_text(errors="replace")[-6000:])
+            raise RuntimeError("Qwen training or evaluation failed; no checkpoint published")
+        from qwen_training_state import collect
+        collect(target, res, report)
+        return
     if practice:
         profile = json.loads((target / "paragraph-practice.json").read_text())
         if (not status.get("ok") or status.get("run_id") != run_id
@@ -189,3 +200,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

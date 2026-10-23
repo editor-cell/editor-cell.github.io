@@ -1,0 +1,15 @@
+{
+  "base_repo": "Qwen/Qwen3-4B",
+  "base_revision": "1cfa9a7208912126459214e8b04321603b3df60c",
+  "adapter_repo": null,
+  "adapter_revision": null,
+  "round": 0,
+  "baseline_run": "39944863880",
+  "exam_fingerprint": "400eaec90c90f516403691afede8403d86c4112641fdc0d2a72ae70acdead61b",
+  "summary": {
+    "Overall": {"correct": 55, "total": 97, "accuracy": 56.7},
+    "English reading": {"correct": 43, "total": 45, "accuracy": 95.56},
+    "Turkish reading": {"correct": 7, "total": 44, "accuracy": 15.91},
+    "Logical reasoning": {"correct": 5, "total": 8, "accuracy": 62.5}
+  }
+}

@@ -1,0 +1,52 @@
+name: Qwen3 4B (English paragraph training, 15 minutes)
+
+on:
+  push:
+    branches: [anlam-okuma]
+    paths:
+      - .github/workflows/qwen-paragraph-training.yml
+      - research-app/train/qwen_paragraph_request.json
+      - research-app/train/qwen_paragraph_round.py
+      - research-app/train/prepare_qwen_paragraph.py
+      - research-app/train/qwen_training_state.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: orbis-qwen-paragraph-training
+  cancel-in-progress: false
+
+jobs:
+  train:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[qwen-paragraph]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 220
+    env:
+      QWEN_PRACTICE: '1'
+      KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+      KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+      KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install readers and existing service clients
+        run: pip install --quiet kaggle 'huggingface_hub>=0.34,<1' 'transformers>=4.51,<5' pymupdf
+      - name: Verify training isolation and continuation rules
+        run: python research-app/train/test_qwen_paragraph.py
+      - name: Prepare only published English paragraph questions
+        run: python research-app/train/prepare_qwen_paragraph.py
+      - name: Train the current Qwen for 15 minutes and test the saved result
+        run: python research-app/train/kaggle_independent_exam.py
+      - name: Keep training counts and scores without question text or model weights
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qwen-paragraph-${{ github.run_id }}
+          path: qwen-report/
+          if-no-files-found: ignore

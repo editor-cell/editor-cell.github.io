@@ -1,0 +1,10 @@
+{
+  "minutes": 15,
+  "seed": 23,
+  "learning_rate": 0.00001,
+  "max_train_tokens": 3072,
+  "training_questions": 1000,
+  "development_questions": 100,
+  "language": "English",
+  "source": "published LSAT reading comprehension; original train split only"
+}
