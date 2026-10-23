@@ -32,7 +32,7 @@ jobs:
         run: |
           git config user.name "editor-cell"
           git config user.email "editor@orbisreadingatlas.com"
-          git add research-app/app/src/main/assets/nli_model.json research-app/logic-test/src/test/resources/nli-tokenizer.tsv
+          git add research-app/app/src/main/assets/nli_model.json research-app/logic-test/src/test/resources/nli-tokenizer.tsv research-app/logic-test/src/test/resources/nli-runtime.tsv
           git commit -m "[android-model-ready] Record the verified current-model Android package"
           git pull --rebase origin "$GITHUB_REF_NAME"
           git push origin "HEAD:$GITHUB_REF_NAME"

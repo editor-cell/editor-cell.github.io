@@ -29,7 +29,7 @@ def sha(path):
 
 def main():
     import torch
-    import sentencepiece as spm
+    from tokenizers import Tokenizer
     from transformers import AutoModelForSequenceClassification, AutoTokenizer
     from optimum.exporters.onnx import main_export
     import onnxruntime as ort
@@ -49,20 +49,18 @@ def main():
         raise ValueError("Unexpected trained NLI labels")
     package = pathlib.Path("android-package")
     package.mkdir(exist_ok=True)
-    # Vocabulary only; these are not a model's weights and never run inference.
-    sp = source / "spm.model"
-    if not sp.exists():
-        sp = pathlib.Path(hf_hub_download("MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7", "spm.model"))
-    shutil.copyfile(sp, package / "spm.model")
-    processor = spm.SentencePieceProcessor(model_file=str(sp))
+    # Use the checkpoint's exact tokenizer, including its normalization graph.
+    # A generic SentencePiece replacement changes some Unicode inputs.
+    shutil.copyfile(source / "tokenizer.json", package / "tokenizer.json")
+    processor = Tokenizer.from_file(str(package / "tokenizer.json"))
     texts = ["", "A clear paragraph about reading.", "Türkiye'de araştırma ve eğitim.",
         "İSTANBUL ı İ i I ç ş ğ ü ö", "  multiple   spaces\nnew\tline  ",
         "café cafe\u0301 ﬁnal ①", "研究と教育 العربية", "An emoji 😀 and a rocket 🚀.",
         "Growth was 3.5% in 2024; it wasn't 4%.", "A\u00a0non-breaking\u2009space."]
     for text in texts:
-        if processor.encode(text) != tok.encode(text, add_special_tokens=False):
-            raise ValueError("Native SentencePiece does not match the trained tokenizer: " + repr(text))
-    print("::notice title=Android export::Current trained tokenizer agrees with native SentencePiece on Unicode and whitespace checks", flush=True)
+        if processor.encode(text, add_special_tokens=False).ids != tok.encode(text, add_special_tokens=False):
+            raise ValueError("Native tokenizer does not match the trained tokenizer: " + repr(text))
+    print("::notice title=Android export::Current trained tokenizer is preserved, including Unicode and whitespace behavior", flush=True)
     special = {"cls": tok.cls_token_id, "sep": tok.sep_token_id, "pad": tok.pad_token_id,
                "max_length": 1024, "labels": labels}
     if any(special[k] is None for k in ("cls", "sep", "pad")):
@@ -125,14 +123,31 @@ def main():
     answer = quant_session.run(None, {i.name: long[i.name] for i in quant_session.get_inputs()})[0]
     if answer.shape != (1, 3) or not np.isfinite(answer).all():
         raise ValueError("Phone model failed the full-length check")
+    # Record the phone-format model on the same frozen independent examination.
+    correct = 0
+    for q in questions:
+        hypotheses = [q["question"].replace("_", o) if "_" in q["question"] else q["question"] + " " + o for o in q["options"]]
+        encoded = tok([q["passage"]] * 5, hypotheses, truncation="only_first", max_length=1024, padding=True, return_tensors="np")
+        lg = quant_session.run(None, {i.name: encoded[i.name] for i in quant_session.get_inputs()})[0]
+        pick = int((lg[:, ent] - lg[:, con]).argmax())
+        correct += "ABCDE"[pick] == q["answer"]
+    print(f"::notice title=Android exam::int8 current model: {correct}/{len(questions)} on the frozen independent examination", flush=True)
+    # Generic exact-runtime fixtures, with no invented semantic answer labels.
+    runtime_vectors = []
+    for p, h in [(texts[1], texts[2]), (texts[3], texts[4]), (texts[6], texts[7])]:
+        encoded = tok(p, h, return_tensors="np")
+        lg = quant_session.run(None, {i.name: encoded[i.name] for i in quant_session.get_inputs()})[0][0]
+        runtime_vectors.append("\t".join([base64.b64encode(p.encode()).decode(), base64.b64encode(h.encode()).decode(), ",".join(map(str, lg.tolist()))]))
     del quant_session
     gc.collect()
     archive = pathlib.Path("android-nli.zip")
     with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=1) as z:
-        for name in ("model.onnx", "spm.model", "encoding.json"):
+        for name in ("model.onnx", "tokenizer.json", "encoding.json"):
             z.write(package / name, name)
     android_repo = "orbisthereadingatlas/orbis-nli-android-" + state.get("training_run", revision[:12])
     api.create_repo(android_repo, private=True, exist_ok=True)
+    if not api.model_info(android_repo).private:
+        raise ValueError("The Android package repository must remain private")
     api.upload_file(path_or_fileobj=str(archive), path_in_repo="android-nli.zip", repo_id=android_repo,
                     commit_message="Verified int8 Android export of the current trained NLI checkpoint")
     package_revision = api.model_info(android_repo).sha
@@ -141,16 +156,17 @@ def main():
         "url": f"https://huggingface.co/{android_repo}/resolve/{package_revision}/android-nli.zip",
         "bytes": archive.stat().st_size, "sha256": sha(archive), "files": {
             name: {"bytes": (package / name).stat().st_size, "sha256": sha(package / name)}
-            for name in ("model.onnx", "spm.model", "encoding.json")},
+            for name in ("model.onnx", "tokenizer.json", "encoding.json")},
         "encoding": special, "parity": {"float_max_error": delta_float, "label_agreement": agreement,
-            "ranking_agreement": ranking_agreement, "quant_max_error": delta_quant}, "runtime_version": "1.23.2"}
+            "ranking_agreement": ranking_agreement, "quant_max_error": delta_quant}, "runtime_version": "1.23.2",
+        "independent_exam": {"correct": correct, "total": len(questions)}}
     assets = root / "research-app/app/src/main/assets"
     assets.mkdir(parents=True, exist_ok=True)
     (assets / "nli_model.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
     fixtures = root / "research-app/logic-test/src/test/resources"
     fixtures.mkdir(parents=True, exist_ok=True)
     (fixtures / "nli-tokenizer.tsv").write_text("\n".join(vectors) + "\n")
-    shutil.copyfile(package / "spm.model", pathlib.Path("android-tokenizer-test.model"))
+    (fixtures / "nli-runtime.tsv").write_text("\n".join(runtime_vectors) + "\n")
     with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as f:
         f.write(f"## Android model export\n\n- Source: {state['repo']} at {revision}.\n- Private Android package: {android_repo}.\n- Download: {archive.stat().st_size / 1048576:.0f} MiB.\n- Label agreement: {agreement:.1%}; five-choice ranking agreement: {ranking_agreement:.1%}.\n")
 
