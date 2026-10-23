@@ -4,7 +4,7 @@ import collections
 import five_human
 from transformers import AutoTokenizer
 
-rows = five_human.build("peek-cache")
+rows = five_human.build("peek-cache", with_turkish=True)
 print("questions (training, held-out) by level:", five_human.build.stats)
 print("Turkish kept:", len(five_human.turkish.kept), " left out:", len(five_human.turkish.left_out))
 for tag, lst in (("KEPT", five_human.turkish.kept), ("LEFT OUT", five_human.turkish.left_out)):
@@ -29,8 +29,8 @@ for r in rows:
     n_h = len(tok(r["en"], add_special_tokens=False)["input_ids"])
     c = cut[r["level"]]
     c[0] += 1
-    c[1] += n_p + n_h + 3 > 768
+    c[1] += n_p + n_h + 3 > 1024
     c[2] = max(c[2], n_p + n_h + 3)
 for lv in sorted(cut):
     n, k, mx = cut[lv]
-    print(f"level {lv}: {n} questions, {k} longer than 768 tokens ({100 * k / n:.0f}%), longest {mx}")
+    print(f"level {lv}: {n} questions, {k} longer than 1024 tokens ({100 * k / n:.0f}%), longest {mx}")

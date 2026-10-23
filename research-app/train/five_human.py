@@ -101,7 +101,9 @@ def turkish(cache, pid):
 turkish.left_out, turkish.kept = [], []
 
 
-def build(cache="five-cache"):
+def build(cache="five-cache", with_turkish=False):
+    """with_turkish: the TurkishMMLU stems are split into passage and question by a rule that breaks on tables, lists and
+    statements (peek of 23 Oct 2026: 46 of 315 long stems survive, many without their passage), so they stay out."""
     import pandas as pd
     rows, pid = [], 300000
     stats = {}
@@ -127,8 +129,9 @@ def build(cache="five-cache"):
             n_dev += where != "train"
             n_tr += where == "train"
         stats[level] = (n_tr, n_dev)
-    extra, stats[4] = turkish(cache, pid)
-    rows += extra
+    if with_turkish:
+        extra, stats[4] = turkish(cache, pid)
+        rows += extra
     build.stats = stats
     return rows
 

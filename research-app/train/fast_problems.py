@@ -164,7 +164,7 @@ if FOCUS in ("sudoku", "humanlogic", "readhuman", "fivehuman"):
 note(f"training pairs an epoch: {len(probs)} from {FOCUS}, {len(others)} from our other examples; "
      f"held-out ({FOCUS}): {len(dev_prob_en)} claims, {len(dev_par)} paragraph claims, {len(dev_puz)} puzzle statements")
 
-MAXLEN = 768 if FOCUS == "fivehuman" else 512 if FOCUS == "readhuman" else 384
+MAXLEN = 1024 if FOCUS == "fivehuman" else 512 if FOCUS == "readhuman" else 384
 tok = AutoTokenizer.from_pretrained(BASE)
 model = AutoModelForSequenceClassification.from_pretrained(BASE).float().to(DEVICE)
 name_to_id = {n.lower(): i for i, n in model.config.id2label.items()}
