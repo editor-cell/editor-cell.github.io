@@ -152,7 +152,7 @@ def main():
     package_revision = api.model_info(android_repo).sha
     manifest = {"schema": 1, "title": "Orbis · son eğitilmiş model", "source_repo": state["repo"],
         "source_revision": revision, "package_repo": android_repo, "package_revision": package_revision,
-        "url": f"https://huggingface.co/{android_repo}/resolve/{package_revision}/android-nli.zip",
+        "url": f"https://github.com/editor-cell/editor-cell.github.io/releases/download/android-reader-{sha(archive)[:16]}/android-nli.zip",
         "bytes": archive.stat().st_size, "sha256": sha(archive), "files": {
             name: {"bytes": (package / name).stat().st_size, "sha256": sha(package / name)}
             for name in ("model.onnx", "tokenizer.json", "encoding.json")},

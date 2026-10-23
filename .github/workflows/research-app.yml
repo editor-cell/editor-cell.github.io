@@ -68,7 +68,7 @@ jobs:
           mkdir -p ~/test-embed
           e=~/test-embed/multilingual-e5-small-q8_0.gguf
           [ -s "$e" ] || curl -fsSL -o "$e" https://github.com/editor-cell/editor-cell.github.io/releases/download/models-1/multilingual-e5-small-q8_0.gguf
-      - name: Fetch and verify only the current private trained model
+      - name: Fetch and verify only the current trained model source package
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
@@ -89,6 +89,10 @@ jobs:
           assert int(root.attrib['tests']) == 2 and int(root.attrib.get('skipped',0)) == 0
           assert int(root.attrib.get('failures',0)) == 0 and int(root.attrib.get('errors',0)) == 0
           PY
+      - name: Publish the model for direct in-app GitHub downloads
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python train/publish_android_package.py "$RUNNER_TEMP/orbis-nli"
       - name: Build and inspect the signed APK
         run: |
           export BUILD_NUMBER=$((1000 + ${{ github.run_number }}))

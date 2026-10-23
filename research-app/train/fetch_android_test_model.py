@@ -1,4 +1,4 @@
-"""Verify the APK's pinned PRIVATE package before native runtime checks. No model fallback."""
+"""Verify the pinned source package before runtime checks and GitHub publication. No fallback."""
 import hashlib
 import json
 import sys
@@ -11,7 +11,7 @@ manifest = json.loads((root / 'app/src/main/assets/nli_model.json').read_text())
 latest = json.loads((root / 'train/latest_model.json').read_text())
 assert manifest['source_repo'] == latest['repo'], 'APK model is not the latest trained checkpoint'
 api = HfApi()
-assert api.model_info(manifest['package_repo']).private, 'Private weights must remain private'
+assert api.model_info(manifest['package_repo']).private, 'The source repository must remain private'
 work = Path(sys.argv[1])
 work.mkdir(parents=True, exist_ok=True)
 archive = Path(hf_hub_download(manifest['package_repo'], 'android-nli.zip',

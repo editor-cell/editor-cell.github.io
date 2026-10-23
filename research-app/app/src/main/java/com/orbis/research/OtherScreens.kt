@@ -2,8 +2,6 @@ package com.orbis.research
 
 import android.app.DownloadManager
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,7 +38,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
 
 @Composable
 fun CollectScreen() {
@@ -119,8 +116,6 @@ fun ModelScreen() {
     var nliProgress by remember { mutableFloatStateOf(0f) }
     var nliMessage by remember { mutableStateOf("") }
     var busy by remember { mutableStateOf(false) }
-    var key by remember { mutableStateOf("") }
-    var savedKey by remember { mutableStateOf(NliFiles.hasToken(ctx)) }
     var downloads by remember { mutableStateOf(Models.pending(ctx)) }
     var progress by remember { mutableStateOf(mapOf<String, Float>()) }
     var haveEmb by remember { mutableStateOf(Models.embedders.filter { Models.ready(ctx, it) }.map { it.id }.toSet()) }
@@ -162,7 +157,7 @@ fun ModelScreen() {
                     busy = false; nliDownload = null; break
                 }
                 DownloadManager.STATUS_FAILED, null -> {
-                    nliMessage = "İndirme tamamlanamadı. Bağlantıyı ve Hugging Face okuma iznini kontrol edin; dosyadan yüklemeyi de kullanabilirsiniz."
+                    nliMessage = "İndirme tamamlanamadı. İnternet bağlantısını ve boş alanı kontrol edip yeniden deneyin."
                     NliFiles.cancelDownload(ctx); nliDownload = null; break
                 }
                 else -> {
@@ -171,29 +166,6 @@ fun ModelScreen() {
                 }
             }
             delay(1000)
-        }
-    }
-
-    val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        if (uri != null) scope.launch {
-            busy = true; nliMessage = "Model paketi doğrulanıp kuruluyor…"
-            try {
-                withContext(Dispatchers.IO) {
-                    val temp = File(ctx.cacheDir, "import-trained-nli.zip")
-                    try {
-                        val maximum = metadata.getLong("bytes")
-                        ctx.contentResolver.openInputStream(uri)?.use { input ->
-                            temp.outputStream().buffered().use { output ->
-                                val buffer = ByteArray(1 shl 20); var total = 0L
-                                while (true) { val n = input.read(buffer); if (n < 0) break; total += n; require(total <= maximum) { "Bu dosya beklenen model paketi değil." }; output.write(buffer, 0, n) }
-                            }
-                        } ?: error("Dosya okunamadı.")
-                        NliFiles.install(ctx, temp)
-                    } finally { temp.delete() }
-                }
-                haveModel = NliFiles.ready(ctx); nliMessage = "Son eğitilmiş model kullanıma hazır."
-            } catch (e: Exception) { nliMessage = e.message ?: "Dosya yüklenemedi." }
-            busy = false
         }
     }
 
@@ -232,25 +204,12 @@ fun ModelScreen() {
                     Text("Son eğitilmiş model kurulu ve seçili.")
                     TextButton(enabled = !working && !busy, onClick = { scope.launch { Nli.release(); withContext(Dispatchers.IO) { NliFiles.remove(ctx) }; haveModel = false } }) { Text("Modeli sil") }
                 } else {
-                    Text("Model özel depoda tutuluyor. Okuma anahtarıyla indirin veya tarayıcıdan indirip dosyadan yükleyin.", style = MaterialTheme.typography.bodySmall)
-                    androidx.compose.material3.OutlinedTextField(value = key, onValueChange = { key = it }, label = { Text("Hugging Face okuma anahtarı") }, singleLine = true,
-                        visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth())
-                    if (savedKey) Text("Okuma anahtarı telefonda şifreli olarak kayıtlı.", style = MaterialTheme.typography.bodySmall)
-                    Button(enabled = !busy && nliDownload == null, onClick = {
-                        scope.launch {
-                            try {
-                                if (key.isNotBlank()) { withContext(Dispatchers.IO) { NliFiles.saveToken(ctx, key) }; key = ""; savedKey = true }
-                                nliDownload = NliFiles.download(ctx)
-                            } catch (e: Exception) { nliMessage = e.message ?: "İndirme başlatılamadı." }
-                        }
-                    }) { Text("Son modeli indir") }
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        TextButton(onClick = {
-                            val url = metadata.getString("url").replace("/resolve/", "/blob/")
-                            ctx.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url)))
-                        }) { Text("Tarayıcıdan indir") }
-                        TextButton(enabled = !working && !busy && nliDownload == null, onClick = { pick.launch(arrayOf("application/zip", "application/octet-stream")) }) { Text("Dosyadan yükle") }
-                    }
+                    TextButton(enabled = !working && !busy && nliDownload == null, onClick = {
+                        try {
+                            nliMessage = "İndirme başlatılıyor…"
+                            nliDownload = NliFiles.download(ctx)
+                        } catch (e: Exception) { nliMessage = e.message ?: "İndirme başlatılamadı." }
+                    }) { Text("İndir") }
                 }
                 if (nliDownload != null) {
                     LinearProgressIndicator(progress = { nliProgress }, modifier = Modifier.fillMaxWidth())
@@ -258,7 +217,6 @@ fun ModelScreen() {
                 }
                 if (busy) LinearProgressIndicator(Modifier.fillMaxWidth())
                 if (nliMessage.isNotEmpty()) Text(nliMessage, style = MaterialTheme.typography.bodySmall)
-                if (savedKey) TextButton(onClick = { NliFiles.forgetToken(ctx); savedKey = false }) { Text("Kayıtlı anahtarı sil") }
             }
         }
     }
