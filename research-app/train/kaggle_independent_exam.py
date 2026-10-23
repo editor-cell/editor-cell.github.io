@@ -1,6 +1,6 @@
 """Submit/collect the evaluation in the existing free Kaggle account.
 
-Uses a separate private dataset per Actions run and never uploads model weights.
+Uses a separate private dataset per Actions run and never replaces checkpoints.
 Credentials remain on the Actions host, just as in the existing training workflow.
 """
 import json
@@ -16,6 +16,10 @@ import zipfile
 def command(*args, check=True, capture=False):
     return subprocess.run(args, check=check, text=True, stdout=subprocess.PIPE if capture else None,
                           stderr=subprocess.STDOUT if capture else None)
+
+
+def gpu_slots_full(message):
+    return "maximum batch gpu session count" in str(message).lower()
 
 
 def main():
@@ -56,28 +60,49 @@ def main():
     kk = pathlib.Path("exam-kernel")
     kk.mkdir(exist_ok=True)
     shutil.copyfile("research-app/train/independent_exam.py", kk / "independent_exam.py")
-    (kk / "kernel-metadata.json").write_text(json.dumps({"id": kernel, "title": kernel_slug, "code_file": "independent_exam.py",
+    metadata = {"id": kernel, "title": kernel_slug, "code_file": "independent_exam.py",
         "language": "python", "kernel_type": "script", "is_private": True,
         "enable_gpu": True, "enable_internet": True, "machine_shape": "NvidiaTeslaT4",
-        "dataset_sources": [dataset], "competition_sources": [], "kernel_sources": []}))
-    try:
-        pushed = api.kernels_push(str(kk))
-    except Exception as exc:
-        response = getattr(exc, "response", None)
-        detail = getattr(response, "text", "") or str(exc)
-        # Show the server's error body, never request headers or credentials.
-        for env_key, value in os.environ.items():
-            if value and len(value) >= 8 and any(t in env_key for t in ("TOKEN", "KEY", "SECRET")):
-                detail = detail.replace(value, "[redacted]")
-        print("Kaggle notebook submission failed: " + detail[:2500], flush=True)
-        raise RuntimeError("Kaggle rejected the examination notebook") from None
-    if pushed is None or pushed.error:
-        raise RuntimeError("Kaggle notebook submission error: " + str(getattr(pushed, "error", "empty response")))
+        "dataset_sources": [dataset], "competition_sources": [], "kernel_sources": []}
+    slot_deadline = time.monotonic() + 80 * 60
+    attempt = 0
+    while True:
+        attempt += 1
+        # A quota-rejected save can leave an unusable slug; use a fresh name on
+        # the next attempt. No existing training notebook is stopped or edited.
+        candidate = kernel_slug if attempt == 1 else kernel_slug + f"-q{attempt:02d}"
+        kernel = username + "/" + candidate
+        metadata.update(id=kernel, title=candidate)
+        (kk / "kernel-metadata.json").write_text(json.dumps(metadata))
+        detail, pushed = "", None
+        try:
+            pushed = api.kernels_push(str(kk))
+            detail = str(pushed.error) if pushed is not None and pushed.error else ""
+        except Exception as exc:
+            response = getattr(exc, "response", None)
+            detail = getattr(response, "text", "") or str(exc)
+            # Show the server's error body, never request headers or credentials.
+            for env_key, value in os.environ.items():
+                if value and len(value) >= 8 and any(t in env_key for t in ("TOKEN", "KEY", "SECRET")):
+                    detail = detail.replace(value, "[redacted]")
+        if not detail and pushed is not None:
+            break
+        if not gpu_slots_full(detail):
+            raise RuntimeError("Kaggle notebook submission failed: " + (detail or "empty response")[:2500])
+        print("::notice title=Independent exam queue::Waiting for a free GPU slot; existing training sessions are left running.", flush=True)
+        report = pathlib.Path("exam-report")
+        report.mkdir(exist_ok=True)
+        (report / "queue-status.json").write_text(json.dumps({"status": "waiting_for_gpu", "run_id": run_id,
+            "attempt": attempt, "reason": "Maximum batch GPU session count reached"}))
+        if time.monotonic() + 120 >= slot_deadline:
+            raise TimeoutError("No GPU slot became available within 80 minutes; no training session was interrupted")
+        time.sleep(120)
     invalid = list(getattr(pushed, "invalidDatasetSources", []) or [])
     if invalid:
         raise RuntimeError("Kaggle rejected the private examination dataset source")
+    (pathlib.Path("exam-report") / "queue-status.json").write_text(json.dumps({"status": "submitted", "run_id": run_id, "kernel": kernel}))
     print("::notice title=Independent exam::Sent to the free Kaggle GPU: " + kernel, flush=True)
-    end = time.monotonic() + 85 * 60
+    end = time.monotonic() + 30 * 60
     final_status = ""
     while time.monotonic() < end:
         state = command("kaggle", "kernels", "status", kernel, capture=True, check=False).stdout
@@ -87,7 +112,7 @@ def main():
             break
         time.sleep(30)
     if not final_status:
-        raise TimeoutError("The Kaggle queue/evaluation is still pending after 85 minutes: " + kernel)
+        raise TimeoutError("The Kaggle queue/evaluation is still pending after 30 minutes: " + kernel)
     res = pathlib.Path("exam-collected")
     command("kaggle", "kernels", "output", kernel, "-p", str(res), "-q", check=False)
     report = pathlib.Path("exam-report")
