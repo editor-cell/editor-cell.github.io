@@ -1,14 +1,22 @@
-"""A look at AGIEval's five-option LSAT sets (run where Hugging Face is reachable). Prints; changes nothing."""
+"""A look at TurkishMMLU (five options, Turkish exam questions). Run where Hugging Face is reachable. Prints; changes nothing."""
 import json
 import pandas as pd
-from huggingface_hub import hf_hub_download
+from huggingface_hub import HfApi, hf_hub_download
 
-for cfg in ("lsat-rc", "lsat-lr", "lsat-ar", "sat-en", "logiqa-en"):
-    for split in ("train", "validation"):
-        p = hf_hub_download("lighteval/agi_eval_en", f"{cfg}/{split}-00000-of-00001.parquet", repo_type="dataset", cache_dir="peek-cache")
+REPO = "AYueksel/TurkishMMLU"
+files = HfApi().list_repo_files(REPO, repo_type="dataset")
+print("FILES:", files[:60])
+for f in files:
+    if not f.endswith((".parquet", ".csv", ".json", ".jsonl")):
+        continue
+    p = hf_hub_download(REPO, f, repo_type="dataset", cache_dir="peek-cache")
+    if f.endswith(".parquet"):
         df = pd.read_parquet(p)
-        print(f"=== {cfg} {split}: {len(df)} rows; columns {list(df.columns)}")
-        if split == "train":
-            print(json.dumps(df.iloc[0].to_dict(), ensure_ascii=False, default=lambda x: x.tolist() if hasattr(x, 'tolist') else str(x))[:1800])
-            lens = [len(str(x)) for x in df[df.columns[0]]]
-            print("   first-column length (chars) mean/max:", sum(lens) // len(lens), max(lens))
+    elif f.endswith(".csv"):
+        df = pd.read_csv(p)
+    else:
+        df = pd.read_json(p, lines=f.endswith(".jsonl"))
+    n_par = sum(1 for q in df["question"] if len(str(q)) > 350) if "question" in df else -1
+    print(f"=== {f}: {len(df)} rows; cols {list(df.columns)}; questions>350 chars: {n_par}")
+    if "Literature" in f or "Language" in f:
+        print(json.dumps(df.iloc[0].to_dict(), ensure_ascii=False, default=lambda x: x.tolist() if hasattr(x, 'tolist') else str(x))[:1500])
