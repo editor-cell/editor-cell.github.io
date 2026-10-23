@@ -1,0 +1,47 @@
+name: Qwen3 4B (same 97 questions, evaluation only)
+
+on:
+  push:
+    branches: [anlam-okuma]
+    paths:
+      - .github/workflows/qwen-independent-exam.yml
+      - research-app/train/qwen_independent_exam.py
+      - research-app/train/prepare_qwen_exam.py
+      - research-app/train/qwen_exam_reference.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: orbis-qwen-independent-exam
+  cancel-in-progress: false
+
+jobs:
+  exam:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 140
+    env:
+      KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+      KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+      KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install exam readers and existing Kaggle client
+        run: pip install --quiet kaggle 'huggingface_hub>=0.34,<1' pymupdf
+      - name: Verify the exact 97 questions and pin Qwen revision
+        run: python research-app/train/prepare_qwen_exam.py
+      - name: Evaluate Qwen on the free GPU without training
+        run: |
+          cp research-app/train/qwen_independent_exam.py research-app/train/independent_exam.py
+          python research-app/train/kaggle_independent_exam.py
+      - name: Keep scores and provenance without question texts or weights
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qwen-independent-exam-${{ github.run_id }}
+          path: exam-report/
+          if-no-files-found: ignore
