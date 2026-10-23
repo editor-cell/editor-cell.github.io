@@ -1,0 +1,32 @@
+name: Research app (reading diagnosis)
+on:
+  push:
+    branches: [anlam-okuma]
+    paths:
+      - .github/workflows/reading-check.yml
+      - research-app/nli-trial/diagnose.py
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install CPU inference dependencies
+        run: pip install 'huggingface_hub<1' 'onnxruntime==1.23.2' tokenizers numpy
+      - name: Verify the current trained model
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: python research-app/train/fetch_android_test_model.py "$RUNNER_TEMP/orbis-nli"
+      - name: Measure real paragraph decisions without training
+        run: python research-app/nli-trial/diagnose.py "$RUNNER_TEMP/orbis-nli/model"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reading-diagnosis
+          path: reading-diagnosis.json
