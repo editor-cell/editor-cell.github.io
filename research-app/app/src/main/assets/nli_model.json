@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "title": "Orbis · son eğitilmiş model",
+  "source_repo": "orbisthereadingatlas/orbis-nli-paragraf-bin-39932763272",
+  "source_revision": "4fe4aba0a59eac771d7b41ef868bbd71bb7b2054",
+  "package_repo": "orbisthereadingatlas/orbis-nli-android-39932763272",
+  "package_revision": "68d7054befb852ceabcc13d4ccf8cf9d4e596ca1",
+  "url": "https://huggingface.co/orbisthereadingatlas/orbis-nli-android-39932763272/resolve/68d7054befb852ceabcc13d4ccf8cf9d4e596ca1/android-nli.zip",
+  "bytes": 878066588,
+  "sha256": "32c2e0758f1d079015385715899fd08333bed7e9e3a442574ca6607b757adb6e",
+  "files": {
+    "model.onnx": {
+      "bytes": 1116156871,
+      "sha256": "551cc7134e39d12365e321b47d944d26e1caedeb6b8d63fdd41920e4f1d4490b"
+    },
+    "tokenizer.json": {
+      "bytes": 15999629,
+      "sha256": "cb6308919953db63c52b57f4c6fbfaadec89ff24b1e1bc4bb65c0f63aa93569b"
+    },
+    "encoding.json": {
+      "bytes": 104,
+      "sha256": "276b73167a5a9bbb6bceeca7f951cb1d0577cf700ca187c8781b7a829cd47274"
+    }
+  },
+  "encoding": {
+    "cls": 1,
+    "sep": 2,
+    "pad": 0,
+    "max_length": 1024,
+    "labels": [
+      "entailment",
+      "neutral",
+      "contradiction"
+    ]
+  },
+  "parity": {
+    "float_max_error": 1.9311904907226562e-05,
+    "label_agreement": 1.0,
+    "ranking_agreement": 1.0,
+    "phone_max_error": 1.9311904907226562e-05,
+    "precision": "float32"
+  },
+  "runtime_version": "1.23.2",
+  "independent_exam": {
+    "correct": 44,
+    "total": 97
+  }
+}
