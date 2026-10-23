@@ -43,7 +43,22 @@ def main():
     kernel = username + "/" + kernel_slug
     target = pathlib.Path("practice-private" if practice else "exam-private")
     (target / "dataset-metadata.json").write_text(json.dumps({"title": slug, "id": dataset, "licenses": [{"name": "other"}]}))
-    command("kaggle", "datasets", "create", "-p", str(target), "-q")
+    # The upload endpoint occasionally returns an empty/non-JSON response.
+    # Retrying the same private run is safe; never replace another run's data.
+    for attempt in range(3):
+        uploaded = command("kaggle", "datasets", "create", "-p", str(target), "-q", check=False, capture=True)
+        if uploaded.returncode == 0:
+            print(uploaded.stdout.strip(), flush=True)
+            break
+        existing = command("kaggle", "datasets", "status", dataset, check=False, capture=True)
+        if existing.returncode == 0:
+            # The exact round marker is still checked below before any kernel runs.
+            break
+        if attempt == 2:
+            raise RuntimeError("Private Kaggle upload failed after three attempts: " + uploaded.stdout[-1800:])
+        print(f"::notice title={title} upload::Retrying an interrupted private dataset upload ({attempt + 1}/3).", flush=True)
+        time.sleep(10)
+
     # Read this exact run marker back; no shared training dataset is changed.
     ready = False
     for _ in range(60):
