@@ -32,7 +32,8 @@ def main():
     run_id = os.environ["GITHUB_RUN_ID"]
     slug = "orbis-independent-exam-" + run_id
     dataset = username + "/" + slug
-    kernel = username + "/" + slug
+    kernel_slug = slug + "-run"
+    kernel = username + "/" + kernel_slug
     target = pathlib.Path("exam-private")
     (target / "dataset-metadata.json").write_text(json.dumps({"title": slug, "id": dataset, "licenses": [{"name": "other"}]}))
     command("kaggle", "datasets", "create", "-p", str(target), "-q")
@@ -55,7 +56,7 @@ def main():
     kk = pathlib.Path("exam-kernel")
     kk.mkdir(exist_ok=True)
     shutil.copyfile("research-app/train/independent_exam.py", kk / "independent_exam.py")
-    (kk / "kernel-metadata.json").write_text(json.dumps({"id": kernel, "title": slug, "code_file": "independent_exam.py",
+    (kk / "kernel-metadata.json").write_text(json.dumps({"id": kernel, "title": kernel_slug, "code_file": "independent_exam.py",
         "language": "python", "kernel_type": "script", "is_private": True,
         "enable_gpu": True, "enable_internet": True, "machine_shape": "NvidiaTeslaT4",
         "dataset_sources": [dataset], "competition_sources": [], "kernel_sources": []}))
