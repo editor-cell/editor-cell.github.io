@@ -36,7 +36,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install readers and existing service clients
-        run: pip install --quiet kaggle 'huggingface_hub>=0.34,<1' 'transformers>=4.51,<5' pymupdf
+        run: pip install --quiet kaggle 'huggingface_hub>=0.34,<1' 'transformers>=4.51,<5' 'jinja2>=3.1' pymupdf
       - name: Verify training isolation and continuation rules
         run: python research-app/train/test_qwen_paragraph.py
       - name: Prepare only published English paragraph questions
