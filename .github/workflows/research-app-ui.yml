@@ -26,6 +26,8 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: Build the UI-only review APK
         working-directory: research-app
+        env:
+          BUILD_NUMBER: '999999'
         run: |
           ./gradlew -PuiReview=true assembleDebug --no-daemon
           python - <<'PY'

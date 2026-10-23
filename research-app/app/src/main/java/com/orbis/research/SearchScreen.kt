@@ -161,8 +161,9 @@ fun SearchScreen(goTo: (Int) -> Unit) {
             )
             var filtersOpen by rememberSaveable { mutableStateOf(false) }
             TextButton(onClick = { filtersOpen = !filtersOpen }, contentPadding = PaddingValues(0.dp)) {
-                Text((if (filtersOpen) "Filtreleri gizle" else "Kaynak ve tarih seç") + " · " + whereLabel(db))
+                Text(if (filtersOpen) "Filtreleri gizle" else "Kaynak ve tarih seç")
             }
+            if (!filtersOpen) Text(whereLabel(db) + " · " + s.range.label(), style = MaterialTheme.typography.bodySmall)
             if (filtersOpen) {
                 WhereRow(db, enabled = !going)
                 DateRangeRow(db, s.range, s.sourceIds(db), enabled = !going) { s.range = it }

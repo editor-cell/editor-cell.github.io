@@ -34,6 +34,14 @@ def tap(text):
 
 def capture(name, expected):
     root = tree()
+    for _ in range(4):
+        if any(expected in n.get('text', '') for n in root.iter('node')):
+            break
+        size = re.findall(r'(\d+)x(\d+)', shell('wm', 'size'))[-1]
+        width, height = map(int, size)
+        shell('input', 'swipe', str(width//2), str(height*3//4), str(width//2), str(height//3), '350')
+        time.sleep(0.5)
+        root = tree()
     assert any(expected in n.get('text', '') for n in root.iter('node')), (name, expected)
     (OUT / (name + '.xml')).write_bytes(ET.tostring(root, encoding='utf-8'))
     (OUT / (name + '.png')).write_bytes(adb('exec-out', 'screencap', '-p'))
@@ -52,7 +60,7 @@ try:
     adb('install', '-r', 'research-app/app/build/outputs/apk/debug/app-debug.apk')
     launch()
     capture('01-search-light', 'Bir yargının izini sür.')
-    tap('Kaynak ve tarih seç · Tüm kaynaklar')
+    tap('Kaynak ve tarih seç')
     capture('02-search-filters', 'Tarih aralığı:')
     for tab, name, expected in [
         ('Kaynaklar', '03-sources-light', 'Araştırmanın dayanağı.'),
