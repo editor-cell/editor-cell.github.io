@@ -252,7 +252,7 @@ def card(when):
     if FOCUS in ("readhuman", "fivehuman"):
         res = exam(dev_prob_en)
         names = {1: "RACE middle", 2: "RACE high", 3: "Belebele English", 4: "Belebele Turkish"} if FOCUS == "readhuman" \
-            else {1: "LSAT logical reasoning", 2: "LSAT logic games", 3: "LSAT reading"}
+            else {1: "LSAT logical reasoning", 2: "LSAT logic games", 3: "LSAT reading", 4: "Turkish exam paragraphs"}
         lines.append(f"{when}: READING EXAM (the right answer picked among {4 if FOCUS == 'readhuman' else 5}, {25 if FOCUS == 'readhuman' else 20}% by chance): {100 * res[0][0] / res[0][1]:.1f}% "
                      f"({res[0][0]}/{res[0][1]} questions); " + ", ".join(f"{names[lv]} {100 * res[lv][0] / res[lv][1]:.0f}%" for lv in sorted(res) if lv))
         acc = 100 * res[0][0] / res[0][1]

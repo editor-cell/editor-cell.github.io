@@ -5,6 +5,9 @@ answers, human-made:
   level 2  analytical reasoning ("logic games": people, places, conditions; the same kind of puzzle as our floors
            and jobs, but written by exam setters)
   level 3  reading comprehension (long passages)
+  level 4  Turkish exam questions with a passage (TurkishMMLU, AYueksel/TurkishMMLU: Turkish language and literature,
+           philosophy, religion and ethics, history, ...), five options each; only the questions whose stem carries a
+           passage (at least 300 characters, the passage at least 150) come in
 A question becomes five pairs: premise = the passage, hypothesis = the question with one answer, the right answer
 SUPPORTS, the others NOT_SUPPORTS; fast_problems.py "fivehuman" trains on the five together (the right answer must
 score above the other four) and its exam is the same: one choice among five, 20% by chance.
@@ -26,6 +29,50 @@ def clean(option):
 def hypothesis(question, option):
     q = question.strip()
     return q.replace("_", option) if "_" in q else f"{q} {option}"
+
+
+def split_stem(stem):
+    """A Turkish exam stem is passage + question in one string. The question is the last sentence (it ends with '?'
+    or a colon); the rest is the passage. -> (passage, question) or None when no passage can be told apart."""
+    t = re.sub(r"\s+", " ", stem).strip()
+    if len(t) < 300:
+        return None
+    body = t.rstrip()
+    cut = max(body[:-1].rfind(". "), body[:-1].rfind("! "), body[:-1].rfind("? "))
+    if cut < 0:
+        return None
+    passage, question = body[:cut + 1].strip(), body[cut + 2:].strip()
+    if len(passage) < 150 or len(question) < 8:
+        return None
+    return passage, question
+
+
+def turkish(cache, pid):
+    from huggingface_hub import hf_hub_download, list_repo_files
+    rows, n_tr, n_dev = [], 0, 0
+    for f in sorted(x for x in list_repo_files("AYueksel/TurkishMMLU", repo_type="dataset") if x.endswith(".json") and x.startswith(("dev/", "test/"))):
+        import pandas as pd
+        data = pd.read_json(hf_hub_download("AYueksel/TurkishMMLU", f, repo_type="dataset", cache_dir=cache)).to_dict("records")
+        for k, r in enumerate(data):
+            options = [str(o).strip() for o in r["choices"]]
+            if len(options) != 5 or r["answer"] not in "ABCDE":
+                continue
+            parts = split_stem(str(r["question"]))
+            if parts is None:
+                continue
+            passage, question = parts
+            right = "ABCDE".index(r["answer"])
+            dev = int(hashlib.md5(passage.encode()).hexdigest(), 16) % 4 == 0
+            for j, opt in enumerate(options):
+                row = {"id": pid, "kind": "fivehuman", "level": 4, "qid": f"tmmlu-{f}-{k}", "premise": passage,
+                       "en": f"{question} {opt}", "tr": "", "label": "SUPPORTS" if j == right else "NOT_SUPPORTS"}
+                if dev:
+                    row["dev"] = True
+                rows.append(row)
+                pid += 1
+            n_dev += dev
+            n_tr += not dev
+    return rows, (n_tr, n_dev)
 
 
 def build(cache="five-cache"):
@@ -52,6 +99,8 @@ def build(cache="five-cache"):
             n_dev += dev
             n_tr += not dev
         stats[level] = (n_tr, n_dev)
+    extra, stats[4] = turkish(cache, pid)
+    rows += extra
     build.stats = stats
     return rows
 
