@@ -63,15 +63,20 @@ jobs:
           export ORBIS_EMBED=~/test-embed/multilingual-e5-small-q8_0.gguf
           export ORBIS_CLOUD_SMOKE=1
           ./gradlew -p logic-test test --no-daemon
-      - name: Check the deployed DeepSeek service with fresh paragraphs
-        run: python cloud-reader/smoke.py
+      - name: Verify all six deployed-model checks ran successfully
+        run: |
+          python - <<'PYTEST'
+          import xml.etree.ElementTree as ET
+          root=ET.parse('logic-test/build/test-results/test/TEST-CloudReaderTest.xml').getroot()
+          assert int(root.attrib['tests']) == 6
+          assert all(int(root.attrib.get(k,0)) == 0 for k in ('skipped','failures','errors'))
+          PYTEST
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: cloud-reading-checks
           path: |
             research-app/logic-test/build/test-results/test/
-            research-app/cloud-reader/smoke-result.json
           if-no-files-found: ignore
       - name: Build and inspect the signed APK
         run: |
