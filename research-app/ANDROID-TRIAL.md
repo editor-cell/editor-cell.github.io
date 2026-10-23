@@ -13,3 +13,5 @@ Eski kaynaklarınız korunur. Önceki modelin arama sonuçları yeni sonuçlarla
 Bu sürümde 0,80 puan eşiği, puan farkı şartı ve komşu paragraflarla aynı karara ulaşma koşulu kaldırıldı. Ön elemeden geçen paragraf ile yargı doğrudan modele verilir; modelin destekliyor, çürütüyor veya ilgisiz kararı ek eşiklerle elenmez. Eski kurallarla kaydedilmiş arama sonuçları yeniden kullanılmaz; güncellemeden sonra aramayı yeniden başlatın.
 
 Kısa cümleleri biçimleri nedeniyle eleyen eski şartlar geri getirilmedi. Kaynaklar sırayla taranır; varsayılan sınırlar 24 web belgesi ve 60 aday paragraftır. Kırık beyaz/koyu yeşil görünüm, açık/koyu tema ve kaynak/tarih filtreleri korunur. Model ağırlıkları değiştirilmedi ve eğitim yapılmadı.
+
+Bu güncellemede belge başlıklarının en az 8 karakter olması şartı kaldırıldı. “Obezite”, “Kanser” ve “HIV” gibi kısa başlıklar da anlam karşılaştırmasına katılır. Başlık boşsa belge adresinden alınan sözcükler kullanılır. Varsayılan 24 belge ve 60 paragraf sınırları korunur.

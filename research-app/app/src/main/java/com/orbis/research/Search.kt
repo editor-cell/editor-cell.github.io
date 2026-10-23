@@ -68,8 +68,9 @@ class Search(private val ctx: Context) {
         for ((source, candidate) in SearchSelection.roundRobin(groups)) {
             if (stopped() || System.currentTimeMillis() > deadline) break
             val (url, title, _) = candidate
-            val text = title.ifEmpty { Extract.slugText(url) }
-            if (text.length < 8) continue
+            // Short titles such as "Obezite", "Kanser" or "HIV" still describe valid documents.
+            val text = title.trim().ifEmpty { Extract.slugText(url) }
+            if (text.isBlank()) continue
             val v = Embedder.embed(Vectors.docText(path, text)) ?: continue
             scored += Triple(Vectors.score(Vectors.toBytes(v), q), source, url)
         }
