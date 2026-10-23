@@ -1,22 +1,36 @@
-"""A look at TurkishMMLU (five options, Turkish exam questions). Run where Hugging Face is reachable. Prints; changes nothing."""
-import json
-import pandas as pd
-from huggingface_hub import HfApi, hf_hub_download
+"""Checks of the five-option set (run where Hugging Face is reachable). Prints; changes nothing:
+how many Turkish questions the text filter keeps and what it throws away, and how many questions are cut by the length limit."""
+import collections
+import five_human
+from transformers import AutoTokenizer
 
-REPO = "AYueksel/TurkishMMLU"
-files = HfApi().list_repo_files(REPO, repo_type="dataset")
-print("FILES:", files[:60])
-for f in files:
-    if not f.endswith((".parquet", ".csv", ".json", ".jsonl")):
+rows = five_human.build("peek-cache")
+print("questions (training, held-out) by level:", five_human.build.stats)
+print("Turkish kept:", len(five_human.turkish.kept), " left out:", len(five_human.turkish.left_out))
+for tag, lst in (("KEPT", five_human.turkish.kept), ("LEFT OUT", five_human.turkish.left_out)):
+    print(f"--- {tag} (first 10 questions of different subjects)")
+    seen = collections.Counter()
+    for f, q in lst:
+        subject = f.split("TurkishMMLU_")[-1]
+        if seen[subject] < 2 and sum(seen.values()) < 10:
+            seen[subject] += 1
+            print(f"  [{subject}] {q}")
+by_subject = collections.Counter(f.split("TurkishMMLU_")[-1] for f, _ in five_human.turkish.kept)
+print("Turkish kept by subject:", dict(by_subject))
+
+tok = AutoTokenizer.from_pretrained("MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7")
+cut = collections.defaultdict(lambda: [0, 0, 0])
+seen_q = set()
+for r in rows:
+    if r["qid"] in seen_q:
         continue
-    p = hf_hub_download(REPO, f, repo_type="dataset", cache_dir="peek-cache")
-    if f.endswith(".parquet"):
-        df = pd.read_parquet(p)
-    elif f.endswith(".csv"):
-        df = pd.read_csv(p)
-    else:
-        df = pd.read_json(p, lines=f.endswith(".jsonl"))
-    n_par = sum(1 for q in df["question"] if len(str(q)) > 350) if "question" in df else -1
-    print(f"=== {f}: {len(df)} rows; cols {list(df.columns)}; questions>350 chars: {n_par}")
-    if "Literature" in f or "Language" in f:
-        print(json.dumps(df.iloc[0].to_dict(), ensure_ascii=False, default=lambda x: x.tolist() if hasattr(x, 'tolist') else str(x))[:1500])
+    seen_q.add(r["qid"])
+    n_p = len(tok(r["premise"], add_special_tokens=False)["input_ids"])
+    n_h = len(tok(r["en"], add_special_tokens=False)["input_ids"])
+    c = cut[r["level"]]
+    c[0] += 1
+    c[1] += n_p + n_h + 3 > 768
+    c[2] = max(c[2], n_p + n_h + 3)
+for lv in sorted(cut):
+    n, k, mx = cut[lv]
+    print(f"level {lv}: {n} questions, {k} longer than 768 tokens ({100 * k / n:.0f}%), longest {mx}")

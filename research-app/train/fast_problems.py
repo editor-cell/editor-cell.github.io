@@ -128,7 +128,9 @@ def pairs(rows, langs=("en", "tr")):
     return [(e.get("premise") or pool[e["id"]]["text"], e[lang], e["label"]) for e in rows for lang in langs if e.get(lang)]
 
 
-dev_prob = [e for e in dev if e.get("kind") == FOCUS]
+dev_prob = [e for e in dev if e.get("kind") == FOCUS and not e.get("final")]
+dev_final = [e for e in dev if e.get("kind") == FOCUS and e.get("final")]
+FINAL = {}
 dev_wp = [e for e in dev if e.get("kind") == "problem" and e.get("premise_lang") != "tr"]
 dev_logic = [e for e in dev if e.get("kind") == "logic"]
 dev_prob_en = [e for e in dev_prob if e.get("premise_lang") != "tr"]
@@ -149,7 +151,7 @@ if FOCUS == "fivehuman":
     groups = [(g[0]["level"], [(e["premise"], e["en"], e["label"]) for e in g]) for g in by_q.values() if len(g) == 5]
 others = pairs([e for e in train if e.get("kind") != FOCUS and not (FOCUS == "logic" and e.get("kind") == "problem")
                 and not (FOCUS == "humanlogic" and e.get("kind") == "logic")
-                and not (FOCUS in ("readhuman", "fivehuman") and e.get("kind") not in ("puzzle", "meaning", "words", "human", "problem"))])  # my own puzzles stay out of a human-made round
+                and not (FOCUS in ("readhuman", "fivehuman") and e.get("kind") not in ("words", "human", "problem"))])  # my own puzzles stay out of a human-made round
 if FOCUS == "logic":
     wp = pairs([e for e in train if e.get("kind") == "problem"])
     random.shuffle(wp)
@@ -256,6 +258,11 @@ def card(when):
         lines.append(f"{when}: READING EXAM (the right answer picked among {4 if FOCUS == 'readhuman' else 5}, {25 if FOCUS == 'readhuman' else 20}% by chance): {100 * res[0][0] / res[0][1]:.1f}% "
                      f"({res[0][0]}/{res[0][1]} questions); " + ", ".join(f"{names[lv]} {100 * res[lv][0] / res[lv][1]:.0f}%" for lv in sorted(res) if lv))
         acc = 100 * res[0][0] / res[0][1]
+        if dev_final:
+            fin = exam(dev_final)
+            FINAL[when] = fin
+            lines.append(f"{when}: FINAL EXAM (never used to choose an epoch): {100 * fin[0][0] / fin[0][1]:.1f}% ({fin[0][0]}/{fin[0][1]} questions); "
+                         + ", ".join(f"{names[lv]} {100 * fin[lv][0] / fin[lv][1]:.0f}%" for lv in sorted(fin) if lv))
     for l in lines:
         note(l)
     return acc
@@ -389,6 +396,9 @@ for epoch in range(1, EPOCHS + 1):
         best_acc, best_epoch = acc, epoch
         model.save_pretrained(out_dir)
         tok.save_pretrained(out_dir)
+if FINAL:
+    fin = FINAL["before training" if best_epoch == 0 else f"after epoch {best_epoch}"]
+    note(f"the kept model on the FINAL EXAM: {100 * fin[0][0] / fin[0][1]:.1f}% ({fin[0][0]}/{fin[0][1]})")
 note(f"kept the model after epoch {best_epoch} (0 = as it came): {FOCUS} held-out {best_acc:.1f}%; "
      f"{(time.time() - t0) / 60:.0f} minutes in all")
 shutil.rmtree(START, ignore_errors=True)

@@ -11,7 +11,9 @@ answers, human-made:
 A question becomes five pairs: premise = the passage, hypothesis = the question with one answer, the right answer
 SUPPORTS, the others NOT_SUPPORTS; fast_problems.py "fivehuman" trains on the five together (the right answer must
 score above the other four) and its exam is the same: one choice among five, 20% by chance.
-Held out: a quarter of the passages (by a hash of the passage, so every question of a passage stays on one side).
+Held out: a quarter of the passages (by a hash of the passage, so every question of a passage stays on one side). That
+quarter is cut in two: one half picks which epoch is kept, the other half ("final") is scored but never used to choose
+anything, so its number is the honest one.
 Rows: kind "fivehuman", "level", "qid", held-out "dev". Usage: five_human.py (needs Hugging Face)"""
 import hashlib
 import re
@@ -20,6 +22,12 @@ import re
 def fetch(cfg, split, cache):
     from huggingface_hub import hf_hub_download
     return hf_hub_download("lighteval/agi_eval_en", f"{cfg}/{split}-00000-of-00001.parquet", repo_type="dataset", cache_dir=cache)
+
+
+def part(passage):
+    """'train', 'dev' (picks the kept epoch) or 'final' (only scored), by a hash of the passage."""
+    h = int(hashlib.md5(passage.encode()).hexdigest(), 16) % 8
+    return "dev" if h == 0 else "final" if h == 4 else "train"
 
 
 def clean(option):
@@ -47,6 +55,15 @@ def split_stem(stem):
     return passage, question
 
 
+POINTS_AT_TEXT = re.compile(r"(par\u00e7a|metin|paragraf|anlat\u0131m|c\u00fcmle|ifade|dize|\u015fiir|ak\u0131l y\u00fcr|\u00e7\u0131kar\u0131m)", re.IGNORECASE)
+
+
+def refers_to_text(question):
+    """The question itself has to ask about the passage (what it says, means, implies), not about a fact the passage
+    only hints at (who is the writer described above). Lower-cased Turkish: I and \u0130 are folded by hand."""
+    return bool(POINTS_AT_TEXT.search(question.replace("I", "\u0131").replace("\u0130", "i").lower()))
+
+
 def turkish(cache, pid):
     from huggingface_hub import hf_hub_download, list_repo_files
     rows, n_tr, n_dev = [], 0, 0
@@ -61,18 +78,27 @@ def turkish(cache, pid):
             if parts is None:
                 continue
             passage, question = parts
+            if not refers_to_text(question):
+                turkish.left_out.append((f, question[:160]))
+                continue
+            turkish.kept.append((f, question[:160]))
             right = "ABCDE".index(r["answer"])
-            dev = int(hashlib.md5(passage.encode()).hexdigest(), 16) % 4 == 0
+            where = part(passage)
             for j, opt in enumerate(options):
                 row = {"id": pid, "kind": "fivehuman", "level": 4, "qid": f"tmmlu-{f}-{k}", "premise": passage,
                        "en": f"{question} {opt}", "tr": "", "label": "SUPPORTS" if j == right else "NOT_SUPPORTS"}
-                if dev:
+                if where != "train":
                     row["dev"] = True
+                if where == "final":
+                    row["final"] = True
                 rows.append(row)
                 pid += 1
-            n_dev += dev
-            n_tr += not dev
+            n_dev += where != "train"
+            n_tr += where == "train"
     return rows, (n_tr, n_dev)
+
+
+turkish.left_out, turkish.kept = [], []
 
 
 def build(cache="five-cache"):
@@ -88,16 +114,18 @@ def build(cache="five-cache"):
                 continue
             right = "ABCDE".index(r["label"])
             passage = str(r["passage"]).strip()
-            dev = int(hashlib.md5(passage.encode()).hexdigest(), 16) % 4 == 0
+            where = part(passage)
             for j, opt in enumerate(options):
                 row = {"id": pid, "kind": "fivehuman", "level": level, "qid": f"{cfg}-{k}", "premise": passage,
                        "en": hypothesis(str(r["question"]), opt), "tr": "", "label": "SUPPORTS" if j == right else "NOT_SUPPORTS"}
-                if dev:
+                if where != "train":
                     row["dev"] = True
+                if where == "final":
+                    row["final"] = True
                 rows.append(row)
                 pid += 1
-            n_dev += dev
-            n_tr += not dev
+            n_dev += where != "train"
+            n_tr += where == "train"
         stats[level] = (n_tr, n_dev)
     extra, stats[4] = turkish(cache, pid)
     rows += extra
