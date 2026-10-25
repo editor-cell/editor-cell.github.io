@@ -299,7 +299,7 @@ function HomeGrid({ stories, lang }: { stories: Story[]; lang: Lang }) {
               />
             </div>
           ) : null}
-          <div className="lead-text flex min-w-0 flex-col justify-center pt-4 md:order-1 md:py-6">
+          <div className="lead-text flex min-w-0 flex-col justify-center pt-4 md:order-1 md:justify-start md:pt-1 md:pb-0">
             <Kicker story={lead} lang={lang} />
             <h2 className="paper-title atlas-lead-title font-extrabold mt-2.5 text-ink decoration-2 underline-offset-[0.12em] group-hover:underline md:mt-4">
               {storyTitle(lead, lang)}

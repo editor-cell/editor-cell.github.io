@@ -2,9 +2,10 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: "Bodoni Moda", "Noto Naskh Arabic", "Times New Roman", serif;
-  /* Two faces (the owner, 20 Oct 2026): Bodoni for the name and every title, Source Serif 4
-     for every text, a face drawn for reading on screens. */
+  --font-display: "EB Garamond", "Noto Naskh Arabic", "Times New Roman", serif;
+  /* Faces (the owner, 25 Oct 2026): Bodoni stays for the name and motto only; every title
+     is EB Garamond, a classic face without Bodoni's hairlines, which were hard to read;
+     Source Serif 4 for every text. */
   --font-body: "Source Serif 4", "Noto Naskh Arabic", Georgia, serif;
   --color-paper: #ffffff;
   --color-sheet: #ffffff;
@@ -130,15 +131,11 @@ body {
   font-family: "Noto Naskh Arabic", Georgia, serif;
 }
 
-/* Front page card titles. Size is set in the markup per card. Bodoni is bold at most (its
-   heavier cuts turn into a fat face) and set a shade tight, as Bodoni titles are. At every
-   size it takes the cut drawn for small type (opsz 11): at its own large-size cut the
-   hairlines vanish in the glare of white paper (the owner, 20 Oct 2026). */
+/* Front page card titles. Size is set in the markup per card. EB Garamond, bold, set a
+   shade tight (the owner, 25 Oct 2026: Bodoni's hairlines were hard to read). */
 .paper-title {
-  font-family: "Bodoni Moda", "Times New Roman", serif;
-  font-optical-sizing: none;
-  font-variation-settings: "opsz" 11;
-  letter-spacing: -0.015em;
+  font-family: "EB Garamond", "Times New Roman", serif;
+  letter-spacing: -0.005em;
 }
 
 .paper-title.font-extrabold {
@@ -179,9 +176,7 @@ body {
 .reading-first:not(:lang(ar))::first-letter {
   float: left;
   margin: 0.08em 0.1em 0 0;
-  font-family: "Bodoni Moda", "Times New Roman", serif;
-  font-optical-sizing: none;
-  font-variation-settings: "opsz" 11;
+  font-family: "EB Garamond", "Times New Roman", serif;
   font-size: 3.55em;
   font-weight: 700;
   line-height: 0.82;
@@ -548,12 +543,10 @@ body {
   h1,
   h2,
   h3 {
-    font-family: "Bodoni Moda", "Times New Roman", serif;
-    font-optical-sizing: none;
-    font-variation-settings: "opsz" 11;
+    font-family: "EB Garamond", "Times New Roman", serif;
     font-weight: 700;
     line-height: 1.15;
-    letter-spacing: -0.015em;
+    letter-spacing: -0.005em;
     text-wrap: balance;
   }
 

@@ -344,7 +344,7 @@ export function Shell({
           {/* The black band carries the name, the motto and the tools, as the footer band does;
               the section strip runs under it on the paper. */}
           <div
-            className={`flex items-center justify-between gap-x-6 bg-panel px-5 text-paper md:px-8 ${
+            className={`band-row flex items-center justify-between gap-x-6 bg-panel px-5 text-paper md:px-8 ${
               searchOpen ? "relative z-40" : ""
             }`}
           >
@@ -398,7 +398,7 @@ export function Shell({
           >
             <div
               ref={bar}
-              className="no-scrollbar flex gap-5 overflow-x-auto px-5 whitespace-nowrap md:justify-between md:gap-7 md:px-8"
+              className="bar-row no-scrollbar flex gap-5 overflow-x-auto px-5 whitespace-nowrap md:justify-between md:gap-7 md:px-8"
             >
               {/* Home first, then the sections; on a wide screen the row runs edge to edge. */}
               <Link
