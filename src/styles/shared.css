@@ -2,9 +2,11 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: "EB Garamond", "Noto Naskh Arabic", "Times New Roman", serif;
+  --font-display: "DM Serif Display", "Noto Naskh Arabic", "Times New Roman", serif;
   /* Faces (the owner, 25 Oct 2026): Bodoni stays for the name and motto only; every title
-     is EB Garamond, a classic face without Bodoni's hairlines, which were hard to read;
+     is DM Serif Display (the owner's pick): a classic display face with character but
+     without Bodoni's hairlines, which were hard to read. It has one weight, so titles are
+     never thickened by the browser;
      Source Serif 4 for every text. */
   --font-body: "Source Serif 4", "Noto Naskh Arabic", Georgia, serif;
   --color-paper: #ffffff;
@@ -131,15 +133,14 @@ body {
   font-family: "Noto Naskh Arabic", Georgia, serif;
 }
 
-/* Front page card titles. Size is set in the markup per card. EB Garamond, bold, set a
-   shade tight (the owner, 25 Oct 2026: Bodoni's hairlines were hard to read). */
-.paper-title {
-  font-family: "EB Garamond", "Times New Roman", serif;
-  letter-spacing: -0.005em;
-}
-
+/* Front page card titles. Size is set in the markup per card. DM Serif Display in its
+   one weight (the owner, 25 Oct 2026: Bodoni's hairlines were hard to read). */
+.paper-title,
 .paper-title.font-extrabold {
-  font-weight: 700;
+  font-family: "DM Serif Display", "Times New Roman", serif;
+  font-weight: 400;
+  font-synthesis: none;
+  letter-spacing: 0;
 }
 
 /* Arabic letters join, so spaced-out labels would break the words apart. */
@@ -176,9 +177,9 @@ body {
 .reading-first:not(:lang(ar))::first-letter {
   float: left;
   margin: 0.08em 0.1em 0 0;
-  font-family: "EB Garamond", "Times New Roman", serif;
+  font-family: "DM Serif Display", "Times New Roman", serif;
   font-size: 3.55em;
-  font-weight: 700;
+  font-weight: 400;
   line-height: 0.82;
   color: var(--color-ink);
 }
@@ -543,10 +544,11 @@ body {
   h1,
   h2,
   h3 {
-    font-family: "EB Garamond", "Times New Roman", serif;
-    font-weight: 700;
+    font-family: "DM Serif Display", "Times New Roman", serif;
+    font-weight: 400;
+    font-synthesis: none;
     line-height: 1.15;
-    letter-spacing: -0.005em;
+    letter-spacing: 0;
     text-wrap: balance;
   }
 
