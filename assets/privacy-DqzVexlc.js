@@ -1,0 +1,1 @@
+import{cn as e}from"./shell-D_3fM3p1.js";import{t}from"./legal-2GWDAlvm.js";var n=e(),r=()=>(0,n.jsx)(t,{page:`privacy`});export{r as component};
