@@ -79,6 +79,9 @@ launch day, set `TRIAL` to false.
 - Compare how several countries respond to the same question; Turkey is not the centre.
 - About 1.5 A4 pages per reading (measured on the English text).
 - Pictures are AI-made (no copyright risk); English first, Turkish second.
+- Picture direction (26 Oct 2026): natural editorial photography, believable daylight
+  and the subject's own colours. Avoid a uniform cream/beige or sepia cast, artificial
+  glow and excessive saturation; the site's burgundy, type and rules provide continuity.
 
 ## Changing the site itself
 
