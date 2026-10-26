@@ -1,0 +1,1 @@
+import{n as e}from"./atlas-BNRudoP_.js";var t=e;export{t as component};
