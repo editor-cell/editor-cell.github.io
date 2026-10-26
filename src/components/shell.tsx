@@ -1,4 +1,3 @@
-import { MEDIA } from "@/lib/breakpoints";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { SiteMenu } from "@/components/menu";
@@ -87,46 +86,6 @@ export function FrameTools({ children }: { children: React.ReactNode }) {
  * Site frame shared by every page: header, section bar, footer (black, or burgundy in the second scheme).
  * `section` marks the active section in the bar ("all" on the home page with no filter).
  */
-/**
- * A wrapped paragraph keeps the full width of its box even where its longest line ends
- * short of it, which left the footer's first gap wider than the second. On wide screens
- * the column is narrowed to its longest line of text, in whatever language is shown, so
- * both gaps between the three columns come out equal.
- */
-function useFitToText(lang: string) {
-  const column = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    const el = column.current;
-    if (!el) return;
-    const wide = window.matchMedia(MEDIA.desktop);
-    const fit = () => {
-      el.style.width = "";
-      if (!wide.matches) return;
-      let start = Infinity;
-      let end = -Infinity;
-      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
-      const range = document.createRange();
-      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
-        range.selectNodeContents(node);
-        for (const rect of range.getClientRects()) {
-          if (!rect.width) continue;
-          start = Math.min(start, rect.left);
-          end = Math.max(end, rect.right);
-        }
-      }
-      // The ORBIS mark sits before the first text; it counts towards the start.
-      const first = el.firstElementChild?.getBoundingClientRect();
-      if (first) start = Math.min(start, first.left);
-      if (end > start) el.style.width = `${Math.ceil(end - start)}px`;
-    };
-    fit();
-    void document.fonts?.ready.then(fit);
-    window.addEventListener("resize", fit);
-    return () => window.removeEventListener("resize", fit);
-  }, [lang]);
-  return column;
-}
-
 export function Shell({
   children,
   section,
@@ -148,7 +107,6 @@ export function Shell({
   const [look, setLook] = useLook();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const footerBrand = useFitToText(lang);
 
   // On a phone the section row scrolls sideways: bring the open section into view.
   useEffect(() => {
@@ -341,19 +299,19 @@ export function Shell({
             <div className="page-width px-5 md:px-8">
               {/* Three columns spread to the edges: the language list ends at the right margin. */}
               <div className="grid gap-8 md:flex md:justify-between md:gap-12">
-                <div ref={footerBrand} className="flex flex-col gap-3 md:max-w-sm">
+                <div className="footer-brand flex flex-col md:w-56">
                   <Link
                     {...homeLink(lang)}
                     dir="ltr"
-                    className="inline-flex min-h-11 items-center gap-3 mb-3 self-start text-paper md:mb-0"
+                    className="inline-flex min-h-11 items-center gap-3 self-start text-paper"
                   >
                     <OrbisLockup className="h-[1.78rem]" mottoClassName="mt-[0.7rem] text-[0.75rem]" />
                   </Link>
-                  <ul className="flex flex-col">
+                  <ul className="footer-brand-links flex flex-col">
                     <li>
                       <Link
                         {...aboutLink(lang)}
-                        className="inline-flex min-h-9 items-center self-start text-base text-paper"
+                        className="inline-flex min-h-9 items-center self-start text-base text-mist hover:text-paper"
                       >
                         {aboutCopy(lang).title}
                       </Link>
@@ -364,14 +322,14 @@ export function Shell({
                         {item === "membership" && signedIn ? (
                           <Link
                             {...accountLink(lang)}
-                            className="inline-flex min-h-9 items-center self-start text-base text-paper"
+                            className="inline-flex min-h-9 items-center self-start text-base text-mist hover:text-paper"
                           >
                             {membersCopy(lang).account}
                           </Link>
                         ) : (
                           <Link
                             {...memberPageLink(lang, item)}
-                            className="inline-flex min-h-9 items-center self-start text-base text-paper"
+                            className="inline-flex min-h-9 items-center self-start text-base text-mist hover:text-paper"
                           >
                             {item === "membership" && !paymentOn
                               ? pagesCopy(lang).membership.menu
@@ -381,18 +339,17 @@ export function Shell({
                       </li>
                     ))}
                   </ul>
-                  <p className="text-base text-mist">{copy.colophon}</p>
                   {/* No e-mail here: readers talk in the comments; the address stays only on
                       the legal pages, where the privacy law asks for it. */}
                 </div>
                 <div>
-                  <p className="text-sm uppercase tracking-widest text-mist">{copy.sections}</p>
-                  <ul className="mt-2 grid w-fit grid-cols-2 gap-x-6">
+                  <h2 className="footer-heading">{copy.sections}</h2>
+                  <ul className="mt-4 grid w-fit grid-cols-2 gap-x-6">
                     {THEMES.map((theme) => (
                       <li key={theme}>
                         <Link
                           {...sectionLink(lang, theme)}
-                          className="inline-flex min-h-9 items-center text-base text-paper"
+                          className="inline-flex min-h-9 items-center text-base text-mist hover:text-paper"
                         >
                           {copy.themes[theme]}
                         </Link>
@@ -401,8 +358,8 @@ export function Shell({
                   </ul>
                 </div>
                 <div>
-                  <p className="text-sm uppercase tracking-widest text-mist">{frame.languages}</p>
-                  <ul className="mt-2 flex flex-col">
+                  <h2 className="footer-heading">{frame.languages}</h2>
+                  <ul className="mt-4 flex flex-col">
                     {LANGS.map((code) => (
                       <li key={code}>
                         <button

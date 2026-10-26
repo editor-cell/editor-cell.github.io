@@ -2,8 +2,8 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: "Libre Baskerville", "Noto Naskh Arabic", Georgia, serif;
-  /* A fuller, upright serif gives titles a clear weight beside the body copy. */
+  --font-display: "Newsreader", "Noto Naskh Arabic", Georgia, serif;
+  /* Compact upright titles keep their emphasis without spreading across the column. */
   --font-body: "Source Serif 4", "Noto Naskh Arabic", Georgia, serif;
   --color-paper: #ffffff;
   --color-sheet: #ffffff;
@@ -130,6 +130,26 @@ body {
   margin-inline-end: -0.03em;
 }
 
+/* Footer labels and links have distinct roles; the brand has its own space above them. */
+.footer-heading {
+  margin: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-paper) 25%, transparent);
+  padding-bottom: 0.75rem;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--color-paper);
+}
+
+.footer-brand-links {
+  margin-top: 1.75rem;
+  border-top: 1px solid color-mix(in srgb, var(--color-paper) 25%, transparent);
+  padding-top: 0.875rem;
+}
+
 :lang(ar) .masthead-motto {
   font-family: "Noto Naskh Arabic", Georgia, serif;
 }
@@ -138,7 +158,8 @@ body {
 .paper-title,
 .paper-title.font-extrabold {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 650;
+  font-optical-sizing: auto;
   font-synthesis: none;
   line-height: 1.2;
   letter-spacing: 0;
@@ -547,7 +568,8 @@ body {
   h2,
   h3 {
     font-family: var(--font-display);
-    font-weight: 700;
+    font-weight: 650;
+    font-optical-sizing: auto;
     font-synthesis: none;
     line-height: 1.15;
     letter-spacing: 0;
