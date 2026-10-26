@@ -13,13 +13,12 @@ import { CARDS } from "@/lib/seed";
 import { formatDate, safeHttpUrl, storyTitle } from "@/lib/text";
 import type { Lang, Source, StoryCard as Story, Theme } from "@/lib/types";
 import { useMostRead } from "@/lib/reads";
-import { DEPTH_KEY } from "@/lib/depth-boot";
 import { MediaStrip } from "@/components/videos";
 import { useLang } from "@/lib/use-lang";
 
 /**
- * Section pages keep the lead reading and ruled columns. The front page alone
- * is a newspaper page: a large pictured lead, a narrow column beside it, then the rest.
+ * Section pages keep the lead reading and ruled columns. The front page has an
+ * independent desktop magazine grid and the existing phone list.
  */
 
 function Meta({ story, lang, section }: { story: Story; lang: Lang; section: Theme | "all" }) {
@@ -261,8 +260,8 @@ function cellSummary(story: Story, lang: Lang): string {
  */
 function HomeGrid({ stories, lang }: { stories: Story[]; lang: Lang }) {
   const dir = langMeta[lang].dir;
-  const [depth, choose] = useDepth();
-  const topRef = useTopFill(depth);
+  // Cards always show their picture and summary, including for returning readers.
+  const depth = 2;
   // One box per rank of the issue: 1 the lead, 2 the large middle card, 3 the card at the
   // left, 4–8 the short readings (4 and 7 at the left, 5, 6 and 8 at the right). Rank 3 is
   // first in the page so the grid keeps its columns; on a phone rank 2 is moved up again.
@@ -284,7 +283,7 @@ function HomeGrid({ stories, lang }: { stories: Story[]; lang: Lang }) {
         <IssueLine stories={stories} lang={lang} />
         <Link
           {...readLink(lang, lead.id)}
-          className={`atlas-own group grid grid-cols-1 pt-4 pb-5 md:gap-[clamp(1.5rem,2.6vw,2.4rem)] md:py-6 ${
+          className={`atlas-own magazine-lead group grid grid-cols-1 pt-4 pb-5 md:gap-[clamp(1.5rem,2.6vw,2.4rem)] md:py-6 ${
             lead.image ? "md:grid-cols-[minmax(0,0.92fr)_minmax(0,1.65fr)]" : ""
           }`}
         >
@@ -316,11 +315,19 @@ function HomeGrid({ stories, lang }: { stories: Story[]; lang: Lang }) {
         </Link>
       </div>
 
-      {/* From here down every reading follows the depth control, the top cards included. */}
-      {rest.length ? <DepthBar lang={lang} depth={depth} choose={choose} /> : null}
+      {rest.length ? <h2 className="sr-only">{words.thisIssue}</h2> : null}
+      {/* Desktop has its own magazine layout; the phone keeps its existing list. */}
+      <div className="magazine-desktop px-5 md:px-8">
+        <div className="magazine-features">
+          {rest.slice(0, 2).map((story) => <MagazineCard key={story.id} story={story} lang={lang} featured />)}
+        </div>
+        <div className="magazine-grid">
+          {rest.slice(2, under ? 8 : 7).map((story) => <MagazineCard key={story.id} story={story} lang={lang} />)}
+        </div>
+      </div>
 
       {main ? (
-        <div ref={topRef} className="records atlas-top px-5 md:px-8" data-depth={depth} suppressHydrationWarning>
+        <div className="magazine-mobile records atlas-top px-5 md:px-8" data-depth={depth} suppressHydrationWarning>
           {side ? <TopCard story={side} lang={lang} className="atlas-card-side" /> : null}
           <div className="atlas-mid">
             <TopCard story={main} lang={lang} className="atlas-card-main" />
@@ -342,6 +349,22 @@ function HomeGrid({ stories, lang }: { stories: Story[]; lang: Lang }) {
 
       <Records stories={records} lang={lang} depth={depth} deskSkip={under?.id} />
     </div>
+  );
+}
+
+/** Desktop cards keep complete summaries and use the existing links and image data. */
+function MagazineCard({ story, lang, featured = false }: { story: Story; lang: Lang; featured?: boolean }) {
+  const summary = cellSummary(story, lang);
+  return (
+    <Link {...readLink(lang, story.id)} className={`magazine-card group ${featured ? "magazine-card-featured" : ""}`}>
+      {story.image ? <CardPicture story={story} lang={lang} ratio="aspect-[3/2]" sizes={imageSizes(featured ? "48vw" : "31vw", "100vw")} /> : null}
+      <div className="magazine-copy">
+        <Kicker story={story} lang={lang} />
+        <h3 className="paper-title magazine-title group-hover:underline underline-offset-[0.14em]">{storyTitle(story, lang)}</h3>
+        {summary ? <p className="font-body magazine-summary">{summary}</p> : null}
+        <span className="atlas-more">{HOME_WORDS[lang].readMore} <span aria-hidden="true">{langMeta[lang].dir === "rtl" ? "←" : "→"}</span></span>
+      </div>
+    </Link>
   );
 }
 
@@ -933,34 +956,9 @@ function TopFill({ story, lang }: { story: Story; lang: Lang }) {
 }
 
 /**
- * Re-fits the top row's fills: after the 200ms depth transition, when the width changes and
- * when the fonts load. A change of height alone (a phone's address bar) does not refit.
+ * Fits the archive excerpts to the room available in their columns.
  */
-function useTopFill(depth: Depth) {
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const root = ref.current;
-    if (!root) return;
-    const fit = () => fitFills(root.querySelectorAll<HTMLElement>(".atlas-fill"));
-    fit();
-    const late = window.setTimeout(fit, 250);
-    void document.fonts?.ready.then(fit);
-    let width = window.innerWidth;
-    const onResize = () => {
-      if (window.innerWidth === width) return;
-      width = window.innerWidth;
-      fit();
-    };
-    window.addEventListener("resize", onResize);
-    return () => {
-      window.clearTimeout(late);
-      window.removeEventListener("resize", onResize);
-    };
-  }, [depth]);
-  return ref;
-}
 
-/** Fits each fill to whole lines of the room it is given, ending with an ellipsis. */
 function fitFills(boxes: Iterable<HTMLElement>) {
   for (const box of boxes) {
     const text = box.firstElementChild as HTMLElement | null;
@@ -1007,77 +1005,6 @@ function useColumnFill(depth: Depth) {
 }
 
 type Depth = 1 | 2 | 3;
-
-function readDepth(): Depth {
-  try {
-    const saved = Number(window.localStorage.getItem(DEPTH_KEY));
-    return saved === 1 || saved === 3 ? saved : 2;
-  } catch {
-    return 2;
-  }
-}
-
-/**
- * Every reading after the lead, newest first, one per ruled row. The control on the right
- * sets how much of each row shows; the choice is kept in this browser.
- * The two readings of the right column are listed only on a phone, where that column is not shown.
- */
-function useDepth(): [Depth, (next: Depth) => void] {
-  const [depth, setDepth] = useState<Depth>(2);
-  useEffect(() => setDepth(readDepth()), []);
-  const choose = (next: Depth) => {
-    setDepth(next);
-    try {
-      window.localStorage.setItem(DEPTH_KEY, String(next));
-    } catch {
-      /* private window: the choice lasts until the page closes */
-    }
-  };
-  return [depth, choose];
-}
-
-/** The ruled bar with the three depth buttons; it heads every reading under the lead. */
-function DepthBar({
-  lang,
-  depth,
-  choose,
-}: {
-  lang: Lang;
-  depth: Depth;
-  choose: (next: Depth) => void;
-}) {
-  const words = HOME_WORDS[lang];
-  return (
-    <div className="px-5 pt-6 md:px-8 md:pt-8">
-      <div className="flex items-center justify-between gap-4 border-t-[3px] border-ink pt-3">
-        {/* The eight boxes speak for themselves; the newest issue has no visible heading. */}
-        <h2 className="sr-only">{words.thisIssue}</h2>
-        <div role="radiogroup" aria-label={words.view} className="ms-auto flex items-center">
-          {([1, 2, 3] as const).map((step) => (
-            <button
-              key={step}
-              type="button"
-              role="radio"
-              aria-checked={depth === step}
-              // Before the scripts start, DEPTH_BOOT (lib/depth-boot.ts) marks the stored
-              // choice through aria-checked; the colours follow aria-checked alone.
-              data-depth-step={step}
-              suppressHydrationWarning
-              onClick={() => choose(step)}
-              className={`border border-ink px-3 py-1 text-xs whitespace-nowrap transition-colors duration-150 md:px-3.5 ${
-                step > 1 ? "-ms-px" : ""
-              } bg-transparent text-ink hover:bg-highlight active:bg-line aria-checked:bg-ink aria-checked:text-paper aria-checked:hover:bg-ink aria-checked:active:bg-ink ${
-                lang === "ar" ? "" : "uppercase tracking-[0.1em]"
-              }`}
-            >
-              {words.depth[step - 1]}
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 type RecordPlan = {
   strip: Story[];

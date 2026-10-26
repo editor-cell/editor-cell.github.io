@@ -15,14 +15,6 @@ import {
 import { LockNote, useMemberText } from "@/components/members/locked";
 import { Shell } from "@/components/shell";
 import { Trail } from "@/components/trail";
-import {
-  TwinButton,
-  TwinHeading,
-  TwinPanel,
-  TwinProse,
-  useTwin,
-  writtenLangs,
-} from "@/components/twin";
 import { byline, editorialCopy, imageCaption } from "@/lib/editorial";
 import { imageSet } from "@/lib/image-set";
 import { langMeta, useCopy } from "@/lib/i18n";
@@ -127,19 +119,9 @@ function Reading({ story }: { story: Story | null }) {
   const lang = useLang();
   const copy = useCopy(lang);
   const [typeStep, setTypeStep] = useState(1);
-  const [twinOpen, setTwinOpen] = useState(false);
   const membersOnly = story?.membersOnly === true;
   // A paid member's full text of a members-only reading; null for everyone else.
   const fullText = useMemberText(story?.id, lang, membersOnly);
-  // Twin reading: every reader on an open reading; on a members-only reading, the paid
-  // members who have its full text, the twin's full text fetched the same way.
-  const twinAllowed =
-    !!story &&
-    hasCopy(story, lang) &&
-    writtenLangs(story).length > 1 &&
-    (!membersOnly || fullText !== null);
-  const [twin, chooseTwin] = useTwin(story, lang, twinAllowed);
-  const twinFull = useMemberText(story?.id, twin ?? lang, membersOnly && twin !== null);
   // Where the reading starts (its header) and ends (after its sources), for the progress line.
   const readStart = useRef<HTMLElement | null>(null);
   const readEnd = useRef<HTMLElement | null>(null);
@@ -189,9 +171,6 @@ function Reading({ story }: { story: Story | null }) {
   const sourceNums = new Set(story.sources.map((source) => source.n));
   const sources = [...story.sources].sort((a, b) => a.n - b.n);
   const others = LANGS.filter((code) => hasCopy(story, code));
-  const canTwin = twinAllowed;
-  // A members-only reading's twin waits for its full text; until then the main text shows alone.
-  const twinBody = twin ? (membersOnly ? twinFull : story.locales[twin].body) : null;
 
   return (
     <main className="px-5 pt-5 pb-10 md:px-12 md:py-14">
@@ -220,7 +199,6 @@ function Reading({ story }: { story: Story | null }) {
             {locale.title || story.locales.en.title}
           </h1>
           {locale.dek ? <p className="reading-dek">{locale.dek}</p> : null}
-          {twin ? <TwinHeading story={story} twin={twin} /> : null}
           <div className="flex items-end justify-between gap-x-3 pt-1">
             <div className="flex min-w-0 flex-col items-start gap-0.5">
               {by ? <p className="text-sm font-bold text-ink">{by}</p> : null}
@@ -234,8 +212,7 @@ function Reading({ story }: { story: Story | null }) {
               ) : null}
             </div>
           </div>
-          {/* One thin line, the same on a phone and a wide screen: listen, share, twin
-              reading, and PDF at the end. Listening plays in the bar at the foot of the
+          {/* One thin line, the same on a phone and a wide screen: listen, share, and PDF at the end. Listening plays in the bar at the foot of the
               screen. */}
           <div className="reading-tools no-print flex flex-wrap items-center gap-x-2 gap-y-2 py-1 sm:gap-x-3 md:py-2.5">
             {locale.audio ? (
@@ -252,21 +229,10 @@ function Reading({ story }: { story: Story | null }) {
               />
             ) : null}
             <ShareButton lang={lang} title={locale.title || story.locales.en.title} />
-            {canTwin ? (
-              <TwinButton
-                lang={lang}
-                on={twin !== null}
-                open={twinOpen}
-                onToggle={() => setTwinOpen((value) => !value)}
-              />
-            ) : null}
             <div className="ms-auto flex">
               <PdfButton lang={lang} />
             </div>
           </div>
-          {canTwin && twinOpen ? (
-            <TwinPanel story={story} lang={lang} twin={twin} choose={chooseTwin} />
-          ) : null}
         </header>
 
         {/* One picture at the top of a reading, wider than the text: a reading with a video
@@ -327,18 +293,7 @@ function Reading({ story }: { story: Story | null }) {
                     the reader's step. */}
                 <div className="reading-text">
                   <div style={{ fontSize: `${TYPE_STEPS[typeStep]}em` }}>
-                    {twin && twinBody ? (
-                      <TwinProse
-                        main={body}
-                        twin={twinBody}
-                        mainLang={lang}
-                        twinLang={twin}
-                        sourceNums={sourceNums}
-                        sourceWord={copy.sourceWord}
-                      />
-                    ) : (
-                      <Prose body={body} sourceNums={sourceNums} sourceWord={copy.sourceWord} />
-                    )}
+                    <Prose body={body} sourceNums={sourceNums} sourceWord={copy.sourceWord} />
                   </div>
                 </div>
               </div>

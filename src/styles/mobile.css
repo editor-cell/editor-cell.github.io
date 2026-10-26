@@ -1,5 +1,34 @@
 /* Mobile rules stay inside their own width queries. */
 
+@media (--orbis-phone) {
+  .magazine-desktop {
+    display: none;
+  }
+  .band-row {
+    gap: 0.5rem;
+    min-width: 0;
+  }
+  .band-row > a {
+    flex-shrink: 1;
+    min-width: 0;
+  }
+  .band-row > a > span {
+    width: 9.6rem;
+    max-width: 100%;
+    min-width: 0;
+  }
+  .band-row [role="img"] {
+    width: 100%;
+    height: auto;
+  }
+  .band-row .masthead-motto {
+    font-size: clamp(0.625rem, 3.2vw, 0.8rem);
+  }
+  .frame-tools {
+    flex-shrink: 0;
+  }
+}
+
 @media (--orbis-compact) {
   .doc-chain-note,
   .doc-chain-count {

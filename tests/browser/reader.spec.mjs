@@ -17,16 +17,12 @@ for (const width of [390, 1280]) {
     page.on("pageerror", (error) => errors.push(error.message));
     const response = await open(page, "http://127.0.0.1:4179/");
     expect(response.status()).toBe(200);
-    // On GitHub's machine a tap in the first moments after loading is sometimes lost (the
-    // page is still starting); a reader would tap again, and so does the test, for up to
-    // ten seconds. A button that never works still fails.
-    for (const depth of [1, 2, 3]) {
-      await expect(async () => {
-        await page.locator(`[data-depth-step="${depth}"]`).click();
-        await expect(page.locator(".atlas-top")).toHaveAttribute("data-depth", String(depth), {
-          timeout: 1000,
-        });
-      }).toPass({ timeout: 10000 });
+    // A choice saved before the layout update must not hide pictures or summaries.
+    for (const previousDepth of [1, 3]) {
+      await page.evaluate((depth) => localStorage.setItem("orbis-depth", String(depth)), previousDepth);
+      await page.reload();
+      await expect(page.locator("[data-depth-step]")).toHaveCount(0);
+      await expect(page.locator(".magazine-mobile")).toHaveAttribute("data-depth", "2");
     }
     await page.locator('button[aria-controls="site-menu"]').click();
     await expect(page.locator("#site-menu")).toBeVisible();
@@ -46,6 +42,7 @@ for (const width of [390, 1280]) {
     await page.reload();
     await expect(page.locator("html")).toHaveAttribute("lang", "tr");
     await open(page, "http://127.0.0.1:4179/tr/read/carbon-books");
+    await expect(page.locator('[aria-controls="twin-panel"]')).toHaveCount(0);
     const chain = page.locator(".doc-chain-toggle");
     await chain.click();
     await expect(chain).toHaveAttribute("aria-expanded", "true");

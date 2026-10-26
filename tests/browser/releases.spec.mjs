@@ -28,7 +28,7 @@ for (const retain of [true, false]) {
           documents.push(new URL(request.url()).pathname);
       });
       await page.goto(base + "/");
-      await page.locator('[data-depth-step="2"]').click();
+      await page.waitForFunction(() => !("$_TSR" in self));
       placeSite(process.env.ORBIS_RELEASE_B, root);
       if (!retain)
         for (const path of JSON.parse(readFileSync(resolve(root, ".site-output.json"))).retained)

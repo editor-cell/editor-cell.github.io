@@ -12,14 +12,13 @@ import { langMeta } from "@/lib/i18n";
 import { LANG_BOOT, langFromPath } from "@/lib/lang-path";
 import { LOOK_BOOT } from "@/lib/look";
 import { CHUNK_RECOVERY_BOOT } from "@/lib/chunk-recovery";
-import { DEPTH_BOOT } from "@/lib/depth-boot";
 import { feedLink, pageMeta, SITE_DESCRIPTION, SITE_NAME, TRIAL } from "@/lib/site";
 import appCss from "../styles.css?url";
 
 // Only the families the stylesheet uses. Google serves Arabic in its own file, which a
 // browser fetches only when Arabic text is on screen.
 const FONTS =
-  "https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400..900&family=DM+Serif+Display:ital@0;1&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&family=Noto+Naskh+Arabic:wght@500;600&display=swap";
+  "https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400..900&family=Cormorant+Garamond:wght@600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&family=Noto+Naskh+Arabic:wght@500;600&display=swap";
 
 const FONT_BOOT = `(function(){var l=document.createElement("link");l.rel="stylesheet";l.href=${JSON.stringify(FONTS)};document.head.appendChild(l)})();`;
 
@@ -83,11 +82,11 @@ function RootDocument() {
         <link {...feedLink(lang)} />
         <HeadContent />
         {/* Before the first paint: the reader's language (plain addresses only), the saved
-            colour scheme, the saved front-page depth, then the web fonts (without blocking
+            colour scheme, then the web fonts (without blocking
             the paint). */}
         <script
           dangerouslySetInnerHTML={{
-            __html: CHUNK_RECOVERY_BOOT + LANG_BOOT + LOOK_BOOT + DEPTH_BOOT + FONT_BOOT,
+            __html: CHUNK_RECOVERY_BOOT + LANG_BOOT + LOOK_BOOT + FONT_BOOT,
           }}
         />
         <noscript>

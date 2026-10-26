@@ -120,7 +120,7 @@ export function FrameTools() {
     <span aria-hidden="true" className="mx-1.5 hidden h-4 w-px bg-paper/25 md:block" />
   );
   return (
-    <div dir="ltr" className="flex shrink-0 items-center text-paper/85">
+    <div dir="ltr" className="frame-tools flex shrink-0 items-center text-paper/85">
       {/* Opens the search bar under the band; before the page has started, the link still
           leads to the search page. */}
       <Link

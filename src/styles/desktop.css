@@ -1,5 +1,89 @@
 /* Desktop rules stay inside their own width queries. */
 
+/* The patch uses the site's 768px boundary, not a competing 1024px breakpoint. */
+@media (--orbis-desktop) {
+  .band-row {
+    justify-content: center;
+    column-gap: clamp(2rem, 5vw, 5rem);
+  }
+  .magazine-mobile {
+    display: none;
+  }
+  .magazine-desktop {
+    display: block;
+    padding-block: 2rem;
+  }
+  .magazine-lead {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+  }
+  .magazine-lead:has(> [data-lead-picture]) {
+    grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
+  }
+  .magazine-lead [data-lead-picture] {
+    order: 0;
+  }
+  .magazine-lead .lead-text {
+    order: 1;
+  }
+  .magazine-lead .atlas-lead-title {
+    font-size: clamp(2.5rem, 4vw, 3.75rem);
+    line-height: 1.08;
+  }
+  .magazine-features,
+  .magazine-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2.25rem;
+  }
+  .magazine-features {
+    border-top: 1px solid var(--color-rule);
+    padding-top: 2rem;
+  }
+  .magazine-grid {
+    margin-top: 2.25rem;
+  }
+  .magazine-card {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 1rem;
+    border-bottom: 1px solid var(--color-line);
+    padding-bottom: 1.5rem;
+  }
+  .magazine-copy {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.65rem;
+  }
+  .magazine-title {
+    font-size: 1.9rem;
+    line-height: 1.08;
+    text-wrap: pretty;
+  }
+  .magazine-card-featured .magazine-title {
+    font-size: clamp(2rem, 2.8vw, 2.75rem);
+  }
+  .magazine-summary {
+    font-size: 1.05rem;
+    line-height: 1.45;
+  }
+  .magazine-copy > .atlas-more {
+    margin-top: auto;
+    padding-top: 0.5rem;
+  }
+}
+
+@media (--orbis-large) {
+  .magazine-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2rem;
+  }
+}
+
 /* On a wide screen the sentence runs on one line and is set a little lighter. */
 @media (--orbis-desktop) {
   .home-sentence {

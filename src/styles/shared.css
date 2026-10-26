@@ -2,12 +2,8 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: "DM Serif Display", "Noto Naskh Arabic", "Times New Roman", serif;
-  /* Faces (the owner, 25 Oct 2026): Bodoni stays for the name and motto only; every title
-     is DM Serif Display (the owner's pick): a classic display face with character but
-     without Bodoni's hairlines, which were hard to read. It has one weight, so titles are
-     never thickened by the browser;
-     Source Serif 4 for every text. */
+  --font-display: "Cormorant Garamond", "Noto Naskh Arabic", "Times New Roman", serif;
+  /* Shared title family from the layout patch; body type and logo stay independent. */
   --font-body: "Source Serif 4", "Noto Naskh Arabic", Georgia, serif;
   --color-paper: #ffffff;
   --color-sheet: #ffffff;
@@ -30,6 +26,11 @@
    Mürekkep logo, 15 Oct 2026). */
 html:not([data-look]) .bg-panel {
   --color-paper: #f4efe6;
+}
+
+/* The requested black masthead uses white lettering; footer and other themes keep their colours. */
+html:not([data-look]) header .band-row {
+  --color-paper: #ffffff;
 }
 
 /* Second scheme: dark, for reading in a dim room. It mirrors the classic one: the band
@@ -133,14 +134,14 @@ body {
   font-family: "Noto Naskh Arabic", Georgia, serif;
 }
 
-/* Front page card titles. Size is set in the markup per card. DM Serif Display in its
-   one weight (the owner, 25 Oct 2026: Bodoni's hairlines were hard to read). */
+/* Shared title typography. Layout rules remain in their viewport-specific sheets. */
 .paper-title,
 .paper-title.font-extrabold {
-  font-family: "DM Serif Display", "Times New Roman", serif;
-  font-weight: 400;
+  font-family: var(--font-display);
+  font-weight: 600;
   font-synthesis: none;
   letter-spacing: 0;
+  overflow-wrap: break-word;
 }
 
 /* Arabic letters join, so spaced-out labels would break the words apart. */
@@ -177,7 +178,7 @@ body {
 .reading-first:not(:lang(ar))::first-letter {
   float: left;
   margin: 0.08em 0.1em 0 0;
-  font-family: "DM Serif Display", "Times New Roman", serif;
+  font-family: "Cormorant Garamond", "Times New Roman", serif;
   font-size: 3.55em;
   font-weight: 400;
   line-height: 0.82;
@@ -544,7 +545,7 @@ body {
   h1,
   h2,
   h3 {
-    font-family: "DM Serif Display", "Times New Roman", serif;
+    font-family: "Cormorant Garamond", "Times New Roman", serif;
     font-weight: 400;
     font-synthesis: none;
     line-height: 1.15;
