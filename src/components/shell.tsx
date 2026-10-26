@@ -89,9 +89,11 @@ export function FrameTools({ children }: { children: React.ReactNode }) {
 export function Shell({
   children,
   section,
+  layout,
 }: {
   children: React.ReactNode;
   section?: Theme | "all";
+  layout?: "video";
 }) {
   const lang = useLang();
   const signedIn = useMember().status === "in";
@@ -178,7 +180,7 @@ export function Shell({
 
   return (
     <ToolsContext.Provider value={tools}>
-      <div className={`flex min-h-dvh flex-col bg-paper text-ink ${section === "all" ? "orbis-home" : ""}`}>
+      <div className={`flex min-h-dvh flex-col bg-paper text-ink ${section === "all" ? "orbis-home" : ""} ${layout === "video" ? "orbis-video" : ""}`}>
         {/* The header: a black band with the name, the motto under it and the tools, and
           under the band the section strip on the paper, scrolling sideways when narrow. */}
         <header dir="ltr" className="no-print relative">

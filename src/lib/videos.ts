@@ -95,6 +95,15 @@ export type VideoWords = {
   settings: string;
   /** The sound bar beside the speaker. */
   volume: string;
+  related: string;
+  more: string;
+  watchLater: string;
+  saved: string;
+  savedVideos: string;
+  savedEmpty: string;
+  share: string;
+  copied: string;
+  copyLink: string;
 };
 
 const WORDS: Record<Lang, VideoWords> = {
@@ -127,6 +136,15 @@ const WORDS: Record<Lang, VideoWords> = {
     speed: "Oynatma hızı",
     settings: "Ayarlar",
     volume: "Ses düzeyi",
+    related: "İlgili videolar",
+    more: "Orbis’ten daha fazlası",
+    watchLater: "Daha sonra izle",
+    saved: "Kaydedildi",
+    savedVideos: "Kaydedilenler",
+    savedEmpty: "Henüz kaydedilmiş video yok.",
+    share: "Paylaş",
+    copied: "Bağlantı kopyalandı",
+    copyLink: "Bağlantıyı kopyala",
   },
   en: {
     videos: "Videos",
@@ -157,6 +175,15 @@ const WORDS: Record<Lang, VideoWords> = {
     speed: "Playback speed",
     settings: "Settings",
     volume: "Volume",
+    related: "Related videos",
+    more: "More from Orbis",
+    watchLater: "Watch later",
+    saved: "Saved",
+    savedVideos: "Saved videos",
+    savedEmpty: "No saved videos yet.",
+    share: "Share",
+    copied: "Link copied",
+    copyLink: "Copy the link",
   },
   ar: {
     videos: "الفيديوهات",
@@ -187,6 +214,15 @@ const WORDS: Record<Lang, VideoWords> = {
     speed: "سرعة التشغيل",
     settings: "الإعدادات",
     volume: "مستوى الصوت",
+    related: "فيديوهات ذات صلة",
+    more: "المزيد من أوربيس",
+    watchLater: "شاهد لاحقًا",
+    saved: "تم الحفظ",
+    savedVideos: "الفيديوهات المحفوظة",
+    savedEmpty: "لا توجد فيديوهات محفوظة بعد.",
+    share: "مشاركة",
+    copied: "نُسخ الرابط",
+    copyLink: "انسخ الرابط",
   },
   fr: {
     videos: "Vidéos",
@@ -217,6 +253,15 @@ const WORDS: Record<Lang, VideoWords> = {
     speed: "Vitesse de lecture",
     settings: "Réglages",
     volume: "Volume",
+    related: "Vidéos similaires",
+    more: "Plus d’Orbis",
+    watchLater: "À regarder plus tard",
+    saved: "Enregistré",
+    savedVideos: "Vidéos enregistrées",
+    savedEmpty: "Aucune vidéo enregistrée.",
+    share: "Partager",
+    copied: "Lien copié",
+    copyLink: "Copier le lien",
   },
   es: {
     videos: "Vídeos",
@@ -247,6 +292,15 @@ const WORDS: Record<Lang, VideoWords> = {
     speed: "Velocidad",
     settings: "Ajustes",
     volume: "Volumen",
+    related: "Vídeos relacionados",
+    more: "Más de Orbis",
+    watchLater: "Ver más tarde",
+    saved: "Guardado",
+    savedVideos: "Vídeos guardados",
+    savedEmpty: "Todavía no hay vídeos guardados.",
+    share: "Compartir",
+    copied: "Enlace copiado",
+    copyLink: "Copiar el enlace",
   },
 };
 

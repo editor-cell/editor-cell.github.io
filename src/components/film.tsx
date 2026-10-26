@@ -95,6 +95,7 @@ export function Film({
   preload = "metadata",
   className = "",
   bare = false,
+  controlsBeforePlay = false,
   onScreen,
   captions = [],
 }: {
@@ -109,6 +110,8 @@ export function Film({
   className?: string;
   /** No start screen: the film is started from outside (the panel's screen). */
   bare?: boolean;
+  /** The editorial video page shows its controls over the poster from the start. */
+  controlsBeforePlay?: boolean;
   /** Receives the video element once it is on the page. */
   onScreen?: (el: HTMLVideoElement | null) => void;
   /** Subtitles the reader can turn on, one per language. */
@@ -375,7 +378,8 @@ export function Film({
 
   const span = duration > 0 ? Math.min(time, duration) / duration : 0;
   const pct = `${span * 100}%`;
-  const bar = started && shown;
+  const hasControls = started || controlsBeforePlay;
+  const bar = hasControls && shown;
   const loud = muted ? 0 : volume;
   barShown.current = bar;
 
@@ -466,7 +470,7 @@ export function Film({
               strokeWidth={0}
             />
           </span>
-          {duration > 0 ? (
+          {duration > 0 && !controlsBeforePlay ? (
             <span aria-hidden="true" dir="ltr" className="film-length">
               {fmt(duration)}
             </span>
@@ -498,7 +502,7 @@ export function Film({
         </p>
       ) : null}
 
-      {started ? (
+      {hasControls ? (
         <div className="film-bar" aria-hidden={!bar}>
           <div className="film-glass">
             {menu ? (
