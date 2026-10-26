@@ -2,9 +2,19 @@
 
 /* The patch uses the site's 768px boundary, not a competing 1024px breakpoint. */
 @media (--orbis-desktop) {
-  .band-row {
-    justify-content: center;
-    column-gap: clamp(2rem, 5vw, 5rem);
+  .band-reader {
+    display: grid;
+    grid-template-columns: minmax(2.75rem, 1fr) auto minmax(2.75rem, 1fr);
+    column-gap: 1.5rem;
+  }
+  .band-reader > .frame-search {
+    justify-self: start;
+  }
+  .band-reader > .frame-menu {
+    justify-self: end;
+  }
+  .band-reader > .band-brand {
+    justify-self: center;
   }
   .magazine-mobile {
     display: none;

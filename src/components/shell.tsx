@@ -3,10 +3,8 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { SiteMenu } from "@/components/menu";
 import { OrbisLockup } from "@/components/orbis-lockup";
-import { Pick } from "@/components/pick";
 import { SearchBar } from "@/components/search-bar";
 import { SearchMark } from "@/components/search-mark";
-import { membersOn } from "@/lib/members/config";
 import { TRIAL, trialNote } from "@/lib/site";
 import { membersCopy } from "@/lib/members/copy";
 import { useMember } from "@/lib/members/session";
@@ -29,43 +27,9 @@ import {
   withLang,
 } from "@/lib/lang-path";
 import { useLibrary } from "@/lib/library";
-import { LOOKS, LOOK_SWATCH, useLook, type Look } from "@/lib/look";
+import { useLook } from "@/lib/look";
 import { LANGS, THEMES, type Lang, type Theme } from "@/lib/types";
 import { useLang } from "@/lib/use-lang";
-
-function Swatch({ look }: { look: Look }) {
-  const [panel, paper] = LOOK_SWATCH[look];
-  return (
-    <span
-      aria-hidden="true"
-      className="me-2.5 inline-block size-3.5 shrink-0 rounded-full border border-ink/30"
-      style={{ background: `linear-gradient(135deg, ${panel} 50%, ${paper} 50%)` }}
-    />
-  );
-}
-
-function HeaderSwatch({ look, dark = false }: { look: Look; dark?: boolean }) {
-  const [panel, paper] = LOOK_SWATCH[look];
-  return (
-    <span
-      aria-hidden="true"
-      className={`block size-[12px] rounded-full border transition-colors md:size-[15px] ${dark ? "border-paper/60 group-hover:border-paper group-aria-expanded:border-paper" : "border-ink/40 group-hover:border-ink group-aria-expanded:border-ink"}`}
-      style={{ background: `linear-gradient(135deg, ${panel} 50%, ${paper} 50%)` }}
-    />
-  );
-}
-
-function Caret() {
-  return (
-    <svg
-      viewBox="0 0 8 5"
-      className="mb-px size-[7px] shrink-0 opacity-70 md:size-2 transition-transform duration-150 group-hover:opacity-100 group-aria-expanded:rotate-180 group-aria-expanded:opacity-100"
-      aria-hidden="true"
-    >
-      <path d="M.75.75 4 4.25 7.25.75" fill="none" stroke="currentColor" strokeWidth="1" />
-    </svg>
-  );
-}
 
 type Tools = {
   openMenu: () => void;
@@ -73,56 +37,19 @@ type Tools = {
   toggleSearch: () => void;
   searchOpen: boolean;
   menuButton: React.RefObject<HTMLButtonElement | null>;
-  look: Look;
-  setLook: (look: Look) => void;
-  lang: Lang;
-  setLang: (lang: Lang) => void;
 };
 
 const ToolsContext = createContext<Tools | null>(null);
 
-/**
- * Search, menu, colour scheme and language. The masthead carries the name alone, so they
- * sit small on the paper at the head of each page, beside the home sentence, a section's
- * name or a reading's way back (place "page"), at every width.
- */
-/** A head and shoulders, drawn in the same thin line as the search mark. */
-function PersonMark() {
-  return (
-    <svg
-      viewBox="0 0 20 20"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.4"
-      aria-hidden="true"
-      className="size-[15px] md:size-[18px]"
-    >
-      <circle cx="10" cy="6.5" r="3.5" />
-      <path d="M3 18c.8-3.6 3.6-5.5 7-5.5s6.2 1.9 7 5.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-/**
- * The tools at the end of the header row: search, language, colour scheme, account and
- * the menu, divided by hairlines as a printed masthead's index. On a phone search, the
- * colour scheme, the account and the menu stay; the language is chosen inside the menu.
- */
-export function FrameTools() {
+/** Search and menu flank the centred brand. Language, theme and membership live in the menu. */
+export function FrameTools({ children }: { children: React.ReactNode }) {
   const tools = useContext(ToolsContext);
   const lang = useLang();
-  const copy = useCopy(lang);
   const frame = useFrameCopy(lang);
   if (!tools) return null;
-  // The tools sit on the black band, light on dark like the name.
-  const hover = "hover:text-paper";
-  const divider = (
-    <span aria-hidden="true" className="mx-1.5 hidden h-4 w-px bg-paper/25 md:block" />
-  );
   return (
-    <div dir="ltr" className="frame-tools flex shrink-0 items-center text-paper/85">
-      {/* Opens the search bar under the band; before the page has started, the link still
-          leads to the search page. */}
+    <>
+      {/* Before hydration this remains a working link to the search page. */}
       <Link
         {...searchLink(lang)}
         aria-label={searchCopy(lang).title}
@@ -132,62 +59,11 @@ export function FrameTools() {
           event.preventDefault();
           tools.toggleSearch();
         }}
-        className={`inline-flex h-11 w-9 shrink-0 items-center justify-center ${hover}`}
+        className="frame-search inline-flex size-11 shrink-0 items-center justify-center text-paper/85 hover:text-paper"
       >
         <SearchMark className="size-[17px] md:size-[18px]" />
       </Link>
-      {divider}
-      <div className="hidden md:block">
-        <Pick
-          tone="panel"
-          align="end"
-          label={copy.language}
-          value={tools.lang}
-          onChange={tools.setLang}
-          options={LANGS.map((code) => ({
-            value: code,
-            label: langMeta[code].name,
-            lang: langMeta[code].html,
-          }))}
-          buttonClassName={`group inline-flex h-11 items-center gap-1 px-2 text-[11px] tracking-[0.14em] ${hover}`}
-        >
-          <span>{langMeta[tools.lang].code}</span>
-          <Caret />
-        </Pick>
-      </div>
-      {divider}
-      {/* The colour scheme stays on the band at every width, a phone included. */}
-      <div>
-        <Pick
-          tone="panel"
-          align="end"
-          label={frame.look}
-          value={tools.look}
-          onChange={tools.setLook}
-          options={LOOKS.map((code) => ({
-            value: code,
-            label: (
-              <>
-                <Swatch look={code} />
-                {frame.looks[code]}
-              </>
-            ),
-          }))}
-          buttonClassName="group inline-flex h-11 w-9 items-center justify-center"
-        >
-          <HeaderSwatch look={tools.look} dark />
-        </Pick>
-      </div>
-      {/* Account once sign-up is on; until then the membership options. On the band at
-          every width, a phone included, so signing in is one tap from any page. */}
-      <Link
-        {...(membersOn ? accountLink(lang) : memberPageLink(lang, "membership"))}
-        aria-label={membersOn ? membersCopy(lang).account : pagesCopy(lang).membership.title}
-        title={membersOn ? membersCopy(lang).account : pagesCopy(lang).membership.title}
-        className={`inline-flex h-11 w-9 shrink-0 items-center justify-center ${hover}`}
-      >
-        <PersonMark />
-      </Link>
+      {children}
       <button
         ref={tools.menuButton}
         type="button"
@@ -195,7 +71,7 @@ export function FrameTools() {
         aria-controls="site-menu"
         aria-label={frame.menu}
         onClick={tools.openMenu}
-        className={`inline-flex h-11 w-9 shrink-0 items-center justify-end ${hover}`}
+        className="frame-menu inline-flex size-11 shrink-0 items-center justify-center text-paper/85 hover:text-paper"
       >
         <span className="flex w-[17px] flex-col gap-[5px]" aria-hidden="true">
           <span className="h-[1.5px] w-full bg-current" />
@@ -203,10 +79,9 @@ export function FrameTools() {
           <span className="h-[1.5px] w-full bg-current" />
         </span>
       </button>
-    </div>
+    </>
   );
 }
-
 
 /**
  * Site frame shared by every page: header, section bar, footer (black, or burgundy in the second scheme).
@@ -329,11 +204,19 @@ export function Shell({
     toggleSearch: () => setSearchOpen((open) => !open),
     searchOpen,
     menuButton,
-    look,
-    setLook,
-    lang,
-    setLang,
   };
+
+  const brand = (
+    <Link
+      {...homeLink(lang)}
+      className="band-brand inline-flex min-h-11 shrink-0 items-center gap-2 py-2.5 md:gap-2.5 md:py-3"
+    >
+      <OrbisLockup
+        className="h-[1.95rem] md:h-[2.68rem]"
+        mottoClassName="mt-[0.8rem] text-[0.8rem] md:mt-[1.05rem] md:text-[1.02rem]"
+      />
+    </Link>
+  );
 
   return (
     <ToolsContext.Provider value={tools}>
@@ -344,20 +227,14 @@ export function Shell({
           {/* The black band carries the name, the motto and the tools, as the footer band does;
               the section strip runs under it on the paper. */}
           <div
-            className={`band-row flex items-center justify-between gap-x-6 bg-panel px-5 text-paper md:px-8 ${
+            className={`band-row ${inPanel ? "band-editor" : "band-reader"} flex items-center justify-between gap-x-6 bg-panel px-5 text-paper md:px-8 ${
               searchOpen ? "relative z-40" : ""
             }`}
           >
-            <Link
-              {...homeLink(lang)}
-              className="inline-flex min-h-11 shrink-0 items-center gap-2 py-2.5 md:gap-2.5 md:py-3"
-            >
-              <OrbisLockup className="h-[1.95rem] md:h-[2.68rem]" mottoClassName="mt-[0.8rem] text-[0.8rem] md:mt-[1.05rem] md:text-[1.02rem]" />
-            </Link>
-
-            <div>
-              {/* The editing panel stays out of the reader's menu; open it at /panel. */}
-              {inPanel ? (
+            {/* The editor keeps its own navigation; reader controls flank the brand. */}
+            {inPanel ? (
+              <>
+                {brand}
                 <nav className="flex items-center gap-4 text-sm">
                   <Link {...homeLink(lang)} className="inline-flex min-h-11 items-center text-mist">
                     {copy.atlas}
@@ -366,10 +243,10 @@ export function Shell({
                     {copy.panel}
                   </Link>
                 </nav>
-              ) : (
-                <FrameTools />
-              )}
-            </div>
+              </>
+            ) : (
+              <FrameTools>{brand}</FrameTools>
+            )}
           </div>
 
           {searchOpen && !inPanel ? (

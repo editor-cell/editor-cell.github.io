@@ -19,11 +19,24 @@
     gap: 0.5rem;
     min-width: 0;
   }
-  .band-row > a {
+  .band-reader {
+    display: grid;
+    grid-template-columns: minmax(2.75rem, 1fr) auto minmax(2.75rem, 1fr);
+  }
+  .band-reader > .frame-search {
+    justify-self: start;
+  }
+  .band-reader > .frame-menu {
+    justify-self: end;
+  }
+  .band-reader > .band-brand {
+    justify-self: center;
+  }
+  .band-row > .band-brand {
     flex-shrink: 1;
     min-width: 0;
   }
-  .band-row > a > span {
+  .band-row > .band-brand > span {
     width: 9.6rem;
     max-width: 100%;
     min-width: 0;
@@ -34,9 +47,6 @@
   }
   .band-row .masthead-motto {
     font-size: clamp(0.625rem, 3.2vw, 0.8rem);
-  }
-  .frame-tools {
-    flex-shrink: 0;
   }
 }
 
