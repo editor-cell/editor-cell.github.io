@@ -12,7 +12,7 @@
 }
 
 @media (--orbis-phone) {
-  .magazine-desktop {
+  .desktop-front {
     display: none;
   }
   .band-row {
@@ -24,10 +24,10 @@
     grid-template-columns: minmax(2.75rem, 1fr) auto minmax(2.75rem, 1fr);
   }
   .band-reader > .frame-search {
-    justify-self: start;
+    justify-self: end;
   }
   .band-reader > .frame-menu {
-    justify-self: end;
+    justify-self: start;
   }
   .band-reader > .band-brand {
     justify-self: center;

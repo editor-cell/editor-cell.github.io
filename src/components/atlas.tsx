@@ -14,6 +14,7 @@ import { formatDate, safeHttpUrl, storyTitle } from "@/lib/text";
 import type { Lang, Source, StoryCard as Story, Theme } from "@/lib/types";
 import { useMostRead } from "@/lib/reads";
 import { MediaStrip } from "@/components/videos";
+import { DesktopFront } from "@/components/desktop-front";
 import { useLang } from "@/lib/use-lang";
 
 /**
@@ -270,8 +271,7 @@ function HomeGrid({ stories, lang }: { stories: Story[]; lang: Lang }) {
   const main = rest[0];
   const side = rest[1];
   const briefs = rest.slice(2, 7);
-  // Desktop only: the middle column holds two boxes of equal height, rank 2 above and the
-  // next reading (rank 9) under it. On a phone that reading stays in the list below.
+  // Keep the existing phone ordering and its hand-off to the archive.
   const under = briefs.length === 5 ? rest[7] : undefined;
   const records = rest.slice(7);
   const words = HOME_WORDS[lang];
@@ -279,90 +279,67 @@ function HomeGrid({ stories, lang }: { stories: Story[]; lang: Lang }) {
   const arrow = dir === "rtl" ? "←" : "→";
   return (
     <div dir={dir}>
-      <div className="px-5 md:px-8">
-        <IssueLine stories={stories} lang={lang} />
-        <Link
-          {...readLink(lang, lead.id)}
-          className="atlas-own magazine-lead group grid grid-cols-1 pt-4 pb-5 md:gap-[clamp(1.5rem,2.6vw,2.4rem)] md:py-6"
-        >
-          {lead.image ? (
-            <div className="md:order-2" data-lead-picture>
-              <CardPicture
-                story={lead}
-                lang={lang}
-                ratio="aspect-[4/3] md:aspect-[3/2]"
-                sizes={imageSizes("40vw", "100vw")}
-                eager
-              />
-            </div>
-          ) : null}
-          <div className="lead-text flex min-w-0 flex-col justify-center pt-4 md:order-1 md:justify-start md:pt-1 md:pb-0">
-            <Kicker story={lead} lang={lang} />
-            <h2 className="paper-title atlas-lead-title font-extrabold mt-2.5 text-ink decoration-2 underline-offset-[0.12em] group-hover:underline md:mt-4">
-              {storyTitle(lead, lang)}
-            </h2>
-            {leadSummary ? (
-              <p className="font-body mt-3 max-w-[36rem] text-pretty text-[1.075rem] leading-[1.35] text-ink md:mt-5 md:text-[1.2rem] md:leading-[1.3]">
-                {leadSummary}
-              </p>
+      <DesktopFront stories={stories} lang={lang} />
+      <div className="magazine-mobile">
+        <div className="px-5 md:px-8">
+          <IssueLine stories={stories} lang={lang} />
+          <Link
+            {...readLink(lang, lead.id)}
+            className="atlas-own magazine-lead group grid grid-cols-1 pt-4 pb-5 md:gap-[clamp(1.5rem,2.6vw,2.4rem)] md:py-6"
+          >
+            {lead.image ? (
+              <div className="md:order-2" data-lead-picture>
+                <CardPicture
+                  story={lead}
+                  lang={lang}
+                  ratio="aspect-[4/3] md:aspect-[3/2]"
+                  sizes={imageSizes("40vw", "100vw")}
+                  eager
+                />
+              </div>
             ) : null}
-            <span className="atlas-more atlas-more-rule mt-3 md:mt-6">
-              {words.readFull} <span aria-hidden="true">{arrow}</span>
-            </span>
-          </div>
-        </Link>
-      </div>
-
-      {rest.length ? <h2 className="sr-only">{words.thisIssue}</h2> : null}
-      {/* Desktop has its own magazine layout; the phone keeps its existing list. */}
-      <div className="magazine-desktop px-5 md:px-8">
-        <div className="magazine-features">
-          {rest.slice(0, 2).map((story) => <MagazineCard key={story.id} story={story} lang={lang} featured />)}
-        </div>
-        <div className="magazine-grid">
-          {rest.slice(2, under ? 8 : 7).map((story) => <MagazineCard key={story.id} story={story} lang={lang} />)}
-        </div>
-      </div>
-
-      {main ? (
-        <div className="magazine-mobile records atlas-top px-5 md:px-8" data-depth={depth} suppressHydrationWarning>
-          {side ? <TopCard story={side} lang={lang} className="atlas-card-side" /> : null}
-          <div className="atlas-mid">
-            <TopCard story={main} lang={lang} className="atlas-card-main" />
-            {under ? <TopCard story={under} lang={lang} className="atlas-card-under" /> : null}
-          </div>
-          {briefs.length ? (
-            <div className="atlas-briefs">
-              {briefs.map((story, index) => (
-                <Brief key={story.id} story={story} lang={lang} className={`atlas-brief-slot-${index + 1}`} />
-              ))}
+            <div className="lead-text flex min-w-0 flex-col justify-center pt-4 md:order-1 md:justify-start md:pt-1 md:pb-0">
+              <Kicker story={lead} lang={lang} />
+              <h2 className="paper-title atlas-lead-title font-extrabold mt-2.5 text-ink decoration-2 underline-offset-[0.12em] group-hover:underline md:mt-4">
+                {storyTitle(lead, lang)}
+              </h2>
+              {leadSummary ? (
+                <p className="font-body mt-3 max-w-[36rem] text-pretty text-[1.075rem] leading-[1.35] text-ink md:mt-5 md:text-[1.2rem] md:leading-[1.3]">
+                  {leadSummary}
+                </p>
+              ) : null}
+              <span className="atlas-more atlas-more-rule mt-3 md:mt-6">
+                {words.readFull} <span aria-hidden="true">{arrow}</span>
+              </span>
             </div>
-          ) : null}
+          </Link>
         </div>
-      ) : null}
 
-      {/* Videos: one row between the newest issue and the archive. It stands apart from the
-          readings, so the depth buttons above leave it as it is. */}
-      <MediaStrip lang={lang} />
+        {rest.length ? <h2 className="sr-only">{words.thisIssue}</h2> : null}
+        {main ? (
+          <div className="magazine-mobile records atlas-top px-5 md:px-8" data-depth={depth} suppressHydrationWarning>
+            {side ? <TopCard story={side} lang={lang} className="atlas-card-side" /> : null}
+            <div className="atlas-mid">
+              <TopCard story={main} lang={lang} className="atlas-card-main" />
+              {under ? <TopCard story={under} lang={lang} className="atlas-card-under" /> : null}
+            </div>
+            {briefs.length ? (
+              <div className="atlas-briefs">
+                {briefs.map((story, index) => (
+                  <Brief key={story.id} story={story} lang={lang} className={`atlas-brief-slot-${index + 1}`} />
+                ))}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
 
-      <Records stories={records} lang={lang} depth={depth} deskSkip={under?.id} />
-    </div>
-  );
-}
-
-/** Desktop cards lead with the words; small pictures support each heading. */
-function MagazineCard({ story, lang, featured = false }: { story: Story; lang: Lang; featured?: boolean }) {
-  const summary = cellSummary(story, lang);
-  return (
-    <Link {...readLink(lang, story.id)} className={`magazine-card group ${featured ? "magazine-card-featured" : ""}`}>
-      <div className="magazine-heading">
-        <Kicker story={story} lang={lang} />
-        <h3 className="paper-title magazine-title group-hover:underline underline-offset-[0.14em]">{storyTitle(story, lang)}</h3>
+        {/* Videos: one row between the newest issue and the archive. It stands apart from the
+            readings, so the depth buttons above leave it as it is. */}
+        <MediaStrip lang={lang} />
       </div>
-      {story.image ? <CardPicture story={story} lang={lang} ratio="aspect-[4/3]" sizes={imageSizes(featured ? "14vw" : "9vw", "100vw")} /> : null}
-      {summary ? <p className="font-body magazine-summary">{summary}</p> : null}
-      <span className="atlas-more">{HOME_WORDS[lang].readMore} <span aria-hidden="true">{langMeta[lang].dir === "rtl" ? "←" : "→"}</span></span>
-    </Link>
+
+      <Records stories={records} desktopStories={stories.slice(7)} lang={lang} depth={depth} />
+    </div>
   );
 }
 
@@ -1048,23 +1025,24 @@ function Records({
   stories,
   lang,
   depth,
-  deskSkip,
+  desktopStories,
 }: {
   stories: Story[];
   lang: Lang;
   depth: Depth;
-  /** A reading the desktop already shows in the top boxes; the phone still lists it here. */
-  deskSkip?: string;
+  /** The reference desktop layout shows seven lead readings; the phone keeps its own list. */
+  desktopStories?: Story[];
 }) {
   // The count covers the whole site; most of the top readings sit in the newest issue above,
   // so ask for enough to find the archive's own most read.
   const ranked = useMostRead(50);
   useColumnFill(depth);
-  if (stories.length === 0) return null;
-  const byId = new Map(stories.map((story) => [story.id, story]));
-  const mostRead = ranked
-    ? ranked.map((id) => byId.get(id)).filter((story): story is Story => Boolean(story))
-    : [];
+  const desktop = desktopStories ?? stories;
+  if (stories.length === 0 && desktop.length === 0) return null;
+  const mostReadIn = (items: Story[]) => {
+    const byId = new Map(items.map((story) => [story.id, story]));
+    return ranked ? ranked.map((id) => byId.get(id)).filter((story): story is Story => Boolean(story)) : [];
+  };
   const words = HOME_WORDS[lang];
 
   return (
@@ -1076,13 +1054,13 @@ function Records({
         {words.archive}
       </h2>
       <div className="md:hidden">
-        <RecordColumns plan={planRecords(stories, mostRead, false)} lang={lang} depth={depth} />
+        <RecordColumns plan={planRecords(stories, mostReadIn(stories), false)} lang={lang} depth={depth} />
       </div>
       <div className="hidden md:block">
         <RecordColumns
           plan={planRecords(
-            stories.filter((story) => story.id !== deskSkip),
-            mostRead.filter((story) => story.id !== deskSkip),
+            desktop,
+            mostReadIn(desktop),
             true,
           )}
           lang={lang}

@@ -48,21 +48,6 @@ export function FrameTools({ children }: { children: React.ReactNode }) {
   if (!tools) return null;
   return (
     <>
-      {/* Before hydration this remains a working link to the search page. */}
-      <Link
-        {...searchLink(lang)}
-        aria-label={searchCopy(lang).title}
-        aria-expanded={tools.searchOpen}
-        title={searchCopy(lang).title}
-        onClick={(event) => {
-          event.preventDefault();
-          tools.toggleSearch();
-        }}
-        className="frame-search inline-flex size-11 shrink-0 items-center justify-center text-paper/85 hover:text-paper"
-      >
-        <SearchMark className="size-[17px] md:size-[18px]" />
-      </Link>
-      {children}
       <button
         ref={tools.menuButton}
         type="button"
@@ -78,6 +63,21 @@ export function FrameTools({ children }: { children: React.ReactNode }) {
           <span className="h-[1.5px] w-full bg-current" />
         </span>
       </button>
+      {children}
+      {/* Before hydration this remains a working link to the search page. */}
+      <Link
+        {...searchLink(lang)}
+        aria-label={searchCopy(lang).title}
+        aria-expanded={tools.searchOpen}
+        title={searchCopy(lang).title}
+        onClick={(event) => {
+          event.preventDefault();
+          tools.toggleSearch();
+        }}
+        className="frame-search inline-flex size-11 shrink-0 items-center justify-center text-paper/85 hover:text-paper"
+      >
+        <SearchMark className="size-[17px] md:size-[18px]" />
+      </Link>
     </>
   );
 }
@@ -178,7 +178,7 @@ export function Shell({
 
   return (
     <ToolsContext.Provider value={tools}>
-      <div className="flex min-h-dvh flex-col bg-paper text-ink">
+      <div className={`flex min-h-dvh flex-col bg-paper text-ink ${section === "all" ? "orbis-home" : ""}`}>
         {/* The header: a black band with the name, the motto under it and the tools, and
           under the band the section strip on the paper, scrolling sideways when narrow. */}
         <header dir="ltr" className="no-print relative">

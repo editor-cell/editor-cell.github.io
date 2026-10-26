@@ -1,112 +1,14 @@
 /* Desktop rules stay inside their own width queries. */
-
-/* The patch uses the site's 768px boundary, not a competing 1024px breakpoint. */
 @media (--orbis-desktop) {
   .band-reader {
     display: grid;
     grid-template-columns: minmax(2.75rem, 1fr) auto minmax(2.75rem, 1fr);
     column-gap: 1.5rem;
   }
-  .band-reader > .frame-search {
-    justify-self: start;
-  }
-  .band-reader > .frame-menu {
-    justify-self: end;
-  }
-  .band-reader > .band-brand {
-    justify-self: center;
-  }
-  .magazine-mobile {
-    display: none;
-  }
-  .magazine-desktop {
-    display: block;
-    padding-block: 2rem;
-  }
-  .magazine-lead {
-    grid-template-columns: minmax(0, 1fr);
-    align-items: center;
-  }
-  .magazine-lead:has(> [data-lead-picture]) {
-    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-  }
-  .magazine-lead [data-lead-picture] {
-    order: 1;
-  }
-  .magazine-lead .lead-text {
-    order: 0;
-  }
-  .magazine-lead .atlas-lead-title {
-    font-size: clamp(2.2rem, 3.4vw, 3.1rem);
-    line-height: 1.16;
-  }
-  .magazine-features,
-  .magazine-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 2.25rem;
-  }
-  .magazine-features {
-    border-top: 1px solid var(--color-rule);
-    padding-top: 2rem;
-  }
-  .magazine-grid {
-    margin-top: 2.25rem;
-  }
-  .magazine-card {
-    display: grid;
-    min-width: 0;
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto 1fr auto;
-    column-gap: 1.25rem;
-    row-gap: 0.85rem;
-    border-bottom: 1px solid var(--color-line);
-    padding-bottom: 1.5rem;
-  }
-  .magazine-card:has(> img) {
-    grid-template-columns: minmax(0, 1fr) minmax(5rem, 28%);
-  }
-  .magazine-card > img {
-    grid-column: 2;
-    grid-row: 1;
-    align-self: start;
-  }
-  .magazine-heading {
-    display: flex;
-    min-width: 0;
-    grid-column: 1;
-    grid-row: 1;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.65rem;
-  }
-  .magazine-title {
-    font-size: 1.5rem;
-    line-height: 1.2;
-    text-wrap: pretty;
-  }
-  .magazine-card-featured .magazine-title {
-    font-size: clamp(1.65rem, 2.25vw, 2.15rem);
-  }
-  .magazine-summary {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    font-size: 1.05rem;
-    line-height: 1.45;
-  }
-  .magazine-card > .atlas-more {
-    grid-column: 1 / -1;
-    grid-row: 3;
-    margin-top: auto;
-    padding-top: 0.5rem;
-  }
-}
-
-@media (--orbis-large) {
-  .magazine-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 2rem;
-  }
+  .band-reader > .frame-search { justify-self: end; }
+  .band-reader > .frame-menu { justify-self: start; }
+  .band-reader > .band-brand { justify-self: center; }
+  .magazine-mobile { display: none; }
 }
 
 /* On a wide screen the sentence runs on one line and is set a little lighter. */

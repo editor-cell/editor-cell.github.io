@@ -2,3 +2,5 @@
 @import "./styles/breakpoints.generated.css";
 @import "./styles/mobile.css";
 @import "./styles/desktop.css";
+
+@import "./styles/front-page.css";
