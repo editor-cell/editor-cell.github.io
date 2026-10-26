@@ -2,8 +2,8 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: "Cormorant Garamond", "Noto Naskh Arabic", "Times New Roman", serif;
-  /* Shared title family from the layout patch; body type and logo stay independent. */
+  --font-display: "Libre Baskerville", "Noto Naskh Arabic", Georgia, serif;
+  /* A fuller, upright serif gives titles a clear weight beside the body copy. */
   --font-body: "Source Serif 4", "Noto Naskh Arabic", Georgia, serif;
   --color-paper: #ffffff;
   --color-sheet: #ffffff;
@@ -138,8 +138,9 @@ body {
 .paper-title,
 .paper-title.font-extrabold {
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 700;
   font-synthesis: none;
+  line-height: 1.2;
   letter-spacing: 0;
   overflow-wrap: break-word;
 }
@@ -545,8 +546,8 @@ body {
   h1,
   h2,
   h3 {
-    font-family: "Cormorant Garamond", "Times New Roman", serif;
-    font-weight: 400;
+    font-family: var(--font-display);
+    font-weight: 700;
     font-synthesis: none;
     line-height: 1.15;
     letter-spacing: 0;
@@ -921,7 +922,7 @@ a.group:not(.atlas-own):has(.paper-title) > div.flex.flex-col > p.tabular-nums {
 
 .atlas-lead-title {
   font-size: clamp(2rem, 8.4vw, 2.9rem);
-  line-height: 1.04;
+  line-height: 1.16;
 }
 
 /* The top row: two cards and a column of three short items; on a phone every one of them

@@ -27,8 +27,8 @@
     order: 1;
   }
   .magazine-lead .atlas-lead-title {
-    font-size: clamp(2.5rem, 4vw, 3.75rem);
-    line-height: 1.08;
+    font-size: clamp(2.2rem, 3.4vw, 3.1rem);
+    line-height: 1.16;
   }
   .magazine-features,
   .magazine-grid {
@@ -60,12 +60,12 @@
     gap: 0.65rem;
   }
   .magazine-title {
-    font-size: 1.9rem;
-    line-height: 1.08;
+    font-size: 1.5rem;
+    line-height: 1.2;
     text-wrap: pretty;
   }
   .magazine-card-featured .magazine-title {
-    font-size: clamp(2rem, 2.8vw, 2.75rem);
+    font-size: clamp(1.65rem, 2.25vw, 2.15rem);
   }
   .magazine-summary {
     font-size: 1.05rem;
@@ -916,7 +916,7 @@
   }
   .atlas-bottom .deep-card > .paper-title {
     font-size: 1.3rem;
-    line-height: 1.15;
+    line-height: 1.2;
   }
   .atlas-bottom .atlas-latest .record-row > .record-thumb {
     width: 5.5rem;
