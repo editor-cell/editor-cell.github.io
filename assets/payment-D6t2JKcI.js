@@ -1,0 +1,1 @@
+import{r as e}from"./pages-LPCqb94x.js";var t=e;export{t as component};
