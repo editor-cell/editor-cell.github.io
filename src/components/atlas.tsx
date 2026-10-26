@@ -13,13 +13,12 @@ import { CARDS } from "@/lib/seed";
 import { formatDate, safeHttpUrl, storyTitle } from "@/lib/text";
 import type { Lang, Source, StoryCard as Story, Theme } from "@/lib/types";
 import { useMostRead } from "@/lib/reads";
-import { MediaStrip } from "@/components/videos";
 import { DesktopFront } from "@/components/desktop-front";
 import { useLang } from "@/lib/use-lang";
 
 /**
  * Section pages keep the lead reading and ruled columns. The front page has an
- * independent desktop magazine grid and the existing phone list.
+ * responsive magazine composition from the selected desktop and phone references.
  */
 
 function Meta({ story, lang, section }: { story: Story; lang: Lang; section: Theme | "all" }) {
@@ -253,92 +252,15 @@ function cellSummary(story: Story, lang: Lang): string {
   return oneSentence(dek || story.locales[lang].lead);
 }
 
-/**
- * The front page, as an atlas page. The lead: its words on the left, its picture on the
- * right (the picture first on a phone). Under it two cards and a column of three short
- * items; on a phone each of them is a row with a small picture. Then the chain of documents
- * the lead rests on, and every other reading as records whose depth the reader sets.
- */
+/** The phone keeps the same lead, latest articles, feature and issue as the desktop.
+ * The two desktop side stories join the phone archive, so each reading appears once. */
 function HomeGrid({ stories, lang }: { stories: Story[]; lang: Lang }) {
-  const dir = langMeta[lang].dir;
-  // Cards always show their picture and summary, including for returning readers.
-  const depth = 2;
-  // One box per rank of the issue: 1 the lead, 2 the large middle card, 3 the card at the
-  // left, 4–8 the short readings (4 and 7 at the left, 5, 6 and 8 at the right). Rank 3 is
-  // first in the page so the grid keeps its columns; on a phone rank 2 is moved up again.
-  const [lead, ...rest] = stories;
-  if (!lead) return null;
-  const main = rest[0];
-  const side = rest[1];
-  const briefs = rest.slice(2, 7);
-  // Keep the existing phone ordering and its hand-off to the archive.
-  const under = briefs.length === 5 ? rest[7] : undefined;
-  const records = rest.slice(7);
-  const words = HOME_WORDS[lang];
-  const leadSummary = cellSummary(lead, lang);
-  const arrow = dir === "rtl" ? "←" : "→";
+  if (!stories.length) return null;
+  const phoneRecords = stories.filter((_, index) => index === 1 || index === 2 || index >= 7);
   return (
-    <div dir={dir}>
+    <div dir={langMeta[lang].dir}>
       <DesktopFront stories={stories} lang={lang} />
-      <div className="magazine-mobile">
-        <div className="px-5 md:px-8">
-          <IssueLine stories={stories} lang={lang} />
-          <Link
-            {...readLink(lang, lead.id)}
-            className="atlas-own magazine-lead group grid grid-cols-1 pt-4 pb-5 md:gap-[clamp(1.5rem,2.6vw,2.4rem)] md:py-6"
-          >
-            {lead.image ? (
-              <div className="md:order-2" data-lead-picture>
-                <CardPicture
-                  story={lead}
-                  lang={lang}
-                  ratio="aspect-[4/3] md:aspect-[3/2]"
-                  sizes={imageSizes("40vw", "100vw")}
-                  eager
-                />
-              </div>
-            ) : null}
-            <div className="lead-text flex min-w-0 flex-col justify-center pt-4 md:order-1 md:justify-start md:pt-1 md:pb-0">
-              <Kicker story={lead} lang={lang} />
-              <h2 className="paper-title atlas-lead-title font-extrabold mt-2.5 text-ink decoration-2 underline-offset-[0.12em] group-hover:underline md:mt-4">
-                {storyTitle(lead, lang)}
-              </h2>
-              {leadSummary ? (
-                <p className="font-body mt-3 max-w-[36rem] text-pretty text-[1.075rem] leading-[1.35] text-ink md:mt-5 md:text-[1.2rem] md:leading-[1.3]">
-                  {leadSummary}
-                </p>
-              ) : null}
-              <span className="atlas-more atlas-more-rule mt-3 md:mt-6">
-                {words.readFull} <span aria-hidden="true">{arrow}</span>
-              </span>
-            </div>
-          </Link>
-        </div>
-
-        {rest.length ? <h2 className="sr-only">{words.thisIssue}</h2> : null}
-        {main ? (
-          <div className="magazine-mobile records atlas-top px-5 md:px-8" data-depth={depth} suppressHydrationWarning>
-            {side ? <TopCard story={side} lang={lang} className="atlas-card-side" /> : null}
-            <div className="atlas-mid">
-              <TopCard story={main} lang={lang} className="atlas-card-main" />
-              {under ? <TopCard story={under} lang={lang} className="atlas-card-under" /> : null}
-            </div>
-            {briefs.length ? (
-              <div className="atlas-briefs">
-                {briefs.map((story, index) => (
-                  <Brief key={story.id} story={story} lang={lang} className={`atlas-brief-slot-${index + 1}`} />
-                ))}
-              </div>
-            ) : null}
-          </div>
-        ) : null}
-
-        {/* Videos: one row between the newest issue and the archive. It stands apart from the
-            readings, so the depth buttons above leave it as it is. */}
-        <MediaStrip lang={lang} />
-      </div>
-
-      <Records stories={records} desktopStories={stories.slice(7)} lang={lang} depth={depth} />
+      <Records stories={phoneRecords} desktopStories={stories.slice(7)} lang={lang} depth={2} />
     </div>
   );
 }
@@ -1008,8 +930,8 @@ function planRecords(stories: Story[], mostRead: Story[], desk: boolean): Record
   // still holds enough readings to fill the boxes (no reading stands in two columns side by
   // side); otherwise the column keeps the next readings under "More readings" and the
   // numbered column beside it reads "Earlier readings".
-  const inLatest = new Set(desk ? latest.map((s) => s.id) : []);
-  const read = mostRead.filter((story) => !inLatest.has(story.id));
+  const alreadyShown = new Set([...strip, ...latest].map((story) => story.id));
+  const read = mostRead.filter((story) => !alreadyShown.has(story.id));
   const counted = read.length >= deepCount;
   const deep = counted ? read.slice(0, deepCount) : after.slice(0, deepCount);
   const inDeep = new Set(deep.map((s) => s.id));
@@ -1030,7 +952,7 @@ function Records({
   stories: Story[];
   lang: Lang;
   depth: Depth;
-  /** The reference desktop layout shows seven lead readings; the phone keeps its own list. */
+  /** The phone moves the two desktop side stories into its archive. */
   desktopStories?: Story[];
 }) {
   // The count covers the whole site; most of the top readings sit in the newest issue above,

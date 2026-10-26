@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { OrbisLockup } from "@/components/orbis-lockup";
 import { CardListen } from "@/components/read-time";
+import { imageSizes } from "@/lib/breakpoints";
 import { imageSet } from "@/lib/image-set";
 import { imageCaption } from "@/lib/editorial";
 import { langMeta, useCopy } from "@/lib/i18n";
@@ -46,7 +47,7 @@ function FrontAction({ story, lang }: { story: StoryCard; lang: Lang }) {
 function FrontStory({ story, lang, kind }: { story: StoryCard; lang: Lang; kind: "side" | "latest" | "feature" }) {
   return (
     <Link {...readLink(lang, story.id)} className={`front-story front-story-${kind} group`}>
-      {story.image ? <div className="front-story-picture"><FrontPicture story={story} lang={lang} sizes={kind === "feature" ? "34vw" : "9vw"} /></div> : null}
+      {story.image ? <div className="front-story-picture"><FrontPicture story={story} lang={lang} sizes={imageSizes(kind === "feature" ? "34vw" : "9vw", kind === "feature" ? "calc(100vw - 40px)" : "25vw")} /></div> : null}
       <div className="front-story-copy">
         <FrontCategory story={story} lang={lang} />
         <h3 className="paper-title group-hover:underline underline-offset-4">{storyTitle(story, lang)}</h3>
@@ -70,7 +71,7 @@ function CurrentIssue({ stories, lang }: { stories: StoryCard[]; lang: Lang }) {
       <div className="front-issue-body">
         <div className="front-issue-cover" aria-hidden="true">
           <div className="front-cover-brand"><OrbisLockup className="w-full" mottoClassName="mt-2 text-[0.5rem]" /></div>
-          <FrontPicture story={lead} lang={lang} sizes="13vw" />
+          <FrontPicture story={lead} lang={lang} sizes={imageSizes("13vw", "32vw")} />
         </div>
         <div className="front-issue-copy">
           <h3 className="paper-title">{issue === undefined ? words.selection : words.issue.replace("{n}", String(issue))}</h3>
@@ -98,7 +99,7 @@ function FrontVideo({ lang }: { lang: Lang }) {
       <h2 id="front-videos" className="front-section-heading"><Link {...mediaLink(lang)}>{words.videos}</Link></h2>
       <Link {...videoLink(lang, video.id)} className="front-video-card group">
         <div className="front-video-picture">
-          {video.poster ? <img src={video.poster} {...imageSet(video.poster, "14vw")} alt="" width={1600} height={900} loading="lazy" decoding="async" /> : null}
+          {video.poster ? <img src={video.poster} {...imageSet(video.poster, imageSizes("14vw", "36vw"))} alt="" width={1600} height={900} loading="lazy" decoding="async" /> : null}
           <span className="front-video-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" /></svg></span>
         </div>
         <div>
@@ -111,7 +112,7 @@ function FrontVideo({ lang }: { lang: Lang }) {
   );
 }
 
-/** Desktop composition from the owner's reference; story order comes from frontOrder. */
+/** Shared content for the owner's desktop and phone magazine references. */
 export function DesktopFront({ stories, lang }: { stories: StoryCard[]; lang: Lang }) {
   const [lead] = stories;
   if (!lead) return null;
@@ -126,7 +127,7 @@ export function DesktopFront({ stories, lang }: { stories: StoryCard[]; lang: La
             <p className="front-summary">{summary(lead, lang)}</p>
             <FrontAction story={lead} lang={lang} />
           </div>
-          {lead.image ? <div className="front-lead-picture"><FrontPicture story={lead} lang={lang} sizes="49vw" eager /></div> : null}
+          {lead.image ? <div className="front-lead-picture"><FrontPicture story={lead} lang={lang} sizes={imageSizes("49vw", "calc(100vw - 40px)")} eager /></div> : null}
         </Link>
         <div className="front-side">
           {stories.slice(1, 3).map(story => <FrontStory key={story.id} story={story} lang={lang} kind="side" />)}

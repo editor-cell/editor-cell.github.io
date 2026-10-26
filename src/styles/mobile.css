@@ -12,9 +12,6 @@
 }
 
 @media (--orbis-phone) {
-  .desktop-front {
-    display: none;
-  }
   .band-row {
     gap: 0.5rem;
     min-width: 0;
