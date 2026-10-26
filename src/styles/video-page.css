@@ -62,7 +62,7 @@
 
 @media (--orbis-large) {
   .video-watch-grid { grid-template-columns: minmax(0, 2.45fr) minmax(0, 1fr); gap: 1.5rem; }
-  .video-related { display: block; border-top: 0; border-inline-start: 1px solid var(--color-rule); margin-top: 0; padding: 0; padding-inline-start: 1.5rem; }
+  .video-related { display: block; border-top: 0; border-inline-start: 1px solid var(--color-ink); margin-top: 0; padding: 0; padding-inline-start: 1.5rem; }
   .video-related > section + section { border-top: 1px solid var(--color-ink); margin-top: 1.5rem; padding-top: 1rem; }
   .video-related-card, .video-related > section:only-child .video-related-card { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 1rem; }
   .video-related-copy > .paper-title { font-size: clamp(1.05rem, 1.45vw, 1.45rem); }
