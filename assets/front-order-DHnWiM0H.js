@@ -1,0 +1,1 @@
+function e(e){let t=(e,t)=>t.date.localeCompare(e.date);return[...e].sort((e,n)=>{let r=e.issue??-1/0,i=n.issue??-1/0;if(r!==i)return i-r;if(e.issue===void 0)return t(e,n);let a=e.rank??1/0,o=n.rank??1/0;return a===o?t(e,n):a-o})}export{e as t};

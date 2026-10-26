@@ -1,1 +1,0 @@
-import{an as e}from"./shell-SLrNUzmo.js";import{t}from"./legal-ApbKC9vL.js";var n=e(),r=()=>(0,n.jsx)(t,{page:`terms`});export{r as component};

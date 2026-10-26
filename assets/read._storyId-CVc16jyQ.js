@@ -1,1 +1,0 @@
-import{an as e}from"./shell-SLrNUzmo.js";import{r as t}from"./index-CpiDcki5.js";import{t as n}from"./reading-CUZNGOM6.js";var r=e();function i(){return(0,r.jsx)(n,{story:t.useLoaderData()})}export{i as component};
