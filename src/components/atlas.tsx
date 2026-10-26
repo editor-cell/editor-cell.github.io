@@ -283,17 +283,15 @@ function HomeGrid({ stories, lang }: { stories: Story[]; lang: Lang }) {
         <IssueLine stories={stories} lang={lang} />
         <Link
           {...readLink(lang, lead.id)}
-          className={`atlas-own magazine-lead group grid grid-cols-1 pt-4 pb-5 md:gap-[clamp(1.5rem,2.6vw,2.4rem)] md:py-6 ${
-            lead.image ? "md:grid-cols-[minmax(0,0.92fr)_minmax(0,1.65fr)]" : ""
-          }`}
+          className="atlas-own magazine-lead group grid grid-cols-1 pt-4 pb-5 md:gap-[clamp(1.5rem,2.6vw,2.4rem)] md:py-6"
         >
           {lead.image ? (
             <div className="md:order-2" data-lead-picture>
               <CardPicture
                 story={lead}
                 lang={lang}
-                ratio="aspect-[4/3] md:aspect-[3/2] md:h-full md:min-h-[22rem]"
-                sizes={imageSizes("64vw", "100vw")}
+                ratio="aspect-[4/3] md:aspect-[3/2]"
+                sizes={imageSizes("40vw", "100vw")}
                 eager
               />
             </div>
@@ -352,18 +350,18 @@ function HomeGrid({ stories, lang }: { stories: Story[]; lang: Lang }) {
   );
 }
 
-/** Desktop cards keep complete summaries and use the existing links and image data. */
+/** Desktop cards lead with the words; small pictures support each heading. */
 function MagazineCard({ story, lang, featured = false }: { story: Story; lang: Lang; featured?: boolean }) {
   const summary = cellSummary(story, lang);
   return (
     <Link {...readLink(lang, story.id)} className={`magazine-card group ${featured ? "magazine-card-featured" : ""}`}>
-      {story.image ? <CardPicture story={story} lang={lang} ratio="aspect-[3/2]" sizes={imageSizes(featured ? "48vw" : "31vw", "100vw")} /> : null}
-      <div className="magazine-copy">
+      <div className="magazine-heading">
         <Kicker story={story} lang={lang} />
         <h3 className="paper-title magazine-title group-hover:underline underline-offset-[0.14em]">{storyTitle(story, lang)}</h3>
-        {summary ? <p className="font-body magazine-summary">{summary}</p> : null}
-        <span className="atlas-more">{HOME_WORDS[lang].readMore} <span aria-hidden="true">{langMeta[lang].dir === "rtl" ? "←" : "→"}</span></span>
       </div>
+      {story.image ? <CardPicture story={story} lang={lang} ratio="aspect-[4/3]" sizes={imageSizes(featured ? "14vw" : "9vw", "100vw")} /> : null}
+      {summary ? <p className="font-body magazine-summary">{summary}</p> : null}
+      <span className="atlas-more">{HOME_WORDS[lang].readMore} <span aria-hidden="true">{langMeta[lang].dir === "rtl" ? "←" : "→"}</span></span>
     </Link>
   );
 }
