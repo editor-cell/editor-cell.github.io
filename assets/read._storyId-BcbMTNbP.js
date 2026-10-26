@@ -1,1 +1,0 @@
-import{cn as e}from"./shell-D_3fM3p1.js";import{r as t}from"./index-DFLoy_Aa.js";import{t as n}from"./reading-nZNodI3E.js";var r=e();function i(){return(0,r.jsx)(n,{story:t.useLoaderData()})}export{i as component};
