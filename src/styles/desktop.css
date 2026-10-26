@@ -860,3 +860,93 @@
     letter-spacing: normal;
   }
 }
+
+/* The archive is a compact index, without body excerpts or equal-height fillers. */
+@media (--orbis-desktop) {
+  .atlas-bottom {
+    align-items: start;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 1.5rem;
+  }
+  .atlas-bottom:has(> .atlas-popular) > .atlas-numbered {
+    grid-column: 1 / -1;
+    padding-inline-start: 0;
+    border-inline-start: 0;
+    border-top: 1px solid var(--color-line);
+    padding-top: 1rem;
+  }
+  .atlas-bottom > .atlas-col,
+  .atlas-bottom .atlas-deep-list,
+  .atlas-bottom .atlas-deep-list > li,
+  .atlas-bottom .atlas-ranked,
+  .atlas-bottom .atlas-ranked > li,
+  .atlas-bottom > .atlas-latest > ol,
+  .atlas-bottom > .atlas-latest > ol > li {
+    display: block;
+    flex: none;
+  }
+  .atlas-bottom.records .atlas-fill {
+    display: none;
+  }
+  .atlas-bottom .deep-card {
+    display: grid;
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+    column-gap: 1rem;
+    align-content: start;
+    flex: none;
+  }
+  .atlas-bottom .deep-card > * {
+    grid-column: 2;
+    min-width: 0;
+  }
+  .atlas-bottom .deep-card:not(:has(> .deep-pic)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .atlas-bottom .deep-card:not(:has(> .deep-pic)) > * {
+    grid-column: 1;
+  }
+  .atlas-bottom .deep-card > .deep-pic {
+    grid-column: 1;
+    grid-row: 1 / 5;
+    align-self: start;
+  }
+  .atlas-bottom .deep-pic img {
+    aspect-ratio: 4 / 3;
+    margin-bottom: 0;
+  }
+  .atlas-bottom .deep-card > .paper-title {
+    font-size: 1.3rem;
+    line-height: 1.15;
+  }
+  .atlas-bottom .atlas-latest .record-row > .record-thumb {
+    width: 5.5rem;
+    aspect-ratio: 4 / 3;
+  }
+  .atlas-bottom .ranked-body {
+    flex-direction: row;
+    gap: 0.75rem;
+  }
+  .atlas-bottom .ranked-body > .ranked-pic {
+    flex: none;
+    width: 5rem;
+    aspect-ratio: 4 / 3;
+    align-self: start;
+  }
+  .atlas-bottom .ranked-body > .ranked-text {
+    flex: 1;
+    width: auto;
+  }
+}
+
+@media (--orbis-large) {
+  .atlas-bottom {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 0.7fr);
+  }
+  .atlas-bottom:has(> .atlas-popular) > .atlas-numbered {
+    grid-column: auto;
+    padding-inline-start: 1.5rem;
+    border-inline-start: 1px solid var(--color-line);
+    border-top: 0;
+    padding-top: 0;
+  }
+}

@@ -1,5 +1,20 @@
 /* Mobile rules stay inside their own width queries. */
 
+/* Cormorant needs a stronger size and weight distinction on narrow reading lists. */
+@media (--orbis-phone) {
+  main .paper-title,
+  main .paper-title.font-extrabold {
+    font-weight: 700;
+  }
+  .atlas-card-title,
+  .record-title,
+  .section-list-text > .paper-title,
+  .ranked-text > .paper-title {
+    font-size: 1.375rem;
+    line-height: 1.12;
+  }
+}
+
 @media (--orbis-phone) {
   .magazine-desktop {
     display: none;
