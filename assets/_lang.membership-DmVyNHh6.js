@@ -1,1 +1,0 @@
-import{t as e}from"./pages-BS0btM7n.js";var t=e;export{t as component};
