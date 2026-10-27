@@ -79,7 +79,7 @@ function CurrentIssue({ stories, lang }: { stories: StoryCard[]; lang: Lang }) {
           <p>{words.count.replace("{n}", String(selection.length))}</p>
           <p className="front-issue-topics">{topics}</p>
           <details className="front-issue-contents">
-            <summary>{words.contents}<span aria-hidden="true">{langMeta[lang].dir === "rtl" ? "←" : "→"}</span></summary>
+            <summary>{words.contents}<span aria-hidden="true">↓</span></summary>
             <ol>
               {selection.map(story => <li key={story.id}><Link {...readLink(lang, story.id)}>{storyTitle(story, lang)}</Link></li>)}
             </ol>

@@ -22,8 +22,8 @@
   .front-action .front-time { color: var(--color-muted); font-size: 0.54rem; letter-spacing: 0.05em; }
   .front-section-heading {
     margin-bottom: 0.65rem; border-bottom: 1px solid var(--color-ink); padding: 0.65rem 0 0.45rem;
-    font-family: var(--font-display); font-size: 1.2rem; font-weight: 400; line-height: 1.2;
-    letter-spacing: 0; text-transform: uppercase; color: var(--color-pine);
+    font-family: var(--font-display); font-size: 0.85rem; font-weight: 500; line-height: 1.35;
+    letter-spacing: 0.04em; text-transform: uppercase; color: var(--color-pine);
   }
   .front-latest, .front-feature, .front-issue, .front-video { min-width: 0; border-top: 1px solid var(--color-ink); }
   .front-story-latest { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2.9fr); gap: 1rem; padding-bottom: 0.8rem; }
@@ -38,20 +38,22 @@
   .front-feature { padding-block: 0.8rem 1rem; }
   .front-story-feature { display: flex; flex-direction: column; gap: 0.5rem; }
   .front-story-feature .paper-title { font-size: clamp(1.65rem, 7vw, 2.1rem); }
-  .front-issue-body { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); align-items: start; gap: 1.25rem; padding: 0.15rem 0 1rem; }
-  .front-issue-cover { border: 1px solid var(--color-line); background: var(--color-paper); box-shadow: 3px 3px 7px #0002; }
+  .front-issue-body { display: grid; grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr); align-items: stretch; gap: 1rem; padding: 0.15rem 0 1rem; }
+  .front-issue-cover { align-self: start; border: 1px solid var(--color-line); background: var(--color-paper); box-shadow: 3px 3px 7px #0002; }
   .front-cover-brand { padding: 0.7rem 0.5rem; text-align: center; }
   .front-cover-brand > span { width: 100%; }
   .front-issue-cover > img { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; }
-  .front-issue-copy { min-width: 0; }
+  .front-issue-copy { display: flex; flex-direction: column; min-width: 0; }
   .front-issue-copy > .paper-title { font-size: 1.15rem; font-weight: 500; line-height: 1.2; }
   .front-issue-copy > p { margin-top: 0.5rem; font-size: 0.95rem; line-height: 1.3; }
-  .front-issue-contents { margin-top: 0.7rem; }
+  .front-issue-contents { min-width: 0; margin-top: auto; padding-top: 0.65rem; }
   .front-issue-contents > summary {
     display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
-    list-style: none; cursor: pointer; background: var(--color-ink); color: var(--color-paper);
-    min-height: 2.75rem; padding: 0.65rem; font-size: 0.88rem; line-height: 1.3;
+    list-style: none; cursor: pointer; color: var(--color-ink);
+    min-height: 2.75rem; padding: 0.55rem 0; font-size: 0.85rem; line-height: 1.3;
   }
+  .front-issue-contents > summary:hover { color: var(--color-pine); }
+  .front-issue-contents[open] > summary > span { transform: rotate(180deg); }
   .front-issue-contents > summary::-webkit-details-marker { display: none; }
   .front-issue-contents > summary:focus-visible { outline: 2px solid var(--color-pine); outline-offset: 3px; }
   .front-issue-contents ol { margin-top: 0.8rem; padding: 0; list-style: none; font-size: 0.95rem; line-height: 1.35; }
