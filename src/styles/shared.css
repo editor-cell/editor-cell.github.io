@@ -12,7 +12,7 @@
   --color-mist: #d4d4d4;
   --color-line: #e6e6e6;
   --color-rule: #9a9a9a;
-  --color-pine: #8b5964;
+  --color-pine: #bf5700;
   --color-highlight: #ececee;
   --color-panel: #0c0c0c;
   /* The test-period line under the band: one tone darker than the paper. */
@@ -36,7 +36,7 @@ html:not([data-look]) header .band-row {
 /* Second scheme: dark, for reading in a dim room. It mirrors the classic one: the band
    stays the darkest thing on the page, the paper is a soft charcoal rather than pure black,
    the text an off-white rather than pure white (less glare on long readings), and the
-   classic burgundy accents are lifted to a light rose so they still read on dark paper. */
+   classic orange accents are lifted to a pale orange so they still read on dark paper. */
 html[data-look="night"] {
   color-scheme: dark;
   --color-paper: #141414;
@@ -46,7 +46,7 @@ html[data-look="night"] {
   --color-mist: #3a3a3a;
   --color-line: #262626;
   --color-rule: #4a4a4a;
-  --color-pine: #d3949f;
+  --color-pine: #e6a16f;
   --color-highlight: #2b2b2b;
   --color-panel: #050505;
   --color-shade: #0d0d0d;
@@ -850,7 +850,7 @@ a.group:not(.atlas-own):has(.paper-title) > div.flex.flex-col > p.tabular-nums {
     --color-mist: #cccccc;
     --color-line: #d9d9d9;
     --color-rule: #999999;
-    --color-pine: #6e2432;
+    --color-pine: #bf5700;
     --color-highlight: #ffffff;
     --color-panel: #ffffff;
     --color-shade: #ffffff;
@@ -1188,7 +1188,7 @@ a.group:not(.atlas-own):has(.paper-title) > div.flex.flex-col > p.tabular-nums {
 }
 
 /* Pointing at a video (strip, list of videos): the still leans in a little, the ring warms
-   to the burgundy and grows, the title takes the accent colour. Nothing moves outside its
+   to the accent colour and grows, the title takes the same colour. Nothing moves outside its
    box, so the strip and the list keep their layout; a phone, which has no pointer, sees
    none of it. */
 @media (hover: hover) {
@@ -1270,7 +1270,7 @@ button.play-disc:active {
 }
 
 /* The video player. A still is dark in every scheme, so its colours are fixed: white
-   controls on a soft shade rising from the foot of the picture, the accent burgundy for the
+   controls on a soft shade rising from the foot of the picture, the accent orange for the
    start button and the part already seen. */
 .film {
   box-shadow: 0 8px 32px rgb(12 12 12 / 0.08);
@@ -1715,8 +1715,8 @@ button.play-disc:active {
 }
 
 /* ---------- The listening panel at the foot of the screen (October 2026) ----------
-   A black band like the masthead, in every scheme: cream type, the accent burgundy for the
-   play button and a lighter rose for the part already heard, so it reads on black. */
+   A black band like the masthead, in every scheme: cream type, a deeper orange for the
+   play button and a lighter orange for the part already heard, so it reads on black. */
 .dock {
   --color-ink: #f4efe6;
   --color-paper: #0c0c0c;
@@ -1725,14 +1725,14 @@ button.play-disc:active {
   --color-rule: #5a5a5a;
   --color-line: rgb(255 255 255 / 0.14);
   --color-mist: rgb(255 255 255 / 0.25);
-  --color-pine: #d07a8a;
+  --color-pine: #e19052;
   border-top: 1px solid #262626;
   background: #0c0c0c;
   color: #f4efe6;
 }
 
 .dock .play-disc {
-  background: #7a2a3a;
+  background: #9d4800;
   color: #f4efe6;
 }
 
