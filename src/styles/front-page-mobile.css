@@ -65,7 +65,7 @@
   .front-video .front-section-heading { border-bottom: 0; margin-bottom: 0.5rem; }
   .front-video-card { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 1.2rem; }
   .front-video-card > div { min-width: 0; }
-  .front-video-picture { position: relative; align-self: start; min-height: 4.5rem; background: var(--color-ink); }
+  .front-video-picture { position: relative; align-self: end; min-height: 4.5rem; background: var(--color-ink); }
   .front-video-picture img { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
   .front-video-play { position: absolute; inset: 0; display: grid; place-items: center; }
   .front-video-play svg { width: 2rem; height: 2rem; padding: 0.4rem; border-radius: 50%; background: #fff; fill: var(--color-pine); }

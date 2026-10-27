@@ -157,7 +157,7 @@
   .front-video { border-top: 1px solid var(--color-ink); padding-top: 0.6rem; }
   .front-video .front-section-heading { border-bottom: 0; margin-bottom: 0.6rem; padding-bottom: 0; }
   .front-video-card { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 1rem; }
-  .front-video-picture { position: relative; align-self: start; min-height: 5rem; background: var(--color-ink); }
+  .front-video-picture { position: relative; align-self: end; min-height: 5rem; background: var(--color-ink); }
   .front-video-picture img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
   .front-video-play { position: absolute; inset: 0; display: grid; place-items: center; }
   .front-video-play svg { width: 2.4rem; height: 2.4rem; padding: 0.45rem; border-radius: 50%; background: #fff; fill: var(--color-pine); }

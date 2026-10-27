@@ -28,6 +28,7 @@
   }
   .band-reader > .band-brand {
     justify-self: center;
+    padding-block: 0.3rem;
   }
   .band-row > .band-brand {
     flex-shrink: 1;
@@ -44,6 +45,13 @@
   }
   .band-row .masthead-motto {
     font-size: clamp(0.625rem, 3.2vw, 0.8rem);
+  }
+  .band-reader > .band-brand > span {
+    width: 7.5rem;
+  }
+  .band-reader .masthead-motto {
+    margin-top: 0.25rem;
+    font-size: 0.6875rem;
   }
 }
 
