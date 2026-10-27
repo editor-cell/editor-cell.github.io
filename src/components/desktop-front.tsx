@@ -61,29 +61,29 @@ function FrontStory({ story, lang, kind }: { story: StoryCard; lang: Lang; kind:
 function CurrentIssue({ stories, lang }: { stories: StoryCard[]; lang: Lang }) {
   const lead = stories[0];
   const words = WORDS[lang];
-  const copy = useCopy(lang);
   const issue = lead.issue;
   const selection = issue === undefined ? stories.slice(0, 9) : stories.filter(story => story.issue === issue);
-  const topics = [...new Set(selection.map(story => copy.themes[story.theme]))].slice(0, 3).join(" · ");
   return (
     <section className="front-issue" aria-labelledby="front-current-issue">
       <h2 id="front-current-issue" className="front-section-heading">{words.current}</h2>
       <div className="front-issue-body">
         <div className="front-issue-cover" aria-hidden="true">
-          <div className="front-cover-brand"><OrbisLockup className="w-full" mottoClassName="mt-2 text-[0.5rem]" /></div>
+          <div className="front-cover-brand"><OrbisLockup className="w-full" mottoClassName="mt-1.5 text-[0.45rem]" /></div>
           <FrontPicture story={lead} lang={lang} sizes={imageSizes("13vw", "32vw")} />
         </div>
         <div className="front-issue-copy">
           <h3 className="paper-title">{issue === undefined ? words.selection : words.issue.replace("{n}", String(issue))}</h3>
           {issue !== undefined ? <p className="front-issue-date">{formatDate(lead.date, lang)}</p> : null}
           <p>{words.count.replace("{n}", String(selection.length))}</p>
-          <p className="front-issue-topics">{topics}</p>
-          <details className="front-issue-contents">
-            <summary>{words.contents}<span aria-hidden="true">↓</span></summary>
-            <ol>
-              {selection.map(story => <li key={story.id}><Link {...readLink(lang, story.id)}>{storyTitle(story, lang)}</Link></li>)}
-            </ol>
-          </details>
+          <Link {...readLink(lang, lead.id)} className="front-issue-featured">{storyTitle(lead, lang)}</Link>
+          {selection.length > 1 ? (
+            <details className="front-issue-contents">
+              <summary>{words.contents}<span aria-hidden="true">↓</span></summary>
+              <ol>
+                {selection.slice(1).map(story => <li key={story.id}><Link {...readLink(lang, story.id)}>{storyTitle(story, lang)}</Link></li>)}
+              </ol>
+            </details>
+          ) : null}
         </div>
       </div>
     </section>
