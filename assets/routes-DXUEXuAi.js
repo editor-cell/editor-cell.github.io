@@ -1,1 +1,0 @@
-import{n as e}from"./atlas-CgiMp_as.js";var t=e;export{t as component};
