@@ -110,7 +110,7 @@
     padding: 0.45rem 0 0.6rem;
     font-family: var(--font-display);
     font-size: clamp(0.9rem, 1.1vw, 1rem);
-    font-weight: 400;
+    font-weight: 300;
     line-height: 1.35;
     letter-spacing: 0.04em;
     text-transform: uppercase;
