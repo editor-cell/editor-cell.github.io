@@ -5,10 +5,6 @@ import { OrbisLockup } from "@/components/orbis-lockup";
 import { SearchBar } from "@/components/search-bar";
 import { SearchMark } from "@/components/search-mark";
 import { TRIAL, trialNote } from "@/lib/site";
-import { membersCopy } from "@/lib/members/copy";
-import { useMember } from "@/lib/members/session";
-import { paymentOn } from "@/lib/members/plans";
-import { pagesCopy } from "@/lib/members/pages-copy";
 import { LEGAL_PAGES, legalCopy } from "@/lib/legal-copy";
 import { searchCopy } from "@/lib/search";
 import { aboutCopy } from "@/lib/about-copy";
@@ -16,10 +12,8 @@ import { useFrameCopy } from "@/lib/frame-copy";
 import { langMeta, useCopy } from "@/lib/i18n";
 import {
   aboutLink,
-  accountLink,
   homeLink,
   legalLink,
-  memberPageLink,
   rememberLang,
   searchLink,
   sectionLink,
@@ -27,7 +21,7 @@ import {
 } from "@/lib/lang-path";
 import { useLibrary } from "@/lib/library";
 import { useLook } from "@/lib/look";
-import { LANGS, THEMES, type Lang, type Theme } from "@/lib/types";
+import { THEMES, type Lang, type Theme } from "@/lib/types";
 import { useLang } from "@/lib/use-lang";
 
 type Tools = {
@@ -96,11 +90,9 @@ export function Shell({
   layout?: "video";
 }) {
   const lang = useLang();
-  const signedIn = useMember().status === "in";
   const setPanelLang = useLibrary((s) => s.setLang);
   const navigate = useNavigate();
   const copy = useCopy(lang);
-  const frame = useFrameCopy(lang);
   const meta = langMeta[lang];
   const path = useRouterState({ select: (s) => s.location.pathname });
   const inPanel = path.startsWith("/panel");
@@ -293,112 +285,39 @@ export function Shell({
             </div>
           </div>
 
+          {/* The footer is the draft the owner approved (28 Oct 2026): the name and motto, and
+              three links. Sections, languages, joining and the newsletter live in the menu. */}
           <footer className="site-footer no-print bg-paper py-10 text-ink">
-            <div className="page-width px-5 md:px-8">
-              {/* Three columns spread to the edges: the language list ends at the right margin. */}
-              <div className="grid gap-8 md:flex md:justify-between md:gap-12">
-                <div className="footer-brand flex flex-col md:w-56">
-                  <Link
-                    {...homeLink(lang)}
-                    dir="ltr"
-                    className="inline-flex min-h-11 items-center gap-3 self-start text-ink"
-                  >
-                    <OrbisLockup className="h-[1.78rem]" mottoClassName="mt-[0.7rem] text-[0.75rem]" />
-                  </Link>
-                  <ul className="footer-brand-links flex flex-col">
-                    <li>
+            <div className="page-width flex flex-col items-center gap-6 px-5 text-center md:flex-row md:items-center md:justify-between md:px-8 md:text-start">
+              <Link
+                {...homeLink(lang)}
+                dir="ltr"
+                className="inline-flex min-h-11 items-center text-ink"
+              >
+                <OrbisLockup className="h-[1.78rem]" mottoClassName="mt-[0.7rem] text-[0.75rem]" />
+              </Link>
+              <nav aria-label={legalCopy(lang).footer}>
+                <ul className="flex flex-wrap justify-center gap-x-6">
+                  <li>
+                    <Link
+                      {...aboutLink(lang)}
+                      className="inline-flex min-h-11 items-center text-base text-ink underline-offset-4 hover:underline"
+                    >
+                      {aboutCopy(lang).title}
+                    </Link>
+                  </li>
+                  {LEGAL_PAGES.map((page) => (
+                    <li key={page}>
                       <Link
-                        {...aboutLink(lang)}
-                        className="inline-flex min-h-9 items-center self-start text-base text-ink hover:underline hover:underline-offset-4"
+                        {...legalLink(lang, page)}
+                        className="inline-flex min-h-11 items-center text-base text-ink underline-offset-4 hover:underline"
                       >
-                        {aboutCopy(lang).title}
+                        {legalCopy(lang)[page].title}
                       </Link>
                     </li>
-                    {(["membership", "newsletter"] as const).map((item) => (
-                      <li key={item}>
-                        {/* A signed-in member is past joining: the row leads to the account. */}
-                        {item === "membership" && signedIn ? (
-                          <Link
-                            {...accountLink(lang)}
-                            className="inline-flex min-h-9 items-center self-start text-base text-ink hover:underline hover:underline-offset-4"
-                          >
-                            {membersCopy(lang).account}
-                          </Link>
-                        ) : (
-                          <Link
-                            {...memberPageLink(lang, item)}
-                            className="inline-flex min-h-9 items-center self-start text-base text-ink hover:underline hover:underline-offset-4"
-                          >
-                            {item === "membership" && !paymentOn
-                              ? pagesCopy(lang).membership.menu
-                              : pagesCopy(lang)[item].title}
-                          </Link>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                  {/* No e-mail here: readers talk in the comments; the address stays only on
-                      the legal pages, where the privacy law asks for it. */}
-                </div>
-                <div>
-                  <h2 className="footer-heading">{copy.sections}</h2>
-                  <ul className="mt-4 grid w-fit grid-cols-2 gap-x-6">
-                    {THEMES.map((theme) => (
-                      <li key={theme}>
-                        <Link
-                          {...sectionLink(lang, theme)}
-                          className="inline-flex min-h-9 items-center text-base text-ink hover:underline hover:underline-offset-4"
-                        >
-                          {copy.themes[theme]}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <h2 className="footer-heading">{frame.languages}</h2>
-                  <ul className="mt-4 flex flex-col">
-                    {LANGS.map((code) => (
-                      <li key={code}>
-                        <button
-                          type="button"
-                          lang={langMeta[code].html}
-                          onClick={() => {
-                            setLang(code);
-                            window.scrollTo({ top: 0 });
-                          }}
-                          className={
-                            code === lang
-                              ? "inline-flex min-h-9 items-center text-base text-ink underline underline-offset-4"
-                              : "inline-flex min-h-9 items-center text-base text-ink hover:underline hover:underline-offset-4"
-                          }
-                        >
-                          {langMeta[code].name}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-              <div className="mt-10 flex flex-col gap-3 border-t border-line pt-6 text-sm text-ink md:flex-row md:items-center md:justify-between">
-                <p>
-                  © {new Date().getFullYear()} Orbis. {frame.rights}
-                </p>
-                <nav aria-label={legalCopy(lang).footer}>
-                  <ul className="flex flex-wrap gap-x-5">
-                    {LEGAL_PAGES.map((page) => (
-                      <li key={page}>
-                        <Link
-                          {...legalLink(lang, page)}
-                          className="inline-flex min-h-9 items-center text-ink hover:underline hover:underline-offset-4"
-                        >
-                          {legalCopy(lang)[page].title}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </nav>
-              </div>
+                  ))}
+                </ul>
+              </nav>
             </div>
           </footer>
         </div>
