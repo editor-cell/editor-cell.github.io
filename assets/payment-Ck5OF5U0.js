@@ -1,0 +1,1 @@
+import{r as e}from"./pages-C2G8TMfi.js";var t=e;export{t as component};
