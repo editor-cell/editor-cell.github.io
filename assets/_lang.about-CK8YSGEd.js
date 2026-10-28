@@ -1,0 +1,1 @@
+import{t as e}from"./about-DwzzNE15.js";var t=e;export{t as component};

@@ -1,1 +1,0 @@
-import{un as e}from"./shell-Cpx8J2zj.js";import{t}from"./legal-Jp0N9VSO.js";var n=e(),r=()=>(0,n.jsx)(t,{page:`terms`});export{r as component};

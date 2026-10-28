@@ -1,1 +1,0 @@
-import{t as e}from"./about-Dik9cR-h.js";var t=e;export{t as component};
