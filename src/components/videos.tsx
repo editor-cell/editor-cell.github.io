@@ -3,6 +3,7 @@ import { Bookmark, Check, Share2 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Film } from "@/components/film";
 import { announceStart } from "@/lib/listen";
+import { seekTo } from "@/lib/seek";
 import { useSavedVideos } from "@/lib/saved-videos";
 import { CARDS } from "@/lib/seed";
 import { frontOrder } from "@/lib/front-order";
@@ -299,9 +300,9 @@ export function VideoPage({ video }: { video: Video | null }) {
   function startAt(seconds: number) {
     const element = screen.current;
     if (!element) return;
-    element.currentTime = seconds;
     announceStart("film");
     void element.play().catch(() => {});
+    void seekTo(element, seconds, true);
   }
   return (
     <Shell layout="video">

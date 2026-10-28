@@ -1,6 +1,7 @@
 import { ChevronsLeft, ChevronsRight, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { AUDIO_EVENT, RATES, announceStart, fmt } from "@/lib/listen";
+import { seekTo } from "@/lib/seek";
 import type { Lang } from "@/lib/types";
 import { videoWords } from "@/lib/videos";
 
@@ -261,7 +262,7 @@ export function Film({
   function seek(value: number) {
     const el = film.current;
     if (!el) return;
-    el.currentTime = value;
+    void seekTo(el, value);
     setTime(value);
   }
 

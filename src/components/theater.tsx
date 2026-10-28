@@ -5,6 +5,7 @@ import { Film, type FilmCaption } from "@/components/film";
 import { Transcript } from "@/components/transcript";
 import { imageSet } from "@/lib/image-set";
 import { announceStart, fmt } from "@/lib/listen";
+import { seekTo } from "@/lib/seek";
 import type { Lang } from "@/lib/types";
 import { videoWords } from "@/lib/videos";
 
@@ -70,11 +71,11 @@ export function VideoStart({
   function playFrom(at?: number) {
     const el = screen.current;
     if (!el) return;
-    if (at !== undefined) el.currentTime = at;
     if (el.paused) {
       announceStart("film");
       void el.play().catch(() => {});
     }
+    if (at !== undefined) void seekTo(el, at, true);
   }
 
   const stop = useCallback(() => {
