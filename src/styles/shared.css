@@ -2,9 +2,9 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: "Source Serif 4", "Noto Naskh Arabic", Georgia, serif;
+  --font-display: "DM Serif Display", "Noto Naskh Arabic", Georgia, serif;
   /* Upright, restrained headings share the text's proportions at a medium weight. */
-  --font-body: "Source Serif 4", "Noto Naskh Arabic", Georgia, serif;
+  --font-body: "Tinos", "Times New Roman", "Noto Naskh Arabic", serif;
   --color-paper: #ffffff;
   --color-sheet: #ffffff;
   --color-ink: #0c0c0c;
@@ -12,7 +12,7 @@
   --color-mist: #d4d4d4;
   --color-line: #e6e6e6;
   --color-rule: #9a9a9a;
-  --color-pine: #9f3b00;
+  --color-pine: #b3261e;
   --color-highlight: #ececee;
   --color-panel: #0c0c0c;
   /* The test-period line under the band: one tone darker than the paper. */
@@ -40,7 +40,7 @@ html[data-look="night"] {
   --color-mist: #3a3a3a;
   --color-line: #262626;
   --color-rule: #4a4a4a;
-  --color-pine: #d46200;
+  --color-pine: #e5534b;
   --color-highlight: #2b2b2b;
   --color-panel: #050505;
   --color-shade: #0d0d0d;
@@ -857,7 +857,7 @@ a.group:not(.atlas-own):has(.paper-title) > div.flex.flex-col > p.tabular-nums {
     --color-mist: #cccccc;
     --color-line: #d9d9d9;
     --color-rule: #999999;
-    --color-pine: #9f3b00;
+    --color-pine: #b3261e;
     --color-highlight: #ffffff;
     --color-panel: #ffffff;
     --color-shade: #ffffff;
@@ -1732,14 +1732,14 @@ button.play-disc:active {
   --color-rule: #5a5a5a;
   --color-line: rgb(255 255 255 / 0.14);
   --color-mist: rgb(255 255 255 / 0.25);
-  --color-pine: #d46200;
+  --color-pine: #e5534b;
   border-top: 1px solid #262626;
   background: #0c0c0c;
   color: #f4efe6;
 }
 
 .dock .play-disc {
-  background: #9f3b00;
+  background: #b3261e;
   color: #f4efe6;
 }
 
@@ -2220,3 +2220,19 @@ form[role="search"]:focus-within {
 .band-reader :is(.frame-menu, .frame-search) { color: rgb(244 239 230 / 0.85); }
 .band-reader :is(.frame-menu, .frame-search):hover { color: #f4efe6; }
 .band-reader .masthead-motto { font-weight: 700; letter-spacing: 0.12em; }
+
+/* The footer is the masthead's black band again, cream on black in both looks
+   (the owner's approved draft, 28 Oct 2026). Its parts keep their roles: the colours they
+   read from are set for the band here. */
+.site-footer {
+  --color-paper: #0c0c0c;
+  --color-sheet: #0c0c0c;
+  --color-ink: #f4efe6;
+  --color-muted: #b9b3a8;
+  --color-rule: #5a5a5a;
+  --color-line: rgb(255 255 255 / 0.16);
+  --color-mist: rgb(255 255 255 / 0.25);
+  --color-pine: #e5534b;
+  background: var(--color-panel);
+  color: #f4efe6;
+}

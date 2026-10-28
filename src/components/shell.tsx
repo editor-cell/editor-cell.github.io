@@ -293,7 +293,7 @@ export function Shell({
             </div>
           </div>
 
-          <footer className="no-print bg-paper py-10 text-ink">
+          <footer className="site-footer no-print bg-paper py-10 text-ink">
             <div className="page-width px-5 md:px-8">
               {/* Three columns spread to the edges: the language list ends at the right margin. */}
               <div className="grid gap-8 md:flex md:justify-between md:gap-12">

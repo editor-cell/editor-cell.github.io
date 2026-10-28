@@ -19,7 +19,7 @@
   .if-kicker { display: flex; align-items: baseline; gap: 0.75rem; }
 
   .if-num {
-    font-family: var(--font-display); font-weight: 600; line-height: 1;
+    font-family: var(--font-display); font-weight: 400; line-height: 1;
     color: var(--color-pine); font-variant-numeric: lining-nums;
   }
   .if-kicker > .if-num { font-size: 3rem; }
@@ -28,7 +28,7 @@
     letter-spacing: 0.15em; text-transform: uppercase; line-height: 1.35;
   }
   .if-title {
-    margin: 0; font-family: var(--font-display); font-weight: 600;
+    margin: 0; font-family: var(--font-display); font-weight: 400;
     text-wrap: balance; overflow-wrap: break-word; color: var(--color-ink);
   }
   .if-title a:hover { text-decoration: underline; text-underline-offset: 0.12em; text-decoration-thickness: 1px; }
@@ -59,7 +59,7 @@
     display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
     padding-bottom: 0.7rem;
   }
-  .if-head-title { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 2.1rem; line-height: 1.2; }
+  .if-head-title { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 2.1rem; line-height: 1.2; }
   .if-head-link { flex: none; font-size: 0.95rem; font-weight: 700; text-decoration: underline; text-underline-offset: 0.2em; }
   .if-count {
     flex: none; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.16em;
@@ -123,7 +123,7 @@
   .if-shelf-item:hover .if-shelf-cover { transform: translateY(-3px); }
   .if-shelf-top { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.72rem; letter-spacing: 0.06em; }
   .if-shelf-name { font-family: "Bodoni Moda", "Times New Roman", serif; font-weight: 700; font-size: 0.9rem; letter-spacing: 0.18em; }
-  .if-shelf-question { font-family: var(--font-display); font-weight: 600; font-size: 1.2rem; line-height: 1.15; overflow-wrap: break-word; }
+  .if-shelf-question { font-family: var(--font-display); font-weight: 400; font-size: 1.2rem; line-height: 1.15; overflow-wrap: break-word; }
   .if-shelf-date { font-size: 0.72rem; color: #cfc8bb; }
   .if-shelf-label { color: var(--color-pine); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; }
 
@@ -131,7 +131,7 @@
   .if-more .if-head-title { font-size: 1.6rem; margin-bottom: 0.6rem; }
   .if-more-list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: 2rem; margin: 0; padding: 0; list-style: none; }
   .if-more-item { display: flex; flex-direction: column; gap: 0.35rem; padding: 1rem 0 1.2rem; border-top: 1px solid var(--color-line); }
-  .if-more-title { font-family: var(--font-display); font-weight: 600; font-size: 1.2rem; line-height: 1.2; overflow-wrap: break-word; }
+  .if-more-title { font-family: var(--font-display); font-weight: 400; font-size: 1.2rem; line-height: 1.2; overflow-wrap: break-word; }
   .if-more-item:hover .if-more-title { text-decoration: underline; }
   .if-more-note { font-size: 0.82rem; color: var(--color-muted); }
 
