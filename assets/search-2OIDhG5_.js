@@ -1,0 +1,1 @@
+import{t as e}from"./search-CY5Imxof.js";var t=e;export{t as component};

@@ -1,0 +1,1 @@
+import{n as e}from"./pages-B8DNsgl0.js";var t=e;export{t as component};
