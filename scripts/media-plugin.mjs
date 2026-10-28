@@ -22,12 +22,19 @@ export function mediaPlugin() {
     configureServer(server) {
       const media = siteServer(root);
       server.middlewares.use((req, res, next) => {
+        if (req.url?.split("?", 1)[0] === "/favicon.svg") req.url = "/images/icons/ora.svg";
         if (/^\/(images|audio|videos)\//.test(req.url ?? "")) media.emit("request", req, res);
         else next();
       });
     },
     generateBundle() {
       if (this.environment.name !== "client") return;
+      // Keep the conventional favicon address without a second source under public/.
+      this.emitFile({
+        type: "asset",
+        fileName: "favicon.svg",
+        source: readFileSync(join(root, "images/icons/ora.svg")),
+      });
       for (const dir of MEDIA_DIRS) {
         for (const path of files(join(root, dir))) {
           this.emitFile({

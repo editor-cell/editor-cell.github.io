@@ -109,8 +109,8 @@ export function normalizeFixtureThemes(dir) {
   }
 }
 
-/** Replaces the readings, videos and their media with the fixtures. */
-function placeFixtures(repo, dir) {
+/** Replaces reading/video content and media, keeping this code version's site icons. */
+export function placeFixtures(repo, dir) {
   const source = join(repo, FIXTURES);
   for (const kind of ["stories", "videos"]) {
     const target = join(dir, "content", kind);
@@ -122,9 +122,16 @@ function placeFixtures(repo, dir) {
     const folders = [kind, join("public", kind)].filter((folder) => existsSync(join(dir, folder)));
     if (!folders.length) folders.push(kind);
     for (const folder of folders) {
-      rmSync(join(dir, folder), { recursive: true, force: true });
-      mkdirSync(join(dir, folder), { recursive: true });
-      cpSync(join(source, "media", kind), join(dir, folder), { recursive: true });
+      const target = join(dir, folder);
+      const media = join(source, "media", kind);
+      mkdirSync(target, { recursive: true });
+      // Icons belong to the exported code, not the frozen readings. In particular,
+      // never replace the reference commit's icons with the working copy's icons.
+      const isSiteIcon = (name) => kind === "images" && name === "icons";
+      for (const name of readdirSync(target))
+        if (!isSiteIcon(name)) rmSync(join(target, name), { recursive: true, force: true });
+      for (const name of readdirSync(media))
+        if (!isSiteIcon(name)) cpSync(join(media, name), join(target, name), { recursive: true });
     }
   }
 }
