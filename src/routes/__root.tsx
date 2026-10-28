@@ -35,7 +35,7 @@ export const Route = createRootRoute({
       ...(TRIAL ? [{ name: "robots", content: "noindex, nofollow" }] : []),
     ],
     links: [
-      // The owner's black-and-white monogram, shared by tabs and home-screen shortcuts.
+      // The Bodoni O stays clear in tabs; home-screen icons leave more breathing room.
       {
         rel: "icon",
         type: "image/png",
@@ -52,7 +52,7 @@ export const Route = createRootRoute({
         rel: "icon",
         type: "image/png",
         sizes: "192x192",
-        href: "/images/icons/orbis-192.png?v=20261028-bodoni",
+        href: "/images/icons/orbis-192.png?v=20261028-bodoni-small",
       },
       { rel: "icon", type: "image/svg+xml", sizes: "any", href: "/images/icons/ora.svg?v=20261028-bodoni" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -61,8 +61,8 @@ export const Route = createRootRoute({
       // (FONT_BOOT below attaches it); until the faces arrive the page shows in Times.
       { rel: "preload", as: "style", href: FONTS },
       { rel: "stylesheet", href: appCss },
-      { rel: "manifest", href: "/__grok/orbis.webmanifest?v=20261028-bodoni" },
-      { rel: "apple-touch-icon", sizes: "180x180", href: "/images/icons/orbis-180.png?v=20261028-bodoni" },
+      { rel: "manifest", href: "/__grok/orbis.webmanifest?v=20261028-bodoni-small" },
+      { rel: "apple-touch-icon", sizes: "180x180", href: "/images/icons/orbis-180.png?v=20261028-bodoni-small" },
     ],
   }),
   component: RootDocument,
