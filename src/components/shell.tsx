@@ -55,7 +55,7 @@ export function FrameTools({ children }: { children: React.ReactNode }) {
         aria-controls="site-menu"
         aria-label={frame.menu}
         onClick={tools.openMenu}
-        className="frame-menu inline-flex size-11 shrink-0 items-center justify-center text-ink"
+        className="frame-menu inline-flex size-11 shrink-0 items-center justify-center text-ink/70 hover:text-ink"
       >
         <span className="flex w-[17px] flex-col gap-[5px]" aria-hidden="true">
           <span className="h-[1.5px] w-full bg-current" />
@@ -74,7 +74,7 @@ export function FrameTools({ children }: { children: React.ReactNode }) {
           event.preventDefault();
           tools.toggleSearch();
         }}
-        className="frame-search inline-flex size-11 shrink-0 items-center justify-center text-ink"
+        className="frame-search inline-flex size-11 shrink-0 items-center justify-center text-ink/70 hover:text-ink"
       >
         <SearchMark className="size-[17px] md:size-[18px]" />
       </Link>
