@@ -29,6 +29,18 @@
   .band-reader > .band-brand {
     justify-self: center;
   }
+  /* The black masthead: tools on the top line, the name alone and large under them. */
+  .band-row.band-reader {
+    grid-template-areas: "menu . search" "brand brand brand";
+    row-gap: 0;
+    padding-top: 0.25rem;
+    padding-bottom: 1.15rem;
+  }
+  .band-reader > .frame-menu { grid-area: menu; }
+  .band-reader > .frame-search { grid-area: search; }
+  .band-reader > .band-brand { grid-area: brand; margin-top: -0.35rem; }
+  .band-reader .band-mark { width: min(13.5rem, 62vw); }
+  .band-reader .masthead-motto { margin-top: 0.6rem; font-size: 0.82rem; }
 }
 
 @media (--orbis-compact) {

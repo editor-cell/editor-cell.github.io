@@ -2206,3 +2206,17 @@ form[role="search"]:focus-within {
 .twin-side:empty {
   display: none;
 }
+
+/* The reader masthead is a black band (the owner, 28 Oct 2026): menu and search on its top
+   line, ORBIS large and alone under them, the motto beneath. Cream on black in both looks;
+   the layout lives in mobile.css and desktop.css. The editor's own band keeps the paper. */
+.band-row.band-reader {
+  background: var(--color-panel);
+  color: #f4efe6;
+  border-bottom-color: var(--color-panel);
+  box-shadow: 0 0 0 100vmax var(--color-panel);
+  clip-path: inset(0 -100vmax);
+}
+.band-reader :is(.frame-menu, .frame-search) { color: rgb(244 239 230 / 0.85); }
+.band-reader :is(.frame-menu, .frame-search):hover { color: #f4efe6; }
+.band-reader .masthead-motto { font-weight: 700; letter-spacing: 0.12em; }
