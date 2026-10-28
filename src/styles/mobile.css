@@ -33,14 +33,15 @@
   .band-row.band-reader {
     grid-template-areas: "menu . search" "brand brand brand";
     row-gap: 0;
-    padding-top: 0.25rem;
-    padding-bottom: 1.15rem;
+    padding-top: 0.15rem;
+    padding-bottom: 0.8rem;
   }
   .band-reader > .frame-menu { grid-area: menu; }
   .band-reader > .frame-search { grid-area: search; }
-  .band-reader > .band-brand { grid-area: brand; margin-top: -0.35rem; }
-  .band-reader .band-mark { width: min(13.5rem, 62vw); }
-  .band-reader .masthead-motto { margin-top: 0.6rem; font-size: 0.82rem; }
+  /* A quarter slimmer than at first (the owner, 28 Oct 2026): the cover reaches the first screen. */
+  .band-reader > .band-brand { grid-area: brand; margin-top: -0.7rem; }
+  .band-reader .band-mark { width: min(10.75rem, 52vw); }
+  .band-reader .masthead-motto { margin-top: 0.45rem; font-size: 0.74rem; }
 }
 
 @media (--orbis-compact) {

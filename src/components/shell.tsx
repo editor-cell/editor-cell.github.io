@@ -4,7 +4,6 @@ import { SiteMenu } from "@/components/menu";
 import { OrbisLockup } from "@/components/orbis-lockup";
 import { SearchBar } from "@/components/search-bar";
 import { SearchMark } from "@/components/search-mark";
-import { TRIAL, trialNote } from "@/lib/site";
 import { LEGAL_PAGES, legalCopy } from "@/lib/legal-copy";
 import { searchCopy } from "@/lib/search";
 import { aboutCopy } from "@/lib/about-copy";
@@ -204,16 +203,8 @@ export function Shell({
             </div>
           ) : null}
 
-          {/* The test period: one quiet line under the masthead. */}
-          {TRIAL && !inPanel ? (
-            <p
-              dir={meta.dir}
-              lang={meta.html}
-              className="border-b border-rule bg-shade px-5 py-1.5 text-center font-body text-[12px] leading-snug text-ink/75 md:px-8"
-            >
-              {trialNote(lang)}
-            </p>
-          ) : null}
+          {/* The test line under the masthead was taken off on 28 Oct 2026 (the owner):
+              nobody pays and few come in yet. TRIAL still keeps search engines away. */}
 
           <nav
             aria-label={copy.sections}
