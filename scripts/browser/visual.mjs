@@ -47,10 +47,11 @@ export function visualCases() {
   return cases;
 }
 
-/** Faces every page uses: the text (Source Serif 4, since 20 Oct 2026; Tinos before). The
+/** Faces every page uses: the text (Tinos again since 28 Oct 2026, the owner's approved
+ * draft; Source Serif 4 from 20 Oct). Titles are DM Serif Display, required only where a page uses them. The
  * name in the band is the owner's drawn logo, not lettering, so the title face (Bodoni Moda)
  * is required only where a page asks for it (a failed download still stops the check below). */
-export const REQUIRED_FACES = ["Source Serif 4"];
+export const REQUIRED_FACES = ["Tinos"];
 
 /**
  * Stops the check unless the site's real faces are on the page: every face the page asked
