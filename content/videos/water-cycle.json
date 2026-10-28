@@ -3,7 +3,7 @@
   "date": "2026-10-18",
   "src": "videos/water-cycle.mp4",
   "poster": "images/water-cycle-video.jpg",
-  "duration": 56,
+  "duration": 54,
   "captions": {
     "en": "videos/water-cycle-en.vtt",
     "tr": "videos/water-cycle-tr.vtt"
@@ -17,7 +17,8 @@
     "tr": {
       "title": "Su döngüsü",
       "dek": "Aynı suyun deniz, gökyüzü ve kara arasındaki bitmeyen yolculuğu.",
-      "transcript": "Su hiçbir zaman tek bir yerde durmaz. Aynı su deniz, gökyüzü ve kara arasında tekrar tekrar yer değiştirir. Bu yolculuğa su döngüsü denir.\n\nHer şey güneşle başlar. Güneş denizin yüzeyini ısıtır ve suyun bir kısmı göze görünmeyen bir gaza, su buharına dönüşür. Bitkiler de yapraklarından su buharı verir.\n\nSıcak ve nemli hava yükselir. Yükseldikçe soğur ve buhar yeniden küçük su damlacıklarına döner. Sayısız damlacık bir araya gelince bulut olur.\n\nBulutun içinde damlacıklar birleşip büyür. Havada duramayacak kadar ağırlaşınca yağmur olarak düşer. Havanın soğuk olduğu yerlerde kar yağar.\n\nKaraya düşen suyun bir kısmı derelere ve nehirlere akar. Bir kısmı toprağa sızar ve orada birikir. Er ya da geç çoğu yeniden denize ulaşır.\n\nOrada güneş onu bir kez daha ısıtır. Döngü hiç durmaz."
+      "transcript": "Su hiçbir zaman tek bir yerde durmaz. Aynı su deniz, gökyüzü ve kara arasında tekrar tekrar yer değiştirir. Bu yolculuğa su döngüsü denir.\n\nHer şey güneşle başlar. Güneş denizin yüzeyini ısıtır ve suyun bir kısmı göze görünmeyen bir gaza, su buharına dönüşür. Bitkiler de yapraklarından su buharı verir.\n\nSıcak ve nemli hava yükselir. Yükseldikçe soğur ve buhar yeniden küçük su damlacıklarına döner. Sayısız damlacık bir araya gelince bulut olur.\n\nBulutun içinde damlacıklar birleşip büyür. Havada duramayacak kadar ağırlaşınca yağmur olarak düşer. Havanın soğuk olduğu yerlerde kar yağar.\n\nKaraya düşen suyun bir kısmı derelere ve nehirlere akar. Bir kısmı toprağa sızar ve orada birikir. Er ya da geç çoğu yeniden denize ulaşır.\n\nOrada güneş onu bir kez daha ısıtır. Döngü hiç durmaz.",
+      "src": "videos/water-cycle-tr.mp4"
     }
   }
 }
