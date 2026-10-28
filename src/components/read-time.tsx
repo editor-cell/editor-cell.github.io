@@ -56,6 +56,32 @@ export function CardListen({ story, lang }: { story: StoryCard; lang: Lang }) {
 }
 
 /**
+ * The front page's own Listen button: a real button standing beside the reading time, not
+ * inside a card link. It plays the recording in the bar at the foot of the screen.
+ * Nothing is shown when the reading has no recording in `lang`.
+ */
+export function ListenButton({ story, lang, solid = false }: { story: StoryCard; lang: Lang; solid?: boolean }) {
+  const copy = useCopy(lang);
+  const now = useListen();
+  const src = story.locales[lang].audio;
+  if (!src) return null;
+  const title = storyTitle(story, lang);
+  const playing = now.clip?.src === src && now.playing;
+  return (
+    <button
+      type="button"
+      aria-label={`${playing ? copy.pause : copy.listen}: ${title}`}
+      aria-pressed={playing}
+      onClick={() => listenTo({ id: story.id, lang, title, src, image: story.image?.src })}
+      className={`if-listen ${solid ? "if-listen-solid" : ""}`.trim()}
+    >
+      <StartGlyph playing={playing} />
+      {playing ? copy.pause : copy.listen}
+    </button>
+  );
+}
+
+/**
  * Start mark beside the Listen word: a hairline ring with a filled triangle,
  * the same size when the recording is paused.
  */

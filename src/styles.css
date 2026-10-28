@@ -5,4 +5,6 @@
 
 @import "./styles/front-page.css";
 @import "./styles/front-page-mobile.css";
+@import "./styles/issue-front-phone.css";
+@import "./styles/issue-front-desktop.css";
 @import "./styles/video-page.css";

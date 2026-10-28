@@ -14,6 +14,7 @@ import { formatDate, safeHttpUrl, storyTitle } from "@/lib/text";
 import type { Lang, Source, StoryCard as Story, Theme } from "@/lib/types";
 import { useMostRead } from "@/lib/reads";
 import { DesktopFront } from "@/components/desktop-front";
+import { IssueFront } from "@/components/issue-front";
 import { useLang } from "@/lib/use-lang";
 
 /**
@@ -92,7 +93,7 @@ export function Atlas({ section }: { section: Theme | "all" }) {
       <div className={home ? "" : "md:border-t md:border-rule"}>
         {latest ? (
           home ? (
-            <HomeGrid stories={sorted} lang={lang} />
+            <IssueFront stories={sorted} lang={lang} />
           ) : (
             <>
             <SectionList stories={sorted} lang={lang} />

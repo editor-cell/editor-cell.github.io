@@ -1,0 +1,148 @@
+/* The magazine front page on a desktop (28 Oct 2026). The phone has its own sheet,
+   issue-front-phone.css; a change here does not touch it. */
+@media (--orbis-desktop) {
+  .issue-front { padding: 0 1.25rem; }
+
+  .if-issue-line {
+    display: flex; justify-content: space-between; gap: 1rem;
+    padding: 1.15rem 0 0.8rem; border-bottom: 3px solid var(--color-ink);
+    font-size: 0.78rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+  }
+
+  .if-cover {
+    display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: center; gap: 2.75rem;
+    padding: 2.25rem 0 2.75rem; border-bottom: 1px solid var(--color-ink);
+  }
+  .if-cover:not(:has(.if-cover-picture)) { grid-template-columns: minmax(0, 1fr); }
+  .if-cover-picture img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; }
+  .if-cover-copy { display: flex; flex-direction: column; gap: 1rem; min-width: 0; }
+  .if-kicker { display: flex; align-items: baseline; gap: 0.75rem; }
+
+  .if-num {
+    font-family: var(--font-display); font-weight: 600; line-height: 1;
+    color: var(--color-pine); font-variant-numeric: lining-nums;
+  }
+  .if-kicker > .if-num { font-size: 3rem; }
+  .if-section {
+    color: var(--color-pine); font-size: 0.75rem; font-weight: 700;
+    letter-spacing: 0.15em; text-transform: uppercase; line-height: 1.35;
+  }
+  .if-title {
+    margin: 0; font-family: var(--font-display); font-weight: 600;
+    text-wrap: balance; overflow-wrap: break-word; color: var(--color-ink);
+  }
+  .if-title a:hover { text-decoration: underline; text-underline-offset: 0.12em; text-decoration-thickness: 1px; }
+  .if-cover-title { font-size: clamp(2.2rem, 3.5vw, 3.3rem); line-height: 1.05; }
+
+  .if-places {
+    display: flex; align-items: center; gap: 0.45rem;
+    font-size: 1rem; font-style: italic; color: var(--color-muted); line-height: 1.35;
+  }
+  .if-places svg { flex: none; width: 0.9rem; height: 0.9rem; fill: none; stroke: currentColor; stroke-width: 1.6; }
+  .if-dek { font-size: 1.2rem; line-height: 1.45; }
+
+  .if-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1.25rem; }
+  .if-time { font-size: 0.88rem; color: var(--color-muted); }
+  .if-listen {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    min-height: 2.75rem; padding: 0 1.05rem;
+    border: 1px solid var(--color-ink); border-radius: 999px;
+    background: transparent; color: var(--color-ink);
+    font: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer;
+  }
+  .if-listen:hover { background: var(--color-highlight); }
+  .if-listen svg { width: 0.85rem; height: 0.85rem; }
+  .if-listen-solid { background: var(--color-ink); color: var(--color-paper); }
+  .if-listen-solid:hover { background: var(--color-ink); opacity: 0.88; }
+
+  .if-head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
+    padding-bottom: 0.7rem;
+  }
+  .if-head-title { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 2.1rem; line-height: 1.2; }
+  .if-head-link { flex: none; font-size: 0.95rem; font-weight: 700; text-decoration: underline; text-underline-offset: 0.2em; }
+  .if-count {
+    flex: none; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--color-muted);
+  }
+
+  /* The contents: a row of four, then the rest in threes; a full issue of nine, two fours. */
+  .if-contents { padding: 2.5rem 0 3rem; }
+  .if-list {
+    display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 2.5rem;
+    margin: 0; padding: 0; list-style: none;
+  }
+  .if-entry {
+    grid-column: span 3;
+    display: grid; grid-template-columns: auto minmax(0, 1fr); align-content: start; row-gap: 0.65rem;
+    padding: 1.4rem 0 2rem; border-top: 1px solid var(--color-ink);
+  }
+  .if-entry:nth-child(n + 5) { grid-column: span 4; }
+  .if-list:has(> .if-entry:nth-child(8)) > .if-entry { grid-column: span 3; }
+  .if-list:has(> .if-entry:nth-child(4):last-child) > .if-entry,
+  .if-list:has(> .if-entry:nth-child(2):last-child) > .if-entry { grid-column: span 6; }
+  .if-list:has(> .if-entry:nth-child(3):last-child) > .if-entry { grid-column: span 4; }
+  .if-entry-copy { display: contents; }
+  .if-entry > .if-num { font-size: 2.5rem; align-self: end; }
+  .if-entry .if-section { justify-self: end; align-self: end; padding-bottom: 0.2rem; }
+  .if-entry :is(.if-entry-title, .if-places, .if-dek, .if-actions) { grid-column: 1 / -1; }
+  .if-entry-title { font-size: 1.5rem; line-height: 1.14; }
+  .if-entry .if-places { font-size: 0.92rem; }
+  .if-entry .if-dek { font-size: 1.02rem; }
+  .if-entry .if-actions { padding-top: 0.25rem; }
+
+  /* The videos on a dark band that runs to both edges of the window. */
+  .if-band {
+    padding: 2.25rem 0 2.75rem;
+    background: var(--color-panel); color: #f4efe6;
+    box-shadow: 0 0 0 100vmax var(--color-panel);
+    clip-path: inset(0 -100vmax);
+  }
+  .if-band .if-head { padding-bottom: 1.1rem; }
+  .if-band .if-head-link { color: #f4efe6; }
+  .if-videos { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.5rem; margin: 0; padding: 0; list-style: none; }
+  .if-videos > li:only-child { grid-column: span 2; }
+  .if-video { display: flex; flex-direction: column; gap: 0.6rem; color: #f4efe6; }
+  .if-video-still { position: relative; display: block; aspect-ratio: 16 / 9; overflow: hidden; background: #262626; }
+  .if-video-still img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .if-video-play { position: absolute; inset: 0; display: grid; place-items: center; }
+  .if-video-play svg { width: 2.8rem; height: 2.8rem; padding: 0.65rem; border-radius: 50%; background: rgb(255 255 255 / 0.92); fill: #111; }
+  .if-video-title { font-size: 1.1rem; font-weight: 700; line-height: 1.25; }
+  .if-video:hover .if-video-title { text-decoration: underline; }
+  .if-video-time { font-size: 0.82rem; color: #bdb6aa; }
+
+  /* Earlier issues as covers on one shelf. */
+  .if-shelf { padding-top: 2.75rem; }
+  .if-covers { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 1.25rem; margin: 0; padding: 0; list-style: none; }
+  .if-shelf-item { display: flex; flex-direction: column; gap: 0.6rem; }
+  .if-shelf-cover {
+    display: flex; flex-direction: column; justify-content: space-between; gap: 0.75rem;
+    aspect-ratio: 5 / 7; padding: 1rem 0.9rem;
+    background: var(--color-panel); color: #f4efe6; transition: transform 200ms ease;
+  }
+  .if-shelf-item:hover .if-shelf-cover { transform: translateY(-3px); }
+  .if-shelf-top { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.72rem; letter-spacing: 0.06em; }
+  .if-shelf-name { font-family: "Bodoni Moda", "Times New Roman", serif; font-weight: 700; font-size: 0.9rem; letter-spacing: 0.18em; }
+  .if-shelf-question { font-family: var(--font-display); font-weight: 600; font-size: 1.2rem; line-height: 1.15; overflow-wrap: break-word; }
+  .if-shelf-date { font-size: 0.72rem; color: #cfc8bb; }
+  .if-shelf-label { color: var(--color-pine); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; }
+
+  .if-more { padding: 2.25rem 0 3.5rem; }
+  .if-more .if-head-title { font-size: 1.6rem; margin-bottom: 0.6rem; }
+  .if-more-list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: 2rem; margin: 0; padding: 0; list-style: none; }
+  .if-more-item { display: flex; flex-direction: column; gap: 0.35rem; padding: 1rem 0 1.2rem; border-top: 1px solid var(--color-line); }
+  .if-more-title { font-family: var(--font-display); font-weight: 600; font-size: 1.2rem; line-height: 1.2; overflow-wrap: break-word; }
+  .if-more-item:hover .if-more-title { text-decoration: underline; }
+  .if-more-note { font-size: 0.82rem; color: var(--color-muted); }
+
+  [dir="rtl"] :is(.if-issue-line, .if-section, .if-count, .if-shelf-label) { letter-spacing: 0; }
+}
+
+/* A narrow desktop or a tablet: fewer columns, the same order. */
+@media (--orbis-desktop) and (width < 1024px) {
+  .if-cover { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
+  .if-list > .if-entry,
+  .if-list:has(> .if-entry:nth-child(8)) > .if-entry { grid-column: span 6; }
+  .if-videos, .if-more-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .if-covers { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
