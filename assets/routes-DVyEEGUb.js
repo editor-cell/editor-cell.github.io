@@ -1,1 +1,0 @@
-import{n as e}from"./atlas-Dyy_doD9.js";var t=e;export{t as component};

@@ -1,1 +1,0 @@
-import{At as e,cn as t}from"./shell-DwNrKaFT.js";import{o as n}from"./index-C60HH-7Q.js";import{r}from"./atlas-Dyy_doD9.js";var i=t();function a(){let{section:t}=n.useParams();return(0,i.jsx)(r,{theme:e(t)})}export{a as component};
