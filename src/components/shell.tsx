@@ -83,7 +83,7 @@ export function FrameTools({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * Site frame shared by every page: paper masthead, section bar and dark footer.
+ * Site frame shared by every page: paper masthead, section bar and paper footer.
  * `section` marks the active section in the bar ("all" on the home page with no filter).
  */
 export function Shell({
@@ -293,7 +293,7 @@ export function Shell({
             </div>
           </div>
 
-          <footer className="no-print bg-panel py-10 text-paper">
+          <footer className="no-print bg-paper py-10 text-ink">
             <div className="page-width px-5 md:px-8">
               {/* Three columns spread to the edges: the language list ends at the right margin. */}
               <div className="grid gap-8 md:flex md:justify-between md:gap-12">
@@ -301,7 +301,7 @@ export function Shell({
                   <Link
                     {...homeLink(lang)}
                     dir="ltr"
-                    className="inline-flex min-h-11 items-center gap-3 self-start text-paper"
+                    className="inline-flex min-h-11 items-center gap-3 self-start text-ink"
                   >
                     <OrbisLockup className="h-[1.78rem]" mottoClassName="mt-[0.7rem] text-[0.75rem]" />
                   </Link>
@@ -309,7 +309,7 @@ export function Shell({
                     <li>
                       <Link
                         {...aboutLink(lang)}
-                        className="inline-flex min-h-9 items-center self-start text-base text-mist hover:text-paper"
+                        className="inline-flex min-h-9 items-center self-start text-base text-ink hover:underline hover:underline-offset-4"
                       >
                         {aboutCopy(lang).title}
                       </Link>
@@ -320,14 +320,14 @@ export function Shell({
                         {item === "membership" && signedIn ? (
                           <Link
                             {...accountLink(lang)}
-                            className="inline-flex min-h-9 items-center self-start text-base text-mist hover:text-paper"
+                            className="inline-flex min-h-9 items-center self-start text-base text-ink hover:underline hover:underline-offset-4"
                           >
                             {membersCopy(lang).account}
                           </Link>
                         ) : (
                           <Link
                             {...memberPageLink(lang, item)}
-                            className="inline-flex min-h-9 items-center self-start text-base text-mist hover:text-paper"
+                            className="inline-flex min-h-9 items-center self-start text-base text-ink hover:underline hover:underline-offset-4"
                           >
                             {item === "membership" && !paymentOn
                               ? pagesCopy(lang).membership.menu
@@ -347,7 +347,7 @@ export function Shell({
                       <li key={theme}>
                         <Link
                           {...sectionLink(lang, theme)}
-                          className="inline-flex min-h-9 items-center text-base text-mist hover:text-paper"
+                          className="inline-flex min-h-9 items-center text-base text-ink hover:underline hover:underline-offset-4"
                         >
                           {copy.themes[theme]}
                         </Link>
@@ -369,8 +369,8 @@ export function Shell({
                           }}
                           className={
                             code === lang
-                              ? "inline-flex min-h-9 items-center text-base text-paper underline underline-offset-4"
-                              : "inline-flex min-h-9 items-center text-base text-mist hover:text-paper"
+                              ? "inline-flex min-h-9 items-center text-base text-ink underline underline-offset-4"
+                              : "inline-flex min-h-9 items-center text-base text-ink hover:underline hover:underline-offset-4"
                           }
                         >
                           {langMeta[code].name}
@@ -380,7 +380,7 @@ export function Shell({
                   </ul>
                 </div>
               </div>
-              <div className="mt-10 flex flex-col gap-3 border-t border-muted pt-6 text-sm text-mist md:flex-row md:items-center md:justify-between">
+              <div className="mt-10 flex flex-col gap-3 border-t border-line pt-6 text-sm text-ink md:flex-row md:items-center md:justify-between">
                 <p>
                   © {new Date().getFullYear()} Orbis. {frame.rights}
                 </p>
@@ -390,7 +390,7 @@ export function Shell({
                       <li key={page}>
                         <Link
                           {...legalLink(lang, page)}
-                          className="inline-flex min-h-9 items-center text-mist hover:text-paper"
+                          className="inline-flex min-h-9 items-center text-ink hover:underline hover:underline-offset-4"
                         >
                           {legalCopy(lang)[page].title}
                         </Link>

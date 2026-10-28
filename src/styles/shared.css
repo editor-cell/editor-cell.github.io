@@ -12,7 +12,7 @@
   --color-mist: #d4d4d4;
   --color-line: #e6e6e6;
   --color-rule: #9a9a9a;
-  --color-pine: #bf5700;
+  --color-pine: #9f3b00;
   --color-highlight: #ececee;
   --color-panel: #0c0c0c;
   /* The test-period line under the band: one tone darker than the paper. */
@@ -30,7 +30,7 @@ html:not([data-look]) .bg-panel {
 
 /* Second scheme: dark, for reading in a dim room. The paper is a soft charcoal rather than pure black,
    the text an off-white rather than pure white (less glare on long readings), and the
-   classic orange accents are lifted to a pale orange so they still read on dark paper. */
+   orange accents stay saturated and light enough to read on dark paper. */
 html[data-look="night"] {
   color-scheme: dark;
   --color-paper: #141414;
@@ -40,13 +40,13 @@ html[data-look="night"] {
   --color-mist: #3a3a3a;
   --color-line: #262626;
   --color-rule: #4a4a4a;
-  --color-pine: #e6a16f;
+  --color-pine: #d46200;
   --color-highlight: #2b2b2b;
   --color-panel: #050505;
   --color-shade: #0d0d0d;
 }
 
-/* Inside dark panels, including the footer, the light and grey
+/* Inside dark panels, the light and grey
    tones keep the roles they have in the classic scheme: the name and links light, the
    small labels grey. */
 html[data-look="night"] .bg-panel {
@@ -140,7 +140,7 @@ body {
 /* Footer labels and links have distinct roles; the brand has its own space above them. */
 .footer-heading {
   margin: 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--color-paper) 25%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-ink) 25%, transparent);
   padding-bottom: 0.75rem;
   font-family: var(--font-body);
   font-size: 0.875rem;
@@ -148,12 +148,12 @@ body {
   line-height: 1.4;
   letter-spacing: 0.13em;
   text-transform: uppercase;
-  color: var(--color-paper);
+  color: var(--color-ink);
 }
 
 .footer-brand-links {
   margin-top: 1.75rem;
-  border-top: 1px solid color-mix(in srgb, var(--color-paper) 25%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--color-ink) 25%, transparent);
   padding-top: 0.875rem;
 }
 
@@ -857,7 +857,7 @@ a.group:not(.atlas-own):has(.paper-title) > div.flex.flex-col > p.tabular-nums {
     --color-mist: #cccccc;
     --color-line: #d9d9d9;
     --color-rule: #999999;
-    --color-pine: #bf5700;
+    --color-pine: #9f3b00;
     --color-highlight: #ffffff;
     --color-panel: #ffffff;
     --color-shade: #ffffff;
@@ -1722,8 +1722,8 @@ button.play-disc:active {
 }
 
 /* ---------- The listening panel at the foot of the screen (October 2026) ----------
-   A black band like the masthead, in every scheme: cream type, a deeper orange for the
-   play button and a lighter orange for the part already heard, so it reads on black. */
+   A dark player in every scheme: cream type, a deeper orange for the play button
+   and a brighter orange for the part already heard, so it reads on black. */
 .dock {
   --color-ink: #f4efe6;
   --color-paper: #0c0c0c;
@@ -1732,14 +1732,14 @@ button.play-disc:active {
   --color-rule: #5a5a5a;
   --color-line: rgb(255 255 255 / 0.14);
   --color-mist: rgb(255 255 255 / 0.25);
-  --color-pine: #e19052;
+  --color-pine: #d46200;
   border-top: 1px solid #262626;
   background: #0c0c0c;
   color: #f4efe6;
 }
 
 .dock .play-disc {
-  background: #9d4800;
+  background: #9f3b00;
   color: #f4efe6;
 }
 

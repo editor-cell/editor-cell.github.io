@@ -8,7 +8,7 @@ import sharp from "sharp";
 const require = createRequire(import.meta.url);
 const regular = require.resolve("dejavu-fonts-ttf/ttf/DejaVuSerif.ttf");
 const bold = require.resolve("dejavu-fonts-ttf/ttf/DejaVuSerif-Bold.ttf");
-const ACCENT = "#bf5700";
+const ACCENT = "#9f3b00";
 const INK = "#171717";
 const MUTED = "#616161";
 const LEFT = 48;
