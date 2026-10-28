@@ -406,18 +406,24 @@
   }
 }
 
-/* A measured closing band: the same name and links, with room between the two rows. */
+/* The grouped footer stacks on a phone; the section links share two equal columns. */
 @media (--orbis-phone) {
-  .site-footer { padding-block: 2.75rem 2.5rem; }
-  .footer-inner {
+  .site-footer { padding-block: 2.5rem; }
+  .footer-inner { padding-inline: 1.25rem; }
+  .footer-columns { display: grid; gap: 2rem; }
+  .footer-mark { height: 1.78rem; }
+  .footer-motto { margin-top: 0.7rem; font-size: 0.75rem; }
+  .footer-section-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 1.5rem;
+    margin-top: 1rem;
+  }
+  .footer-bottom {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 1.5rem;
-    padding-inline: 1.25rem;
-    text-align: center;
+    gap: 0.75rem;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
   }
-  .footer-mark { height: 1.3rem; }
-  .footer-motto { margin-top: 0.5rem; font-size: 0.66rem; }
-  .footer-links { font-size: 0.82rem; }
 }
