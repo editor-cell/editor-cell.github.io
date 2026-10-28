@@ -10,7 +10,7 @@
   },
   {
     "id": "who-keeps-the-clock",
-    "theme": "politics",
+    "theme": "economy-politics",
     "date": "2026-10-09",
     "title": "Who keeps the clock?",
     "dek": "Most governments now agree the twice-yearly clock change has outlived its use. They disagree on which hour to keep.",
@@ -19,7 +19,7 @@
   },
   {
     "id": "migration-and-the-vote",
-    "theme": "politics",
+    "theme": "economy-politics",
     "date": "2026-10-08",
     "title": "Does migration move voters to the right?",
     "dek": "Studies that follow where newcomers actually settled find an effect, but its size and even its direction depend on contact.",
@@ -28,7 +28,7 @@
   },
   {
     "id": "earthquake-and-the-economy",
-    "theme": "economy",
+    "theme": "economy-politics",
     "date": "2026-10-07",
     "title": "How many years does an earthquake cost an economy?",
     "dek": "For most countries, national output recovers within a few years. The places hit hardest can carry the loss for decades.",
@@ -46,7 +46,7 @@
   },
   {
     "id": "consumption-and-wellbeing",
-    "theme": "economy",
+    "theme": "economy-politics",
     "date": "2026-10-05",
     "title": "Does consuming more mean living better?",
     "dek": "Income and life satisfaction rise together, but each step buys less than the one before. The argument is over where, and for whom, it stops.",
@@ -55,7 +55,7 @@
   },
   {
     "id": "measuring-sea-level",
-    "theme": "science",
+    "theme": "science-technology",
     "date": "2026-10-02",
     "title": "How is sea level measured?",
     "dek": "A rise of a few millimetres a year is built from tide gauges, satellites and a correction for land that moves.",
@@ -64,7 +64,7 @@
   },
   {
     "id": "rivers-running-dry",
-    "theme": "environment",
+    "theme": "climate-environment",
     "date": "2026-10-01",
     "title": "Why are rivers running dry?",
     "dek": "Some of the world's great rivers no longer reach the sea for part of the year. The main cause lies upstream, in fields and reservoirs.",
@@ -82,7 +82,7 @@
   },
   {
     "id": "data-centres-and-water",
-    "theme": "technology",
+    "theme": "science-technology",
     "date": "2026-09-29",
     "title": "How much water do data centres use?",
     "dek": "The answer has two parts: the water evaporated to cool the servers, and the water used to make their electricity.",
@@ -91,7 +91,7 @@
   },
   {
     "id": "carbon-books",
-    "theme": "climate",
+    "theme": "climate-environment",
     "date": "2026-03-12",
     "title": "The carbon books, reconciled",
     "dek": "National inventories and satellite measurements are being read against each other – not as a headline, but as an accounting problem.",
@@ -109,7 +109,7 @@
   },
   {
     "id": "after-ten-million",
-    "theme": "politics",
+    "theme": "economy-politics",
     "date": "2026-01-20",
     "title": "After ten million",
     "dek": "A megacity used to be an exception. The public record now has enough of them to compare the planning, not the skyline.",
@@ -118,7 +118,7 @@
   },
   {
     "id": "grain-moves",
-    "theme": "economy",
+    "theme": "economy-politics",
     "date": "2025-11-04",
     "title": "How grain actually moves",
     "dek": "Wheat, maize, and rice cross borders as balance sheets before they cross them as ships.",

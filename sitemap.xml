@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://orbisreadingatlas.com/</loc></url>
-  <url><loc>https://orbisreadingatlas.com/climate</loc></url>
-  <url><loc>https://orbisreadingatlas.com/environment</loc></url>
-  <url><loc>https://orbisreadingatlas.com/politics</loc></url>
-  <url><loc>https://orbisreadingatlas.com/economy</loc></url>
-  <url><loc>https://orbisreadingatlas.com/science</loc></url>
-  <url><loc>https://orbisreadingatlas.com/technology</loc></url>
-  <url><loc>https://orbisreadingatlas.com/culture</loc></url>
+  <url><loc>https://orbisreadingatlas.com/climate-environment</loc></url>
+  <url><loc>https://orbisreadingatlas.com/economy-politics</loc></url>
+  <url><loc>https://orbisreadingatlas.com/science-technology</loc></url>
   <url><loc>https://orbisreadingatlas.com/health</loc></url>
+  <url><loc>https://orbisreadingatlas.com/culture</loc></url>
   <url><loc>https://orbisreadingatlas.com/about</loc></url>
   <url><loc>https://orbisreadingatlas.com/membership</loc></url>
   <url><loc>https://orbisreadingatlas.com/newsletter</loc></url>
@@ -32,14 +29,11 @@
   <url><loc>https://orbisreadingatlas.com/media</loc></url>
   <url><loc>https://orbisreadingatlas.com/media/water-cycle</loc><lastmod>2026-10-18</lastmod></url>
   <url><loc>https://orbisreadingatlas.com/tr/</loc></url>
-  <url><loc>https://orbisreadingatlas.com/tr/climate</loc></url>
-  <url><loc>https://orbisreadingatlas.com/tr/environment</loc></url>
-  <url><loc>https://orbisreadingatlas.com/tr/politics</loc></url>
-  <url><loc>https://orbisreadingatlas.com/tr/economy</loc></url>
-  <url><loc>https://orbisreadingatlas.com/tr/science</loc></url>
-  <url><loc>https://orbisreadingatlas.com/tr/technology</loc></url>
-  <url><loc>https://orbisreadingatlas.com/tr/culture</loc></url>
+  <url><loc>https://orbisreadingatlas.com/tr/climate-environment</loc></url>
+  <url><loc>https://orbisreadingatlas.com/tr/economy-politics</loc></url>
+  <url><loc>https://orbisreadingatlas.com/tr/science-technology</loc></url>
   <url><loc>https://orbisreadingatlas.com/tr/health</loc></url>
+  <url><loc>https://orbisreadingatlas.com/tr/culture</loc></url>
   <url><loc>https://orbisreadingatlas.com/tr/about</loc></url>
   <url><loc>https://orbisreadingatlas.com/tr/membership</loc></url>
   <url><loc>https://orbisreadingatlas.com/tr/newsletter</loc></url>

@@ -10,7 +10,7 @@
   },
   {
     "id": "who-keeps-the-clock",
-    "theme": "politics",
+    "theme": "economy-politics",
     "date": "2026-10-09",
     "title": "Saati kim tutar?",
     "dek": "Hükûmetlerin çoğu yılda iki kez saat değiştirmenin işe yaramadığında artık hemfikir. Hangi saatin kalacağında ise ayrılıyorlar.",
@@ -19,7 +19,7 @@
   },
   {
     "id": "migration-and-the-vote",
-    "theme": "politics",
+    "theme": "economy-politics",
     "date": "2026-10-08",
     "title": "Göç seçmeni sağa mı kaydırır?",
     "dek": "Gelenlerin gerçekte nereye yerleştiğini izleyen çalışmalar bir etki buluyor; ama etkinin büyüklüğü, hatta yönü, temasa bağlı.",
@@ -28,7 +28,7 @@
   },
   {
     "id": "earthquake-and-the-economy",
-    "theme": "economy",
+    "theme": "economy-politics",
     "date": "2026-10-07",
     "title": "Bir deprem ekonomiye kaç yıla mal olur?",
     "dek": "Çoğu ülkede ulusal üretim birkaç yıl içinde toparlanır. En ağır vurulan yerler ise kaybı on yıllarca taşıyabilir.",
@@ -46,7 +46,7 @@
   },
   {
     "id": "consumption-and-wellbeing",
-    "theme": "economy",
+    "theme": "economy-politics",
     "date": "2026-10-05",
     "title": "Daha çok tüketmek daha iyi yaşamak mı demek?",
     "dek": "Gelir ve yaşam memnuniyeti birlikte artıyor; ama her adım bir öncekinden daha azını satın alıyor. Tartışma, bunun nerede ve kimin için durduğu üzerine.",
@@ -55,7 +55,7 @@
   },
   {
     "id": "measuring-sea-level",
-    "theme": "science",
+    "theme": "science-technology",
     "date": "2026-10-02",
     "title": "Deniz seviyesi nasıl ölçülür?",
     "dek": "Yılda birkaç milimetrelik yükseliş; gelgit ölçerlerden, uydulardan ve hareket eden kara için yapılan bir düzeltmeden elde ediliyor.",
@@ -64,7 +64,7 @@
   },
   {
     "id": "rivers-running-dry",
-    "theme": "environment",
+    "theme": "climate-environment",
     "date": "2026-10-01",
     "title": "Nehirler neden kuruyor?",
     "dek": "Dünyanın büyük nehirlerinden bazıları yılın bir bölümünde artık denize ulaşmıyor. Asıl neden yukarıda; tarlalarda ve barajlarda.",
@@ -82,7 +82,7 @@
   },
   {
     "id": "data-centres-and-water",
-    "theme": "technology",
+    "theme": "science-technology",
     "date": "2026-09-29",
     "title": "Veri merkezleri ne kadar su kullanıyor?",
     "dek": "Cevabın iki parçası var: sunucuları soğutmak için buharlaşan su ve elektriklerini üretmek için kullanılan su.",
@@ -91,7 +91,7 @@
   },
   {
     "id": "carbon-books",
-    "theme": "climate",
+    "theme": "climate-environment",
     "date": "2026-03-12",
     "title": "Karbon defterleri, yan yana",
     "dek": "Ulusal envanterler ile uydu ölçümleri bir manşet olarak değil, bir muhasebe sorunu olarak birlikte okunuyor.",
@@ -109,7 +109,7 @@
   },
   {
     "id": "after-ten-million",
-    "theme": "politics",
+    "theme": "economy-politics",
     "date": "2026-01-20",
     "title": "On milyondan sonra",
     "dek": "Megakent bir istisnaydı. Kamusal kayıtta artık silueti değil planlamayı karşılaştırmaya yetecek kadar kent var.",
@@ -118,7 +118,7 @@
   },
   {
     "id": "grain-moves",
-    "theme": "economy",
+    "theme": "economy-politics",
     "date": "2025-11-04",
     "title": "Tahıl gerçekten nasıl gider",
     "dek": "Buğday, mısır ve pirinç bir sınırı gemi olarak geçmeden önce bilanço olarak geçer.",

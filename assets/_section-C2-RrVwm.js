@@ -1,1 +1,0 @@
-import{Jt as e,gt as t,tt as n}from"./shell-B5PUnI8V.js";import{s as r}from"./index-BaG3Dinq.js";import{n as i,r as a}from"./atlas-CfI4Pjlj.js";var o=e();function s(){let{section:e}=r.useParams();return n(e)?(0,o.jsx)(i,{}):(0,o.jsx)(a,{theme:t(e)})}export{s as component};
