@@ -3,7 +3,7 @@
   .band-reader {
     display: grid;
     grid-template-columns: minmax(2.75rem, 1fr) auto minmax(2.75rem, 1fr);
-    column-gap: 1.5rem;
+    column-gap: 0.75rem;
   }
   .band-reader > .frame-search { justify-self: end; }
   .band-reader > .frame-menu { justify-self: start; }

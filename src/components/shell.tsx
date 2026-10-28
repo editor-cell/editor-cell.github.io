@@ -76,7 +76,7 @@ export function FrameTools({ children }: { children: React.ReactNode }) {
         }}
         className="frame-search inline-flex size-11 shrink-0 items-center justify-center text-ink/70 hover:text-ink"
       >
-        <SearchMark className="size-[17px] md:size-[18px]" />
+        <SearchMark className="size-[17px]" />
       </Link>
     </>
   );
@@ -169,11 +169,11 @@ export function Shell({
   const brand = (
     <Link
       {...homeLink(lang)}
-      className="band-brand inline-flex min-h-11 shrink-0 items-center gap-2 py-2.5 md:gap-2.5 md:py-3"
+      className="band-brand inline-flex min-w-0 shrink-0 items-center"
     >
       <OrbisLockup
-        className="h-[1.95rem] md:h-[2.68rem]"
-        mottoClassName="mt-[0.8rem] text-[0.8rem] md:mt-[1.05rem] md:text-[1.02rem]"
+        className="band-mark"
+        mottoClassName="band-motto"
       />
     </Link>
   );
@@ -184,7 +184,7 @@ export function Shell({
         {/* The name and tools share the page's paper, above a single accent rule. */}
         <header dir="ltr" className="no-print relative">
           <div
-            className={`band-row ${inPanel ? "band-editor" : "band-reader"} flex items-center justify-between gap-x-6 border-b border-pine bg-paper px-5 text-ink md:px-8 ${
+            className={`band-row ${inPanel ? "band-editor" : "band-reader"} flex items-center justify-between gap-x-3 border-b border-pine bg-paper px-5 pt-[0.35rem] pb-[0.45rem] text-ink md:px-8 ${
               searchOpen ? "relative z-40" : ""
             }`}
           >

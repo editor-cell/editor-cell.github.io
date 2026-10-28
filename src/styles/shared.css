@@ -119,6 +119,24 @@ body {
   margin-inline-end: -0.03em;
 }
 
+/* The masthead sits on the reading surface, with one compact lockup at every width. */
+.band-mark {
+  width: min(9.5rem, 42vw);
+  height: auto;
+}
+.band-mark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.band-row .masthead-motto {
+  margin-top: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1;
+  text-align: center;
+}
+
 /* Footer labels and links have distinct roles; the brand has its own space above them. */
 .footer-heading {
   margin: 0;

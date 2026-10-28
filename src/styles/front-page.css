@@ -8,14 +8,6 @@
   }
   .orbis-home .band-row,
   .orbis-home .bar-row { padding-inline: 1.5rem; }
-  .orbis-home .band-brand { padding-block: 0.65rem; }
-  .orbis-home .band-brand [role="img"] { height: 2.25rem; }
-  .orbis-home .band-brand .masthead-motto {
-    margin-top: 0.45rem;
-    font-size: 0.7rem;
-  }
-  .orbis-home .frame-menu > span { width: 1.6rem; gap: 0.4rem; }
-  .orbis-home .frame-search > svg { width: 1.5rem; height: 1.5rem; }
   .desktop-front { display: block; padding: 1.5rem 1.25rem 0; }
   .front-opening {
     display: grid;
