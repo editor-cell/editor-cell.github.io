@@ -1,0 +1,1 @@
+import{Yt as e}from"./shell-8X6fvKbp.js";import{n as t}from"./videos-DFy_D4Zn.js";import{n}from"./index-SO-rGtVP.js";var r=e();function i(){return(0,r.jsx)(t,{video:n.useLoaderData()})}export{i as component};

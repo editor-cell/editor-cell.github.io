@@ -1,1 +1,0 @@
-import{Jt as e}from"./shell-pQRs5--8.js";import{t}from"./legal-DczQiLSA.js";var n=e(),r=()=>(0,n.jsx)(t,{page:`terms`});export{r as component};
