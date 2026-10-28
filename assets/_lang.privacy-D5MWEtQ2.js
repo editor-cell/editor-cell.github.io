@@ -1,1 +1,0 @@
-import{Jt as e}from"./shell-C1SZssXh.js";import{t}from"./legal-C13_iJCK.js";var n=e(),r=()=>(0,n.jsx)(t,{page:`privacy`});export{r as component};
