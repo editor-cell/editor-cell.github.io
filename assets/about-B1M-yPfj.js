@@ -1,1 +1,0 @@
-import{t as e}from"./about-DDHnjRga.js";var t=e;export{t as component};

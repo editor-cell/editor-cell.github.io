@@ -1,0 +1,1 @@
+import{t as e}from"./pages-CTXM_HBd.js";var t=e;export{t as component};
