@@ -288,7 +288,7 @@ export function Shell({
                 <OrbisLockup className="h-[1.78rem]" mottoClassName="mt-[0.7rem] text-[0.75rem]" />
               </Link>
               <nav aria-label={legalCopy(lang).footer}>
-                <ul className="flex flex-wrap justify-center gap-x-6">
+                <ul className="flex flex-col items-center md:flex-row md:flex-wrap md:justify-center md:gap-x-6">
                   <li>
                     <Link
                       {...aboutLink(lang)}
