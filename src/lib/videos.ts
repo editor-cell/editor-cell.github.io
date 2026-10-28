@@ -35,6 +35,12 @@ export async function loadVideo(id: string): Promise<Video | null> {
     id: card!.id,
     src: mediaUrl(video.src),
     poster: video.poster ? mediaUrl(video.poster) : undefined,
+    locales: Object.fromEntries(
+      Object.entries(video.locales).map(([lang, copy]) => [
+        lang,
+        copy?.src ? { ...copy, src: mediaUrl(copy.src) } : copy,
+      ]),
+    ),
     captions: video.captions
       ? Object.fromEntries(
           Object.entries(video.captions).map(([lang, path]) => [lang, mediaUrl(path)]),

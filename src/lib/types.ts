@@ -181,6 +181,9 @@ export type VideoCopy = {
   dek: string;
   /** Everything said in the video, paragraphs separated by a blank line. */
   transcript: string;
+  /** The film narrated in this language (videos/<id>-<lang>.mp4), when it has its own;
+   * otherwise the video's `src` plays. */
+  src?: string;
 };
 
 export type Video = {

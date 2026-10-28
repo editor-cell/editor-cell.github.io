@@ -313,7 +313,7 @@ export function VideoPage({ video }: { video: Video | null }) {
             <article className="video-primary">
               <Film
                 key={`${video.id}-${lang}`}
-                src={video.src}
+                src={copy.src ?? video.src}
                 poster={video.poster}
                 label={copy.title}
                 lang={lang}

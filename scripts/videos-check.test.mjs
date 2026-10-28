@@ -67,6 +67,11 @@ for (const file of files) {
     for (const lang of langs) {
       assert.ok(LANGS.includes(lang), `${file}: unknown language ${lang}`);
       const copy = video.locales[lang];
+      if (copy?.src !== undefined) {
+        assert.ok(typeof copy.src === "string" && copy.src, `${file} (${lang}): src is empty`);
+        assert.ok(!/^http:/.test(copy.src), `${file} (${lang}): the film's address must be https`);
+        assert.ok(mediaExists(copy.src), `${file} (${lang}): film ${copy.src} is missing`);
+      }
       if (!copy?.title?.trim()) continue;
       assert.ok(
         copy.transcript?.trim(),
