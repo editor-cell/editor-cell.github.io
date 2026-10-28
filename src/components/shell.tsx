@@ -266,44 +266,43 @@ export function Shell({
           <div className="page-width flex flex-1 flex-col">
             <div className="flex-1">{children}</div>
 
-            <div
-              aria-hidden="true"
-              className="no-print flex items-center gap-3 px-5 pt-12 pb-10 md:px-8"
-            >
-              <span className="h-px flex-1 bg-rule" />
-              <span className="size-1.5 rounded-full bg-ink" />
-              <span className="h-px flex-1 bg-rule" />
-            </div>
+            {/* Room before the footer; the ruled divider with a dot was taken off (28 Oct 2026). */}
+            <div aria-hidden="true" className="no-print h-12 md:h-16" />
           </div>
 
           {/* The footer is the draft the owner approved (28 Oct 2026): the name and motto, and
               three links. Sections, languages, joining and the newsletter live in the menu. */}
-          <footer className="site-footer no-print bg-paper py-10 text-ink">
-            <div className="page-width flex flex-col items-center gap-6 px-5 text-center md:flex-row md:items-center md:justify-between md:px-8 md:text-start">
+          <footer className="site-footer no-print bg-paper py-7 text-ink md:py-9">
+            <div className="page-width flex flex-col items-center gap-3 px-5 text-center md:flex-row md:justify-between md:gap-6 md:px-8 md:text-start">
               <Link
                 {...homeLink(lang)}
                 dir="ltr"
                 className="inline-flex min-h-11 items-center text-ink"
               >
-                <OrbisLockup className="h-[1.78rem]" mottoClassName="mt-[0.7rem] text-[0.75rem]" />
+                <OrbisLockup className="h-[1.3rem] md:h-[1.6rem]" mottoClassName="mt-[0.5rem] text-[0.66rem] md:text-[0.72rem]" />
               </Link>
+              {/* One quiet line of links, centred on a phone, at the right on a desktop. */}
               <nav aria-label={legalCopy(lang).footer}>
-                <ul className="flex flex-col items-center md:flex-row md:flex-wrap md:justify-center md:gap-x-6">
-                  <li>
-                    <Link
-                      {...aboutLink(lang)}
-                      className="inline-flex min-h-11 items-center text-base text-ink underline-offset-4 hover:underline"
-                    >
-                      {aboutCopy(lang).title}
-                    </Link>
-                  </li>
-                  {LEGAL_PAGES.map((page) => (
-                    <li key={page}>
+                <ul className="footer-links flex flex-wrap items-center justify-center text-[0.82rem] md:text-[0.9rem]">
+                  {[
+                    { key: "about", link: aboutLink(lang), title: aboutCopy(lang).title },
+                    ...LEGAL_PAGES.map((page) => ({
+                      key: page,
+                      link: legalLink(lang, page),
+                      title: legalCopy(lang)[page].title,
+                    })),
+                  ].map((item, index) => (
+                    <li key={item.key} className="inline-flex items-center">
+                      {index > 0 ? (
+                        <span aria-hidden="true" className="px-2.5 text-muted">
+                          ·
+                        </span>
+                      ) : null}
                       <Link
-                        {...legalLink(lang, page)}
-                        className="inline-flex min-h-11 items-center text-base text-ink underline-offset-4 hover:underline"
+                        {...item.link}
+                        className="inline-flex min-h-11 items-center text-ink/85 underline-offset-4 hover:text-ink hover:underline"
                       >
-                        {legalCopy(lang)[page].title}
+                        {item.title}
                       </Link>
                     </li>
                   ))}
