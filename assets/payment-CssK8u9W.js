@@ -1,1 +1,0 @@
-import{r as e}from"./pages-Bwty2PxD.js";var t=e;export{t as component};

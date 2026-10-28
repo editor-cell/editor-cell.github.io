@@ -1,1 +1,0 @@
-import{t as e}from"./about-BRTPi5Cu.js";var t=e;export{t as component};

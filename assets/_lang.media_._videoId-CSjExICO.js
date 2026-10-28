@@ -1,1 +1,0 @@
-import{Yt as e}from"./shell-WIss2wTp.js";import{n as t}from"./videos-UdqinbNp.js";import{n}from"./index-BOssH6P2.js";var r=e();function i(){return(0,r.jsx)(t,{video:n.useLoaderData()})}export{i as component};
