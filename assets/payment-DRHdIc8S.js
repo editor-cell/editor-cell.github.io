@@ -1,0 +1,1 @@
+import{r as e}from"./pages-CAPy0m1o.js";var t=e;export{t as component};
