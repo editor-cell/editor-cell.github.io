@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "vite dev --host 0.0.0.0 --port 8080",
     "build": "npm run build:pages",
-    "build:pages": "ORBIS_PAGES=1 vite build && node scripts/pages-shell.mjs && node scripts/check-built-site.mjs",
+    "build:pages": "ORBIS_PAGES=1 vite build && node scripts/pages-shell.mjs && node scripts/reading-pdfs.mjs && node scripts/check-built-site.mjs",
     "preview": "node scripts/site-server.mjs dist/client 8081",
     "typecheck": "tsc --noEmit",
     "test:site": "node --experimental-strip-types --test scripts/*.test.mjs src/lib/front-order.test.ts src/lib/drafts.test.ts src/lib/search.test.ts src/lib/transcript.test.ts src/lib/members/members.test.ts supabase/orbis-members.test.mjs scripts/browser/serve.test.mjs",
@@ -52,6 +52,8 @@
     "sharp": "^0.34.5",
     "typescript-eslint": "^8.56.1",
     "@electric-sql/pglite": "^0.5.4",
-    "wrangler": "4.152.0"
+    "wrangler": "4.152.0",
+    "dejavu-fonts-ttf": "2.37.3",
+    "pdfkit": "0.20.2"
   }
 }

@@ -6,7 +6,8 @@ import { imageSet } from "@/lib/image-set";
 import { imageCaption } from "@/lib/editorial";
 import { langMeta, useCopy } from "@/lib/i18n";
 import { readLink, videoLink, mediaLink } from "@/lib/lang-path";
-import { storyTitle, formatDate } from "@/lib/text";
+import { storyTitle, formatDateRange } from "@/lib/text";
+import { TRIAL } from "@/lib/site";
 import { videosIn, videoWords, formatDuration } from "@/lib/videos";
 import type { Lang, StoryCard } from "@/lib/types";
 
@@ -16,6 +17,11 @@ const WORDS: Record<Lang, { latest: string; current: string; selection: string; 
   ar: { latest: "أحدث المقالات", current: "العدد الحالي", selection: "مختارات للقراءة", issue: "العدد {n}", contents: "تصفح المقالات", read: "اقرأ المقال", count: "{n} مقالات" },
   fr: { latest: "Derniers articles", current: "Numéro actuel", selection: "Sélection de lectures", issue: "Numéro {n}", contents: "Découvrir les articles", read: "Lire l’article", count: "{n} articles" },
   es: { latest: "Últimos artículos", current: "Número actual", selection: "Selección de lecturas", issue: "Número {n}", contents: "Explorar los artículos", read: "Leer el artículo", count: "{n} artículos" },
+};
+
+const PREVIEW: Record<Lang, string> = {
+  en: "Preview issue", tr: "Deneme sayısı", ar: "عدد تجريبي",
+  fr: "Numéro d’essai", es: "Número de prueba",
 };
 
 function summary(story: StoryCard, lang: Lang) {
@@ -63,6 +69,7 @@ function CurrentIssue({ stories, lang }: { stories: StoryCard[]; lang: Lang }) {
   const words = WORDS[lang];
   const issue = lead.issue;
   const selection = issue === undefined ? stories.slice(0, 9) : stories.filter(story => story.issue === issue);
+  const dates = selection.map(story => story.date).sort();
   return (
     <section className="front-issue" aria-labelledby="front-current-issue">
       <h2 id="front-current-issue" className="front-section-heading">{words.current}</h2>
@@ -72,8 +79,8 @@ function CurrentIssue({ stories, lang }: { stories: StoryCard[]; lang: Lang }) {
           <FrontPicture story={lead} lang={lang} sizes={imageSizes("13vw", "32vw")} />
         </div>
         <div className="front-issue-copy">
-          <h3 className="paper-title">{issue === undefined ? words.selection : words.issue.replace("{n}", String(issue))}</h3>
-          {issue !== undefined ? <p className="front-issue-date">{formatDate(lead.date, lang)}</p> : null}
+          <h3 className="paper-title">{issue === undefined ? (TRIAL ? PREVIEW[lang] : words.selection) : words.issue.replace("{n}", String(issue))}</h3>
+          <p className="front-issue-date">{formatDateRange(dates[0], dates[dates.length - 1], lang)}</p>
           <p>{words.count.replace("{n}", String(selection.length))}</p>
           <Link {...readLink(lang, lead.id)} className="front-issue-featured">{storyTitle(lead, lang)}</Link>
         </div>

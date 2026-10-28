@@ -11,7 +11,7 @@ import type { Lang, Story, StoryCard } from "@/lib/types";
 /**
  * What sits at the end of a reading and around it, open to every reader:
  * - a passage copied from the reading carries its source with it;
- * - "Save as PDF or print": the browser's own print sheet, with a clean page (styles.css, @media print);
+ * - a downloadable PDF containing the reading and its sources;
  * - a few related readings, same section first.
  */
 
@@ -27,31 +27,31 @@ const WORDS: Record<
   tr: {
     source: "Kaynak",
     pdf: "PDF",
-    pdfLong: "PDF olarak kaydet ya da yazdır",
+    pdfLong: "PDF indir",
     related: "İlgili okumalar",
   },
   en: {
     source: "Source",
     pdf: "PDF",
-    pdfLong: "Save as PDF or print",
+    pdfLong: "Download PDF",
     related: "Related readings",
   },
   ar: {
     source: "المصدر",
     pdf: "PDF",
-    pdfLong: "حفظ بصيغة PDF أو طباعة",
+    pdfLong: "تنزيل PDF",
     related: "قراءات ذات صلة",
   },
   fr: {
     source: "Source",
     pdf: "PDF",
-    pdfLong: "Enregistrer en PDF ou imprimer",
+    pdfLong: "Télécharger le PDF",
     related: "Lectures liées",
   },
   es: {
     source: "Fuente",
     pdf: "PDF",
-    pdfLong: "Guardar como PDF o imprimir",
+    pdfLong: "Descargar PDF",
     related: "Lecturas relacionadas",
   },
 };
@@ -118,19 +118,21 @@ export function useSignedCopy(
   }, [area, story, lang]);
 }
 
-/** "PDF" in the line with A− A+: opens the browser's print sheet, where "Save as PDF" lives. */
-export function PdfButton({ lang }: { lang: Lang }) {
+/** PDFs are produced from public readings with every site build. */
+export function PdfButton({ story, lang }: { story: Story; lang: Lang }) {
   const words = WORDS[lang];
+  const published = CARDS.find((card) => card.id === story.id);
+  if (story.status === "draft" || story.membersOnly || !published?.locales[lang].written) return null;
   return (
-    <button
-      type="button"
-      onClick={() => window.print()}
+    <a
+      href={`/assets/pdf/${lang}/${encodeURIComponent(story.id)}.pdf`}
+      download={`orbis-${story.id}-${lang}.pdf`}
       aria-label={words.pdfLong}
       title={words.pdfLong}
       className="inline-flex h-8 items-center px-0 text-sm text-ink tracking-wide sm:px-1.5"
     >
       <span dir="ltr">{words.pdf}</span>
-    </button>
+    </a>
   );
 }
 

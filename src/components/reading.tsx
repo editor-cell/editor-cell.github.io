@@ -230,7 +230,7 @@ function Reading({ story }: { story: Story | null }) {
             ) : null}
             <ShareButton lang={lang} title={locale.title || story.locales.en.title} />
             <div className="ms-auto flex">
-              <PdfButton lang={lang} />
+              <PdfButton story={story} lang={lang} />
             </div>
           </div>
         </header>

@@ -31,6 +31,17 @@ export function formatDate(iso: string, lang: Lang): string {
   }).format(date);
 }
 
+/** The dates covered by a selection, rather than an invented issue publication date. */
+export function formatDateRange(start: string, end: string, lang: Lang): string {
+  const from = new Date(`${start}T00:00:00Z`);
+  const to = new Date(`${end}T00:00:00Z`);
+  if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime())) return start;
+  const format = new Intl.DateTimeFormat(INTL[lang], {
+    day: "numeric", month: "short", year: "numeric", timeZone: "UTC",
+  });
+  return start === end ? format.format(from) : format.formatRange(from, to);
+}
+
 export function safeHttpUrl(raw: string): string | null {
   try {
     const url = new URL(raw.trim());
