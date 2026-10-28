@@ -5,8 +5,8 @@ import { homeHead, sectionHead } from "@/lib/site";
 import { toTheme, type Theme } from "@/lib/types";
 
 /**
- * A one-part address is either a language's front page (/tr, /ar, /fr, /es) or an
- * English section (/climate, /politics, …).
+ * A one-part address is either a language's front page (/tr) or an
+ * English section (/climate-environment, /economy-politics, …).
  */
 export const Route = createFileRoute("/$section")({
   beforeLoad: ({ params }) => {
@@ -17,7 +17,7 @@ export const Route = createFileRoute("/$section")({
     const theme = toTheme(part);
     // Neither: the site has no page here.
     if (!theme) throw notFound();
-    // An old two-part section name: to the section that replaced it.
+    // An old section name: to the section that replaced it.
     if (theme !== part) {
       throw redirect({ to: "/$section", params: { section: theme }, replace: true });
     }

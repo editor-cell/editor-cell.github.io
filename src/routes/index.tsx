@@ -5,7 +5,7 @@ import { toTheme } from "@/lib/types";
 
 /** The front page in English. The other languages' front pages are /tr, /ar, /fr, /es. */
 export const Route = createFileRoute("/")({
-  // Sections used to open as /?s=climate; old links now land on /climate.
+  // Sections used to open as /?s=climate; old links now land on /climate-environment.
   beforeLoad: ({ search }) => {
     const s = (search as Record<string, unknown>).s;
     const theme = typeof s === "string" ? toTheme(s) : undefined;

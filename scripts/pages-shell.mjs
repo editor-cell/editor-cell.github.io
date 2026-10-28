@@ -5,6 +5,7 @@ import { readVideoIndex } from "./video-index.mjs";
 import { writeFeeds } from "./feed.mjs";
 import { writeSearchIndex } from "./search-index.mjs";
 import { writeImageSizes } from "./image-sizes.mjs";
+import { writeSectionRedirects } from "./section-redirects.mjs";
 
 /**
  * After `vite build` (see vite.config.ts): checks that every page was written out, makes
@@ -99,6 +100,7 @@ const sitemap = [
   "",
 ].join("\n");
 writeFileSync(join(root, "sitemap.xml"), sitemap);
+writeSectionRedirects(root);
 writeFeeds({ root, langs: LANGS, site, name });
 writeSearchIndex(root);
 writeFileSync(

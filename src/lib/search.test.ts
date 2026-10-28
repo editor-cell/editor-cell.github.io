@@ -17,7 +17,7 @@ function card(id: string, lang: Lang, fields: Partial<LocaleCard>, date = "2026-
   const locales = Object.fromEntries(
     LANGS.map((l) => [l, l === lang ? locale(fields) : locale({ written: false })]),
   ) as Record<Lang, LocaleCard>;
-  return { id, file: `${id}.json`, theme: "climate", date, locales };
+  return { id, file: `${id}.json`, theme: "climate-environment", date, locales };
 }
 
 const ids = (cards: StoryCard[]) => cards.map((c) => c.id);
@@ -105,8 +105,23 @@ test("region and section name are searched", () => {
     card("b", "en", { title: "Rivers", region: "Asia" }),
   ];
   assert.deepEqual(ids(searchCards(cards, "en", "africa")), ["a"]);
-  // Both cards are in the climate section.
+  // Both cards are in the Climate & Environment section.
   assert.deepEqual(ids(searchCards(cards, "en", "climate")).sort(), ["a", "b"]);
+});
+
+test("both halves of every merged section name find its readings in English and Turkish", () => {
+  const queries = [
+    ["climate-environment", ["climate", "environment"], ["iklim", "cevre"]],
+    ["economy-politics", ["economy", "politics"], ["ekonomi", "politika"]],
+    ["science-technology", ["science", "technology"], ["bilim", "teknoloji"]],
+  ] as const;
+  for (const [theme, en, tr] of queries) {
+    for (const [lang, words] of [["en", en], ["tr", tr]] as const) {
+      const reading = { ...card("reading", lang, { title: "Report" }), theme };
+      for (const word of words)
+        assert.deepEqual(ids(searchCards([reading], lang, word)), ["reading"], `${lang}: ${word}`);
+    }
+  }
 });
 
 test("only readings written in the page's language are searched", () => {

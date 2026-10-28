@@ -1,6 +1,7 @@
 /* Desktop rules stay inside their own width queries. */
 @media (--orbis-desktop) {
   .band-reader {
+    --masthead-mark-width: min(22rem, 34vw);
     display: grid;
     grid-template-columns: minmax(2.75rem, 1fr) auto minmax(2.75rem, 1fr);
     column-gap: 0.75rem;
@@ -8,17 +9,23 @@
   .band-reader > .frame-search { justify-self: end; }
   .band-reader > .frame-menu { justify-self: start; }
   .band-reader > .band-brand { justify-self: center; }
-  /* The black masthead: tools on the top line, the name alone and large under them. */
+  /* Keep the logo and motto fixed: 0.5rem + the old 2.75rem tool row - 0.75rem.
+     The tools now occupy the logo's row, centred on the mark rather than the motto. */
   .band-row.band-reader {
-    grid-template-areas: "menu . search" "brand brand brand";
+    grid-template-areas: "menu brand search";
     row-gap: 0;
-    padding-top: 0.5rem;
+    padding-top: 2.5rem;
     padding-bottom: 1.75rem;
   }
   .band-reader > .frame-menu { grid-area: menu; }
   .band-reader > .frame-search { grid-area: search; }
-  .band-reader > .band-brand { grid-area: brand; margin-top: -0.75rem; }
-  .band-reader .band-mark { width: min(22rem, 34vw); }
+  .band-reader > :is(.frame-menu, .frame-search) {
+    align-self: start;
+    /* Keep this ratio in step with the 1516 × 308 logo SVG. */
+    margin-top: calc((var(--masthead-mark-width) * 308 / 1516 - 2.75rem) / 2);
+  }
+  .band-reader > .band-brand { grid-area: brand; }
+  .band-reader .band-mark { width: var(--masthead-mark-width); }
   .band-reader .masthead-motto { margin-top: 0.85rem; font-size: 1rem; }
   .magazine-mobile { display: none; }
 }
@@ -888,4 +895,20 @@
     border-top: 0;
     padding-top: 0;
   }
+}
+
+/* The closing band keeps its horizontal composition, with balanced breathing room. */
+@media (--orbis-desktop) {
+  .site-footer { padding-block: 2.5rem; }
+  .footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    padding-inline: 2rem;
+    text-align: start;
+  }
+  .footer-mark { height: 1.6rem; }
+  .footer-motto { margin-top: 0.5rem; font-size: 0.72rem; }
+  .footer-links { font-size: 0.9rem; column-gap: 0.25rem; }
 }

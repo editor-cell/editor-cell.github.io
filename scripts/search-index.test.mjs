@@ -21,7 +21,7 @@ const copy = (title, dek, body, region = "Global") => ({ title, dek, region, bod
 function fullStory(id, date) {
   return {
     id,
-    theme: "climate",
+    theme: "climate-environment",
     date,
     locales: {
       tr: copy("Başlık", "Özet", "Gövde metni. [1]", "Küresel"),
@@ -62,7 +62,7 @@ test("records carry id, theme, date, title, dek, region and a cleaned body", (t)
   const [record] = read(out, "en");
   assert.deepEqual(Object.keys(record), ["id", "theme", "date", "title", "dek", "region", "body"]);
   assert.equal(record.id, "reading");
-  assert.equal(record.theme, "climate");
+  assert.equal(record.theme, "climate-environment");
   assert.equal(record.date, "2026-02-01");
   assert.equal(record.title, "Title");
   assert.equal(record.dek, "Summary");

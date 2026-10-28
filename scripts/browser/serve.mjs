@@ -1,6 +1,7 @@
 import { createReadStream, existsSync, statSync } from "node:fs";
 import { createServer } from "node:http";
 import { extname, join, normalize, sep } from "node:path";
+import { readRedirects, redirectFor } from "../section-redirects.mjs";
 
 /**
  * Serves a built site the way Cloudflare serves the repository root (wrangler.jsonc:
@@ -50,7 +51,13 @@ export function resolveAddress(root, address) {
 
 /** Starts the server on a free port; resolves to { url, close }. */
 export function serveSite(root) {
+  const redirects = readRedirects(root);
   const server = createServer((req, res) => {
+    const redirect = redirectFor(redirects, req.url ?? "/");
+    if (redirect) {
+      res.writeHead(redirect.status, { location: redirect.location }).end();
+      return;
+    }
     const file = resolveAddress(root, req.url ?? "/");
     const status = file ? 200 : 404;
     const body = file ?? join(root, "404.html");

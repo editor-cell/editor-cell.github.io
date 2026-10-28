@@ -25,7 +25,7 @@ function story(extra: { audio?: string; image?: string } = {}) {
   });
   return {
     id: "carbon-books",
-    theme: "climate",
+    theme: "climate-environment",
     date: "2026-09-30",
     sources: [],
     ...(extra.image ? { image: { src: extra.image, credit: "" } } : {}),
@@ -90,4 +90,17 @@ test("clearing removes the draft; a broken entry reads as no draft", () => {
     globalThis as { localStorage: { setItem: (k: string, v: string) => void } }
   ).localStorage.setItem("orbis-draft:carbon-books", "{not json");
   assert.equal(loadDraft("carbon-books"), null);
+});
+
+
+test("old saved draft sections move to their merged home without changing the publish base", () => {
+  const draft = { ...JSON.parse(JSON.stringify(story())), theme: "politics" };
+  const base = JSON.stringify(draft);
+  localStorage.setItem("orbis-draft:old", JSON.stringify({
+    story: draft, hasBase: true, base, mediaDropped: false, savedAt: 1,
+  }));
+  const saved = loadDraft("old");
+  assert.equal(saved?.story.theme, "economy-politics");
+  assert.equal(saved?.base, base);
+  assert.equal(saved?.story.locales.tr.title, "Başlık");
 });

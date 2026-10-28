@@ -117,7 +117,7 @@ export function accountLink(lang: Lang, back?: string, join?: boolean) {
  * language or from location. A choice is stored only when the reader picks a
  * language in the menu (see rememberLang), and the next visit to a plain address
  * opens in that language.
- * 1. An old section link (/?s=climate) goes to the section's own address (/climate).
+ * 1. An old section link (/?s=climate) goes to the section's current address (/climate-environment).
  * 2. A stored manual choice other than English sends a plain front page or section
  *    page to that language. A reading's address is never changed, so a shared link
  *    opens in the language it was shared in. An address that already names a

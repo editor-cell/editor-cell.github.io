@@ -2207,8 +2207,8 @@ form[role="search"]:focus-within {
   display: none;
 }
 
-/* The reader masthead is a black band (the owner, 28 Oct 2026): menu and search on its top
-   line, ORBIS large and alone under them, the motto beneath. Cream on black in both looks;
+/* The reader masthead is a black band (the owner, 28 Oct 2026): menu and search flank
+   ORBIS, with the motto beneath. Cream on black in both looks;
    the layout lives in mobile.css and desktop.css. The editor's own band keeps the paper. */
 .band-row.band-reader {
   background: var(--color-panel);

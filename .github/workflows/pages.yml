@@ -8,6 +8,7 @@ on:
       - robots.txt
       - sitemap.xml
       - feed.xml
+      - _redirects
       - read/**
       - media/**
       - .site-output.json

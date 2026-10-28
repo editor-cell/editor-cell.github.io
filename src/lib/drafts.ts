@@ -1,4 +1,4 @@
-import type { Story } from "@/lib/types";
+import { normalizeTheme, type Story } from "./types.ts";
 
 /**
  * Unpublished changes in the panel, kept in this browser so that a reload, a closed tab
@@ -32,7 +32,9 @@ export function loadDraft(editorId: string): SavedDraft | null {
     const raw = localStorage.getItem(key(editorId));
     if (!raw) return null;
     const saved = JSON.parse(raw) as SavedDraft;
-    return saved?.story?.locales ? saved : null;
+    if (!saved?.story?.locales) return null;
+    saved.story.theme = normalizeTheme(saved.story.theme);
+    return saved;
   } catch {
     return null;
   }

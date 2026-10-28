@@ -2,6 +2,8 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { readStoryIndex } from "./story-index-plugin.mjs";
 import { readVideoIndex } from "./video-index.mjs";
+import { readRedirects, redirectFor, sectionRedirects } from "./section-redirects.mjs";
+import { sectionCopy } from "../src/lib/section-copy.js";
 
 /**
  * The last check before publishing, run on the finished site in dist/client (npm run
@@ -18,6 +20,7 @@ import { readVideoIndex } from "./video-index.mjs";
  */
 
 const root = join(process.cwd(), "dist", "client");
+const redirects = readRedirects(root);
 const problems = [];
 const warnings = [];
 
@@ -34,8 +37,12 @@ function htmlFiles(dir) {
   return out;
 }
 
-function resolves(address) {
+function resolves(address, visited = new Set()) {
   const path = decodeURIComponent(address.split(/[?#]/)[0]);
+  if (visited.has(path)) return false;
+  visited.add(path);
+  const redirect = redirectFor(redirects, path);
+  if (redirect) return resolves(redirect.location, visited);
   if (path === "" || path === "/") return existsSync(join(root, "index.html"));
   if (SHELL_ROUTES.test(path)) return true;
   const base = join(root, path);
@@ -54,6 +61,26 @@ const LANGS = [
 ].map((m) => m[1]);
 const escapeHtml = (text) =>
   text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+/** Every old section address redirects to a built canonical page, never a chain or a 404. */
+for (const expected of sectionRedirects()) {
+  const actual = redirectFor(redirects, expected.from);
+  if (actual?.status !== 301 || actual.location !== expected.to || !resolves(expected.to))
+    problems.push(`${expected.from}: missing permanent redirect to ${expected.to}`);
+}
+const sitemap = readFileSync(join(root, "sitemap.xml"), "utf8");
+for (const lang of LANGS) {
+  const prefix = lang === "en" ? "" : `/${lang}`;
+  for (const [theme, label] of Object.entries(sectionCopy[lang])) {
+    const file = join(root, prefix, `${theme}.html`);
+    if (!existsSync(file) || !readFileSync(file, "utf8").includes(escapeHtml(label)))
+      problems.push(`${prefix}/${theme}: section page is missing its current label`);
+    if (!sitemap.includes(`${prefix}/${theme}</loc>`))
+      problems.push(`${prefix}/${theme}: canonical section is missing from the sitemap`);
+  }
+}
+for (const { from } of sectionRedirects())
+  if (sitemap.includes(`${from}</loc>`)) problems.push(`${from}: old section remains in the sitemap`);
+
 for (const story of readStoryIndex("content/stories")) {
   for (const lang of LANGS) {
     const copy = story.locales[lang];

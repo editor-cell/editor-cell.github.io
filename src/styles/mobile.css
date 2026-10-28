@@ -17,6 +17,7 @@
     min-width: 0;
   }
   .band-reader {
+    --masthead-mark-width: min(10.75rem, 52vw);
     display: grid;
     grid-template-columns: minmax(2.75rem, 1fr) auto minmax(2.75rem, 1fr);
   }
@@ -29,18 +30,23 @@
   .band-reader > .band-brand {
     justify-self: center;
   }
-  /* The black masthead: tools on the top line, the name alone and large under them. */
+  /* Preserve the old logo position and band height: the former tool row's space is
+     now top padding (0.15rem + 2.75rem - 0.7rem). Tools share the logo's centre. */
   .band-row.band-reader {
-    grid-template-areas: "menu . search" "brand brand brand";
+    grid-template-areas: "menu brand search";
     row-gap: 0;
-    padding-top: 0.15rem;
+    padding-top: 2.2rem;
     padding-bottom: 0.8rem;
   }
   .band-reader > .frame-menu { grid-area: menu; }
   .band-reader > .frame-search { grid-area: search; }
-  /* A quarter slimmer than at first (the owner, 28 Oct 2026): the cover reaches the first screen. */
-  .band-reader > .band-brand { grid-area: brand; margin-top: -0.7rem; }
-  .band-reader .band-mark { width: min(10.75rem, 52vw); }
+  .band-reader > :is(.frame-menu, .frame-search) {
+    align-self: start;
+    /* The mark's SVG is 1516 × 308; the motto is outside this alignment. */
+    margin-top: calc((var(--masthead-mark-width) * 308 / 1516 - 2.75rem) / 2);
+  }
+  .band-reader > .band-brand { grid-area: brand; }
+  .band-reader .band-mark { width: var(--masthead-mark-width); }
   .band-reader .masthead-motto { margin-top: 0.45rem; font-size: 0.74rem; }
 }
 
@@ -398,4 +404,20 @@
   .media-strip:has(> li:only-child) {
     grid-auto-columns: 100%;
   }
+}
+
+/* A measured closing band: the same name and links, with room between the two rows. */
+@media (--orbis-phone) {
+  .site-footer { padding-block: 2.75rem 2.5rem; }
+  .footer-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding-inline: 1.25rem;
+    text-align: center;
+  }
+  .footer-mark { height: 1.3rem; }
+  .footer-motto { margin-top: 0.5rem; font-size: 0.66rem; }
+  .footer-links { font-size: 0.82rem; }
 }

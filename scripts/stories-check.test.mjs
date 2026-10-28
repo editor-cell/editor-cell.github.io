@@ -21,12 +21,6 @@ const THEMES = [
     .match(/export const THEMES = \[([\s\S]*?)\]/)[1]
     .matchAll(/"([^"]+)"/g),
 ].map((m) => m[1]);
-const LEGACY = [
-  ...(
-    readFileSync("src/lib/types.ts", "utf8").match(/LEGACY_THEMES[^{]*\{([\s\S]*?)\}/)?.[1] ?? ""
-  ).matchAll(/["']?([a-z-]+)["']?\s*:/g),
-].map((m) => m[1]);
-
 /** A media path inside a reading (images/…, audio/…, videos/…) exists in the repository. */
 function mediaExists(path) {
   if (!path || /^(https?:|data:|blob:)/.test(path)) return true;
@@ -67,7 +61,7 @@ for (const file of files) {
     if (story.status === "draft") return;
 
     assert.ok(
-      THEMES.includes(story.theme) || LEGACY.includes(story.theme),
+      THEMES.includes(story.theme),
       `${file}: unknown section "${story.theme}"`,
     );
     assert.match(String(story.date), /^\d{4}-\d{2}-\d{2}$/, `${file}: date must be YYYY-MM-DD`);

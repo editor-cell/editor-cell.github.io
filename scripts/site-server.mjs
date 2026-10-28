@@ -2,6 +2,7 @@ import { createServer } from "node:http";
 import { createReadStream, existsSync, statSync } from "node:fs";
 import { extname, resolve, sep } from "node:path";
 import { pathToFileURL } from "node:url";
+import { readRedirects, redirectFor } from "./section-redirects.mjs";
 
 const MIME = {
   ".html": "text/html",
@@ -22,6 +23,7 @@ const file = (path) => existsSync(path) && statSync(path).isFile();
 /** Static assets, extensionless HTML, and a real 404 response with the site shell. */
 export function siteServer(directory) {
   const root = resolve(directory);
+  const redirects = readRedirects(root);
   return createServer((req, res) => {
     if (!["GET", "HEAD"].includes(req.method)) {
       res.writeHead(405).end();
@@ -32,6 +34,11 @@ export function siteServer(directory) {
       name = decodeURIComponent(new URL(req.url, "http://localhost").pathname);
     } catch {
       res.writeHead(400).end();
+      return;
+    }
+    const redirect = redirectFor(redirects, req.url);
+    if (redirect) {
+      res.writeHead(redirect.status, { location: redirect.location }).end();
       return;
     }
     const base = resolve(root, `.${name}`);

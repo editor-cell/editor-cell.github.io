@@ -9,14 +9,11 @@ export type Lang = (typeof ALL_LANGS)[number];
 export const LANGS = ["en", "tr"] as const satisfies readonly Lang[];
 
 export const THEMES = [
-  "climate",
-  "environment",
-  "politics",
-  "economy",
-  "science",
-  "technology",
-  "culture",
+  "climate-environment",
+  "economy-politics",
+  "science-technology",
   "health",
+  "culture",
 ] as const;
 export type Theme = (typeof THEMES)[number];
 
@@ -95,22 +92,28 @@ export function isTheme(value: string): value is Theme {
   return (THEMES as readonly string[]).includes(value);
 }
 
-/** Older two-part sections, mapped to the first half of their old label. */
-const LEGACY_THEMES: Record<string, Theme> = {
-  // "Research" was a section until October 2026; every reading rests on research.
-  research: "science",
-  cities: "politics",
-  trade: "science",
+/** Old section addresses keep pointing directly to their current home. */
+export const LEGACY_THEMES: Record<string, Theme> = {
+  climate: "climate-environment",
+  environment: "climate-environment",
+  economy: "economy-politics",
+  politics: "economy-politics",
+  science: "science-technology",
+  technology: "science-technology",
+  // Sections used before October 2026 also keep their links and saved drafts.
+  research: "science-technology",
+  cities: "economy-politics",
+  trade: "science-technology",
   knowledge: "culture",
 };
 
-/** A current section, or the new home of an old two-part one; otherwise undefined. */
+/** A current section, or the new home of an old one; otherwise undefined. */
 export function toTheme(value: string): Theme | undefined {
   return isTheme(value) ? value : LEGACY_THEMES[value];
 }
 
 export function normalizeTheme(value: string): Theme {
-  return toTheme(value) ?? "science";
+  return toTheme(value) ?? "science-technology";
 }
 
 export function emptyLocale(): LocaleCopy {
@@ -120,7 +123,7 @@ export function emptyLocale(): LocaleCopy {
 export function blankStory(): Story {
   return {
     id: crypto.randomUUID(),
-    theme: "climate",
+    theme: "climate-environment",
     date: new Date().toISOString().slice(0, 10),
     sources: [],
     locales: {

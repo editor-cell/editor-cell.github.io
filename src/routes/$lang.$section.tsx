@@ -4,7 +4,7 @@ import { DEFAULT_LANG, isPrefixed } from "@/lib/lang-path";
 import { sectionHead } from "@/lib/site";
 import { toTheme, type Theme } from "@/lib/types";
 
-/** A section in Turkish, Arabic, French or Spanish: /tr/climate, /ar/politics, … */
+/** A section in Turkish: /tr/climate-environment, /tr/economy-politics, … */
 export const Route = createFileRoute("/$lang/$section")({
   beforeLoad: ({ params }) => {
     const theme = toTheme(params.section);

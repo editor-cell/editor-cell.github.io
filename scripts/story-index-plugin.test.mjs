@@ -9,7 +9,7 @@ test("drafts stay out of the public index while legacy published files survive",
   const dir = mkdtempSync(join(tmpdir(), "orbis-index-"));
   t.after(() => rmSync(dir, { recursive: true, force: true }));
   const locale = { title: "Reading", body: "A sourced reading.", dek: "Summary" };
-  const story = { id: "legacy", theme: "science", date: "2026-01-01", locales: { en: locale } };
+  const story = { id: "legacy", theme: "science-technology", date: "2026-01-01", locales: { en: locale } };
   writeFileSync(join(dir, "legacy.json"), JSON.stringify(story));
   writeFileSync(
     join(dir, "draft.json"),
@@ -30,7 +30,7 @@ test("publishing a draft restores its card and preserves author, dates and local
   const story = {
     id: "reading",
     status: "published",
-    theme: "science",
+    theme: "science-technology",
     date: "2026-01-01",
     updatedAt: "2026-01-02",
     author: "Author",

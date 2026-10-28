@@ -22,7 +22,7 @@ test("page numbers do not create extra pages in a short downloadable reading", a
   const out = await mkdtemp(join(tmpdir(), "orbis-pdf-"));
   try {
     const file = await writeReadingPdf({
-      story: { ...story, theme: "science", date: "2026-10-09", sources: [{ n: 1, label: "Source", url: "https://example.org/source" }],
+      story: { ...story, theme: "science-technology", date: "2026-10-09", sources: [{ n: 1, label: "Source", url: "https://example.org/source" }],
         locales: { tr: { title: "Türkçe okuma", dek: "İçerik ve kaynakları.", body: "İstanbul'da güneş, gölge, ışık ve yağmur. [1]" } } },
       lang: "tr",
     }, { root: out, out, site: "https://example.org" });

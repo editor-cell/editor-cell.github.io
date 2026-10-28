@@ -91,6 +91,24 @@ function exportWorkingCopy(repo, dir) {
   }
 }
 
+/** Adapt only the copied readings to the taxonomy supported by this code version. */
+export function normalizeFixtureThemes(dir) {
+  const types = readFileSync(join(dir, "src/lib/types.ts"), "utf8");
+  const current = new Set([...types.match(/export const THEMES = \[([\s\S]*?)\]/)[1]
+    .matchAll(/"([^"]+)"/g)].map((match) => match[1]));
+  const legacy = types.match(/(?:export )?const LEGACY_THEMES[^=]*=\s*\{([\s\S]*?)\}/)?.[1] ?? "";
+  const aliases = Object.fromEntries([...legacy.matchAll(/^\s*(?:"([a-z-]+)"|([a-z-]+)):\s*"([a-z-]+)"/gm)]
+    .map((match) => [match[1] || match[2], match[3]]));
+  const stories = join(dir, "content/stories");
+  for (const name of readdirSync(stories).filter((file) => file.endsWith(".json"))) {
+    const file = join(stories, name);
+    const story = JSON.parse(readFileSync(file, "utf8"));
+    if (current.has(story.theme) || !current.has(aliases[story.theme])) continue;
+    story.theme = aliases[story.theme];
+    writeFileSync(file, JSON.stringify(story, null, 2) + "\n");
+  }
+}
+
 /** Replaces the readings, videos and their media with the fixtures. */
 function placeFixtures(repo, dir) {
   const source = join(repo, FIXTURES);
@@ -151,6 +169,7 @@ export function buildFixtureSite(repo, name, sha, { tweak } = {}) {
   if (sha) exportCommit(repo, sha, dir);
   else exportWorkingCopy(repo, dir);
   placeFixtures(repo, dir);
+  normalizeFixtureThemes(dir);
   // A change made to this copy only (the open-tab check builds a "next publish" this way).
   tweak?.(dir);
   linkPackages(repo, dir);

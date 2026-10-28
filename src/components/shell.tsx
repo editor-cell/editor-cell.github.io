@@ -172,7 +172,7 @@ export function Shell({
   return (
     <ToolsContext.Provider value={tools}>
       <div className={`flex min-h-dvh flex-col bg-paper text-ink ${section === "all" ? "orbis-home" : ""} ${layout === "video" ? "orbis-video" : ""}`}>
-        {/* The name and tools share the page's paper, above a single accent rule. */}
+        {/* The reader's tools flank the logo in the black masthead. */}
         <header dir="ltr" className="no-print relative">
           <div
             className={`band-row ${inPanel ? "band-editor" : "band-reader"} flex items-center justify-between gap-x-3 border-b border-pine bg-paper px-5 pt-[0.35rem] pb-[0.45rem] text-ink md:px-8 ${
@@ -270,20 +270,20 @@ export function Shell({
             <div aria-hidden="true" className="no-print h-12 md:h-16" />
           </div>
 
-          {/* The footer is the draft the owner approved (28 Oct 2026): the name and motto, and
-              three links. Sections, languages, joining and the newsletter live in the menu. */}
-          <footer className="site-footer no-print bg-paper py-7 text-ink md:py-9">
-            <div className="page-width flex flex-col items-center gap-3 px-5 text-center md:flex-row md:justify-between md:gap-6 md:px-8 md:text-start">
+          {/* The closing band keeps the name, motto and three links. Its spacing is
+              set separately for phone and desktop, with the existing colours unchanged. */}
+          <footer className="site-footer no-print bg-paper text-ink">
+            <div className="footer-inner page-width">
               <Link
                 {...homeLink(lang)}
                 dir="ltr"
                 className="inline-flex min-h-11 items-center text-ink"
               >
-                <OrbisLockup className="h-[1.3rem] md:h-[1.6rem]" mottoClassName="mt-[0.5rem] text-[0.66rem] md:text-[0.72rem]" />
+                <OrbisLockup className="footer-mark" mottoClassName="footer-motto" />
               </Link>
               {/* One quiet line of links, centred on a phone, at the right on a desktop. */}
               <nav aria-label={legalCopy(lang).footer}>
-                <ul className="footer-links flex flex-wrap items-center justify-center text-[0.82rem] md:text-[0.9rem]">
+                <ul className="footer-links flex flex-wrap items-center justify-center">
                   {[
                     { key: "about", link: aboutLink(lang), title: aboutCopy(lang).title },
                     ...LEGAL_PAGES.map((page) => ({

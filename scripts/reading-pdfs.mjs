@@ -4,6 +4,7 @@ import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";
 import PDFDocument from "pdfkit";
 import sharp from "sharp";
+import { sectionCopy } from "../src/lib/section-copy.js";
 
 const require = createRequire(import.meta.url);
 const regular = require.resolve("dejavu-fonts-ttf/ttf/DejaVuSerif.ttf");
@@ -14,10 +15,9 @@ const MUTED = "#616161";
 const LEFT = 48;
 const BODY_SIZE = 10.5;
 const WORDS = {
-  en: { sources: "Sources", updated: "Updated", online: "Read online", generated: "AI-generated image", themes: ["Climate", "Environment", "Politics", "Economy", "Science", "Technology", "Culture", "Health"] },
-  tr: { sources: "Kaynaklar", updated: "Güncellendi", online: "Sitede oku", generated: "Yapay zekâ ile üretilmiş görsel", themes: ["İklim", "Çevre", "Politika", "Ekonomi", "Bilim", "Teknoloji", "Kültür", "Sağlık"] },
+  en: { sources: "Sources", updated: "Updated", online: "Read online", generated: "AI-generated image" },
+  tr: { sources: "Kaynaklar", updated: "Güncellendi", online: "Sitede oku", generated: "Yapay zekâ ile üretilmiş görsel" },
 };
-const THEMES = ["climate", "environment", "politics", "economy", "science", "technology", "culture", "health"];
 
 /** Private full text and unpublished drafts must never become public static downloads. */
 export function pdfReadings(stories, langs) {
@@ -66,7 +66,7 @@ export async function writeReadingPdf({ story, lang }, { root, out, site }) {
   };
 
   doc.font("Body").fontSize(9).fillColor(ACCENT)
-    .text((words.themes[THEMES.indexOf(story.theme)] || story.theme).toLocaleUpperCase(lang), { characterSpacing: 1.1 });
+    .text((sectionCopy[lang][story.theme] || story.theme).toLocaleUpperCase(lang), { characterSpacing: 1.1 });
   doc.moveDown(0.7);
   doc.font("Heading").fontSize(25).fillColor(INK).text(copy.title, { lineGap: 2 });
   if (copy.dek) {

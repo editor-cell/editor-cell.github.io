@@ -1,6 +1,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { readStoryIndex } from "./story-index-plugin.mjs";
+import { sectionCopy } from "../src/lib/section-copy.js";
 
 const FEED_COPY = {
   en: { language: "", description: (name) => `Sourced readings from ${name}.` },
@@ -16,8 +17,8 @@ const escapeXml = (value) =>
   });
 
 /** Write one RSS 2.0 feed per language after the static pages and sitemap exist. */
-export function writeFeeds({ root, langs, site, name }) {
-  const stories = readStoryIndex("content/stories")
+export function writeFeeds({ root, langs, site, name, storiesDir = "content/stories" }) {
+  const stories = readStoryIndex(storiesDir)
     .filter((story) => !story.id.startsWith("sample-"))
     .map((story) => {
       const date = new Date(story.date);
@@ -43,6 +44,7 @@ export function writeFeeds({ root, langs, site, name }) {
           `      <title>${escapeXml(copy.title)}</title>`,
           `      <link>${link}</link>`,
           `      <description>${escapeXml(copy.dek)}</description>`,
+          `      <category>${escapeXml(sectionCopy[lang][story.theme])}</category>`,
           `      <pubDate>${story.date.toUTCString()}</pubDate>`,
           `      <guid isPermaLink="true">${link}</guid>`,
           "    </item>",
