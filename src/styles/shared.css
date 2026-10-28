@@ -28,13 +28,7 @@ html:not([data-look]) .bg-panel {
   --color-paper: #f4efe6;
 }
 
-/* The requested black masthead uses white lettering; footer and other themes keep their colours. */
-html:not([data-look]) header .band-row {
-  --color-paper: #ffffff;
-}
-
-/* Second scheme: dark, for reading in a dim room. It mirrors the classic one: the band
-   stays the darkest thing on the page, the paper is a soft charcoal rather than pure black,
+/* Second scheme: dark, for reading in a dim room. The paper is a soft charcoal rather than pure black,
    the text an off-white rather than pure white (less glare on long readings), and the
    classic orange accents are lifted to a pale orange so they still read on dark paper. */
 html[data-look="night"] {
@@ -52,18 +46,13 @@ html[data-look="night"] {
   --color-shade: #0d0d0d;
 }
 
-/* Inside the band (masthead, footer, dropdowns opened from the band) the light and grey
+/* Inside dark panels, including the footer, the light and grey
    tones keep the roles they have in the classic scheme: the name and links light, the
    small labels grey. */
 html[data-look="night"] .bg-panel {
   --color-paper: #ece9e2;
   --color-mist: #a8a6a0;
   --color-muted: #3a3a3a;
-}
-
-/* The band is near black on charcoal paper; a hairline keeps its lower edge crisp. */
-html[data-look="night"] header.bg-panel {
-  border-bottom: 1px solid #262626;
 }
 
 /* Pictures are dimmed a touch so a bright photograph does not glare out of a dark page. */

@@ -55,7 +55,7 @@ export function FrameTools({ children }: { children: React.ReactNode }) {
         aria-controls="site-menu"
         aria-label={frame.menu}
         onClick={tools.openMenu}
-        className="frame-menu inline-flex size-11 shrink-0 items-center justify-center text-paper/85 hover:text-paper"
+        className="frame-menu inline-flex size-11 shrink-0 items-center justify-center text-ink"
       >
         <span className="flex w-[17px] flex-col gap-[5px]" aria-hidden="true">
           <span className="h-[1.5px] w-full bg-current" />
@@ -74,7 +74,7 @@ export function FrameTools({ children }: { children: React.ReactNode }) {
           event.preventDefault();
           tools.toggleSearch();
         }}
-        className="frame-search inline-flex size-11 shrink-0 items-center justify-center text-paper/85 hover:text-paper"
+        className="frame-search inline-flex size-11 shrink-0 items-center justify-center text-ink"
       >
         <SearchMark className="size-[17px] md:size-[18px]" />
       </Link>
@@ -83,7 +83,7 @@ export function FrameTools({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * Site frame shared by every page: header, section bar, footer (black, or burgundy in the second scheme).
+ * Site frame shared by every page: paper masthead, section bar and dark footer.
  * `section` marks the active section in the bar ("all" on the home page with no filter).
  */
 export function Shell({
@@ -181,13 +181,10 @@ export function Shell({
   return (
     <ToolsContext.Provider value={tools}>
       <div className={`flex min-h-dvh flex-col bg-paper text-ink ${section === "all" ? "orbis-home" : ""} ${layout === "video" ? "orbis-video" : ""}`}>
-        {/* The header: a black band with the name, the motto under it and the tools, and
-          under the band the section strip on the paper, scrolling sideways when narrow. */}
+        {/* The name and tools share the page's paper, above a single accent rule. */}
         <header dir="ltr" className="no-print relative">
-          {/* The black band carries the name, the motto and the tools, as the footer band does;
-              the section strip runs under it on the paper. */}
           <div
-            className={`band-row ${inPanel ? "band-editor" : "band-reader"} flex items-center justify-between gap-x-6 bg-panel px-5 text-paper md:px-8 ${
+            className={`band-row ${inPanel ? "band-editor" : "band-reader"} flex items-center justify-between gap-x-6 border-b border-pine bg-paper px-5 text-ink md:px-8 ${
               searchOpen ? "relative z-40" : ""
             }`}
           >
@@ -196,10 +193,10 @@ export function Shell({
               <>
                 {brand}
                 <nav className="flex items-center gap-4 text-sm">
-                  <Link {...homeLink(lang)} className="inline-flex min-h-11 items-center text-mist">
+                  <Link {...homeLink(lang)} className="inline-flex min-h-11 items-center text-muted">
                     {copy.atlas}
                   </Link>
-                  <Link to="/panel" className="inline-flex min-h-11 items-center text-paper">
+                  <Link to="/panel" className="inline-flex min-h-11 items-center text-ink">
                     {copy.panel}
                   </Link>
                 </nav>
@@ -215,7 +212,7 @@ export function Shell({
             </div>
           ) : null}
 
-          {/* The test period: one quiet line on the paper, under the black band. */}
+          {/* The test period: one quiet line under the masthead. */}
           {TRIAL && !inPanel ? (
             <p
               dir={meta.dir}
@@ -282,8 +279,7 @@ export function Shell({
         ) : null}
 
         <div dir={meta.dir} lang={meta.html} className="flex flex-1 flex-col">
-          {/* On a wide screen the page keeps a newspaper's width in the middle; the black
-            bands above and below still run edge to edge. */}
+          {/* On a wide screen the reading surface stays centred within the full-width frame. */}
           <div className="page-width flex flex-1 flex-col">
             <div className="flex-1">{children}</div>
 

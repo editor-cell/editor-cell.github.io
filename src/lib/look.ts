@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 /** Colour schemes for the whole site. Since 15 Oct 2026 night there are two: "classic"
- * (Mürekkep, the main one: black bands with the cream logo on white paper) and "night" (the
+ * (Mürekkep, the main one: ink on white paper) and "night" (the
  * dark one, for a dim room). Bordo, Kâğıt and Kahverengi were taken out the same night; a
  * reader who had chosen one of them simply sees the main scheme. */
 export const LOOKS = ["classic", "night"] as const;
@@ -14,15 +14,15 @@ export const LOOK_KEY = "orbis-look";
 
 /** Browser bar colour for each scheme (matches the header). */
 export const BAR: Record<Look, string> = {
-  classic: "#0c0c0c",
-  night: "#050505",
+  classic: "#ffffff",
+  night: "#141414",
 };
 
-/** Swatches shown next to each scheme's name in the menus: panel, paper. */
+/** Swatches shown next to each scheme's name in the menus: ink, paper. */
 export const LOOK_SWATCH: Record<Look, [string, string]> = {
-  classic: ["#0c0c0c", "#f4efe6"],
+  classic: ["#0c0c0c", "#ffffff"],
   // The dark scheme is the classic disc turned over: light where classic is dark.
-  night: ["#e7e4dd", "#161616"],
+  night: ["#e7e4dd", "#141414"],
 };
 
 /**

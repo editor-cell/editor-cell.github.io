@@ -10,7 +10,7 @@ import { ListenBar } from "@/components/listen-bar";
 import { NotFoundPage } from "@/components/not-found";
 import { langMeta } from "@/lib/i18n";
 import { LANG_BOOT, langFromPath } from "@/lib/lang-path";
-import { LOOK_BOOT } from "@/lib/look";
+import { BAR, LOOK_BOOT, MAIN_LOOK } from "@/lib/look";
 import { CHUNK_RECOVERY_BOOT } from "@/lib/chunk-recovery";
 import { feedLink, pageMeta, SITE_DESCRIPTION, SITE_NAME, TRIAL } from "@/lib/site";
 import appCss from "../styles.css?url";
@@ -29,7 +29,7 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { name: "theme-color", content: "#0c0c0c" },
+      { name: "theme-color", content: BAR[MAIN_LOOK] },
       ...pageMeta({ title: SITE_NAME, description: SITE_DESCRIPTION, url: "/" }),
       // During the test period no page is listed by search engines (see TRIAL in site.ts).
       ...(TRIAL ? [{ name: "robots", content: "noindex, nofollow" }] : []),
