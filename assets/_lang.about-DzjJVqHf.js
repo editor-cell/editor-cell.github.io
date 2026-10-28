@@ -1,0 +1,1 @@
+import{t as e}from"./about-CKbMR_-T.js";var t=e;export{t as component};
