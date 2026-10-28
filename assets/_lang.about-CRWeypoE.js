@@ -1,1 +1,0 @@
-import{t as e}from"./about-CVXxp1ye.js";var t=e;export{t as component};

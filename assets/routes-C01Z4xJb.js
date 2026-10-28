@@ -1,1 +1,0 @@
-import{n as e}from"./atlas-CTpBSB2O.js";var t=e;export{t as component};

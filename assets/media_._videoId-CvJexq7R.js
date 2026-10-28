@@ -1,0 +1,1 @@
+import{Jt as e}from"./shell-pQRs5--8.js";import{n as t}from"./videos-xiVWFZVZ.js";import{a as n}from"./index-CZFiV46N.js";var r=e();function i(){return(0,r.jsx)(t,{video:n.useLoaderData()})}export{i as component};
