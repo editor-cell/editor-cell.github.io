@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { existsSync, mkdirSync, readdirSync, rmSync, statSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync } from "node:fs";
 import { join, relative, resolve, sep } from "node:path";
 import { annotate, fontRouter, launchBrowser } from "./browser.mjs";
 import { serveSite } from "./serve.mjs";
@@ -173,6 +173,19 @@ try {
       try {
         opened = await openSettled(browser, site.url + item.path, item, fonts, watch);
         const problems = [...new Set([...errors, ...(await opened.page.evaluate(problemsOnPage))])];
+        // A PDF control must download an actual PDF, not navigate to a print dialog or an HTML fallback.
+        const pdf = opened.page.locator('a[download][href^="/assets/pdf/"]');
+        if (await pdf.count()) {
+          const [download] = await Promise.all([
+            opened.page.waitForEvent("download", { timeout: 15000 }),
+            pdf.click(),
+          ]);
+          const file = await download.path();
+          if (!file || readFileSync(file).subarray(0, 5).toString() !== "%PDF-")
+            problems.push("PDF button did not download a PDF file");
+          if (!download.suggestedFilename().endsWith(".pdf"))
+            problems.push("PDF download has no .pdf filename");
+        }
         if (problems.length) {
           failures.push({ label, problems });
           mkdirSync(out, { recursive: true });
