@@ -1,28 +1,28 @@
 {
   "name": "Orbis",
   "short_name": "Orbis",
-  "description": "The reading atlas: sourced readings in English and Turkish.",
+  "description": "Sourced readings in Turkish, Arabic, English, French and Spanish.",
   "id": "/",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#5a1a24",
-  "theme_color": "#5a1a24",
+  "background_color": "#0c0c0c",
+  "theme_color": "#0c0c0c",
   "icons": [
     {
-      "src": "/images/icons/orbis-192.png?v=20261030-cloth",
+      "src": "/images/icons/orbis-192.png?v=20261028-bodoni-small",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/images/icons/orbis-512.png?v=20261030-cloth",
+      "src": "/images/icons/orbis-512.png?v=20261028-bodoni-small",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/images/icons/orbis-maskable-512.png?v=20261030-cloth",
+      "src": "/images/icons/orbis-maskable-512.png?v=20261028-bodoni-small",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
