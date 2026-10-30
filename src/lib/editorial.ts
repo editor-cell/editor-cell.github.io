@@ -94,15 +94,6 @@ export function imageCaption(image: StoryImage | undefined, lang: Lang): string 
   return image?.captions?.[lang]?.trim() || image?.credit?.trim() || "";
 }
 
-/**
- * The caption printed under a picture. The description in a reading file (`credit`) is
- * written in English; a page in another language prints it only when it has its own
- * translation (`captions`), and otherwise just says how the picture was made.
- */
-export function visibleCaption(image: StoryImage | undefined, lang: Lang): string {
-  return image?.captions?.[lang]?.trim() || (lang === "en" ? image?.credit?.trim() : "") || "";
-}
-
 export function contactHref(): string | undefined {
   const email = EDITORIAL.contactEmail.trim();
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? `mailto:${email}` : undefined;

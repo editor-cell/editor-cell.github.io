@@ -1,0 +1,928 @@
+/* Desktop rules stay inside their own width queries. */
+@media (--orbis-desktop) {
+  .band-reader {
+    --masthead-mark-width: min(22rem, 34vw);
+    display: grid;
+    grid-template-columns: minmax(2.75rem, 1fr) auto minmax(2.75rem, 1fr);
+    column-gap: 0.75rem;
+  }
+  .band-reader > .frame-search { justify-self: end; }
+  .band-reader > .frame-menu { justify-self: start; }
+  .band-reader > .band-brand { justify-self: center; }
+  /* Keep the logo and motto fixed: 0.5rem + the old 2.75rem tool row - 0.75rem.
+     The tools now occupy the logo's row, centred on the mark rather than the motto. */
+  .band-row.band-reader {
+    grid-template-areas: "menu brand search";
+    row-gap: 0;
+    padding-top: 2.5rem;
+    padding-bottom: 1.75rem;
+  }
+  .band-reader > .frame-menu { grid-area: menu; }
+  .band-reader > .frame-search { grid-area: search; }
+  .band-reader > :is(.frame-menu, .frame-search) {
+    align-self: start;
+    /* Keep this ratio in step with the 1516 × 308 logo SVG. */
+    margin-top: calc((var(--masthead-mark-width) * 308 / 1516 - 2.75rem) / 2);
+  }
+  .band-reader > .band-brand { grid-area: brand; }
+  .band-reader .band-mark { width: var(--masthead-mark-width); }
+  .band-reader .masthead-motto { margin-top: 0.85rem; font-size: 1rem; }
+  .magazine-mobile { display: none; }
+}
+
+/* On a wide screen the sentence runs on one line and is set a little lighter. */
+@media (--orbis-desktop) {
+  .home-sentence {
+    font-weight: 500;
+    font-variation-settings:
+      "opsz" 16,
+      "wght" 500;
+  }
+  :lang(ar) .home-sentence {
+    font-variation-settings: normal;
+  }
+}
+
+@media (--orbis-desktop) {
+  .doc-chain[data-page] .chain-panel {
+    margin-inline: -1.5rem;
+  }
+  .doc-chain[data-page] .doc-chain-list {
+    padding-inline: 1.5rem;
+  }
+  /* Desktop (11 Oct 2026). The "+N" belongs to the phone only (all sources are shown here).
+     At the foot of a reading the column is narrow, so the chips wrapped unevenly and the
+     second line began with a stray hairline; they now sit in three straight columns. */
+  .doc-chain-preview > .doc-chain-node:has(> .doc-chain-more) {
+    display: none;
+  }
+  .doc-chain[data-page] .doc-chain-preview {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.45rem 0.5rem;
+  }
+  .doc-chain[data-page] .doc-chain-rule {
+    display: none;
+  }
+  .doc-chain[data-page] .doc-chain-chip {
+    width: 100%;
+  }
+  .doc-chain[data-page] .doc-chain-name {
+    min-width: 0;
+    max-width: none;
+    text-overflow: ellipsis;
+  }
+}
+
+@media (--orbis-desktop) {
+  .doc-chain-name {
+    max-width: 9rem;
+  }
+}
+@layer base {
+  @media (--orbis-desktop) {
+    .reading-progress {
+      display: none;
+    }
+  }
+
+  @media (--orbis-large) {
+    .section-bar::after,
+    .section-bar::before {
+      display: none;
+    }
+  }
+}
+
+@media (--orbis-desktop) {
+  .atlas-more-rule {
+    position: relative;
+    padding-top: 1rem;
+  }
+  .atlas-more-rule::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    inset-inline-start: 0;
+    width: 3rem;
+    height: 3px;
+    background: var(--color-pine);
+  }
+}
+
+@media (--orbis-desktop) {
+  .atlas-lead-title {
+    font-size: clamp(2.5rem, 4vw, 4.25rem);
+    line-height: 1.02;
+  }
+}
+
+@media (--orbis-desktop) {
+  /* Desktop: two readings at the left, the pictured reading large in the middle and two
+     more at the right. The DOM order stays newest-first; only the grid places them. */
+  .atlas-top {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.2fr) minmax(0, 0.9fr);
+    grid-template-rows: auto auto;
+    column-gap: 1.5rem;
+    row-gap: 1.25rem;
+    align-items: start;
+    padding-block: 1.5rem;
+  }
+  .atlas-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+    border: 0;
+  }
+  .atlas-top .atlas-card-side {
+    grid-column: 1;
+    grid-row: 1;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-line);
+  }
+  /* The middle column: rank 2 above and, when there is one, rank 9 under it, in two boxes
+     of the same height (the taller one sets both). */
+  .atlas-top > .atlas-mid {
+    display: grid;
+    grid-auto-rows: 1fr;
+    row-gap: 1.25rem;
+    grid-column: 2;
+    grid-row: 1 / 3;
+  }
+  .atlas-mid > .atlas-card-main:has(+ .atlas-card-under) {
+    padding-bottom: 0.95rem;
+    border-bottom: 1px solid var(--color-line);
+  }
+  /* Rules on both sides of the middle column sit in the middle of the gaps and run through
+     every row. */
+  .atlas-mid {
+    position: relative;
+  }
+  .atlas-mid::before,
+  .atlas-mid::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    border-inline-start: 1px solid var(--color-line);
+  }
+  .atlas-mid::before {
+    inset-inline-start: -0.75rem;
+  }
+  .atlas-mid::after {
+    inset-inline-end: -0.75rem;
+  }
+  .atlas-card > .atlas-pic-slot {
+    aspect-ratio: 16 / 10;
+    margin-bottom: 0.75rem;
+  }
+  .atlas-card .atlas-card-pic {
+    aspect-ratio: 16 / 10;
+    margin-bottom: 0;
+  }
+  .atlas-card .atlas-dek {
+    display: block;
+  }
+  .atlas-briefs {
+    display: contents;
+  }
+  .atlas-brief {
+    grid-template-columns: 44% minmax(0, 1fr);
+    gap: 0.9rem;
+    padding-block: 0.95rem;
+    border-bottom: 1px solid var(--color-line);
+  }
+  /* The first short reading moves from the old right column to the foot of the left one;
+     the other two keep their order on the right. */
+  .atlas-briefs > .atlas-brief.atlas-brief-slot-1 {
+    grid-column: 1;
+    grid-row: 2;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+  .atlas-briefs > .atlas-brief.atlas-brief-slot-2 {
+    grid-column: 3;
+    grid-row: 1;
+    padding-top: 0;
+  }
+  .atlas-briefs > .atlas-brief.atlas-brief-slot-3 {
+    grid-column: 3;
+    grid-row: 2;
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+  /* In the two-by-two side columns a short reading fills its row and its text and picture
+     sit in the middle of it. This leaves no open band above the next row. */
+  .atlas-top.records:not([data-depth="1"]) {
+    align-items: stretch;
+  }
+  .atlas-top.records:not([data-depth="1"]) .atlas-brief {
+    align-content: center;
+  }
+  .atlas-brief > .atlas-pic-slot {
+    aspect-ratio: 4 / 3;
+  }
+  .atlas-brief .atlas-card-pic {
+    aspect-ratio: 4 / 3;
+  }
+
+  /* Tablet/desktop form of the same paired-media rule. Mobile order is untouched. */
+  .atlas-brief {
+    align-items: stretch;
+  }
+  .atlas-brief > .atlas-pic-slot {
+    align-self: stretch;
+  }
+  .atlas-brief > .atlas-pic-slot > div {
+    height: 100%;
+  }
+  .atlas-brief > .atlas-pic-slot img {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+  .records:not(.atlas-strip) .record-row > .record-thumb {
+    width: 7rem;
+  }
+  /* The depth rule still wins at tablet and desktop widths: headline mode closes the
+     picture column completely instead of keeping its paired-media width. */
+  .records[data-depth="1"] .record-row > .record-thumb {
+    width: 0;
+    margin-inline-end: 0;
+  }
+  .atlas-brief > div.atlas-text,
+  .records:not(.atlas-strip) .record-text {
+    align-self: center;
+  }
+  .records:not(.atlas-strip) .record-text {
+    justify-content: center;
+  }
+}
+
+/* Headlines only, on a wide screen: the column of three short readings opens into three
+   columns beside the two cards, so the five headlines stand in one ruled row and nothing
+   leaves an empty space under the two cards. */
+@media (--orbis-desktop) {
+  .atlas-top.records[data-depth="1"] {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-rows: none;
+    row-gap: 0;
+    padding-block-end: 0.25rem;
+  }
+  .atlas-top.records[data-depth="1"] .atlas-card,
+  .atlas-top.records[data-depth="1"] .atlas-briefs > .atlas-brief {
+    grid-column: auto;
+    grid-row: auto;
+  }
+  .atlas-top.records[data-depth="1"] .atlas-card {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+  /* Headlines only: the middle pair opens into the row like the other headlines. */
+  .atlas-top.records[data-depth="1"] > .atlas-mid {
+    display: contents;
+  }
+  .atlas-top.records[data-depth="1"] > .atlas-mid::before,
+  .atlas-top.records[data-depth="1"] > .atlas-mid::after {
+    content: none;
+  }
+  .atlas-top.records[data-depth="1"] .atlas-card-main,
+  .atlas-top.records[data-depth="1"] .atlas-card-under {
+    position: relative;
+  }
+  .atlas-top.records[data-depth="1"] .atlas-card-main::before,
+  .atlas-top.records[data-depth="1"] .atlas-card-under::before {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: -0.75rem;
+    border-inline-start: 1px solid var(--color-line);
+  }
+  .atlas-top.records[data-depth="1"] .atlas-briefs {
+    display: contents;
+  }
+  .atlas-top.records[data-depth="1"] .atlas-brief {
+    position: relative;
+    padding: 0;
+    border-bottom: 0;
+  }
+  .atlas-top.records[data-depth="1"] .atlas-brief::before {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: -0.75rem;
+    border-inline-start: 1px solid var(--color-line);
+  }
+  .atlas-top.records[data-depth="1"] .atlas-card h3 {
+    font-size: 1.4rem;
+    line-height: 1.1;
+  }
+  /* The two cards' pictures fold away in this mode; their slot folds with them instead of
+     keeping the picture's shape as empty room, so all five headlines start on one line. */
+  .atlas-top.records[data-depth="1"] .atlas-card > .atlas-pic-slot {
+    aspect-ratio: auto;
+    margin-bottom: 0;
+  }
+}
+
+@media (--orbis-desktop) {
+  /* Three rows: the middle card runs through all of them; ranks 4 and 7 stand under
+     rank 3 at the left, ranks 5, 6 and 8 at the right. */
+  .atlas-top {
+    grid-template-rows: auto auto auto;
+  }
+  .atlas-top > .atlas-mid {
+    grid-row: 1 / 4;
+  }
+  .atlas-top.records:not([data-depth="1"])
+    .atlas-briefs:has(> .atlas-brief-slot-4)
+    > .atlas-brief.atlas-brief-slot-1 {
+    padding-bottom: 0.95rem;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .atlas-top.records:not([data-depth="1"])
+    .atlas-briefs:has(> .atlas-brief-slot-5)
+    > .atlas-brief.atlas-brief-slot-3 {
+    padding-bottom: 0.95rem;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .atlas-briefs > .atlas-brief.atlas-brief-slot-4 {
+    grid-column: 1;
+    grid-row: 3;
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+  .atlas-briefs > .atlas-brief.atlas-brief-slot-5 {
+    grid-column: 3;
+    grid-row: 3;
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+  /* Headlines only: the seven headlines under the lead stand in rank order in two ruled
+     rows, four and three, instead of one row of five. Each place is fixed, so the rule
+     between columns is drawn on every headline except the first of a row. */
+  .atlas-top.records[data-depth="1"]:has(.atlas-brief.atlas-brief-slot-4) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    row-gap: 1.25rem;
+  }
+  .atlas-top.records[data-depth="1"]:has(.atlas-brief.atlas-brief-slot-4) .atlas-card-main {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .atlas-top.records[data-depth="1"]:has(.atlas-brief.atlas-brief-slot-4) .atlas-card-main::before {
+    content: none;
+  }
+  .atlas-top.records[data-depth="1"]:has(.atlas-brief.atlas-brief-slot-4) .atlas-card-side {
+    grid-column: 2;
+    grid-row: 1;
+    position: relative;
+  }
+  .atlas-top.records[data-depth="1"]:has(.atlas-brief.atlas-brief-slot-4) .atlas-card-side::before {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: -0.75rem;
+    border-inline-start: 1px solid var(--color-line);
+  }
+  .atlas-top.records[data-depth="1"]
+    .atlas-briefs:has(> .atlas-brief-slot-4)
+    > .atlas-brief.atlas-brief-slot-1 {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  .atlas-top.records[data-depth="1"]
+    .atlas-briefs:has(> .atlas-brief-slot-4)
+    > .atlas-brief.atlas-brief-slot-2 {
+    grid-column: 4;
+    grid-row: 1;
+  }
+  .atlas-top.records[data-depth="1"]
+    .atlas-briefs:has(> .atlas-brief-slot-4)
+    > .atlas-brief.atlas-brief-slot-3 {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .atlas-top.records[data-depth="1"]
+    .atlas-briefs:has(> .atlas-brief-slot-4)
+    > .atlas-brief.atlas-brief-slot-3::before {
+    content: none;
+  }
+  .atlas-top.records[data-depth="1"]
+    .atlas-briefs:has(> .atlas-brief-slot-4)
+    > .atlas-brief.atlas-brief-slot-4 {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .atlas-top.records[data-depth="1"]
+    .atlas-briefs:has(> .atlas-brief-slot-5)
+    > .atlas-brief.atlas-brief-slot-5 {
+    grid-column: 3;
+    grid-row: 2;
+  }
+
+  /* Headlines only: rank 9 is the eighth headline, the last of the second row. */
+  .atlas-top.records[data-depth="1"] .atlas-card-under {
+    grid-column: 4;
+    grid-row: 2;
+  }
+  /* Its headline keeps the size of the short readings beside it, below ranks 2 and 3. */
+  .atlas-top.records[data-depth="1"] .atlas-card-under h3 {
+    font-size: 1.1rem;
+    line-height: 1.15;
+  }
+}
+
+@media (--orbis-desktop) {
+  .atlas-bottom {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 0.7fr);
+    column-gap: 1.5rem;
+  }
+  /* Without the middle column the two remaining columns share the width. */
+  .atlas-bottom:not(:has(> .atlas-popular)) {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  }
+  /* Headline mode is not a balancing act: no equal-height columns, no reserved room and no
+     picture in the numbered list. Every column starts at the top and ends with its text. */
+  .atlas-bottom.records[data-depth="1"] {
+    align-items: start;
+  }
+  .atlas-bottom.records[data-depth="1"] > .atlas-col,
+  .atlas-bottom.records[data-depth="1"] .atlas-deep-list,
+  .atlas-bottom.records[data-depth="1"] .atlas-ranked {
+    display: block;
+  }
+  .atlas-bottom.records[data-depth="1"] .atlas-deep-list > li,
+  .atlas-bottom.records[data-depth="1"] .atlas-ranked > li {
+    display: block;
+  }
+  .atlas-bottom.records[data-depth="1"] .atlas-deep-list > li + li {
+    margin-top: 0;
+  }
+  .atlas-bottom.records[data-depth="1"] .deep-card,
+  .atlas-bottom.records[data-depth="1"] .atlas-ranked > li > a {
+    flex: none;
+  }
+  .atlas-bottom.records[data-depth="1"] .ranked-pic {
+    display: none;
+  }
+  /* Only the front page carries these columns; let the closing rule follow them without
+     the usual page-end gap. The space below the rule stays unchanged. */
+  .page-width:has(.atlas-bottom) > div:last-child {
+    padding-top: 0;
+  }
+  .atlas-col + .atlas-col {
+    margin-top: 0;
+    padding-inline-start: 1.5rem;
+    border-inline-start: 1px solid var(--color-line);
+  }
+  .atlas-more-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 1.5rem;
+  }
+  /* Desktop only: the three columns end on one line. Where a column is shorter than the
+     longest one, the reading's opening text runs on into the room left (pictures keep
+     their own shape). The fill adds no height itself; whole lines are fitted by script. */
+  .atlas-bottom > .atlas-col {
+    display: flex;
+    flex-direction: column;
+  }
+  .atlas-bottom .deep-card {
+    flex: 1 1 auto;
+  }
+  /* Two readings in depth, one under the other, sharing the column's height. */
+  .atlas-deep-list {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .atlas-deep-list > li {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .atlas-deep-list > li + li {
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--color-line);
+  }
+  .records:not([data-depth="1"]) .atlas-fill {
+    display: block;
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+  .atlas-fill > p {
+    position: absolute;
+    inset: 0 0 auto 0;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+  }
+  /* A fill shows only once it has been cut to the room it has (fitFills makes it visible);
+     before the scripts start it would run past its box and over the cards below. */
+  .atlas-fill > p:first-child {
+    visibility: hidden;
+  }
+  /* The in-depth card's own five opening lines become the start of the fill. */
+  .deep-card .deep-opening {
+    display: none;
+  }
+  .records[data-depth="3"] .deep-card .atlas-fill {
+    min-height: calc(5 * 1.45 * 0.95rem + 0.5rem);
+  }
+  /* The latest column: its readings share the column's height, and each one's opening text
+     runs on into its share, so the column never ends in an empty space beside the two in depth.
+     The picture keeps its own shape at the top of the row. */
+  .atlas-bottom > .atlas-latest > ol {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .atlas-bottom > .atlas-latest > ol > li {
+    flex: 1 1 auto;
+    display: flex;
+  }
+  .atlas-bottom > .atlas-latest > ol > li > a {
+    flex: 1 1 auto;
+  }
+  .atlas-bottom .atlas-latest .record-row > .record-thumb {
+    align-self: start;
+    aspect-ratio: 3 / 4;
+  }
+  .atlas-bottom .atlas-latest .record-text {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+  .atlas-bottom .atlas-latest .record-opening {
+    display: none;
+  }
+  .atlas-bottom.records[data-depth="1"] .atlas-latest > ol,
+  .atlas-bottom.records[data-depth="1"] .atlas-latest > ol > li {
+    display: block;
+  }
+  /* The numbered column is narrow: the picture goes above the title at the column's
+     full width, so the title and the section line are no longer squeezed. The first
+     three carry a picture; the rest of the list is text only. */
+  .atlas-ranked .ranked-body {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .atlas-ranked .ranked-body > div {
+    flex: none;
+    width: 100%;
+  }
+  .atlas-ranked .ranked-pic {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+  }
+  .atlas-ranked > li:nth-child(n + 4) .ranked-pic {
+    display: none;
+  }
+  /* A short list shares the room left among its first three entries, as text. */
+  .atlas-bottom .atlas-ranked {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .atlas-bottom .atlas-ranked > li {
+    display: flex;
+  }
+  .atlas-bottom .atlas-ranked > li:nth-child(-n + 3) {
+    flex: 1 1 auto;
+  }
+  .atlas-bottom .atlas-ranked > li > a {
+    flex: 1 1 auto;
+  }
+  .atlas-ranked .ranked-body > .atlas-fill {
+    width: 100%;
+    margin-top: -0.5rem;
+  }
+}
+
+@media (--orbis-more) {
+  .atlas-more-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (--orbis-strip) {
+  .atlas-strip {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Section-page lead: the same paired-media rule at tablet and desktop widths. */
+@media (--orbis-desktop) {
+  .section-lead {
+    align-items: stretch;
+  }
+  .section-lead-picture,
+  .section-lead-text {
+    height: 100%;
+  }
+  .section-lead-text {
+    align-self: stretch;
+    justify-content: center;
+  }
+}
+
+/* Top row fill (desktop, depth 2 and 3): the room left in a box under its words takes the
+   story's opening lines (an .atlas-fill, fitted as the columns lower down), and "Read more"
+   sits at the foot of the box. Type sizes and box sizes stay as they were. */
+@media (--orbis-desktop) {
+  .atlas-top .deep-lines {
+    display: none;
+  }
+  .atlas-top-fill > .atlas-fill-sizer {
+    position: static;
+    visibility: hidden;
+  }
+  .atlas-top.records:not([data-depth="3"]) .atlas-fill-sizer,
+  .atlas-brief .atlas-fill-sizer {
+    display: none;
+  }
+  .atlas-top.records:not([data-depth="1"]) .atlas-card > div.atlas-text {
+    flex: 1 1 auto;
+  }
+  .atlas-top.records:not([data-depth="1"]) .atlas-card > div.atlas-text > .atlas-top-fill {
+    order: 1;
+  }
+  .atlas-top.records:not([data-depth="1"])
+    .atlas-card
+    > div.atlas-text
+    > .record-layer[data-layer="3"] {
+    order: 2;
+  }
+  .atlas-top.records:not([data-depth="1"]) .atlas-card > div.atlas-text > .atlas-more {
+    order: 3;
+  }
+  /* A short reading: picture, section, title and summary stay side by side at the top; the
+     fill runs under the picture across the whole box, then the date and "Read more". */
+  .atlas-top.records:not([data-depth="1"]) .atlas-brief {
+    align-content: stretch;
+    grid-template-rows: min-content min-content min-content auto 1fr auto auto;
+    row-gap: 0;
+  }
+  .atlas-top.records:not([data-depth="1"]) .atlas-brief > .atlas-pic-slot {
+    grid-column: 1;
+    grid-row: 1 / 5;
+    /* The picture takes the height of the words beside it and adds none of its own, so
+       the box is never taller than before; the photograph is cover-cropped as before. */
+    aspect-ratio: auto;
+    min-height: 0;
+  }
+  .atlas-top.records:not([data-depth="1"]) .atlas-brief > div.atlas-text {
+    display: contents;
+  }
+  .atlas-top.records:not([data-depth="1"]) .atlas-brief > div.atlas-text > * {
+    grid-column: 2;
+  }
+  .atlas-top.records:not([data-depth="1"]) .atlas-brief > div.atlas-text > .card-kicker {
+    grid-row: 1;
+  }
+  .atlas-top.records:not([data-depth="1"]) .atlas-brief > div.atlas-text > .atlas-card-title {
+    grid-row: 2;
+  }
+  .atlas-top.records:not([data-depth="1"]) .atlas-brief > div.atlas-text > .atlas-card-summary {
+    grid-row: 3;
+  }
+  .atlas-top.records:not([data-depth="1"]) .atlas-brief > .atlas-top-fill {
+    grid-column: 1 / -1;
+    grid-row: 5;
+  }
+  .atlas-top.records:not([data-depth="1"]) .atlas-brief > div.atlas-text > .atlas-card-detail {
+    grid-column: 1 / -1;
+    grid-row: 6;
+  }
+  .atlas-top.records:not([data-depth="1"]) .atlas-brief > div.atlas-text > .atlas-more {
+    grid-column: 1 / -1;
+    grid-row: 7;
+    justify-self: start;
+  }
+}
+
+@media (--orbis-desktop) {
+  .media-strip {
+    grid-auto-columns: calc((100% - 3 * 1.5rem) / 4);
+    gap: 1.5rem;
+    margin-inline: 0;
+    padding-inline: 0;
+    scroll-padding-inline: 0;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line) transparent;
+  }
+  .media-strip::-webkit-scrollbar {
+    display: block;
+    height: 6px;
+  }
+  .media-strip::-webkit-scrollbar-thumb {
+    background: var(--color-line);
+  }
+}
+
+@media (--orbis-desktop) {
+  .twin-prose {
+    --twin-width: min(61rem, calc(100vw - 6rem));
+    width: var(--twin-width);
+    margin-inline: calc((100% - var(--twin-width)) / 2);
+  }
+  .twin-heads {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 3rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--color-line);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  .twin-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 3rem;
+  }
+  .twin-side {
+    margin-top: 0;
+    padding-inline-start: 0;
+    border-inline-start: 0;
+    font-size: 1em;
+    color: var(--color-ink);
+    opacity: 0.78;
+  }
+  .twin-side:empty {
+    display: block;
+  }
+}
+
+@media (--orbis-desktop) {
+  /* Every short box of the top rows (left and right) shows at least three opening lines
+     at "Deep", so the change is visible at every width. */
+  .atlas-top.records[data-depth="3"] .atlas-brief > .atlas-top-fill {
+    min-height: calc(3 * 1.4 * 0.92rem + 0.375rem);
+  }
+}
+
+/* A reading on a wide screen: the text a size larger, so a line holds about 70 letters (a
+   comfortable measure; at the phone's size it held 85), and the standfirst above it grows
+   with it so it stays the larger of the two. On screen only: print keeps its own sizes. */
+@media screen and (--orbis-desktop) {
+  .reading-text {
+    font-size: 1.25rem;
+  }
+  .reading-dek {
+    font-size: 1.45rem;
+  }
+}
+
+/* Desktop (25 Oct 2026, owner): the page no longer runs to the screen's edges. Readings keep
+   a newspaper's width in the middle; the black bands and the section strip still run edge to
+   edge, but what is on them (ORBIS, the tools, the section names) lines up with the page. */
+@media (--orbis-desktop) {
+  :root {
+    --page-max: 78rem;
+  }
+  .page-width {
+    width: 100%;
+    max-width: var(--page-max);
+    margin-inline: auto;
+  }
+  .band-row,
+  .bar-row {
+    padding-inline: max(2rem, calc((100% - var(--page-max)) / 2 + 2rem));
+  }
+  /* Section names larger, so the strip reads as a menu and not as a hairline. */
+  .section-link {
+    font-size: 0.875rem;
+    letter-spacing: 0.08em;
+  }
+  :lang(ar) .section-link {
+    font-size: 1rem;
+    letter-spacing: normal;
+  }
+}
+
+/* The archive is a compact index, without body excerpts or equal-height fillers. */
+@media (--orbis-desktop) {
+  .atlas-bottom {
+    align-items: start;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 1.5rem;
+  }
+  .atlas-bottom:has(> .atlas-popular) > .atlas-numbered {
+    grid-column: 1 / -1;
+    padding-inline-start: 0;
+    border-inline-start: 0;
+    border-top: 1px solid var(--color-line);
+    padding-top: 1rem;
+  }
+  .atlas-bottom > .atlas-col,
+  .atlas-bottom .atlas-deep-list,
+  .atlas-bottom .atlas-deep-list > li,
+  .atlas-bottom .atlas-ranked,
+  .atlas-bottom .atlas-ranked > li,
+  .atlas-bottom > .atlas-latest > ol,
+  .atlas-bottom > .atlas-latest > ol > li {
+    display: block;
+    flex: none;
+  }
+  .atlas-bottom.records .atlas-fill {
+    display: none;
+  }
+  .atlas-bottom .deep-card {
+    display: grid;
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+    column-gap: 1rem;
+    align-content: start;
+    flex: none;
+  }
+  .atlas-bottom .deep-card > * {
+    grid-column: 2;
+    min-width: 0;
+  }
+  .atlas-bottom .deep-card:not(:has(> .deep-pic)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .atlas-bottom .deep-card:not(:has(> .deep-pic)) > * {
+    grid-column: 1;
+  }
+  .atlas-bottom .deep-card > .deep-pic {
+    grid-column: 1;
+    grid-row: 1 / 5;
+    align-self: start;
+  }
+  .atlas-bottom .deep-pic img {
+    aspect-ratio: 4 / 3;
+    margin-bottom: 0;
+  }
+  .atlas-bottom .deep-card > .paper-title {
+    font-size: 1.3rem;
+    line-height: 1.2;
+  }
+  .atlas-bottom .atlas-latest .record-row > .record-thumb {
+    width: 5.5rem;
+    aspect-ratio: 4 / 3;
+  }
+  .atlas-bottom .ranked-body {
+    flex-direction: row;
+    gap: 0.75rem;
+  }
+  .atlas-bottom .ranked-body > .ranked-pic {
+    flex: none;
+    width: 5rem;
+    aspect-ratio: 4 / 3;
+    align-self: start;
+  }
+  .atlas-bottom .ranked-body > .ranked-text {
+    flex: 1;
+    width: auto;
+  }
+}
+
+@media (--orbis-large) {
+  .atlas-bottom {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 0.7fr);
+  }
+  .atlas-bottom:has(> .atlas-popular) > .atlas-numbered {
+    grid-column: auto;
+    padding-inline-start: 1.5rem;
+    border-inline-start: 1px solid var(--color-line);
+    border-top: 0;
+    padding-top: 0;
+  }
+}
+
+/* The original three footer groups spread across the desktop reading width. */
+@media (--orbis-desktop) {
+  .site-footer { padding-block: 2.5rem; }
+  .footer-inner { padding-inline: 2rem; }
+  .footer-columns {
+    display: flex;
+    justify-content: space-between;
+    gap: 3rem;
+  }
+  .footer-brand { flex: 0 1 14rem; min-width: 0; }
+  .footer-sections { flex: 0 1 22rem; min-width: 0; }
+  .footer-languages { flex: none; }
+  .footer-mark { height: 1.78rem; }
+  .footer-motto { margin-top: 0.7rem; font-size: 0.75rem; }
+  .footer-section-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 1.5rem;
+    margin-top: 1rem;
+  }
+  .footer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+  }
+}

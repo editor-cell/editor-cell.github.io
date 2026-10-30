@@ -34,10 +34,12 @@ export function AccountPage() {
   const words = membersCopy(lang);
   return (
     <Shell>
-      <main className="page-plain">
-        <div className="flex max-w-xl flex-col gap-8">
+      <main className="px-5 py-10 md:px-12 md:py-14">
+        <div className="mx-auto flex max-w-xl flex-col gap-8">
           <Trail lang={lang} here={words.account} className="-mb-3" />
-          <h1 className="page-title">{words.account}</h1>
+          <div className="flex items-center justify-between gap-4">
+            <h1 className="text-3xl md:text-4xl">{words.account}</h1>
+          </div>
           <Account lang={lang} />
         </div>
       </main>
@@ -191,7 +193,7 @@ function History({ lang, userId }: { lang: Lang; userId: string }) {
   const [asking, setAsking] = useState(false);
   const [error, setError] = useState("");
   const label =
-    lang === "ar" ? "text-sm text-pine" : "text-sm text-pine";
+    lang === "ar" ? "text-sm text-pine" : "text-xs uppercase tracking-[0.14em] text-pine";
   const rows = (entries ?? [])
     .map((entry) => ({ entry, card: findCard(entry.storyId) }))
     .filter((row) => row.card !== undefined);

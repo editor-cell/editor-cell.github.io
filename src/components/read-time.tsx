@@ -30,7 +30,7 @@ export function ReadTime({
       className={
         lang === "ar"
           ? "text-xs whitespace-nowrap text-muted tabular-nums"
-          : "text-sm whitespace-nowrap text-muted"
+          : "text-xs whitespace-nowrap text-muted uppercase tracking-widest tabular-nums"
       }
     >
       {pattern.replace("{n}", String(minutes))}

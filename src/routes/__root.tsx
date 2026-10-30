@@ -1,3 +1,4 @@
+import { MEDIA } from "@/lib/breakpoints";
 import {
   createRootRoute,
   HeadContent,
@@ -13,6 +14,13 @@ import { BAR, LOOK_BOOT, MAIN_LOOK } from "@/lib/look";
 import { CHUNK_RECOVERY_BOOT } from "@/lib/chunk-recovery";
 import { feedLink, pageMeta, SITE_DESCRIPTION, SITE_NAME, TRIAL } from "@/lib/site";
 import appCss from "../styles.css?url";
+
+// Only the families the stylesheet uses. Google serves Arabic in its own file, which a
+// browser fetches only when Arabic text is on screen.
+const FONTS =
+  "https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400..900&family=Cormorant+Garamond:wght@600;700&family=DM+Serif+Display:ital@0;1&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,400..700&family=Noto+Naskh+Arabic:wght@500;600&display=swap";
+
+const FONT_BOOT = `(function(){var l=document.createElement("link");l.rel="stylesheet";l.href=${JSON.stringify(FONTS)};document.head.appendChild(l)})();`;
 
 export const Route = createRootRoute({
   // Site-wide defaults; a section or reading page replaces the title, description and
@@ -32,24 +40,29 @@ export const Route = createRootRoute({
         rel: "icon",
         type: "image/png",
         sizes: "32x32",
-        href: "/images/icons/orbis-32.png?v=20261030-cloth",
+        href: "/images/icons/orbis-32.png?v=20261028-bodoni",
       },
       {
         rel: "icon",
         type: "image/png",
         sizes: "48x48",
-        href: "/images/icons/orbis-48.png?v=20261030-cloth",
+        href: "/images/icons/orbis-48.png?v=20261028-bodoni",
       },
       {
         rel: "icon",
         type: "image/png",
         sizes: "192x192",
-        href: "/images/icons/orbis-192.png?v=20261030-cloth",
+        href: "/images/icons/orbis-192.png?v=20261028-bodoni-small",
       },
-      { rel: "icon", type: "image/svg+xml", sizes: "any", href: "/images/icons/ora.svg?v=20261030-cloth" },
+      { rel: "icon", type: "image/svg+xml", sizes: "any", href: "/images/icons/ora.svg?v=20261028-bodoni" },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      // The font stylesheet starts downloading at once but does not hold up the first paint
+      // (FONT_BOOT below attaches it); until the faces arrive the page shows in Times.
+      { rel: "preload", as: "style", href: FONTS },
       { rel: "stylesheet", href: appCss },
-      { rel: "manifest", href: "/__grok/orbis.webmanifest?v=20261030-cloth" },
-      { rel: "apple-touch-icon", sizes: "180x180", href: "/images/icons/orbis-180.png?v=20261030-cloth" },
+      { rel: "manifest", href: "/__grok/orbis.webmanifest?v=20261028-bodoni-small" },
+      { rel: "apple-touch-icon", sizes: "180x180", href: "/images/icons/orbis-180.png?v=20261028-bodoni-small" },
     ],
   }),
   component: RootDocument,
@@ -67,11 +80,21 @@ function RootDocument() {
       <head>
         <link {...feedLink(lang)} />
         <HeadContent />
-        {/* Before the first paint: the reader's language (plain addresses only) and the
-            saved colour scheme. The faces are the site's own files, named in the stylesheet. */}
+        {/* Before the first paint: the reader's language (plain addresses only), the saved
+            colour scheme, then the web fonts (without blocking
+            the paint). */}
         <script
           dangerouslySetInnerHTML={{
-            __html: CHUNK_RECOVERY_BOOT + LANG_BOOT + LOOK_BOOT,
+            __html: CHUNK_RECOVERY_BOOT + LANG_BOOT + LOOK_BOOT + FONT_BOOT,
+          }}
+        />
+        <noscript>
+          <link rel="stylesheet" href={FONTS} />
+        </noscript>
+        <style
+          dangerouslySetInnerHTML={{
+            __html:
+              ".border-t-\\[3px\\].border-ink{border-top-width:1px;margin-inline:-1.25rem;padding-inline:1.25rem}@media" + MEDIA.desktop + "{.border-t-\\[3px\\].border-ink{margin-inline:-2rem;padding-inline:2rem}}",
           }}
         />
       </head>

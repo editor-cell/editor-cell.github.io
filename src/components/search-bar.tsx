@@ -95,7 +95,7 @@ export function ResultList({
                   <p>
                     <span
                       className={
-                        lang === "ar" ? "text-pine" : "text-pine"
+                        lang === "ar" ? "text-pine" : "uppercase tracking-widest text-pine"
                       }
                     >
                       {videoWords(lang).video}
@@ -134,7 +134,7 @@ export function ResultList({
               <div className="mt-1 flex flex-col items-start gap-1 text-xs text-muted">
                 <p>
                   <span
-                    className={lang === "ar" ? "text-pine" : "text-pine"}
+                    className={lang === "ar" ? "text-pine" : "uppercase tracking-widest text-pine"}
                   >
                     {copy.themes[story.theme]}
                   </span>
@@ -164,7 +164,7 @@ export function Count({ n, className }: { n: number; className: string }) {
   return (
     <p
       aria-live="polite"
-      className={`${className} ${lang === "ar" ? "text-xs text-muted tabular-nums" : "text-sm italic text-muted"}`}
+      className={`${className} ${lang === "ar" ? "text-xs text-muted tabular-nums" : "text-xs uppercase tracking-widest text-muted tabular-nums"}`}
     >
       {searchCopy(lang).count(n)}
     </p>

@@ -51,12 +51,12 @@ export function SearchPage() {
 
   return (
     <Shell>
-      <main className="page-width gutter">
-        <div className="pt-10 md:pt-16">
-          <h1 className="page-title">{words.title}</h1>
+      <main>
+        <div className="flex items-start justify-between gap-4 px-5 py-3.5 md:px-8 md:py-5">
+          <h1 className="min-w-0 text-2xl leading-tight md:text-3xl">{words.title}</h1>
         </div>
 
-        <div className="pt-6 pb-6 md:pt-8 md:pb-8">
+        <div className="border-t border-rule px-5 pt-7 pb-6 md:px-8 md:pt-10 md:pb-8">
           <form
             role="search"
             className="group flex items-center gap-3 border-b border-rule pb-2.5 focus-within:border-ink"
@@ -95,16 +95,16 @@ export function SearchPage() {
         </div>
 
         {searching && results.length > 0 ? (
-          <ResultList results={results} className="" />
+          <ResultList results={results} className="px-5 md:px-8" />
         ) : null}
 
         {searching && results.length === 0 ? (
-          <p aria-live="polite" className="pt-2 pb-10 italic text-muted">
+          <p aria-live="polite" className="px-5 pt-2 pb-10 text-[15px] text-muted md:px-8">
             {words.empty}
           </p>
         ) : null}
         {pending || failed ? (
-          <p role="status" className="pt-2 pb-10 italic text-muted">
+          <p role="status" className="px-5 pt-2 pb-10 text-[15px] text-muted md:px-8">
             {pending ? words.loading : words.failed}
           </p>
         ) : null}

@@ -31,12 +31,12 @@ export function LegalPageView({ page }: { page: LegalPage }) {
   const doc = all[page];
   return (
     <Shell>
-      <main className="page-plain">
-        <article className="flex flex-col gap-8">
+      <main className="px-5 py-10 md:px-12 md:py-14">
+        <article className="mx-auto flex max-w-2xl flex-col gap-8">
           <Trail lang={lang} here={doc.title} className="-mb-3" />
           <header className="flex flex-col gap-4">
-            <h1 className="page-title">{doc.title}</h1>
-            <p className="page-lead">{fill(doc.lead, lang)}</p>
+            <h1 className="text-4xl md:text-5xl">{doc.title}</h1>
+            <p className="text-pretty text-lg text-muted">{fill(doc.lead, lang)}</p>
             <p className="text-sm text-muted">
               {all.updated}: {formatDate(LEGAL_UPDATED, lang)}
             </p>
@@ -47,8 +47,8 @@ export function LegalPageView({ page }: { page: LegalPage }) {
                 key={section.heading}
                 className="flex flex-col gap-3 border-b border-line py-6"
               >
-                <h2 className="flex items-baseline gap-3 text-2xl md:text-3xl">
-                  <span className="text-pine">{i + 1}</span>
+                <h2 className="flex items-baseline gap-3 text-xl md:text-2xl">
+                  <span className="text-sm text-muted tabular-nums">{i + 1}.</span>
                   {section.heading}
                 </h2>
                 {section.paragraphs.map((para) => (

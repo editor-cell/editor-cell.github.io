@@ -13,7 +13,7 @@ export function Prose({
   first?: boolean;
 }) {
   return (
-    <div className="reading-flow">
+    <div className="flex flex-col gap-6">
       {paragraphs(body).map((para, index) => (
         <p
           key={index}

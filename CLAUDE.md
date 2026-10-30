@@ -57,21 +57,20 @@ Videos stand on their own: no reading and no issue behind them. One file per vid
 language `title`, `dek`, `transcript`; optional `captions`, per language a WebVTT file
 `videos/<id>-<lang>.vtt` timed to the narration; they also time that language's transcript, so
 they must say what the transcript says, and the check stops a video whose captions do not).
-The newest sits first in the front page's Videos block, after the contents; "Show all" opens `/media`; each video has its
+The newest sits first in the one-row media strip between the newest issue and the archive; "Show all" opens `/media`; each video has its
 own page `/media/<id>` with the transcript behind a button; search finds a video by its
 title and transcript. `scripts/videos-check.test.mjs` checks every file. Cloudflare serves
 static files only up to 25 MiB, so a long film goes on outside storage with an https
-`src`.
+`src`. The strip must never change the boxes above it or the depth buttons.
 The search box reads "Search the readings" / "Okumalarda ara" while there are no
 videos; with the first video, the owner wants videos named there again (`src/lib/search.ts`).
 
 ## Test period
 
-Until launch, `TRIAL = true` in `src/lib/site.ts`: every page carries `noindex, nofollow`
-and the front page calls its issue "Preview issue" while no reading has an issue number
-(the visible "in test" line was taken off on 28 Oct 2026). The readings on the site now are
-interim texts (Gemini drafts corrected against their sources). On launch day, set `TRIAL`
-to false.
+Until launch, `TRIAL = true` in `src/lib/site.ts`: every reader page shows a thin
+"in test" line under the header and every page carries `noindex, nofollow`. The readings
+on the site now are interim texts (Gemini drafts corrected against their sources). On
+launch day, set `TRIAL` to false.
 
 ## Editorial rules from the owner
 
@@ -99,43 +98,3 @@ Media has one source: repository-root `images/`, `audio/`, `videos/`. Do not add
 under `public/`. Vite emits these files at their existing root URLs. Both content checks
 require this source; the built-site check requires the corresponding output. Image
 sizes still come from `images/` and are served under `/assets/img/`.
-
-## The design (30 Oct 2026)
-
-On 30 Oct 2026 the owner handed the whole design over to Claude ("tamamen sana bırakıyorum":
-layout, section names, videos, membership pages, languages). The site was redesigned as a
-bound atlas. Keep to it; change it only when the owner asks.
-
-- **Colours** (`src/styles/base.css`): the binding is oxblood cloth `#5a1a24` with gilt
-  `#d4ba82` and cream `#f4ead8` (masthead, the front page's cover, the menu, the listening
-  strip, the footer); inside, white paper and warm ink `#1d1b19`, the accent `#8a2632`.
-  `.on-cloth` resets the colour tokens for anything set on the cloth. The dark scheme
-  (`html[data-look="night"]`) keeps the same roles. The browser bar and the icons are the
-  cloth.
-- **Type**: Cormorant Garamond for every title, EB Garamond for text, both served from
-  `src/assets/fonts/` (Latin and Latin Extended, normal and italic; OFL licences beside
-  them). No Google Fonts. Garamond's x-height is small, so the Tailwind type scale is set
-  larger in `@theme`. Labels are plain words, never spaced capitals; numbers of the issue and
-  of the documents are lining figures.
-- **Sections** keep their addresses (`/climate-environment`, …) but are named in one word:
-  Earth, Society, Science, Health, Culture (Yeryüzü, Toplum, Bilim, Sağlık, Kültür) in
-  `src/lib/section-copy.js`. Search also knows the older topic words (`SECTION_TOPICS` in
-  `src/lib/search.ts`), so "climate" or "ekonomi" still finds those readings.
-- **Front page** (`src/components/front.tsx`): the cover on cloth (the tools, ORBIS large,
-  the issue line, reading no. 1 with its photograph framed like a tipped-in plate, and the
-  gilt globe of `globe.tsx`, the site's only ornament); then, on paper, Contents (readings
-  2–9 numbered), Videos, Earlier issues (small cloth covers, once readings carry issue
-  numbers), From the archive, and the Index of places. On a wide screen each block keeps its
-  title in a margin column (3 of 12) beside its content (9 of 12).
-- **Places**: a reading's `region` ("Denmark · Austria · Greece", or "Global") is set in
-  italic as a sentence ("Denmark, Austria and Greece", "Worldwide") by `src/lib/places.ts`;
-  the index of places lists every named place in the language's alphabetical order.
-- **Reading page**: section, title, standfirst, places and date, one row of tools (listen,
-  share, PDF, type size), the photograph wider than the text, the text in one column with a
-  dropped first letter, then Documents (always open; a number in the text lights its
-  document), related readings and comments.
-- **Stylesheets** (`src/styles/`): `base` (fonts, tokens, schemes), `frame` (masthead, menu,
-  footer), `front`, `section`, `reading`, `players` (film, listening strip, cinema,
-  transcript), `video-page`, `pages` (about, legal, search, membership, account), `print`.
-  Phone first; wide-screen rules sit in `@media (--orbis-desktop)` inside each file.
-

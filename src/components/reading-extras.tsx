@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect } from "react";
+import { ReadTime } from "@/components/read-time";
 import { useCopy } from "@/lib/i18n";
 import { publicPath, readLink } from "@/lib/lang-path";
-import { placeLine } from "@/lib/places";
 import { CARDS } from "@/lib/seed";
 import { absoluteUrl, SITE_NAME } from "@/lib/site";
 import { storyTitle } from "@/lib/text";
@@ -127,14 +127,11 @@ export function PdfButton({ story, lang }: { story: Story; lang: Lang }) {
     <a
       href={`/assets/pdf/${lang}/${encodeURIComponent(story.id)}.pdf`}
       download={`orbis-${story.id}-${lang}.pdf`}
+      aria-label={words.pdfLong}
       title={words.pdfLong}
-      className="reading-tool"
+      className="inline-flex h-8 items-center px-0 text-sm text-ink tracking-wide sm:px-1.5"
     >
-      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden="true" className="reading-tool-mark">
-        <path d="M10 3v10M5.5 8.5 10 13l4.5-4.5M4 16.5h12" />
-      </svg>
       <span dir="ltr">{words.pdf}</span>
-      <span className="sr-only">{words.pdfLong}</span>
     </a>
   );
 }
@@ -152,30 +149,41 @@ export function RelatedReadings({ story, lang }: { story: Story; lang: Lang }) {
   const copy = useCopy(lang);
   const cards = relatedCards(story, lang);
   if (!cards.length) return null;
+  const label =
+    lang === "ar" ? "text-sm text-pine" : "text-xs uppercase tracking-[0.14em] text-pine";
   return (
-    <section className="related" aria-labelledby="related-heading">
-      <h2 id="related-heading" className="related-title">
+    <section className="no-print mt-4" aria-labelledby="related-heading">
+      <h2
+        id="related-heading"
+        className={`border-b-[3px] border-ink pb-3 font-body font-normal ${label}`}
+      >
         {WORDS[lang].related}
       </h2>
-      <ol className="related-list">
+      <ol>
         {cards.map((card) => {
           const locale = card.locales[lang];
-          const places = placeLine(locale.region, lang);
           return (
-            <li key={card.id} className="related-item">
-              <h3 className="related-item-title">
-                <Link {...readLink(lang, card.id)}>{storyTitle(card, lang)}</Link>
-              </h3>
-              {locale.dek ? <p className="related-dek">{locale.dek.match(/^.*?[.!?؟۔](?=\s|$)/)?.[0] || locale.dek}</p> : null}
-              <p className="meta">
-                {places ? <span className="meta-places">{places}</span> : null}
-                <span className="meta-section">{copy.themes[card.theme]}</span>
-                {locale.minutes ? (
-                  <span className="meta-time">
-                    {locale.minutes} {copy.min}
-                  </span>
+            <li key={card.id} className="border-b border-line">
+              <Link {...readLink(lang, card.id)} className="group block py-4">
+                <h3 className="paper-title text-[1.2rem] leading-[1.2] font-bold text-ink decoration-1 underline-offset-[0.14em] group-hover:underline">
+                  {storyTitle(card, lang)}
+                </h3>
+                {locale.dek ? (
+                  <p className="pt-1.5 text-base leading-[1.35] text-ink">{locale.dek}</p>
                 ) : null}
-              </p>
+                <div className="mt-1.5 flex flex-wrap items-baseline gap-x-2">
+                  <span className={label}>{copy.themes[card.theme]}</span>
+                  {locale.minutes ? <span className="text-xs text-muted">·</span> : null}
+                  {locale.minutes ? (
+                    <ReadTime
+                      minutes={locale.minutes}
+                      lang={lang}
+                      pattern={copy.minRead}
+                      story={card}
+                    />
+                  ) : null}
+                </div>
+              </Link>
             </li>
           );
         })}
