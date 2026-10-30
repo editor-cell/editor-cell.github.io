@@ -153,6 +153,21 @@ a.meta-section:hover {
   position: relative;
 }
 
+/* Where the globe's gilt lines pass behind words, each word keeps a thin margin of cloth
+   around it, as place names on a map keep a halo over the lines they cross. */
+.cover :is(.frame-tool, .cover-motto, .cover-issue) {
+  text-shadow:
+    0 0 1px var(--color-cloth),
+    0 0 3px var(--color-cloth),
+    0 0 6px var(--color-cloth),
+    0 0 10px var(--color-cloth);
+}
+
+.cover-logo svg,
+.cover .frame-mark {
+  filter: drop-shadow(0 0 3px var(--color-cloth)) drop-shadow(0 0 8px var(--color-cloth));
+}
+
 .cover-inner {
   position: relative;
   padding-bottom: 2.5rem;
@@ -161,7 +176,7 @@ a.meta-section:hover {
 .cover-name {
   display: flex;
   justify-content: center;
-  margin: 0.5rem 0 1.6rem;
+  margin: 0.25rem 0 1.15rem;
 }
 
 .cover-name a {
@@ -191,8 +206,8 @@ a.meta-section:hover {
 
 .cover-lead {
   display: grid;
-  gap: 1.6rem;
-  margin-top: 1.6rem;
+  gap: 1.25rem;
+  margin-top: 1.25rem;
 }
 
 /* The photograph is tipped in like a plate: a margin of cloth inside a gilt rule. */
