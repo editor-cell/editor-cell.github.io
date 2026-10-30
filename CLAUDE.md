@@ -94,6 +94,10 @@ direction every design change works toward, not a rule that each change must lan
 at once; only what the width itself forces (a line that wraps, a pointer instead of a
 finger) differs for good.
 
+On 30 Oct 2026 a full redesign ("bound atlas": oxblood cloth cover, gilt globe, Garamond,
+text-only contents) went live and the owner rejected the style the same day; it was
+reverted. Do not bring that look back.
+
 Media has one source: repository-root `images/`, `audio/`, `videos/`. Do not add copies
 under `public/`. Vite emits these files at their existing root URLs. Both content checks
 require this source; the built-site check requires the corresponding output. Image
