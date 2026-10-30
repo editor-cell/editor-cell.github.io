@@ -1,0 +1,1 @@
+import{Jt as e}from"./shell-BWHO_RYl.js";import{t}from"./index-Cwvr64wg.js";import{t as n}from"./reading-CL_oMPIc.js";var r=e();function i(){return(0,r.jsx)(n,{story:t.useLoaderData()})}export{i as component};

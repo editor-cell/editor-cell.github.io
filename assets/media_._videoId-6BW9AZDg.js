@@ -1,0 +1,1 @@
+import{Jt as e}from"./shell-BWHO_RYl.js";import{n as t}from"./videos-DayDBCA0.js";import{a as n}from"./index-Cwvr64wg.js";var r=e();function i(){return(0,r.jsx)(t,{video:n.useLoaderData()})}export{i as component};

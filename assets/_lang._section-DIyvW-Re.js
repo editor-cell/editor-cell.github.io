@@ -1,0 +1,1 @@
+import{Jt as e,vt as t}from"./shell-BWHO_RYl.js";import{o as n}from"./index-Cwvr64wg.js";import{n as r}from"./atlas-BqxhMVCM.js";var i=e();function a(){let{section:e}=n.useParams();return(0,i.jsx)(r,{theme:t(e)})}export{a as component};
