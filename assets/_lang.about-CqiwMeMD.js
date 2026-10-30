@@ -1,0 +1,1 @@
+import{t as e}from"./about-D_EhU_Sw.js";var t=e;export{t as component};
