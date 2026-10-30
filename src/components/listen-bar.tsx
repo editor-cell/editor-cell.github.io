@@ -84,7 +84,7 @@ export function ListenBar() {
               </button>
             ) : null}
             <div className="flex min-w-0 flex-1 flex-col">
-              <p className="text-[11px] uppercase tracking-[0.14em] text-muted tabular-nums">
+              <p className="text-sm text-muted tabular-nums">
                 {copy.listen}
                 <span dir="ltr">{` · ${fmt(now.time)} / ${fmt(now.duration)}`}</span>
               </p>

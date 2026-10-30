@@ -47,11 +47,11 @@ export function visualCases() {
   return cases;
 }
 
-/** Faces every page uses: the text (Tinos again since 28 Oct 2026, the owner's approved
- * draft; Source Serif 4 from 20 Oct). Titles are DM Serif Display, required only where a page uses them. The
- * name in the band is the owner's drawn logo, not lettering, so the title face (Bodoni Moda)
- * is required only where a page asks for it (a failed download still stops the check below). */
-export const REQUIRED_FACES = ["Tinos"];
+/** The face every page uses: the text, EB Garamond (since 30 Oct 2026, served from the site
+ * itself). Titles are Cormorant Garamond, required only where a page uses them; the name in
+ * the masthead is the drawn logo, not lettering. A face that fails to arrive still stops the
+ * check below. */
+export const REQUIRED_FACES = ["EB Garamond"];
 
 /**
  * Stops the check unless the site's real faces are on the page: every face the page asked

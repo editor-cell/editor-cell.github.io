@@ -20,34 +20,10 @@ import { useLang } from "@/lib/use-lang";
 import { formatDuration, videoWords, videosIn } from "@/lib/videos";
 
 /**
- * Videos are their own content: no reading and no issue behind them. On the front page they
- * sit in one row between the newest issue and the archive, newest at the start, swiped
- * sideways; "Show all" opens the list of every video. Each video has its own page with the
- * transcript under it. The depth buttons do not touch the row.
+ * Videos are their own content: no reading and no issue behind them. The front page shows
+ * them in its Videos block (front.tsx); "Show all" opens the list of every video. Each video
+ * has its own page with the transcript under it.
  */
-
-function kickerClass(lang: Lang) {
-  return lang === "ar"
-    ? "text-sm leading-snug text-pine"
-    : "text-xs leading-snug uppercase tracking-[0.14em] text-pine";
-}
-
-/** "VIDEO · 1:35": the label a reading shows its section in, with the length beside it. */
-function VideoKicker({ video, lang }: { video: { duration?: number }; lang: Lang }) {
-  const words = videoWords(lang);
-  const length = formatDuration(video.duration);
-  return (
-    <p className={kickerClass(lang)}>
-      {words.video}
-      {length ? (
-        <span className="text-muted tabular-nums" dir="ltr">
-          {" · "}
-          {length}
-        </span>
-      ) : null}
-    </p>
-  );
-}
 
 /** The still of a video with a quiet play mark in its middle. */
 function Still({
@@ -79,39 +55,6 @@ function Still({
         </svg>
       </span>
     </div>
-  );
-}
-
-/** The row of videos on the front page. Nothing is shown while there is no video. */
-export function MediaStrip({ lang }: { lang: Lang }) {
-  const videos = videosIn(lang);
-  if (videos.length === 0) return null;
-  const words = videoWords(lang);
-  const arrow = langMeta[lang].dir === "rtl" ? "←" : "→";
-  return (
-    <section data-media-strip aria-labelledby="atlas-media" className="px-5 pt-4 md:px-8 md:pt-8">
-      <div className="mb-3 flex items-baseline justify-between gap-4 border-t border-rule pt-3 md:mb-4">
-        <h2 id="atlas-media" className={`font-body font-normal ${kickerClass(lang)}`}>
-          {words.videos}
-        </h2>
-        <Link {...mediaLink(lang)} className="atlas-more shrink-0 text-[0.8rem]">
-          {words.showAll} <span aria-hidden="true">{arrow}</span>
-        </Link>
-      </div>
-      <ol className="media-strip">
-        {videos.map((video) => (
-          <li key={video.id}>
-            <Link {...videoLink(lang, video.id)} className="group flex flex-col gap-2">
-              <Still video={video} sizes="(min-width: 768px) 24vw, 78vw" />
-              <VideoKicker video={video} lang={lang} />
-              <h3 className="paper-title font-bold text-[1.05rem] leading-[1.15] text-ink decoration-1 underline-offset-[0.14em] group-hover:underline md:text-[1.1rem]">
-                {video.locales[lang]?.title}
-              </h3>
-            </Link>
-          </li>
-        ))}
-      </ol>
-    </section>
   );
 }
 
@@ -166,48 +109,35 @@ export function VideoListPage() {
   const visible = onlySaved ? videos.filter(video => saved.ids.includes(video.id)) : videos;
   return (
     <Shell>
-      <main>
-        <div className="px-5 pt-5 pb-4 md:px-8 md:pt-8 md:pb-6">
-          <div className="mb-3">
-            <VideoTrail lang={lang} />
-          </div>
-          <h1 className="paper-title font-bold text-[2.4rem] leading-[1.05] md:text-[3rem]">
-            {words.videos}
-          </h1>
-          <p className="mt-2 text-[15px] text-muted">{words.listNote}</p>
+      <main className="video-list page-width gutter">
+        <header className="video-list-head">
+          <h1 className="video-list-title">{words.videos}</h1>
+          <p className="video-list-note">{words.listNote}</p>
           <div className="video-list-filters" aria-label={words.videos}>
             <button type="button" aria-pressed={!onlySaved} onClick={() => setOnlySaved(false)}>{words.back}</button>
             <button type="button" aria-pressed={onlySaved} onClick={() => setOnlySaved(true)}>{words.savedVideos} ({videos.filter(video => saved.ids.includes(video.id)).length})</button>
           </div>
-        </div>
+        </header>
         {visible.length === 0 ? (
-          <p className="border-t border-rule px-5 py-8 text-[15px] text-muted md:px-8">
-            {onlySaved ? words.savedEmpty : words.empty}
-          </p>
+          <p className="video-list-empty">{onlySaved ? words.savedEmpty : words.empty}</p>
         ) : null}
-        <ol className="-mb-5 border-t border-rule px-5 md:mb-0 md:px-8">
+        <ol className="video-list-rows">
           {visible.map((video, index) => {
             const copy = video.locales[lang];
             return (
-              <li key={video.id} className="border-b border-line last:border-b-0 last:[&>a]:pb-0 md:last:[&>a]:pb-5">
-                <Link
-                  {...videoLink(lang, video.id)}
-                  className="group grid grid-cols-[minmax(0,9rem)_minmax(0,1fr)] items-start gap-4 py-5 md:grid-cols-[minmax(0,18rem)_minmax(0,1fr)] md:gap-7"
-                >
-                  <Still video={video} sizes="(min-width: 768px) 18rem, 9rem" eager={index < 3} />
-                  <div className="flex min-w-0 flex-col gap-1.5">
-                    <VideoKicker video={video} lang={lang} />
-                    <h2 className="paper-title font-bold text-[1.15rem] leading-[1.15] text-ink group-hover:underline group-hover:underline-offset-4 md:text-[1.5rem]">
-                      {copy?.title}
-                    </h2>
-                    {copy?.dek ? (
-                      <p className="font-body hidden max-w-2xl text-pretty text-[15px] leading-snug text-ink sm:block">
-                        {copy.dek}
-                      </p>
-                    ) : null}
-                    {/* Under the label, as on the reading cards (styles.css orders title, sentence, label). */}
-                    <p className="text-xs text-muted" style={{ order: 4 }}>
-                      {formatDate(video.date, lang)}
+              <li key={video.id} className="video-list-row">
+                <Link {...videoLink(lang, video.id)} className="video-list-link group">
+                  <Still video={video} sizes="(min-width: 768px) 24rem, 40vw" eager={index < 3} />
+                  <div className="video-list-copy">
+                    <h2 className="video-list-item-title">{copy?.title}</h2>
+                    {copy?.dek ? <p className="video-list-dek">{copy.dek}</p> : null}
+                    <p className="meta">
+                      <span className="meta-time">{formatDate(video.date, lang)}</span>
+                      {video.duration ? (
+                        <span className="meta-time figures" dir="ltr">
+                          {formatDuration(video.duration)}
+                        </span>
+                      ) : null}
                     </p>
                   </div>
                 </Link>
@@ -246,7 +176,7 @@ function VideoActions({ video, lang }: { video: Video; lang: Lang }) {
       </button>
       <button type="button" onClick={() => void share()}><Share2 aria-hidden="true" />{copied ? words.copied : words.share}</button>
     </div>
-    {marked ? <Link {...mediaLink(lang)} className="video-saved-link">{words.savedVideos} →</Link> : null}
+    {marked ? <Link {...mediaLink(lang)} className="video-saved-link">{words.savedVideos}</Link> : null}
     {shareLink ? <label className="video-share-link">{words.copyLink}<input readOnly value={shareLink} onFocus={event => event.currentTarget.select()} /></label> : null}
   </>;
 }
@@ -306,9 +236,8 @@ export function VideoPage({ video }: { video: Video | null }) {
   }
   return (
     <Shell layout="video">
-      <main className="video-watch">
+      <main className="video-watch page-width gutter">
         <div className="video-breadcrumb"><VideoTrail lang={lang} title={copy?.title} /></div>
-        <h2 className="video-section-title video-page-label">{words.videos}</h2>
         {video && copy ? (
           <div className="video-watch-grid">
             <article className="video-primary">

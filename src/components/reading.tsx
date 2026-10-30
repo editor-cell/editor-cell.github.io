@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { VideoStart } from "@/components/theater";
 import { ListenButton } from "@/components/player";
-import { DocumentChain } from "@/components/atlas";
+import { Sources } from "@/components/sources";
 import { Prose } from "@/components/prose";
 import { Comments } from "@/components/members/comments";
 import {
@@ -14,11 +14,11 @@ import {
 } from "@/components/reading-extras";
 import { LockNote, useMemberText } from "@/components/members/locked";
 import { Shell } from "@/components/shell";
-import { Trail } from "@/components/trail";
-import { byline, editorialCopy, imageCaption } from "@/lib/editorial";
+import { byline, editorialCopy, imageCaption, visibleCaption } from "@/lib/editorial";
 import { imageSet } from "@/lib/image-set";
 import { langMeta, useCopy } from "@/lib/i18n";
 import { homeLink, readLink, rememberLang, sectionLink } from "@/lib/lang-path";
+import { placeLine } from "@/lib/places";
 import { formatDate, hasCopy } from "@/lib/text";
 import { countRead, useNoteRead } from "@/lib/reads";
 import { LANGS, type Lang, type Story } from "@/lib/types";
@@ -92,23 +92,18 @@ function TypeSize({
 }) {
   const atMin = step <= 0;
   const atMax = step >= TYPE_STEPS.length - 1;
-  const button = "inline-flex h-8 w-8 items-center justify-center text-ink disabled:text-muted";
   return (
-    <div
-      dir="ltr"
-      className="inline-flex shrink-0 items-center rounded-full border border-line px-1"
-    >
-      <span className="sr-only">{label}</span>
-      <button type="button" onClick={onDown} disabled={atMin} className={`${button} text-[12px]`}>
-        <span aria-hidden="true">A−</span>
+    <div dir="ltr" className="type-size" role="group" aria-label={label}>
+      <button type="button" onClick={onDown} disabled={atMin} className="type-key type-key-down">
+        <span aria-hidden="true">A</span>
         <span className="sr-only">{downLabel}</span>
       </button>
-      <button type="button" onClick={onReset} className={`${button} text-[14px]`}>
+      <button type="button" onClick={onReset} className="type-key type-key-mid">
         <span aria-hidden="true">A</span>
         <span className="sr-only">{label}</span>
       </button>
-      <button type="button" onClick={onUp} disabled={atMax} className={`${button} text-[16px]`}>
-        <span aria-hidden="true">A+</span>
+      <button type="button" onClick={onUp} disabled={atMax} className="type-key type-key-up">
+        <span aria-hidden="true">A</span>
         <span className="sr-only">{upLabel}</span>
       </button>
     </div>
@@ -150,9 +145,9 @@ function Reading({ story }: { story: Story | null }) {
 
   if (!story) {
     return (
-      <main className="px-5 py-12 md:px-12">
+      <main className="page-plain">
         <p>{copy.missing}</p>
-        <Link {...homeLink(lang)} className="mt-6 inline-flex min-h-11 items-center text-pine">
+        <Link {...homeLink(lang)} className="text-link mt-6 inline-flex min-h-11 items-center">
           {copy.back}
         </Link>
       </main>
@@ -169,58 +164,43 @@ function Reading({ story }: { story: Story | null }) {
   const body = fullText ?? locale.body;
   const written = hasCopy(story, lang);
   const sourceNums = new Set(story.sources.map((source) => source.n));
-  const sources = [...story.sources].sort((a, b) => a.n - b.n);
   const others = LANGS.filter((code) => hasCopy(story, code));
+  const title = locale.title || story.locales.en.title;
+  const places = placeLine(locale.region, lang);
 
   return (
-    <main className="px-5 pt-5 pb-10 md:px-12 md:py-14">
-      <div ref={page} className="mx-auto flex max-w-[65rem] flex-col gap-7 md:gap-8">
-        {/* On paper (print or PDF) the band is left out; the name and the address head the page. */}
-        <p className="print-only text-sm" dir="ltr">
-          <span className="masthead-name text-2xl">ORBIS</span>
-          <span className="ms-3 text-muted">{readingUrl(lang, story.id)}</span>
+    <main className="reading" dir={langMeta[lang].dir}>
+      <div ref={page}>
+        {/* On paper (print or PDF) the masthead is left out; the name and the address head the page. */}
+        <p className="print-only reading-print-head" dir="ltr">
+          <span className="reading-print-name">ORBIS</span>
+          <span>{readingUrl(lang, story.id)}</span>
         </p>
-        {/* Where the reading sits: home, its section, its title. */}
-        <Trail
-          lang={lang}
-          here={locale.title || story.locales.en.title}
-          parent={(className) => (
-            <Link {...sectionLink(lang, story.theme)} className={className}>
-              {copy.themes[story.theme]}
-            </Link>
-          )}
-          className="reading-column -mb-3"
-        />
 
         <ReadingProgress start={readStart} end={readEnd} />
-        <header ref={readStart} className="reading-column flex w-full flex-col gap-4">
-          <p className="text-xs uppercase tracking-widest text-pine">{copy.themes[story.theme]}</p>
-          <h1 className="paper-title font-bold text-[2.25rem] leading-[1.08] md:text-5xl md:leading-[1.05]">
-            {locale.title || story.locales.en.title}
-          </h1>
+        <header ref={readStart} className="reading-head">
+          <Link {...sectionLink(lang, story.theme)} className="reading-section">
+            {copy.themes[story.theme]}
+          </Link>
+          <h1 className="reading-title">{title}</h1>
           {locale.dek ? <p className="reading-dek">{locale.dek}</p> : null}
-          <div className="flex items-end justify-between gap-x-3 pt-1">
-            <div className="flex min-w-0 flex-col items-start gap-0.5">
-              {by ? <p className="text-sm font-bold text-ink">{by}</p> : null}
-              <p className="text-sm text-muted">
-                {[locale.region, formatDate(story.date, lang)].filter(Boolean).join(" · ")}
-              </p>
-              {story.updatedAt && story.updatedAt !== story.date ? (
-                <p className="text-sm text-muted">
-                  {editorial.updated}: {formatDate(story.updatedAt, lang)}
-                </p>
-              ) : null}
-            </div>
-          </div>
-          {/* One thin line, the same on a phone and a wide screen: listen, share, and PDF at the end. Listening plays in the bar at the foot of the
-              screen. */}
-          <div className="reading-tools no-print flex flex-wrap items-center gap-x-2 gap-y-2 py-1 sm:gap-x-3 md:py-2.5">
+          <p className="reading-meta">
+            {places ? <span className="meta-places">{places}</span> : null}
+            <span>{formatDate(story.date, lang)}</span>
+            {story.updatedAt && story.updatedAt !== story.date ? (
+              <span>
+                {editorial.updated} {formatDate(story.updatedAt, lang)}
+              </span>
+            ) : null}
+            {by ? <span className="reading-by">{by}</span> : null}
+          </p>
+          <div className="reading-tools no-print">
             {locale.audio ? (
               <ListenButton
                 clip={{
                   id: story.id,
                   lang,
-                  title: locale.title || story.locales.en.title,
+                  title,
                   src: locale.audio.dataUrl,
                   image: story.image?.src,
                 }}
@@ -228,111 +208,102 @@ function Reading({ story }: { story: Story | null }) {
                 pause={copy.pause}
               />
             ) : null}
-            <ShareButton lang={lang} title={locale.title || story.locales.en.title} />
-            <div className="ms-auto flex">
-              <PdfButton story={story} lang={lang} />
-            </div>
+            <ShareButton lang={lang} title={title} />
+            <PdfButton story={story} lang={lang} />
+            {written ? (
+              <TypeSize
+                step={typeStep}
+                onDown={() => setStep(typeStep - 1)}
+                onUp={() => setStep(typeStep + 1)}
+                onReset={() => setStep(1)}
+                label={copy.textSize}
+                downLabel={copy.typeDown}
+                upLabel={copy.typeUp}
+              />
+            ) : null}
           </div>
         </header>
 
-        {/* One picture at the top of a reading, wider than the text: a reading with a video
+        {/* One picture at the head of a reading, wider than the text: a reading with a video
             shows the video in the picture's place; the picture stays on the cards. */}
         {story.video ? (
-          <figure className="flex max-w-full flex-col gap-2">
+          <figure className="reading-figure">
             <VideoStart
               clip={{
                 lang,
-                title: videoCaption || locale.title || story.locales.en.title,
+                title: videoCaption || title,
                 src: story.video.src,
               }}
               className="w-full max-w-full"
             />
-            <figcaption className="text-xs leading-snug text-muted">
-              {videoCaption ? `${videoCaption} · ${AI_VIDEO_NOTE[lang]}` : AI_VIDEO_NOTE[lang]}
+            <figcaption className="reading-caption">
+              {videoCaption ? `${videoCaption} ${AI_VIDEO_NOTE[lang]}.` : `${AI_VIDEO_NOTE[lang]}.`}
             </figcaption>
           </figure>
         ) : story.image ? (
-          <figure className="flex max-w-full flex-col gap-2">
+          <figure className="reading-figure">
             <img
               src={story.image.src}
-              {...imageSet(story.image.src, imageSizes("48rem", "100vw"))}
+              {...imageSet(story.image.src, imageSizes("min(64rem, 92vw)", "100vw"))}
               alt={caption}
               width={1500}
               height={1000}
               loading="eager"
               fetchPriority="high"
               decoding="async"
-              className="-mx-5 block h-auto w-[calc(100%+2.5rem)] max-w-none md:mx-0 md:w-full md:max-w-full"
             />
-            <figcaption className="text-xs leading-snug text-muted">
-              {caption ? `${caption} · ${AI_NOTE[lang]}` : AI_NOTE[lang]}
+            <figcaption className="reading-caption">
+              {visibleCaption(story.image, lang)
+                ? `${visibleCaption(story.image, lang)} ${AI_NOTE[lang]}.`
+                : `${AI_NOTE[lang]}.`}
             </figcaption>
           </figure>
         ) : null}
 
-        <div className="reading-column flex w-full flex-col gap-8">
+        <div className="reading-body">
           {written ? (
-            <div
-              ref={sources.length ? undefined : (node) => void (readEnd.current = node)}
-              className="flex flex-col gap-8"
-            >
-              <div className="flex flex-col gap-3">
-                {/* The text size sits right above the text, at its right, after the picture. */}
-                <div className="no-print flex justify-end">
-                  <TypeSize
-                    step={typeStep}
-                    onDown={() => setStep(typeStep - 1)}
-                    onUp={() => setStep(typeStep + 1)}
-                    onReset={() => setStep(1)}
-                    label={copy.textSize}
-                    downLabel={copy.typeDown}
-                    upLabel={copy.typeUp}
-                  />
-                </div>
-                {/* The text's own size (larger on a wide screen, styles: .reading-text), times
-                    the reader's step. */}
-                <div className="reading-text">
-                  <div style={{ fontSize: `${TYPE_STEPS[typeStep]}em` }}>
-                    <Prose body={body} sourceNums={sourceNums} sourceWord={copy.sourceWord} />
-                  </div>
-                </div>
+            <div ref={story.sources.length ? undefined : (node) => void (readEnd.current = node)}>
+              {/* The text's own size (larger on a wide screen), times the reader's step. */}
+              <div className="reading-text" style={{ fontSize: `${TYPE_STEPS[typeStep]}em` }}>
+                <Prose body={body} sourceNums={sourceNums} sourceWord={copy.sourceWord} />
               </div>
               {membersOnly && fullText === null ? <LockNote lang={lang} /> : null}
             </div>
           ) : (
-            <div className="flex flex-col gap-4">
+            <div className="reading-unwritten">
               <p>{copy.unwritten}</p>
               {others.length ? (
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-sm text-muted">{copy.availableIn}</span>
+                <p className="reading-other-langs">
+                  <span>{copy.availableIn}</span>
                   {others.map((code) => (
                     <Link
                       key={code}
                       {...readLink(code, story.id)}
                       onClick={() => rememberLang(code)}
                       lang={langMeta[code].html}
-                      className="inline-flex min-h-11 items-center border border-line px-3 text-sm"
+                      className="text-link"
                     >
                       {langMeta[code].name}
                     </Link>
                   ))}
-                </div>
+                </p>
               ) : null}
             </div>
           )}
 
-          {sources.length ? (
-            <section ref={readEnd}>
-              <DocumentChain story={story} lang={lang} page />
-            </section>
-          ) : null}
-
-          <RelatedReadings story={story} lang={lang} />
-
-          <div className="no-print">
-            <Comments storyId={story.id} lang={lang} />
-          </div>
+          <Sources
+            sources={story.sources}
+            lang={lang}
+            endRef={(node) => {
+              if (story.sources.length) readEnd.current = node;
+            }}
+          />
         </div>
+      </div>
+
+      <div className="reading-after no-print">
+        <RelatedReadings story={story} lang={lang} />
+        <Comments storyId={story.id} lang={lang} />
       </div>
     </main>
   );
@@ -365,26 +336,21 @@ function ShareButton({ lang, title }: { lang: Lang; title: string }) {
     }
   }
   return (
-    <button
-      type="button"
-      onClick={() => void share()}
-      aria-label={copied ? words.copied : words.share}
-      title={copied ? words.copied : words.share}
-      className="inline-flex size-7 shrink-0 items-center justify-center rounded-full border border-line text-ink md:size-8"
-    >
+    <button type="button" onClick={() => void share()} className="reading-tool" aria-live="polite">
       <svg
         viewBox="0 0 20 20"
         fill="none"
         stroke="currentColor"
         strokeWidth="1.3"
         aria-hidden="true"
-        className="size-[14px]"
+        className="reading-tool-mark"
       >
         <circle cx="15" cy="4.5" r="2.2" />
         <circle cx="5" cy="10" r="2.2" />
         <circle cx="15" cy="15.5" r="2.2" />
         <path d="m7 9 6-3.4M7 11l6 3.4" />
       </svg>
+      {copied ? words.copied : words.share}
     </button>
   );
 }

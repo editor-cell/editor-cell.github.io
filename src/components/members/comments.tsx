@@ -21,10 +21,9 @@ type Comment = {
 const MAX = 2000;
 
 /** The same small label a reading uses for "Related readings", which sits just above. */
-function sectionHead(lang: Lang) {
-  const label =
-    lang === "ar" ? "text-sm text-pine" : "text-xs uppercase tracking-[0.14em] text-pine";
-  return `border-b-[3px] border-ink pb-3 font-body font-normal ${label}`;
+function sectionHead(_lang: Lang) {
+  // The headings at the foot of a reading (Documents, Related readings) set the pattern.
+  return "plain-head";
 }
 
 /**
@@ -233,7 +232,7 @@ export function Comments({ storyId, lang }: { storyId: string; lang: Lang }) {
                 className={
                   lang === "ar"
                     ? "text-sm text-pine"
-                    : "text-xs uppercase tracking-[0.14em] text-pine"
+                    : "text-sm text-pine"
                 }
               >
                 {words.yourComment}

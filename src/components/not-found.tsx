@@ -58,16 +58,11 @@ export function NotFoundPage() {
 
   return (
     <Shell>
-      <main className="px-5 py-16 md:px-12 md:py-24">
-        <div className="mx-auto flex max-w-3xl flex-col gap-6">
-          <h1 className="paper-title text-4xl font-bold leading-[1.08] md:text-5xl">
-            {words.title}
-          </h1>
-          <p className="reading-dek">{words.lead}</p>
-          <Link
-            {...homeLink(lang)}
-            className="inline-flex min-h-11 items-center self-start text-pine underline-offset-4 hover:underline"
-          >
+      <main className="page-plain">
+        <div className="flex flex-col gap-6">
+          <h1 className="page-title">{words.title}</h1>
+          <p className="page-lead">{words.lead}</p>
+          <Link {...homeLink(lang)} className="text-link inline-flex min-h-11 items-center self-start">
             {words.home}
           </Link>
         </div>

@@ -1,0 +1,1028 @@
+/* The players: the film (video) player, the listening strip at the foot of the screen,
+   the cinema a reading's film opens in, the timed transcript and the panel's preview of a
+   recording. A film is dark in every scheme, so its own colours are fixed; the listening
+   strip is set on the cloth. Moved here unchanged from the October stylesheet, with its
+   colours taken from the binding. */
+
+.reading-player .seek-line {
+  position: relative;
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  min-width: 2.5rem;
+  height: 1.75rem;
+}
+
+.reading-player .seek-rule {
+  position: relative;
+  width: 100%;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--color-mist);
+}
+
+.reading-player .seek-fill {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--color-pine);
+}
+
+.reading-player .seek-knob {
+  position: absolute;
+  top: 50%;
+  width: 11px;
+  height: 11px;
+  border-radius: 999px;
+  background: var(--color-pine);
+  box-shadow: 0 0 0 2px var(--color-sheet);
+  transform: translate(-50%, -50%);
+  transition:
+    width 150ms ease,
+    height 150ms ease;
+}
+
+.reading-player .seek-line:hover .seek-knob,
+.reading-player .seek-line:active .seek-knob,
+.reading-player .seek-line:has(.seek:focus-visible) .seek-knob {
+  width: 15px;
+  height: 15px;
+}
+
+.reading-player .seek-line:has(.seek:focus-visible) .seek-rule {
+  outline: 2px solid var(--color-pine);
+  outline-offset: 5px;
+}
+
+[dir="rtl"] .reading-player .seek-knob {
+  transform: translate(50%, -50%);
+}
+
+.reading-player input[type="range"].seek {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+
+/* The reading player (the panel's preview of a recording), laid out like the bar at the
+   foot of the screen on every width: the seek line across the whole width, the times under
+   its two ends, then the speed at the start and back · play · ahead in the middle. */
+.reading-player .listen-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-areas:
+    "seek seek seek"
+    "ends ends ends"
+    "speed keys .";
+  align-items: center;
+}
+
+.reading-player .listen-row > .seek-line {
+  grid-area: seek;
+}
+
+.reading-player .listen-ends {
+  grid-area: ends;
+  display: flex;
+  justify-content: space-between;
+  margin-top: -0.25rem;
+}
+
+.reading-player .listen-keys {
+  grid-area: keys;
+  column-gap: 1.25rem;
+  margin-top: 0.25rem;
+}
+
+.reading-player .listen-speed {
+  grid-area: speed;
+  justify-self: start;
+  margin-top: 0.25rem;
+}
+
+/* ---------- Players (October 2026) ----------
+   The round play button of both listening players: filled with the accent, the triangle in
+   the paper's colour, so it reads in the classic and the night scheme alike. */
+.play-disc {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--color-pine);
+  color: var(--color-paper);
+  transition:
+    transform 150ms ease,
+    filter 150ms ease;
+}
+
+button:hover > .play-disc,
+button.play-disc:hover {
+  filter: brightness(1.12);
+}
+
+button:active > .play-disc,
+button.play-disc:active {
+  transform: scale(0.94);
+}
+
+/* The video player. A still is dark in every scheme, so its colours are fixed: white
+   controls on a soft shade rising from the foot of the picture, the accent orange for the
+   start button and the part already seen. */
+.film {
+  box-shadow: 0 8px 32px rgb(12 12 12 / 0.08);
+  color: #fff;
+}
+
+.film.is-full {
+  box-shadow: none;
+}
+
+.film.is-quiet {
+  cursor: none;
+}
+
+/* Quick taps on the picture are the player's own (double taps jump), not the browser's
+   zoom. */
+.film video {
+  touch-action: manipulation;
+}
+
+/* The jump made by double taps, at its side: a pale half-round behind the arrows and the
+   seconds, as on YouTube. */
+.film-jump {
+  display: flex;
+  width: 38%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  background: rgb(255 255 255 / 0.12);
+  pointer-events: none;
+  animation: film-jump-in 150ms ease-out;
+}
+
+.film-jump-words {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.5);
+}
+
+@keyframes film-jump-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.film-start {
+  cursor: pointer;
+  background: linear-gradient(to bottom, rgb(12 12 12 / 0) 55%, rgb(12 12 12 / 0.45));
+}
+
+.film-start-ring {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(3.5rem, 14%, 5.25rem);
+  aspect-ratio: 1;
+  border: 2px solid rgb(255 255 255 / 0.92);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-cloth) 90%, transparent);
+  box-shadow: 0 6px 24px rgb(0 0 0 / 0.35);
+  transition:
+    transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 300ms ease;
+}
+
+.film-start:hover .film-start-ring,
+.film-start:focus-visible .film-start-ring {
+  transform: scale(1.08);
+  background: var(--color-cloth);
+}
+
+.film-start:focus-visible {
+  outline: none;
+}
+
+.film-start:focus-visible .film-start-ring {
+  outline: 2px solid #fff;
+  outline-offset: 4px;
+}
+
+/* The length, in the start corner of the still, as on the cards of the video sites. */
+.film-length {
+  position: absolute;
+  inset-inline-start: 0.75rem;
+  bottom: 0.75rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 2px;
+  background: rgb(0 0 0 / 0.65);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.film-failed {
+  background: rgb(0 0 0 / 0.75);
+}
+
+/* The film's bar: a pane of black glass floating at the foot of the picture, dressed like a
+   dinner jacket: black, ivory hairlines, the play button an ivory round like the shirt
+   front, nothing in colour. Its frame lets taps through to the picture; only its controls
+   take them. */
+.film-bar {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 2.5rem 0.9rem 0.6rem;
+  background: linear-gradient(
+    to top,
+    rgb(0 0 0 / 0.82) 0%,
+    rgb(0 0 0 / 0.45) 40%,
+    transparent 100%
+  );
+  pointer-events: none;
+  transition:
+    opacity 300ms ease,
+    transform 300ms ease;
+}
+
+.film.is-quiet .film-bar {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+/* The bar itself: no pane, only the controls on the dark fade (22 Oct 2026). */
+.film-glass {
+  position: relative;
+  color: #f4efe6;
+}
+
+.film-ico {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.film-ico-bar {
+  width: 22px;
+  height: 22px;
+}
+
+.film-bar .film-seek,
+.film-bar .film-vol-line,
+.film-bar .film-key,
+.film-bar .film-word,
+.film-bar .film-menu {
+  pointer-events: auto;
+}
+
+.film.is-quiet .film-bar .film-seek,
+.film.is-quiet .film-bar .film-vol-line,
+.film.is-quiet .film-bar .film-key,
+.film.is-quiet .film-bar .film-word,
+.film.is-quiet .film-bar .film-menu {
+  pointer-events: none;
+}
+
+.film-row {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.film-key {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  color: #f4efe6;
+  opacity: 0.85;
+  transition: opacity 150ms ease;
+}
+
+.film-key:hover,
+.film-key.is-on {
+  opacity: 1;
+}
+
+.film-key-main {
+  margin-inline: -0.35rem 0.2rem;
+}
+
+/* The two worded keys (subtitles, speed): small capitals in a hairline lozenge, filled
+   ivory while they are in use. */
+.film-word {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  height: 1.6rem;
+  margin-inline: 0.15rem;
+  padding: 0 0.5rem;
+  border: 1px solid rgb(244 239 230 / 0.32);
+  border-radius: 999px;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  color: rgb(244 239 230 / 0.86);
+  transition:
+    color 150ms ease,
+    background-color 150ms ease,
+    border-color 150ms ease;
+}
+
+.film-word:hover {
+  border-color: rgb(244 239 230 / 0.7);
+  color: #fff;
+}
+
+.film-word.is-on {
+  border-color: #f4efe6;
+  background: #f4efe6;
+  color: #0c0c0c;
+}
+
+.film-key:focus-visible,
+.film-word:focus-visible,
+.film-menu-item:focus-visible,
+.film-set:focus-visible,
+.film-seek:has(input:focus-visible) {
+  outline: 1px solid #f4efe6;
+  outline-offset: 2px;
+}
+
+/* The sound: the speaker, then a short line with its ball, as the seek line. */
+.film-vol {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  margin-inline-end: 0.6rem;
+}
+
+.film-vol-line {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 4.5rem;
+  height: 1.6rem;
+  margin-inline-start: -0.1rem;
+}
+
+.film-vol-line input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.film-vol-line:hover .film-rule {
+  height: 4px;
+}
+
+.film-vol-line:has(input:focus-visible) {
+  outline: 1px solid #f4efe6;
+  outline-offset: 2px;
+}
+
+.film-time {
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: rgb(244 239 230 / 0.86);
+}
+
+.film-time-rule {
+  padding: 0 0.3em;
+  opacity: 0.45;
+}
+
+.film-seek {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.film-rule {
+  position: relative;
+  width: 100%;
+  height: 2px;
+  background: rgb(255 255 255 / 0.28);
+  transition: height 150ms ease;
+}
+
+.film-seek:hover .film-rule {
+  height: 4px;
+}
+
+.film-fill {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0;
+  height: 100%;
+  border-radius: 999px;
+  background: #f4efe6;
+}
+
+.film-knob {
+  position: absolute;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #f4efe6;
+  transform: translate(-50%, -50%);
+}
+
+[dir="rtl"] .film-knob {
+  transform: translate(50%, -50%);
+}
+
+.film-seek input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* A menu of the bar (subtitles, speed): the same black glass, rising from the bar's end. */
+.film-menu {
+  position: absolute;
+  inset-inline-end: 0.5rem;
+  bottom: calc(100% + 0.5rem);
+  display: flex;
+  min-width: 9rem;
+  flex-direction: column;
+  padding: 0.5rem 0;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 8px;
+  background: rgb(12 12 12 / 0.94);
+}
+
+.film-menu-item {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 0.4rem 1rem 0.4rem 2.6rem;
+  font-size: 0.85rem;
+  text-align: start;
+  color: #f4efe6;
+}
+
+.film-menu-item::before {
+  content: "";
+  width: 1.1rem;
+  margin-inline-start: -1.1rem;
+  flex-shrink: 0;
+}
+
+.film-menu-item:hover,
+.film-menu-item[aria-checked="true"] {
+  background: rgb(255 255 255 / 0.08);
+}
+
+.film-menu-item[aria-checked="true"]::before {
+  content: "✓";
+}
+
+/* The settings panel behind the gear: one line per setting, its icon, its name and, at the
+   end, what it is set to now; speed and subtitles open their choices under their line. */
+.film:not(.film-still) {
+  container-type: size;
+}
+
+.film-menu {
+  min-width: 13.5rem;
+  max-height: calc(100cqh - 5.5rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.film-set {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  flex-shrink: 0;
+  padding: 0.55rem 1rem;
+  font-size: 0.9rem;
+  text-align: start;
+  color: #f4efe6;
+}
+
+.film-set:hover {
+  background: rgb(255 255 255 / 0.06);
+}
+
+.film-set-label {
+  flex: 1;
+}
+
+.film-set-value {
+  font-size: 0.8rem;
+  color: #a8a39a;
+}
+
+.film-sub {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  padding: 0.25rem 0 0.4rem;
+}
+
+/* The subtitle line, in the site's type on a dark band, kept clear of the bar. */
+.film-cue {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 5.4rem;
+  display: flex;
+  justify-content: center;
+  padding: 0 1rem;
+  pointer-events: none;
+  transition: bottom 300ms ease;
+}
+
+.film.is-quiet .film-cue {
+  bottom: 1rem;
+}
+
+.film-cue span {
+  max-width: 92%;
+  padding: 0.2em 0.6em;
+  border-radius: 6px;
+  background: rgb(0 0 0 / 0.72);
+  color: #fff;
+  font-size: clamp(0.85rem, 2.6vw, 1.35rem);
+  line-height: 1.35;
+  text-align: center;
+  text-wrap: balance;
+}
+
+/* ---------- The listening panel at the foot of the screen (October 2026) ----------
+   A dark player in every scheme: cream type, a deeper orange for the play button
+   and a brighter orange for the part already heard, so it reads on black. */
+.dock {
+  --color-ink: var(--color-cream);
+  --color-paper: var(--color-cloth);
+  --color-sheet: var(--color-cloth);
+  --color-muted: color-mix(in srgb, var(--color-cream) 70%, var(--color-cloth));
+  --color-rule: color-mix(in srgb, var(--color-gilt) 50%, var(--color-cloth));
+  --color-line: color-mix(in srgb, var(--color-gilt) 26%, var(--color-cloth));
+  --color-mist: color-mix(in srgb, var(--color-gilt) 40%, var(--color-cloth));
+  --color-pine: var(--color-gilt);
+  border-top: 1px solid color-mix(in srgb, var(--color-gilt) 35%, var(--color-cloth));
+  background: var(--color-cloth);
+  color: var(--color-cream);
+}
+
+.dock .play-disc {
+  background: var(--color-gilt);
+  color: var(--color-cloth-deep);
+}
+
+.dock .seek-fill,
+.dock .seek-knob {
+  background: var(--color-pine);
+}
+
+.dock .seek-knob {
+  box-shadow: 0 0 0 2px var(--color-cloth);
+}
+
+/* Folded: the part heard runs along the top edge of the strip. */
+.dock-progress {
+  position: absolute;
+  top: -1px;
+  inset-inline-start: 0;
+  height: 2px;
+  background: var(--color-pine);
+}
+
+.dock-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  color: var(--color-muted);
+  transition: color 150ms ease;
+}
+
+.dock-icon:hover {
+  color: var(--color-ink);
+}
+
+/* The reading's picture, small, at the start of the strip. */
+.dock-thumb {
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 2px;
+  background: #222;
+}
+
+.listen-bar .dock-thumb {
+  width: 3rem;
+  height: 3rem;
+}
+
+/* Open, the big play button in the middle does the playing; the strip keeps its own for
+   when folded. */
+.dock.is-open .dock-play {
+  display: none;
+}
+
+/* The listening controls fold away under the strip. */
+.dock-more {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 350ms cubic-bezier(0.22, 0.7, 0.2, 1);
+}
+
+.dock.is-folded .dock-more {
+  grid-template-rows: 0fr;
+}
+
+.dock-more > * {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.film-still {
+  cursor: pointer;
+}
+
+.film-still:hover .film-start-ring,
+.film-still:focus-visible .film-start-ring {
+  transform: scale(1.08);
+  background: var(--color-cloth);
+}
+
+/* ---------- The cinema (October 2026) ----------
+   A film plays on a projection screen in the middle of a darkened page. The lights go down
+   first, then the screen comes down from its roller, top first; closing, the screen rolls
+   up first, then the lights come back. */
+.theater {
+  --screen-width: min(100vw, calc((100dvh - 9rem) * 16 / 9));
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  color: #f4efe6;
+  background: rgb(5 5 5 / 0);
+  visibility: hidden;
+  transition:
+    background-color 350ms ease 350ms,
+    visibility 0s 700ms;
+}
+
+.theater.is-on {
+  background: rgb(5 5 5 / 1);
+  visibility: visible;
+  transition:
+    background-color 400ms ease,
+    visibility 0s;
+}
+
+/* The screen's middle sits a little above the middle of the window (44 per cent down);
+   the transcript, when opened, follows under it and the dark scrolls. */
+.theater-frame {
+  width: var(--screen-width);
+  margin-inline: auto;
+  padding-top: max(1rem, calc(44dvh - var(--screen-width) * 9 / 32 - 4.75rem));
+  padding-bottom: 2.5rem;
+  transition:
+    width 400ms ease,
+    padding-top 400ms ease;
+}
+
+.theater-head {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  padding: 0 1.25rem 0.75rem;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.theater.is-on .theater-head {
+  opacity: 1;
+  transition: opacity 300ms ease 600ms;
+}
+
+.theater-close {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-inline-end: -0.5rem;
+  color: #a8a39a;
+  transition: color 150ms ease;
+}
+
+.theater-close:hover {
+  color: #f4efe6;
+}
+
+.theater-close:focus-visible {
+  outline: 2px solid #f4efe6;
+  outline-offset: -2px;
+}
+
+/* The roller the screen hangs from: a dark rod a little wider than the screen. */
+.theater-roller {
+  height: 6px;
+  margin-inline: -0.5%;
+  border-radius: 3px;
+  background: linear-gradient(to bottom, #5a5a5a, #1f1f1f);
+  opacity: 0;
+  transition: opacity 250ms ease 300ms;
+}
+
+.theater.is-on .theater-roller {
+  opacity: 1;
+  transition: opacity 250ms ease 250ms;
+}
+
+.theater-screen {
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 400ms cubic-bezier(0.4, 0, 1, 1);
+}
+
+.theater.is-on .theater-screen {
+  clip-path: inset(0);
+  transition: clip-path 800ms cubic-bezier(0.22, 0.7, 0.2, 1) 350ms;
+}
+
+.theater-screen > .film {
+  box-shadow: 0 24px 80px rgb(0 0 0 / 0.6);
+}
+
+/* Under the screen: the transcript behind one worded key, then on black glass. */
+.theater-notes {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.9rem;
+  margin-top: 1rem;
+  padding-inline: 1.25rem;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.theater.is-on .theater-notes {
+  opacity: 1;
+  transition: opacity 300ms ease 900ms;
+}
+
+.theater-notes-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.25rem;
+  padding: 0 1rem;
+  border: 1px solid rgb(244 239 230 / 0.32);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgb(244 239 230 / 0.86);
+  transition:
+    color 150ms ease,
+    border-color 150ms ease;
+}
+
+.theater-notes-button:hover {
+  border-color: rgb(244 239 230 / 0.7);
+  color: #fff;
+}
+
+.theater-notes-button[aria-expanded="true"] {
+  border-color: #f4efe6;
+  background: #f4efe6;
+  color: #0c0c0c;
+}
+
+.theater-notes-button:focus-visible {
+  outline: 1px solid #f4efe6;
+  outline-offset: 2px;
+}
+
+.theater-transcript {
+  display: flex;
+  max-width: 44rem;
+  flex-direction: column;
+  gap: 1.1rem;
+  padding: 1.25rem 1.4rem;
+  border: 1px solid rgb(244 239 230 / 0.1);
+  border-radius: 14px;
+  background:
+    linear-gradient(to bottom, rgb(255 255 255 / 0.05), rgb(255 255 255 / 0) 30%),
+    rgb(255 255 255 / 0.03);
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: #e9e4da;
+  text-wrap: pretty;
+}
+
+.theater-transcript[hidden] {
+  display: none;
+}
+
+/* With the transcript open the screen moves up (and on a wide or low window grows a little
+   smaller) and stays put: the dark no longer scrolls, only the words do, in the rest of the
+   window under the screen, so the film is always in sight while they are read. */
+.theater.is-reading {
+  --screen-width: min(100vw, max(16rem, calc((100dvh - 9rem - 16rem) * 16 / 9)));
+  overflow: hidden;
+}
+
+.theater.is-reading .theater-frame {
+  display: flex;
+  height: 100dvh;
+  flex-direction: column;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.theater.is-reading .theater-notes {
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+.theater.is-reading .theater-transcript {
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+  max-width: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+@media (--orbis-desktop) {
+  .theater {
+    --screen-width: min(calc(100vw - 4rem), 64rem, calc((100dvh - 9rem) * 16 / 9));
+  }
+  .theater.is-reading {
+    --screen-width: min(
+      calc(100vw - 4rem),
+      64rem,
+      max(16rem, calc((100dvh - 9rem - 16rem) * 16 / 9))
+    );
+  }
+  .theater-head,
+  .theater-notes {
+    padding-inline: 0;
+  }
+}
+
+/* ---------- The timed transcript (October 2026) ----------
+   With subtitles in its language a transcript is timed. Beside each paragraph, in a narrow
+   column that scrolls with the words, stands a small play key, a hairline round like the
+   film's keys, with the time the paragraph begins under it; only that key moves the film.
+   Under the screen the line being spoken is marked in a soft ivory and its paragraph's key
+   fills, as the film's own play key is filled. On the page the colours are the page's own;
+   on the black of the cinema, ivory. */
+.transcript {
+  --transcript-time: var(--color-muted);
+  --transcript-ring: var(--color-rule);
+  --transcript-key: var(--color-ink);
+  --transcript-key-text: var(--color-paper);
+}
+
+.theater-transcript {
+  --transcript-time: rgb(244 239 230 / 0.55);
+  --transcript-ring: rgb(244 239 230 / 0.35);
+  --transcript-key: #f4efe6;
+  --transcript-key-text: #0c0c0c;
+}
+
+.transcript-row {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  column-gap: 0.75rem;
+  align-items: start;
+}
+
+/* The column has the words' size and line, so the key's round sits in the middle of the
+   paragraph's first line. */
+.transcript-time {
+  padding-top: calc((1lh - 1.5rem) / 2);
+}
+
+.transcript-play {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding-bottom: 0.35rem;
+  border-radius: 6px;
+  color: var(--transcript-time);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  transition: color 150ms ease;
+}
+
+.transcript-play-ring {
+  display: inline-flex;
+  width: 1.5rem;
+  height: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--transcript-ring);
+  border-radius: 999px;
+  color: var(--transcript-key);
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+
+.transcript-play:hover {
+  color: var(--transcript-key);
+}
+
+.transcript-play:hover .transcript-play-ring,
+.transcript-row.is-now .transcript-play-ring {
+  border-color: var(--transcript-key);
+  background: var(--transcript-key);
+  color: var(--transcript-key-text);
+}
+
+.transcript-row.is-now .transcript-play {
+  color: var(--transcript-key);
+}
+
+.transcript-play:focus-visible {
+  outline: 1px solid var(--transcript-key);
+  outline-offset: 1px;
+}
+
+/* A run of words keeps the same room whether it is marked or not. */
+.transcript-piece {
+  padding-inline: 0.15em;
+  margin-inline: -0.15em;
+  border-radius: 3px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition:
+    background-color 200ms ease,
+    color 200ms ease;
+}
+
+.transcript-piece.is-now {
+  background: rgb(244 239 230 / 0.16);
+  color: #fff;
+}
+
+/* After the reader has moved the words: one key, kept at the foot of the box, to follow the
+   film again. The same black glass as the film's bar. */
+.transcript-follow {
+  position: sticky;
+  bottom: 0;
+  align-self: center;
+  margin-top: auto;
+  min-height: 2.25rem;
+  padding: 0 1rem;
+  border: 1px solid rgb(244 239 230 / 0.2);
+  border-radius: 999px;
+  background: rgb(10 10 10 / 0.72);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.45);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(16px) saturate(140%);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #f4efe6;
+}
+
+.transcript-follow:focus-visible {
+  outline: 1px solid #f4efe6;
+  outline-offset: 2px;
+}
+

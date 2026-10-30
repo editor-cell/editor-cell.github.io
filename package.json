@@ -12,7 +12,7 @@
     "build:pages": "ORBIS_PAGES=1 vite build && node scripts/pages-shell.mjs && node scripts/reading-pdfs.mjs && node scripts/check-built-site.mjs",
     "preview": "node scripts/site-server.mjs dist/client 8081",
     "typecheck": "tsc --noEmit",
-    "test:site": "node --experimental-strip-types --test scripts/*.test.mjs src/lib/front-order.test.ts src/lib/drafts.test.ts src/lib/search.test.ts src/lib/transcript.test.ts src/lib/members/members.test.ts supabase/orbis-members.test.mjs scripts/browser/serve.test.mjs",
+    "test:site": "node --experimental-strip-types --test scripts/*.test.mjs src/lib/front-order.test.ts src/lib/drafts.test.ts src/lib/search.test.ts src/lib/transcript.test.ts src/lib/places.test.ts src/lib/members/members.test.ts supabase/orbis-members.test.mjs scripts/browser/serve.test.mjs",
     "test": "npm run test:site",
     "lint": "eslint .",
     "format": "prettier --write .",

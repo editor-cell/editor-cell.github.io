@@ -1,0 +1,357 @@
+/* A reading: the plate. The head and the text share one column and one left edge; the
+   photograph is wider than the text; the documents close the reading, then what to read
+   next and the comments. */
+
+.reading {
+  padding-top: 2.25rem;
+}
+
+.reading-head,
+.reading-body,
+.reading-after {
+  width: 100%;
+  max-width: 42.5rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+.reading-section {
+  font-size: 1.0625rem;
+  color: var(--color-pine);
+}
+
+.reading-section:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.reading-title {
+  margin-top: 0.45rem;
+  font-size: clamp(2.5rem, 10vw, 4.6rem);
+  line-height: 1;
+  letter-spacing: -0.008em;
+}
+
+.reading-dek {
+  margin-top: 1rem;
+  font-size: 1.3125rem;
+  line-height: 1.42;
+  color: color-mix(in srgb, var(--color-ink) 84%, var(--color-paper));
+}
+
+.reading-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 1.1rem;
+  margin-top: 1rem;
+  font-size: 1rem;
+  color: var(--color-muted);
+}
+
+.reading-by {
+  color: var(--color-ink);
+}
+
+.reading-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 1.2rem;
+  margin-top: 1.25rem;
+  border-block: 1px solid var(--color-line);
+  padding-block: 0.55rem;
+}
+
+.reading-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.5rem;
+  font-size: 1.0625rem;
+  color: var(--color-ink);
+}
+
+.reading-tool:hover {
+  color: var(--color-pine);
+}
+
+.reading-tool-mark {
+  width: 1.05rem;
+  height: 1.05rem;
+  flex-shrink: 0;
+}
+
+/* The listening key of a reading (player.tsx) sits in the same row. */
+.reading-tools .reading-player {
+  flex-basis: 100%;
+}
+
+.type-size {
+  display: inline-flex;
+  align-items: baseline;
+  margin-inline-start: auto;
+}
+
+.type-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.1rem;
+  min-height: 2.5rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1;
+  color: var(--color-ink);
+}
+
+.type-key-down {
+  font-size: 1rem;
+}
+
+.type-key-mid {
+  font-size: 1.3rem;
+}
+
+.type-key-up {
+  font-size: 1.65rem;
+}
+
+.type-key:disabled {
+  color: var(--color-mist);
+  cursor: default;
+}
+
+.reading-figure {
+  width: 100%;
+  max-width: 66rem;
+  margin: 2rem auto 0;
+}
+
+.reading-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.reading-caption {
+  margin-top: 0.55rem;
+  padding-inline: 1.25rem;
+  font-size: 0.9375rem;
+  font-style: italic;
+  line-height: 1.4;
+  color: var(--color-muted);
+}
+
+.reading-body {
+  padding-top: 2.25rem;
+}
+
+.reading-text {
+  font-size: 1.25rem;
+  line-height: 1.6;
+}
+
+.reading-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.95em;
+}
+
+.reading-para {
+  text-align: start;
+  hyphens: manual;
+  text-wrap: pretty;
+}
+
+/* The first letter drops three lines, in the title face and the accent. Arabic letters join,
+   so Arabic keeps its first word whole. */
+.reading-first:not(:lang(ar))::first-letter {
+  float: left;
+  margin: 0.06em 0.09em 0 0;
+  font-family: var(--font-display);
+  font-size: 4.1em;
+  font-weight: 600;
+  line-height: 0.78;
+  color: var(--color-pine);
+}
+
+[dir="rtl"] .reading-first:not(:lang(ar))::first-letter {
+  float: right;
+  margin: 0.06em 0 0 0.09em;
+}
+
+.reading-unwritten {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.reading-other-langs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  color: var(--color-muted);
+}
+
+/* On a phone a hairline at the top of the screen fills as the reader moves through the
+   text and its documents. */
+.reading-progress {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: 40;
+  height: 3px;
+  background: var(--color-pine);
+  transform: scaleX(0);
+  transform-origin: left center;
+  pointer-events: none;
+}
+
+[dir="rtl"] .reading-progress {
+  transform-origin: right center;
+}
+
+/* ---------- Documents ---------- */
+.sources {
+  margin-top: 3rem;
+  border-top: 1px solid var(--color-rule);
+  padding-top: 1.6rem;
+}
+
+.sources-title {
+  font-size: 2rem;
+}
+
+.sources-note {
+  margin-top: 0.3rem;
+  font-size: 1.0625rem;
+  font-style: italic;
+  color: var(--color-muted);
+}
+
+.sources-list {
+  display: grid;
+  margin-top: 1rem;
+}
+
+.source-row {
+  display: grid;
+  grid-template-columns: 1.9rem minmax(0, 1fr);
+  gap: 0.6rem;
+  margin-inline: -0.6rem;
+  padding: 0.7rem 0.6rem;
+  border-radius: 2px;
+  scroll-margin-top: 6rem;
+}
+
+.source-row:target,
+.source-row.is-lit {
+  animation: source-lit 2.6s ease-out;
+}
+
+@keyframes source-lit {
+  0%,
+  35% {
+    background: var(--color-highlight);
+  }
+  100% {
+    background: transparent;
+  }
+}
+
+.source-n {
+  font-family: var(--font-display);
+  font-variant-numeric: lining-nums;
+  font-size: 1.45rem;
+  font-weight: 600;
+  line-height: 1.05;
+  color: var(--color-pine);
+}
+
+.source-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.source-issuer {
+  font-size: 1rem;
+  color: var(--color-muted);
+}
+
+.source-doc {
+  font-size: 1.125rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+a.source-link:hover .source-doc {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+.source-host {
+  font-size: 0.9375rem;
+  font-style: italic;
+  color: var(--color-pine);
+}
+
+/* ---------- After the reading ---------- */
+.reading-after {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  padding-top: 3.5rem;
+}
+
+.related-title {
+  font-size: 2rem;
+}
+
+.related-list {
+  display: grid;
+  margin-top: 0.75rem;
+}
+
+.related-item {
+  border-top: 1px solid var(--color-line);
+  padding-block: 1.1rem 1.2rem;
+}
+
+.related-item-title {
+  font-size: 1.55rem;
+  line-height: 1.08;
+}
+
+.related-dek {
+  margin-top: 0.4rem;
+  font-size: 1.0625rem;
+  line-height: 1.45;
+}
+
+@media (--orbis-desktop) {
+  .reading {
+    padding-top: 4rem;
+  }
+  .reading-dek {
+    font-size: 1.5rem;
+  }
+  .reading-figure {
+    margin-top: 2.75rem;
+    padding-inline: 3rem;
+  }
+  .reading-caption {
+    padding-inline: 0;
+  }
+  .reading-body {
+    padding-top: 3rem;
+  }
+  .reading-text {
+    font-size: 1.3125rem;
+  }
+  .reading-progress {
+    display: none;
+  }
+}

@@ -153,7 +153,7 @@ export function VideoStart({
               <div className="theater-frame">
                 <div className="theater-head">
                   <div className="flex min-w-0 flex-1 flex-col gap-1">
-                    <p className="text-[11px] uppercase tracking-[0.14em] text-[#a8a39a]">
+                    <p className="text-sm text-[#a8a39a]">
                       {words.video}
                       {clip.duration ? (
                         <span dir="ltr" className="tabular-nums">{` · ${fmt(clip.duration)}`}</span>

@@ -1,4 +1,4 @@
-import type { Lang, StoryCard, VideoCard } from "@/lib/types";
+import type { Lang, StoryCard, Theme, VideoCard } from "@/lib/types";
 // Relative import with the extension, so the tests can load this file directly with node.
 import { copyFor } from "./i18n.ts";
 
@@ -198,6 +198,49 @@ function bodyWords(bodies: ReadonlyMap<string, string>, id: string): string[] {
   return words;
 }
 
+/**
+ * What each section covers, beside its one-word name (30 Oct 2026: Earth, Society, Science,
+ * Health, Culture), so a reader who searches for "climate" or "ekonomi" still finds the
+ * readings of the section that covers it.
+ */
+const SECTION_TOPICS: Record<Lang, Record<Theme, string>> = {
+  en: {
+    "climate-environment": "climate environment water land air",
+    "economy-politics": "economy economics politics government public life",
+    "science-technology": "technology research measurement",
+    health: "public health care",
+    culture: "language languages records",
+  },
+  tr: {
+    "climate-environment": "iklim çevre su toprak hava",
+    "economy-politics": "ekonomi politika siyaset yönetim kamusal hayat",
+    "science-technology": "teknoloji araştırma ölçüm",
+    health: "halk sağlığı bakım",
+    culture: "dil diller kayıt",
+  },
+  ar: {
+    "climate-environment": "المناخ البيئة الماء",
+    "economy-politics": "الاقتصاد السياسة",
+    "science-technology": "التقنية البحث",
+    health: "الصحة العامة",
+    culture: "اللغة",
+  },
+  fr: {
+    "climate-environment": "climat environnement eau",
+    "economy-politics": "économie politique",
+    "science-technology": "technologie recherche",
+    health: "santé publique",
+    culture: "langue",
+  },
+  es: {
+    "climate-environment": "clima medio ambiente agua",
+    "economy-politics": "economía política",
+    "science-technology": "tecnología investigación",
+    health: "salud pública",
+    culture: "lengua",
+  },
+};
+
 function fieldsOf(card: StoryCard, lang: Lang): Fields {
   let byLang = prepared.get(card);
   if (!byLang) {
@@ -211,7 +254,7 @@ function fieldsOf(card: StoryCard, lang: Lang): Fields {
     fields = [
       [fieldWords(copy.title), 5],
       [fieldWords(copy.dek), 3],
-      [fieldWords(`${copy.region} ${themes[card.theme]}`), 2],
+      [fieldWords(`${copy.region} ${themes[card.theme]} ${SECTION_TOPICS[lang][card.theme]}`), 2],
       [fieldWords(copy.lead), 1],
     ];
     byLang[lang] = fields;

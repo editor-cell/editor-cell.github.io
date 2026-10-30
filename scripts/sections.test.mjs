@@ -12,11 +12,12 @@ const canonical = ["climate-environment", "economy-politics", "science-technolog
 
 test("the five sections have the requested order and names in all five languages", () => {
   assert.deepEqual(THEMES, canonical);
+  // One word each since 30 Oct 2026; the addresses stay the same.
   assert.deepEqual(Object.values(copyFor("en").themes), [
-    "Climate & Environment", "Economy & Politics", "Science & Technology", "Health", "Culture",
+    "Earth", "Society", "Science", "Health", "Culture",
   ]);
   assert.deepEqual(Object.values(copyFor("tr").themes), [
-    "İklim ve Çevre", "Ekonomi ve Politika", "Bilim ve Teknoloji", "Sağlık", "Kültür",
+    "Yeryüzü", "Toplum", "Bilim", "Sağlık", "Kültür",
   ]);
   for (const lang of ALL_LANGS) {
     assert.deepEqual(Object.keys(copyFor(lang).themes), canonical, lang);

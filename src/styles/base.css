@@ -1,0 +1,343 @@
+/* Orbis, 30 Oct 2026: the reading atlas as a bound volume.
+   Cloth (a deep oxblood) and gilt on the cover, the masthead and the footer; plain white
+   paper and warm ink inside. Two faces of one family: Cormorant Garamond for titles,
+   EB Garamond for text. Both are served from the site itself (no third-party font host). */
+@import "tailwindcss";
+
+@font-face {
+  font-family: "EB Garamond";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("../assets/fonts/eb-garamond-latin-wght-normal.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308,
+    U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "EB Garamond";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("../assets/fonts/eb-garamond-latin-ext-wght-normal.woff2") format("woff2");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113,
+    U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "EB Garamond";
+  font-style: italic;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("../assets/fonts/eb-garamond-latin-wght-italic.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308,
+    U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "EB Garamond";
+  font-style: italic;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("../assets/fonts/eb-garamond-latin-ext-wght-italic.woff2") format("woff2");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113,
+    U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Cormorant Garamond";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("../assets/fonts/cormorant-garamond-latin-wght-normal.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308,
+    U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Cormorant Garamond";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("../assets/fonts/cormorant-garamond-latin-ext-wght-normal.woff2") format("woff2");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113,
+    U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Cormorant Garamond";
+  font-style: italic;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("../assets/fonts/cormorant-garamond-latin-wght-italic.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308,
+    U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Cormorant Garamond";
+  font-style: italic;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("../assets/fonts/cormorant-garamond-latin-ext-wght-italic.woff2") format("woff2");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113,
+    U+2C60-2C7F, U+A720-A7FF;
+}
+
+@theme {
+  --font-display: "Cormorant Garamond", "EB Garamond", Garamond, "Times New Roman", serif;
+  --font-body: "EB Garamond", Garamond, "Times New Roman", "Noto Naskh Arabic", serif;
+  --font-sans: var(--font-body);
+  --font-serif: var(--font-body);
+
+  /* Garamond has a small x-height: every step of the type scale sits a little larger than
+     Tailwind's defaults, so the account, panel and search pages stay as legible as the
+     readings. */
+  --text-xs: 0.875rem;
+  --text-xs--line-height: 1.35;
+  --text-sm: 1rem;
+  --text-sm--line-height: 1.4;
+  --text-base: 1.1875rem;
+  --text-base--line-height: 1.55;
+  --text-lg: 1.3125rem;
+  --text-lg--line-height: 1.45;
+  --text-xl: 1.5rem;
+  --text-xl--line-height: 1.3;
+  --text-2xl: 1.75rem;
+  --text-2xl--line-height: 1.2;
+  --text-3xl: 2.125rem;
+  --text-3xl--line-height: 1.1;
+  --text-4xl: 2.625rem;
+  --text-4xl--line-height: 1.05;
+  --text-5xl: 3.25rem;
+  --text-5xl--line-height: 1.02;
+
+  /* Inside the book: white paper, warm ink. */
+  --color-paper: #ffffff;
+  --color-sheet: #ffffff;
+  --color-ink: #1d1b19;
+  --color-muted: #6b655d;
+  --color-mist: #d9d2c7;
+  --color-line: #ebe6de;
+  --color-rule: #b8afa2;
+  /* The accent on paper: the cloth, a shade brighter so it reads as a link. */
+  --color-pine: #8a2632;
+  --color-highlight: #f5eee2;
+  --color-shade: #f6f2ec;
+  /* The binding: oxblood cloth with gilt lettering. */
+  --color-cloth: #5a1a24;
+  --color-cloth-deep: #47131c;
+  --color-gilt: #d4ba82;
+  --color-cream: #f4ead8;
+  --color-panel: #5a1a24;
+
+  --radius-sm: 2px;
+  --radius-md: 2px;
+  --radius-lg: 2px;
+}
+
+/* Second scheme, for a dim room: the paper turns to a soft charcoal, the ink to an off-white,
+   the cloth darkens and the accent lightens so it still reads. */
+html[data-look="night"] {
+  color-scheme: dark;
+  --color-paper: #151416;
+  --color-sheet: #1c1b1e;
+  --color-ink: #ebe5da;
+  --color-muted: #a59e93;
+  --color-mist: #3b383b;
+  --color-line: #2a282b;
+  --color-rule: #57524d;
+  --color-pine: #e0939b;
+  --color-highlight: #2e272a;
+  --color-shade: #1c1b1e;
+  --color-cloth: #3a1118;
+  --color-cloth-deep: #2c0d12;
+  --color-gilt: #cdb27a;
+  --color-cream: #efe5d2;
+  --color-panel: #3a1118;
+}
+
+/* A bright photograph is dimmed a touch so it does not glare out of a dark page. */
+html[data-look="night"] main img {
+  filter: brightness(0.9);
+}
+
+/* On the cloth (masthead, cover, menu, footer) the colours a component reads from are the
+   gilt and cream of the binding, whichever scheme is on. */
+.on-cloth {
+  --color-paper: var(--color-cloth);
+  --color-sheet: var(--color-cloth-deep);
+  --color-ink: var(--color-cream);
+  --color-muted: color-mix(in srgb, var(--color-cream) 72%, var(--color-cloth));
+  --color-line: color-mix(in srgb, var(--color-gilt) 28%, var(--color-cloth));
+  --color-mist: color-mix(in srgb, var(--color-gilt) 40%, var(--color-cloth));
+  --color-rule: color-mix(in srgb, var(--color-gilt) 55%, var(--color-cloth));
+  --color-pine: var(--color-gilt);
+  --color-highlight: color-mix(in srgb, var(--color-cream) 14%, var(--color-cloth));
+  background: var(--color-cloth);
+  color: var(--color-cream);
+}
+
+body {
+  transition:
+    background-color 300ms ease,
+    color 300ms ease;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: var(--font-body);
+    font-size: 1.1875rem;
+    line-height: 1.55;
+    font-kerning: normal;
+    font-variant-ligatures: common-ligatures;
+    background: var(--color-paper);
+    color: var(--color-ink);
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  /* Every title on the site is set in the display Garamond. */
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-synthesis: none;
+    line-height: 1.06;
+    letter-spacing: -0.004em;
+    text-wrap: balance;
+  }
+
+  :lang(ar) {
+    font-family: "Noto Naskh Arabic", Georgia, serif;
+    line-height: 1.85;
+  }
+
+  :lang(ar) :is(h1, h2, h3, h4) {
+    font-family: "Noto Naskh Arabic", Georgia, serif;
+    line-height: 1.35;
+  }
+
+  ::selection {
+    background: var(--color-highlight);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-pine);
+    outline-offset: 3px;
+  }
+
+  /* A number in the text that opens its document at the foot of the reading. */
+  a.cite {
+    color: var(--color-pine);
+    font-size: 0.68em;
+    font-weight: 600;
+    font-variant-numeric: lining-nums tabular-nums;
+    line-height: 1;
+    vertical-align: super;
+    text-decoration: none;
+    padding-inline: 0.12em;
+  }
+
+  a.cite:hover {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+}
+
+/* Older components still name the title face this way. */
+.paper-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-synthesis: none;
+  line-height: 1.08;
+  overflow-wrap: break-word;
+}
+
+:lang(ar) .paper-title {
+  font-family: "Noto Naskh Arabic", Georgia, serif;
+  line-height: 1.4;
+}
+
+/* Times, counts and prices: lining figures that keep their width. */
+.figures {
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* The search field draws no browser clear button and sets its hint in italic. */
+.search-field::-webkit-search-cancel-button,
+.search-field::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.search-field::placeholder {
+  font-style: italic;
+}
+
+/* The page's width on a wide screen, with the same side margin everywhere. */
+.page-width {
+  width: 100%;
+  max-width: 82rem;
+  margin-inline: auto;
+}
+
+.gutter {
+  padding-inline: 1.25rem;
+}
+
+@media (--orbis-desktop) {
+  .gutter {
+    padding-inline: 3rem;
+  }
+}
+
+/* Plain links inside running text. */
+.text-link {
+  color: var(--color-pine);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+.print-only {
+  display: none;
+}

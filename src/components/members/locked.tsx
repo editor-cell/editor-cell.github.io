@@ -58,7 +58,7 @@ export function LockNote({ lang }: { lang: Lang }) {
   const here = useHere();
   return (
     <div className="flex flex-col gap-3 border-y border-line py-6">
-      <p className="text-xs uppercase tracking-widest text-pine">{words.membersOnly}</p>
+      <p className="text-sm text-pine">{words.membersOnly}</p>
       <p>{words.lockNote}</p>
       {membersOn && member.status === "out" ? (
         <Link

@@ -12,17 +12,16 @@ export const MAIN_LOOK: Look = "classic";
 
 export const LOOK_KEY = "orbis-look";
 
-/** Browser bar colour for each scheme (matches the header). */
+/** Browser bar colour for each scheme: the cloth of the masthead (30 Oct 2026). */
 export const BAR: Record<Look, string> = {
-  classic: "#ffffff",
-  night: "#141414",
+  classic: "#5a1a24",
+  night: "#3a1118",
 };
 
 /** Swatches shown next to each scheme's name in the menus: ink, paper. */
 export const LOOK_SWATCH: Record<Look, [string, string]> = {
-  classic: ["#0c0c0c", "#ffffff"],
-  // The dark scheme is the classic disc turned over: light where classic is dark.
-  night: ["#e7e4dd", "#141414"],
+  classic: ["#5a1a24", "#ffffff"],
+  night: ["#ebe5da", "#151416"],
 };
 
 /**

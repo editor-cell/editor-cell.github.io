@@ -20,10 +20,9 @@ import type { Lang } from "@/lib/types";
 import { useLang } from "@/lib/use-lang";
 
 /** The same small label a reading uses for "Related readings". */
-function sectionHead(lang: Lang) {
-  const label =
-    lang === "ar" ? "text-sm text-pine" : "text-xs uppercase tracking-[0.14em] text-pine";
-  return `border-b-[3px] border-ink pb-3 font-body font-normal ${label}`;
+function sectionHead(_lang: Lang) {
+  // The headings at the foot of a reading (Documents, Related readings) set the pattern.
+  return "plain-head";
 }
 
 const outlineButton =
@@ -45,20 +44,14 @@ function Page({
   const lang = useLang();
   return (
     <Shell>
-      <main className="px-5 py-10 md:px-12 md:py-14">
-        <div className="mx-auto flex max-w-3xl flex-col gap-8">
+      <main className="page-plain">
+        <div className="flex flex-col gap-8">
           <Trail lang={lang} here={title} parent={parent} className="-mb-3" />
-          <header className="flex max-w-2xl flex-col gap-4">
-            <h1 className="paper-title text-4xl font-bold leading-[1.08] md:text-5xl md:leading-[1.05]">
-              {title}
-            </h1>
-            <p className="reading-dek">{lead}</p>
+          <header className="flex flex-col gap-4">
+            <h1 className="page-title">{title}</h1>
+            <p className="page-lead">{lead}</p>
           </header>
-          {/* The rule runs to the screen's edges on a phone and stays in the column on a wide
-              screen. */}
-          <div className="-mx-5 flex flex-col gap-10 border-t border-ink px-5 pt-8 md:mx-0 md:px-0">
-            {children}
-          </div>
+          <div className="flex flex-col gap-10 border-t border-rule pt-8">{children}</div>
         </div>
       </main>
     </Shell>
@@ -73,10 +66,10 @@ function Points({ items, under = false }: { items: string[]; under?: boolean }) 
       {items.map((item, index) => (
         <li
           key={item}
-          className="grid grid-cols-[2rem_1fr] items-baseline gap-2 border-b border-line py-3.5 text-[17px] leading-snug"
+          className="grid grid-cols-[1.75rem_1fr] items-baseline gap-2 border-b border-line py-3.5 text-lg leading-snug"
         >
-          <span aria-hidden="true" className="text-xs tabular-nums text-pine">
-            {String(index + 1).padStart(2, "0")}
+          <span aria-hidden="true" className="font-display text-2xl font-semibold leading-none text-pine">
+            {index + 1}
           </span>
           <span>{item}</span>
         </li>

@@ -1,0 +1,405 @@
+/* The frame of every page: the cloth masthead, the menu, the search layer and the cloth
+   footer. Phone first; the wide screen only widens the margins and shows a few words that
+   a phone has no room for. */
+
+/* ---------- Masthead ---------- */
+.frame {
+  position: relative;
+  z-index: 20;
+}
+
+.frame-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  width: 100%;
+  max-width: 82rem;
+  min-height: 3.5rem;
+  margin-inline: auto;
+  padding-inline: 0.75rem;
+}
+
+.frame-start {
+  display: flex;
+  justify-self: start;
+}
+
+.frame-end {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: 0.15rem;
+}
+
+.frame-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.75rem;
+  padding-inline: 0.5rem;
+  font-size: 1.0625rem;
+  line-height: 1;
+  color: var(--color-gilt);
+  transition: color 150ms ease;
+}
+
+.frame-tool:hover {
+  color: var(--color-cream);
+}
+
+.frame-mark {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+}
+
+/* The word beside the search mark shows where there is room for it. */
+.frame-tool-word {
+  display: none;
+}
+
+.frame-lang {
+  font-style: italic;
+}
+
+.frame-brand {
+  display: inline-flex;
+  color: var(--color-cream);
+}
+
+.frame-brand-start {
+  grid-column: 1;
+  justify-self: start;
+}
+
+.frame-logo {
+  width: 7.25rem;
+}
+
+@media (--orbis-desktop) {
+  .frame-row {
+    min-height: 4.5rem;
+    padding-inline: 2.5rem;
+  }
+  .frame-logo {
+    width: 9.5rem;
+  }
+  .frame-tool-word {
+    display: inline;
+  }
+  .frame-end {
+    gap: 0.75rem;
+  }
+}
+
+/* The search opens as a sheet under the masthead, over the page. */
+.frame-search-layer {
+  position: absolute;
+  inset-inline: 0;
+  top: 100%;
+  z-index: 40;
+}
+
+.search-scrim {
+  background: rgb(29 20 18 / 0.3);
+}
+
+html[data-look="night"] .search-scrim {
+  background: rgb(0 0 0 / 0.5);
+}
+
+/* The motto under the name: "the reading atlas", in the text's italic. */
+.masthead-motto {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: var(--color-gilt);
+}
+
+/* ---------- Menu ---------- */
+.menu-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+}
+
+.menu-scrim {
+  position: absolute;
+  inset: 0;
+  background: rgb(29 14 16 / 0.5);
+  animation: menu-fade 220ms ease-out;
+}
+
+.menu-sheet {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  width: min(100%, 24rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 1.5rem 2.5rem;
+  box-shadow: 0 0 60px rgb(0 0 0 / 0.35);
+  animation: menu-in 260ms cubic-bezier(0.22, 0.7, 0.2, 1);
+}
+
+[dir="rtl"] .menu-sheet {
+  animation-name: menu-in-rtl;
+}
+
+@keyframes menu-in {
+  from {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes menu-in-rtl {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes menu-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+.menu-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 3.5rem;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.menu-brand {
+  display: inline-flex;
+  color: var(--color-cream);
+}
+
+.menu-logo {
+  width: 6.5rem;
+}
+
+.menu-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-inline-end: -0.6rem;
+  color: var(--color-gilt);
+}
+
+.menu-sections {
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-section {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 3rem;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--color-cream);
+}
+
+.menu-section:hover {
+  color: var(--color-gilt);
+}
+
+/* The open section carries a small gilt disc before its name. */
+.menu-section[aria-current="page"] {
+  color: var(--color-gilt);
+}
+
+.menu-section[aria-current="page"]::before {
+  content: "";
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.menu-pages {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--color-line);
+  padding-top: 1rem;
+}
+
+.menu-page {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.6rem;
+  font-size: 1.25rem;
+  color: var(--color-cream);
+}
+
+.menu-page:hover,
+.menu-page[aria-current="page"] {
+  color: var(--color-gilt);
+}
+
+.menu-choices {
+  display: grid;
+  gap: 1.1rem;
+  border-top: 1px solid var(--color-line);
+  padding-top: 1.25rem;
+}
+
+.menu-label {
+  margin-bottom: 0.45rem;
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--color-gilt);
+}
+
+.menu-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.menu-option {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding-inline: 1rem;
+  border: 1px solid var(--color-mist);
+  border-radius: 999px;
+  font-size: 1.0625rem;
+  color: var(--color-cream);
+}
+
+.menu-option[aria-pressed="true"] {
+  border-color: var(--color-gilt);
+  background: var(--color-gilt);
+  color: var(--color-cloth-deep);
+}
+
+/* ---------- Footer: the back cover ---------- */
+.site-footer {
+  margin-top: 4.5rem;
+  padding-block: 3rem 2rem;
+}
+
+.footer-inner {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2.25rem 1.5rem;
+}
+
+.footer-brand {
+  grid-column: 1 / -1;
+}
+
+.footer-name {
+  display: inline-flex;
+  color: var(--color-cream);
+}
+
+.footer-logo {
+  width: 9rem;
+}
+
+.footer-motto {
+  margin-top: 0.45rem;
+  font-size: 1rem;
+}
+
+.footer-principle {
+  max-width: 24rem;
+  margin-top: 1.25rem;
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  color: var(--color-muted);
+}
+
+.footer-head {
+  margin-bottom: 0.5rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--color-gilt);
+}
+
+.footer-col ul {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.35rem;
+  font-size: 1.0625rem;
+  color: var(--color-cream);
+}
+
+.footer-link:hover,
+.footer-link[aria-pressed="true"] {
+  color: var(--color-gilt);
+}
+
+.footer-link[aria-pressed="true"] {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+}
+
+.footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem 1.5rem;
+  grid-column: 1 / -1;
+  border-top: 1px solid var(--color-line);
+  padding-top: 1.25rem;
+  font-size: 0.9375rem;
+  color: var(--color-muted);
+}
+
+.footer-bottom ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.25rem;
+}
+
+.footer-bottom .footer-link {
+  font-size: 0.9375rem;
+  color: var(--color-muted);
+}
+
+@media (--orbis-desktop) {
+  .site-footer {
+    margin-top: 6rem;
+    padding-block: 4rem 2.25rem;
+  }
+  .footer-inner {
+    grid-template-columns: minmax(0, 5fr) repeat(3, minmax(0, 2fr));
+    column-gap: 3rem;
+  }
+  .footer-brand {
+    grid-column: auto;
+  }
+  .footer-logo {
+    width: 11rem;
+  }
+}
+
+/* The front page's footer follows its last block without the usual gap above. */
+.orbis-home .site-footer {
+  margin-top: 3.5rem;
+}

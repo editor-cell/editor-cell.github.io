@@ -3,8 +3,7 @@ import lockup from "@/assets/orbis-lockup.svg?raw";
 /**
  * The owner's logo (16 Oct 2026, evening): ORBIS in wide-set, high-contrast serif capitals,
  * traced from his picture. The picture had a Turkish dotted İ; the dot was taken off, since
- * the site's name is English. Drawn in the current text colour, so it is cream on the black
- * bands and light on the dark one. The mark is plain outlines, so it needs no ids of its own
+ * the site's name is English. Drawn in the current text colour: cream on the cloth. The mark is plain outlines, so it needs no ids of its own
  * and any number of copies (header, footer, menu) can sit on a page.
  */
 export function OrbisLockup({
@@ -12,8 +11,8 @@ export function OrbisLockup({
   mottoClassName,
 }: {
   className: string;
-  /** On the black bands the owner wants "The reading atlas." centred under the name
-   * (16 Oct 2026, evening), in bold Bodoni, lower case; the menu shows the name alone. */
+  /** "the reading atlas" centred under the name, in the text's italic (frame.css,
+   * .masthead-motto); the masthead row and the menu show the name alone. */
   mottoClassName?: string;
 }) {
   const html = lockup.replace("<svg ", '<svg width="100%" height="100%" aria-hidden="true" ');

@@ -105,7 +105,8 @@ test("region and section name are searched", () => {
     card("b", "en", { title: "Rivers", region: "Asia" }),
   ];
   assert.deepEqual(ids(searchCards(cards, "en", "africa")), ["a"]);
-  // Both cards are in the Climate & Environment section.
+  // Both cards are in the Earth section, which covers the climate.
+  assert.deepEqual(ids(searchCards(cards, "en", "earth")).sort(), ["a", "b"]);
   assert.deepEqual(ids(searchCards(cards, "en", "climate")).sort(), ["a", "b"]);
 });
 
