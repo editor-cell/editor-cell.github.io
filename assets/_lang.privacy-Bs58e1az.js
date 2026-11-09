@@ -1,0 +1,1 @@
+import{Yt as e}from"./shell-C_KBmgrS.js";import{t}from"./legal-Cgs0ltxE.js";var n=e(),r=()=>(0,n.jsx)(t,{page:`privacy`});export{r as component};
