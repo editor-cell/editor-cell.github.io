@@ -1,1 +1,0 @@
-import{t as e}from"./about-CA6_jBBD.js";var t=e;export{t as component};
