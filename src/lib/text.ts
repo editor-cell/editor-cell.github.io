@@ -3,7 +3,7 @@ import type { Lang, Story } from "@/lib/types";
 const INTL: Record<Lang, string> = {
   tr: "tr-TR",
   ar: "ar",
-  en: "en-GB",
+  en: "en-US",
   fr: "fr-FR",
   es: "es-ES",
 };
@@ -45,6 +45,15 @@ export function formatDateRange(start: string, end: string, lang: Lang): string 
     fr: ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."],
     es: ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"],
   };
+  if (lang === "en") {
+    // The English pages are written in American English (owner, 9 Nov 2026): month first.
+    const monthDay = (date: Date) => `${months.en[date.getUTCMonth()]} ${date.getUTCDate()}`;
+    const year = (date: Date) => date.getUTCFullYear();
+    if (start === end) return `${monthDay(to)}, ${year(to)}`;
+    if (year(from) !== year(to)) return `${monthDay(from)}, ${year(from)} – ${monthDay(to)}, ${year(to)}`;
+    const tail = from.getUTCMonth() === to.getUTCMonth() ? String(to.getUTCDate()) : monthDay(to);
+    return `${monthDay(from)} – ${tail}, ${year(to)}`;
+  }
   const dayMonth = (date: Date) => `${date.getUTCDate()} ${months[lang][date.getUTCMonth()]}`;
   const finish = `${dayMonth(to)} ${to.getUTCFullYear()}`;
   if (start === end) return finish;

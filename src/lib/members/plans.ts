@@ -30,7 +30,7 @@ export const paymentOn: boolean = PAYMENT.checkoutUrl.startsWith("https://");
 const LOCALE: Record<Lang, string> = {
   tr: "tr-TR",
   ar: "ar",
-  en: "en-GB",
+  en: "en-US",
   fr: "fr-FR",
   es: "es-ES",
 };

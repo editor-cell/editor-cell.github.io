@@ -55,7 +55,7 @@ const SECTION_DESCRIPTION: Record<Lang, (name: string) => string> = {
 const OG_LOCALE: Record<Lang, string> = {
   tr: "tr_TR",
   ar: "ar_AR",
-  en: "en_GB",
+  en: "en_US",
   fr: "fr_FR",
   es: "es_ES",
 };

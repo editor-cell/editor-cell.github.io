@@ -32,7 +32,7 @@ export function pdfReadings(stories, langs) {
   });
 }
 
-const dateText = (iso, lang) => new Intl.DateTimeFormat(lang === "tr" ? "tr-TR" : "en-GB", {
+const dateText = (iso, lang) => new Intl.DateTimeFormat(lang === "tr" ? "tr-TR" : "en-US", {
   day: "numeric", month: "long", year: "numeric", timeZone: "UTC",
 }).format(new Date(`${iso}T00:00:00Z`));
 

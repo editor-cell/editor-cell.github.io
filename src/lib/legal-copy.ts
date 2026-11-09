@@ -53,8 +53,8 @@ const EN: Record<LegalPage, Doc> & {
           "What you buy: for the period you choose, the Orbis digital magazine of eight articles a week, at least 36,000 characters in total (including spaces, measured on the English text), with audio of each article. Access starts as soon as you pay; you reach it in your browser at orbisreadingatlas.com, signed in to your account.",
           "Gift: access to all other content on Orbis is given to members as a gift; it is not part of what the price pays for.",
           "Price: {prices}. Taxes due in your country are added on the payment page, which shows the total before you pay. Payment is made by card through the payment provider named on that page.",
-          "Renewal and cancellation: membership renews at the end of each period for the same period and price unless you cancel. You can cancel at any time; cancelling stops the next renewal, and access lasts until the end of the period you have paid for.",
-          "Refunds: because access is provided immediately on payment, there is no right of withdrawal, and payments are not refunded, including for the rest of a cancelled period.",
+          "Renewal and cancellation: membership renews at the end of each period for the same period and price unless you cancel. You can cancel at any time; canceling stops the next renewal, and access lasts until the end of the period you have paid for.",
+          "Refunds: because access is provided immediately on payment, there is no right of withdrawal, and payments are not refunded, including for the rest of a canceled period.",
         ],
       },
       {
@@ -77,7 +77,7 @@ const EN: Record<LegalPage, Doc> & {
         heading: "Reading without an account",
         paragraphs: [
           "You can read and listen without giving us anything. Orbis uses no advertising and no tracking cookies.",
-          "Your browser keeps a few choices on your own device so the site remembers them: language, colour scheme, playback speed and the state of the menu. They are not sent to us.",
+          "Your browser keeps a few choices on your own device so the site remembers them: language, color scheme, playback speed and the state of the menu. They are not sent to us.",
           "Our hosting provider, Cloudflare, processes the technical data every website receives (such as IP address and browser type) to deliver the pages and protect the site from attacks.",
         ],
       },

@@ -6,10 +6,11 @@ import { formatDateRange } from "./text.ts";
 const ids = (list: { id: string }[]) => list.map((s) => s.id);
 
 test("issue date ranges have stable text for server and browser rendering", () => {
-  assert.equal(formatDateRange("2026-09-30", "2026-10-09", "en"), "30 Sep – 9 Oct 2026");
+  assert.equal(formatDateRange("2026-09-30", "2026-10-09", "en"), "Sep 30 – Oct 9, 2026");
   assert.equal(formatDateRange("2026-09-30", "2026-10-09", "tr"), "30 Eyl – 9 Eki 2026");
-  assert.equal(formatDateRange("2026-10-01", "2026-10-09", "en"), "1 – 9 Oct 2026");
-  assert.equal(formatDateRange("2025-12-30", "2026-01-02", "en"), "30 Dec 2025 – 2 Jan 2026");
+  assert.equal(formatDateRange("2026-10-01", "2026-10-09", "en"), "Oct 1 – 9, 2026");
+  assert.equal(formatDateRange("2025-12-30", "2026-01-02", "en"), "Dec 30, 2025 – Jan 2, 2026");
+  assert.equal(formatDateRange("2026-10-09", "2026-10-09", "en"), "Oct 9, 2026");
   assert.equal(formatDateRange("2026-10-09", "2026-10-09", "tr"), "9 Eki 2026");
 });
 

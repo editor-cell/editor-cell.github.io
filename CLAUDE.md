@@ -82,6 +82,14 @@ launch day, set `TRIAL` to false.
 - Picture direction (26 Oct 2026): natural editorial photography, believable daylight
   and the subject's own colours. Avoid a uniform cream/beige or sepia cast, artificial
   glow and excessive saturation; the site's burgundy, type and rules provide continuity.
+- English is American English (9 Nov 2026): American spelling (color, center, program,
+  neighbor, -ize) and dates (November 9, 2026). Proper names and the titles of cited
+  documents keep their own spelling (International Labour Organization, Climate Change
+  Committee). Ids and file names stay as they are.
+- The owner writes his readings in Turkish. The English is a faithful translation in
+  natural English (9 Nov 2026): his meaning, images and structure stay; nothing should
+  read as translated. Never change his meaning or framing on your own (the time shifts
+  in a closing sentence, a word he deliberately cut); ask him first.
 
 ## Changing the site itself
 
