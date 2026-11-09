@@ -1,0 +1,1 @@
+import{t as e}from"./about-u0CPaGlR.js";var t=e;export{t as component};
