@@ -1,0 +1,1 @@
+import{Yt as e}from"./shell-CMdrLNUF.js";import{t}from"./legal-c7APPFpW.js";var n=e(),r=()=>(0,n.jsx)(t,{page:`privacy`});export{r as component};
