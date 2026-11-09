@@ -4,6 +4,11 @@ The site's owner (Yavuz) works from a phone and does not run technical checks hi
 Talk to him in Turkish, in plain words, without file paths or code. Every change below
 is published by pushing to `main`: the "Publish site" workflow tests, builds and commits
 the pages; Cloudflare (Workers Builds) then serves them at https://orbisreadingatlas.com.
+Cloudflare builds every commit, and builds can run late: on 9 Nov 2026 two ran two hours
+late and put a morning copy back over the newest site. Its deploy command is therefore
+`node scripts/deploy-newest.mjs`, which deploys only while the build's commit is still the
+newest on `main`. A Cloudflare check that says "success" may be a skipped build; the
+build log says which. Never change the deploy command back to plain `npx wrangler deploy`.
 
 ## The gates (nothing broken reaches readers)
 
