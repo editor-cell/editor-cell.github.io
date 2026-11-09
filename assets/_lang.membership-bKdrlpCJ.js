@@ -1,0 +1,1 @@
+import{t as e}from"./pages-BtklF3ny.js";var t=e;export{t as component};
