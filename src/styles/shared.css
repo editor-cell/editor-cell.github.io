@@ -12,7 +12,7 @@
   --color-mist: #d4d4d4;
   --color-line: #e6e6e6;
   --color-rule: #9a9a9a;
-  --color-pine: #b3261e;
+  --color-pine: #6e2432;
   --color-highlight: #ececee;
   --color-panel: #0c0c0c;
   /* The test-period line under the band: one tone darker than the paper. */
@@ -40,7 +40,7 @@ html[data-look="night"] {
   --color-mist: #3a3a3a;
   --color-line: #262626;
   --color-rule: #4a4a4a;
-  --color-pine: #e5534b;
+  --color-pine: #d3949f;
   --color-highlight: #2b2b2b;
   --color-panel: #050505;
   --color-shade: #0d0d0d;
@@ -857,7 +857,7 @@ a.group:not(.atlas-own):has(.paper-title) > div.flex.flex-col > p.tabular-nums {
     --color-mist: #cccccc;
     --color-line: #d9d9d9;
     --color-rule: #999999;
-    --color-pine: #b3261e;
+    --color-pine: #6e2432;
     --color-highlight: #ffffff;
     --color-panel: #ffffff;
     --color-shade: #ffffff;
@@ -1732,14 +1732,14 @@ button.play-disc:active {
   --color-rule: #5a5a5a;
   --color-line: rgb(255 255 255 / 0.14);
   --color-mist: rgb(255 255 255 / 0.25);
-  --color-pine: #e5534b;
+  --color-pine: #d07a8a;
   border-top: 1px solid #262626;
   background: #0c0c0c;
   color: #f4efe6;
 }
 
 .dock .play-disc {
-  background: #b3261e;
+  background: #7a2a3a;
   color: #f4efe6;
 }
 
@@ -2232,7 +2232,7 @@ form[role="search"]:focus-within {
   --color-rule: #5a5a5a;
   --color-line: rgb(255 255 255 / 0.16);
   --color-mist: rgb(255 255 255 / 0.25);
-  --color-pine: #e5534b;
+  --color-pine: #d07a8a;
   background: var(--color-panel);
   color: #f4efe6;
 }
