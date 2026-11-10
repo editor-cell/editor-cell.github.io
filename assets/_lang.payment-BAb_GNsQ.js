@@ -1,0 +1,1 @@
+import{r as e}from"./pages-DF5WumXv.js";var t=e;export{t as component};
