@@ -1,0 +1,150 @@
+/* Phone geometry never reaches the desktop view. */
+@media (--orbis-phone) {
+  .video-library,
+  .video-watch {
+    padding: 1.25rem 1.25rem 2.75rem;
+  }
+  .video-breadcrumb {
+    margin-bottom: 1.5rem;
+  }
+  .video-library-heading {
+    padding-bottom: 1.5rem;
+  }
+  .video-library-heading h1 {
+    font-size: 3.4rem;
+  }
+  .video-library-note {
+    margin-top: 1.5rem;
+  }
+  .video-library-note > .paper-title {
+    font-size: 1.5rem;
+  }
+  .video-library-note > p:last-child {
+    font-size: 0.95rem;
+  }
+  .video-list-filters {
+    margin-bottom: 1.5rem;
+    gap: 0.25rem 1.25rem;
+  }
+  .video-feature {
+    margin-inline: -1.25rem;
+  }
+  .video-feature .media-play {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+  .video-feature-copy {
+    display: grid;
+    gap: 1rem;
+    padding: 1.5rem 1.25rem 2rem;
+  }
+  .video-feature h2 {
+    font-size: 2.4rem;
+  }
+  .video-feature-dek {
+    font-size: 1.1rem;
+  }
+  .video-feature-picture .video-duration {
+    bottom: 0.5rem;
+    right: 0.5rem;
+  }
+  .video-library-grid {
+    display: grid;
+    gap: 2rem;
+    margin-top: 2.5rem;
+  }
+  .video-library-card h2 {
+    font-size: 1.8rem;
+  }
+  .video-stage {
+    margin-inline: -1.25rem;
+    padding: 0.5rem 1.25rem 2rem;
+  }
+  .video-stage-top {
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.5rem;
+  }
+  .video-stage-top .video-overline {
+    font-size: 0.6rem;
+  }
+  .video-back {
+    font-size: 0.8rem;
+  }
+  .video-stage-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.75rem;
+  }
+  .video-title {
+    font-size: clamp(2.1rem, 9vw, 3rem);
+  }
+  .video-dek {
+    font-size: 1.12rem;
+  }
+  .video-meta {
+    margin-top: 1.25rem;
+    padding-top: 0.75rem;
+  }
+  .video-meta > time {
+    flex-basis: calc(100% - 4rem);
+  }
+  .video-meta > button {
+    margin-top: 0.25rem;
+  }
+  .video-inline-player .film-bar {
+    padding: 1.75rem 0.6rem 0.35rem;
+  }
+  .video-inline-player .film-start-ring {
+    width: 3.5rem;
+  }
+  .video-inline-player .film-key {
+    width: 2.2rem;
+    height: 2.2rem;
+  }
+  .video-inline-player .film-time {
+    font-size: 0.65rem;
+  }
+  .video-inline-player .film-menu {
+    min-width: min(13.5rem, 100%);
+    max-width: 100%;
+    max-height: calc(100cqh - 4.8rem);
+    bottom: calc(100% + 0.1rem);
+  }
+  .video-inline-player .film-set {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.8rem;
+  }
+  .video-transcript-section {
+    padding-block: 1.25rem;
+  }
+  .video-transcript-heading h2 {
+    font-size: 1.6rem;
+  }
+  .video-related {
+    margin-top: 2rem;
+  }
+  .video-related > section + section {
+    margin-top: 2rem;
+  }
+  .video-section-title {
+    font-size: 1.7rem;
+    margin-bottom: 1.25rem;
+  }
+  .video-related-card {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.8fr);
+    gap: 1rem;
+    padding-block: 1rem;
+    border-top: 1px solid var(--color-line);
+  }
+  .video-related-card:not(:has(.video-related-picture)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .video-related-picture img {
+    aspect-ratio: 1;
+  }
+  .video-related-copy > .paper-title {
+    font-size: 1.3rem;
+  }
+  .video-related-copy > p:last-child {
+    font-size: 0.95rem;
+  }
+}

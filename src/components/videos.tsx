@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Bookmark, Check, Share2 } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Bookmark, Check, Share2 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Film } from "@/components/film";
 import { announceStart } from "@/lib/listen";
@@ -153,68 +153,113 @@ function VideoTrail({ lang, title }: { lang: Lang; title?: string }) {
   );
 }
 
-/** Every video, newest first: a still at the start of each row, then its words. */
+/** Shared editorial language for the archive and its viewing room. */
+function motionCopy(lang: Lang) {
+  return lang === "tr"
+    ? {
+        label: "Hareketli Orbis",
+        title: "Görmenin başka bir yolu.",
+        latest: "Son video",
+        words: "Videonun metni",
+      }
+    : {
+        label: "Orbis in motion",
+        title: "A different way to see.",
+        latest: "Latest film",
+        words: "The story in words",
+      };
+}
+
+/** The newest published video leads the archive; saved filtering keeps the same layout. */
 export function VideoListPage() {
   const lang = useLang();
   useEffect(() => {
     listPlace = historyPlace();
   }, []);
   const words = videoWords(lang);
+  const motion = motionCopy(lang);
   const videos = videosIn(lang);
   const saved = useSavedVideos();
   const [onlySaved, setOnlySaved] = useState(false);
-  const visible = onlySaved ? videos.filter(video => saved.ids.includes(video.id)) : videos;
+  const savedVideos = videos.filter((video) => saved.ids.includes(video.id));
+  const visible = onlySaved ? savedVideos : videos;
+  const [featured, ...more] = visible;
   return (
-    <Shell>
-      <main>
-        <div className="px-5 pt-5 pb-4 md:px-8 md:pt-8 md:pb-6">
-          <div className="mb-3">
-            <VideoTrail lang={lang} />
-          </div>
-          <h1 className="paper-title font-bold text-[2.4rem] leading-[1.05] md:text-[3rem]">
-            {words.videos}
-          </h1>
-          <p className="mt-2 text-[15px] text-muted">{words.listNote}</p>
-          <div className="video-list-filters" aria-label={words.videos}>
-            <button type="button" aria-pressed={!onlySaved} onClick={() => setOnlySaved(false)}>{words.back}</button>
-            <button type="button" aria-pressed={onlySaved} onClick={() => setOnlySaved(true)}>{words.savedVideos} ({videos.filter(video => saved.ids.includes(video.id)).length})</button>
-          </div>
+    <Shell layout="video">
+      <main className="video-library">
+        <div className="video-breadcrumb">
+          <VideoTrail lang={lang} />
         </div>
-        {visible.length === 0 ? (
-          <p className="border-t border-rule px-5 py-8 text-[15px] text-muted md:px-8">
+        <header className="video-library-heading">
+          <div>
+            <p className="video-overline">{motion.label}</p>
+            <h1 className="paper-title">{words.videos}</h1>
+          </div>
+          <div className="video-library-note">
+            <p className="paper-title">{motion.title}</p>
+            <p>{words.listNote}</p>
+          </div>
+        </header>
+        <div className="video-list-filters" aria-label={words.videos}>
+          <button type="button" aria-pressed={!onlySaved} onClick={() => setOnlySaved(false)}>
+            {words.back}
+            <span>{videos.length}</span>
+          </button>
+          <button type="button" aria-pressed={onlySaved} onClick={() => setOnlySaved(true)}>
+            {words.savedVideos}
+            <span>{savedVideos.length}</span>
+          </button>
+        </div>
+        {featured ? (
+          <article className="video-feature">
+            <Link
+              {...videoLink(lang, featured.id)}
+              aria-label={`${words.play}: ${featured.locales[lang]?.title}`}
+              className="video-feature-picture"
+            >
+              <Still video={featured} sizes={imageSizes("58vw", "100vw")} eager />
+              <span className="video-duration" dir="ltr">
+                {formatDuration(featured.duration)}
+              </span>
+            </Link>
+            <div className="video-feature-copy">
+              <div className="video-feature-top">
+                <p className="video-overline">{onlySaved ? words.savedVideos : motion.latest}</p>
+                <span aria-hidden="true">01</span>
+              </div>
+              <h2 className="paper-title">
+                <Link {...videoLink(lang, featured.id)}>{featured.locales[lang]?.title}</Link>
+              </h2>
+              {featured.locales[lang]?.dek ? (
+                <p className="video-feature-dek">{featured.locales[lang]?.dek}</p>
+              ) : null}
+              <time dateTime={featured.date}>{formatDate(featured.date, lang)}</time>
+              <Link {...videoLink(lang, featured.id)} className="video-editorial-link">
+                {words.play}
+                <ArrowUpRight aria-hidden="true" />
+              </Link>
+            </div>
+          </article>
+        ) : (
+          <p className="video-empty" role="status">
             {onlySaved ? words.savedEmpty : words.empty}
           </p>
-        ) : null}
-        <ol className="-mb-5 border-t border-rule px-5 md:mb-0 md:px-8">
-          {visible.map((video, index) => {
-            const copy = video.locales[lang];
-            return (
-              <li key={video.id} className="border-b border-line last:border-b-0 last:[&>a]:pb-0 md:last:[&>a]:pb-5">
-                <Link
-                  {...videoLink(lang, video.id)}
-                  className="group grid grid-cols-[minmax(0,9rem)_minmax(0,1fr)] items-start gap-4 py-5 md:grid-cols-[minmax(0,18rem)_minmax(0,1fr)] md:gap-7"
-                >
-                  <Still video={video} sizes="(min-width: 768px) 18rem, 9rem" eager={index < 3} />
-                  <div className="flex min-w-0 flex-col gap-1.5">
-                    <VideoKicker video={video} lang={lang} />
-                    <h2 className="paper-title font-bold text-[1.15rem] leading-[1.15] text-ink group-hover:underline group-hover:underline-offset-4 md:text-[1.5rem]">
-                      {copy?.title}
-                    </h2>
-                    {copy?.dek ? (
-                      <p className="font-body hidden max-w-2xl text-pretty text-[15px] leading-snug text-ink sm:block">
-                        {copy.dek}
-                      </p>
-                    ) : null}
-                    {/* Under the label, as on the reading cards (styles.css orders title, sentence, label). */}
-                    <p className="text-xs text-muted" style={{ order: 4 }}>
-                      {formatDate(video.date, lang)}
-                    </p>
-                  </div>
+        )}
+        {more.length ? (
+          <ol className="video-library-grid">
+            {more.map((video) => (
+              <li key={video.id}>
+                <Link {...videoLink(lang, video.id)} className="video-library-card">
+                  <Still video={video} sizes={imageSizes("30vw", "100vw")} />
+                  <VideoKicker video={video} lang={lang} />
+                  <h2 className="paper-title">{video.locales[lang]?.title}</h2>
+                  {video.locales[lang]?.dek ? <p>{video.locales[lang]?.dek}</p> : null}
+                  <time dateTime={video.date}>{formatDate(video.date, lang)}</time>
                 </Link>
               </li>
-            );
-          })}
-        </ol>
+            ))}
+          </ol>
+        ) : null}
       </main>
     </Shell>
   );
@@ -230,60 +275,121 @@ function VideoActions({ video, lang }: { video: Video; lang: Lang }) {
   async function share() {
     const url = window.location.href.split("#")[0];
     try {
-      if (navigator.share) { await navigator.share({ title: video.locales[lang]?.title, url }); return; }
+      if (navigator.share) {
+        await navigator.share({ title: video.locales[lang]?.title, url });
+        return;
+      }
       await navigator.clipboard.writeText(url);
       setCopied(true);
     } catch (error) {
       if (!(error instanceof DOMException && error.name === "AbortError")) setShareLink(url);
     }
   }
-  return <>
-    <div className="video-meta">
-      <time dateTime={video.date}>{formatDate(video.date, lang)}</time>
-      <span dir="ltr">{formatDuration(video.duration)}</span>
-      <button type="button" aria-pressed={marked} onClick={() => saved.toggle(video.id)}>
-        {marked ? <Check aria-hidden="true" /> : <Bookmark aria-hidden="true" />}{marked ? words.saved : words.watchLater}
-      </button>
-      <button type="button" onClick={() => void share()}><Share2 aria-hidden="true" />{copied ? words.copied : words.share}</button>
-    </div>
-    {marked ? <Link {...mediaLink(lang)} className="video-saved-link">{words.savedVideos} →</Link> : null}
-    {shareLink ? <label className="video-share-link">{words.copyLink}<input readOnly value={shareLink} onFocus={event => event.currentTarget.select()} /></label> : null}
-  </>;
+  return (
+    <>
+      <div className="video-meta">
+        <time dateTime={video.date}>{formatDate(video.date, lang)}</time>
+        <span dir="ltr">{formatDuration(video.duration)}</span>
+        <button type="button" aria-pressed={marked} onClick={() => saved.toggle(video.id)}>
+          {marked ? <Check aria-hidden="true" /> : <Bookmark aria-hidden="true" />}
+          {marked ? words.saved : words.watchLater}
+        </button>
+        <button type="button" onClick={() => void share()}>
+          <Share2 aria-hidden="true" />
+          {copied ? words.copied : words.share}
+        </button>
+      </div>
+      {marked ? (
+        <Link {...mediaLink(lang)} className="video-saved-link">
+          {words.savedVideos}
+          <ArrowUpRight aria-hidden="true" />
+        </Link>
+      ) : null}
+      {shareLink ? (
+        <label className="video-share-link">
+          {words.copyLink}
+          <input readOnly value={shareLink} onFocus={(event) => event.currentTarget.select()} />
+        </label>
+      ) : null}
+    </>
+  );
 }
 
 /** Other published videos appear here as they are added; no sample videos are invented. */
 function VideoRelated({ video, lang }: { video: Video; lang: Lang }) {
   const words = videoWords(lang);
   const copy = useCopy(lang);
-  const others = videosIn(lang).filter(item => item.id !== video.id).slice(0, 3);
-  const readings = frontOrder(CARDS.filter(story => story.locales[lang].written)).slice(0, 3);
+  const others = videosIn(lang)
+    .filter((item) => item.id !== video.id)
+    .slice(0, 3);
+  const readings = frontOrder(CARDS.filter((story) => story.locales[lang].written)).slice(0, 3);
   return (
     <aside className="video-related">
-      {others.length ? <section aria-labelledby="video-related-title">
-        <h2 id="video-related-title" className="video-section-title">{words.related}</h2>
-        {others.map(item => <Link key={item.id} {...videoLink(lang, item.id)} className="video-related-card group">
-          <div className="video-related-picture">
-            {item.poster ? <img src={item.poster} {...imageSet(item.poster, imageSizes("15vw", "34vw"))} alt="" width={1600} height={900} loading="lazy" /> : null}
-            <span className="video-duration" dir="ltr">{formatDuration(item.duration)}</span>
-          </div>
-          <div className="video-related-copy">
-            <p className="video-category">{words.video}</p>
-            <h3 className="paper-title group-hover:underline">{item.locales[lang]?.title}</h3>
-            <p>{item.locales[lang]?.dek}</p>
-          </div>
-        </Link>)}
-      </section> : null}
-      {readings.length ? <section aria-labelledby="video-more-title">
-        <h2 id="video-more-title" className="video-section-title">{words.more}</h2>
-        {readings.map(story => <Link key={story.id} {...readLink(lang, story.id)} className="video-related-card group">
-          {story.image ? <div className="video-related-picture"><img src={story.image.src} {...imageSet(story.image.src, imageSizes("15vw", "34vw"))} alt="" width={1500} height={1000} loading="lazy" /></div> : null}
-          <div className="video-related-copy">
-            <p className="video-category">{copy.themes[story.theme]}</p>
-            <h3 className="paper-title group-hover:underline">{storyTitle(story, lang)}</h3>
-            <p>{(story.locales[lang].dek || story.locales[lang].lead).match(/^.*?[.!?؟۔](?=\s|$)/)?.[0] || story.locales[lang].dek || story.locales[lang].lead}</p>
-          </div>
-        </Link>)}
-      </section> : null}
+      {others.length ? (
+        <section aria-labelledby="video-related-title">
+          <h2 id="video-related-title" className="video-section-title">
+            {words.related}
+          </h2>
+          {others.map((item) => (
+            <Link key={item.id} {...videoLink(lang, item.id)} className="video-related-card group">
+              <div className="video-related-picture">
+                {item.poster ? (
+                  <img
+                    src={item.poster}
+                    {...imageSet(item.poster, imageSizes("15vw", "34vw"))}
+                    alt=""
+                    width={1600}
+                    height={900}
+                    loading="lazy"
+                  />
+                ) : null}
+                <span className="video-duration" dir="ltr">
+                  {formatDuration(item.duration)}
+                </span>
+              </div>
+              <div className="video-related-copy">
+                <p className="video-category">{words.video}</p>
+                <h3 className="paper-title group-hover:underline">{item.locales[lang]?.title}</h3>
+                <p>{item.locales[lang]?.dek}</p>
+              </div>
+            </Link>
+          ))}
+        </section>
+      ) : null}
+      {readings.length ? (
+        <section aria-labelledby="video-more-title">
+          <h2 id="video-more-title" className="video-section-title">
+            {words.more}
+          </h2>
+          {readings.map((story) => (
+            <Link key={story.id} {...readLink(lang, story.id)} className="video-related-card group">
+              {story.image ? (
+                <div className="video-related-picture">
+                  <img
+                    src={story.image.src}
+                    {...imageSet(story.image.src, imageSizes("15vw", "34vw"))}
+                    alt=""
+                    width={1500}
+                    height={1000}
+                    loading="lazy"
+                  />
+                </div>
+              ) : null}
+              <div className="video-related-copy">
+                <p className="video-category">{copy.themes[story.theme]}</p>
+                <h3 className="paper-title group-hover:underline">{storyTitle(story, lang)}</h3>
+                <p>
+                  {(story.locales[lang].dek || story.locales[lang].lead).match(
+                    /^.*?[.!?؟۔](?=\s|$)/,
+                  )?.[0] ||
+                    story.locales[lang].dek ||
+                    story.locales[lang].lead}
+                </p>
+              </div>
+            </Link>
+          ))}
+        </section>
+      ) : null}
     </aside>
   );
 }
@@ -294,7 +400,9 @@ export function VideoPage({ video }: { video: Video | null }) {
   const words = videoWords(lang);
   const [open, setOpen] = useState(false);
   const screen = useRef<HTMLVideoElement | null>(null);
-  const onScreen = useCallback((element: HTMLVideoElement | null) => { screen.current = element; }, []);
+  const onScreen = useCallback((element: HTMLVideoElement | null) => {
+    screen.current = element;
+  }, []);
   const copy = video?.locales[lang];
   const transcript = copy?.transcript ? paragraphs(copy.transcript) : [];
   function startAt(seconds: number) {
@@ -304,43 +412,85 @@ export function VideoPage({ video }: { video: Video | null }) {
     void element.play().catch(() => {});
     void seekTo(element, seconds, true);
   }
+  const motion = motionCopy(lang);
   return (
     <Shell layout="video">
       <main className="video-watch">
-        <div className="video-breadcrumb"><VideoTrail lang={lang} title={copy?.title} /></div>
-        <h2 className="video-section-title video-page-label">{words.videos}</h2>
+        <div className="video-breadcrumb">
+          <VideoTrail lang={lang} title={copy?.title} />
+        </div>
         {video && copy ? (
-          <div className="video-watch-grid">
-            <article className="video-primary">
-              <Film
-                key={`${video.id}-${lang}`}
-                src={copy.src ?? video.src}
-                poster={video.poster}
-                label={copy.title}
-                lang={lang}
-                length={video.duration}
-                controlsBeforePlay
-                onScreen={onScreen}
-                captions={Object.entries(video.captions ?? {}).map(([code, path]) => ({ lang: code as Lang, src: path, label: langMeta[code as Lang].name }))}
-                className="video-inline-player"
-              />
-              <div className="video-description">
-                <p className="video-category">{words.video}</p>
-                <h1 className="paper-title video-title">{copy.title}</h1>
-                {copy.dek ? <p className="video-dek">{copy.dek}</p> : null}
-                {transcript[0] ? <p className="video-intro">{transcript[0]}</p> : null}
-                <VideoActions key={`${video.id}-${lang}`} video={video} lang={lang} />
+          <>
+            <article className="video-stage">
+              <div className="video-stage-top">
+                <p className="video-overline">{motion.label}</p>
+                <Link {...mediaLink(lang)} className="video-back">
+                  <ArrowLeft aria-hidden="true" />
+                  {words.back}
+                </Link>
               </div>
-              {transcript.length ? <section className="video-transcript-section">
-                <button type="button" aria-expanded={open} aria-controls="video-transcript" onClick={() => setOpen(value => !value)} className="video-transcript-toggle">
-                  {open ? words.hideTranscript : words.readTranscript}<span aria-hidden="true">{open ? "−" : "+"}</span>
-                </button>
-                <Transcript id="video-transcript" paragraphs={transcript} captions={video.captions?.[lang]} lang={lang} hidden={!open} film={screen} onPlayFrom={startAt} className="video-transcript-copy" />
-              </section> : null}
+              <div className="video-stage-grid">
+                <Film
+                  key={`${video.id}-${lang}`}
+                  src={copy.src ?? video.src}
+                  poster={video.poster}
+                  label={copy.title}
+                  lang={lang}
+                  length={video.duration}
+                  controlsBeforePlay
+                  onScreen={onScreen}
+                  captions={Object.entries(video.captions ?? {}).map(([code, path]) => ({
+                    lang: code as Lang,
+                    src: path,
+                    label: langMeta[code as Lang].name,
+                  }))}
+                  className="video-inline-player"
+                />
+                <div className="video-description">
+                  <p className="video-overline">{words.video}</p>
+                  <h1 className="paper-title video-title">{copy.title}</h1>
+                  {copy.dek ? <p className="video-dek">{copy.dek}</p> : null}
+                  <VideoActions key={`${video.id}-${lang}`} video={video} lang={lang} />
+                </div>
+              </div>
             </article>
+            {transcript.length ? (
+              <section
+                className="video-transcript-section"
+                aria-labelledby="video-transcript-title"
+              >
+                <div className="video-transcript-heading">
+                  <h2 id="video-transcript-title" className="paper-title">
+                    {motion.words}
+                  </h2>
+                  <button
+                    type="button"
+                    aria-expanded={open}
+                    aria-controls="video-transcript"
+                    onClick={() => setOpen((value) => !value)}
+                    className="video-transcript-toggle"
+                  >
+                    {open ? words.hideTranscript : words.readTranscript}
+                    <span aria-hidden="true">{open ? "−" : "+"}</span>
+                  </button>
+                </div>
+                <Transcript
+                  id="video-transcript"
+                  paragraphs={transcript}
+                  captions={video.captions?.[lang]}
+                  lang={lang}
+                  hidden={!open}
+                  film={screen}
+                  onPlayFrom={startAt}
+                  className="video-transcript-copy"
+                />
+              </section>
+            ) : null}
             <VideoRelated video={video} lang={lang} />
-          </div>
-        ) : <p className="py-10 text-muted">{words.missing}</p>}
+          </>
+        ) : (
+          <p className="video-empty">{words.missing}</p>
+        )}
       </main>
     </Shell>
   );

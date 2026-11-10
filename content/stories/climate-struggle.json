@@ -2,6 +2,13 @@
   "id": "climate-struggle",
   "theme": "climate-environment",
   "date": "2026-11-08",
+  "image": {
+    "src": "images/home-climate-energy.jpg",
+    "credit": "Wind turbines above green fields beneath a clouded sky.",
+    "captions": {
+      "tr": "Bulutlu bir gökyüzünün altında, yeşil tarlaların üzerindeki rüzgâr türbinleri."
+    }
+  },
   "sources": [
     {
       "n": 1,

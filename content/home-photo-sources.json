@@ -1,7 +1,7 @@
 {
   "created": "2026-11-10",
   "method": "OpenAI native image generation",
-  "usage": "Homepage only. No third-party stock photos added; reading-page artwork unchanged.",
+  "usage": "Original generated images used on the homepage. The climate image also illustrates its reading page. No third-party stock photos added.",
   "images": [
     {
       "file": "images/home-climate-energy.jpg",
