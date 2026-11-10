@@ -1,0 +1,19 @@
+{
+  "created": "2026-11-10",
+  "method": "OpenAI native image generation",
+  "usage": "Homepage only. No third-party stock photos added; reading-page artwork unchanged.",
+  "images": [
+    {
+      "file": "images/home-climate-energy.jpg",
+      "generated": true
+    },
+    {
+      "file": "images/home-bread.jpg",
+      "generated": true
+    },
+    {
+      "file": "images/home-market.jpg",
+      "generated": true
+    }
+  ]
+}
