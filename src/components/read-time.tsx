@@ -85,7 +85,7 @@ export function ListenButton({ story, lang, solid = false }: { story: StoryCard;
  * Start mark beside the Listen word: a hairline ring with a filled triangle,
  * the same size when the recording is paused.
  */
-function StartGlyph({ playing }: { playing: boolean }) {
+export function StartGlyph({ playing }: { playing: boolean }) {
   return (
     <svg viewBox="0 0 16 16" className="size-3 shrink-0 rtl:-scale-x-100" aria-hidden="true">
       <circle cx="8" cy="8" r="6.6" fill="none" stroke="currentColor" strokeWidth="0.8" />

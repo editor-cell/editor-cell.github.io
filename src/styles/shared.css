@@ -1738,9 +1738,12 @@ button.play-disc:active {
   color: #f4efe6;
 }
 
+/* The play button of the panel matches the front page's Listen button: white on black,
+   a hairline white ring round a white triangle (November 2026). */
 .dock .play-disc {
-  background: #7a2a3a;
+  background: #0c0c0c;
   color: #f4efe6;
+  box-shadow: inset 0 0 0 1px #f4efe6;
 }
 
 .dock .seek-fill,
