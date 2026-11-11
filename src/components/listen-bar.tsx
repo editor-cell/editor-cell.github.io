@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ChevronDown, ChevronUp, Pause, Play, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { Pick } from "@/components/pick";
 import { SkipButton } from "@/components/player";
 import { useDockHeight } from "@/lib/dock";
@@ -139,9 +139,13 @@ export function ListenBar() {
           <div className="dock-more" inert={!open}>
             <div>
               <div className="seek-line mt-0.5 w-full" style={{ flex: "none" }}>
-                <div className="seek-rule" aria-hidden="true">
-                  <span className="seek-fill" style={{ width: pct }} />
-                  <span className="seek-knob" style={{ insetInlineStart: pct }} />
+                <div
+                  className="seek-rule"
+                  aria-hidden="true"
+                  style={{ "--seek": span } as CSSProperties}
+                >
+                  <span className="seek-fill" />
+                  <span className="seek-knob" />
                 </div>
                 <input
                   className="seek"

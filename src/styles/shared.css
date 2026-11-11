@@ -1746,13 +1746,32 @@ button.play-disc:active {
   box-shadow: inset 0 0 0 1px #f4efe6;
 }
 
-.dock .seek-fill,
-.dock .seek-knob {
+/* The ball travels inside the line, from its start to its end, so it is never cut off
+   at the ends of the panel; the part heard runs up to the ball's middle. The ball is
+   white, like the play button (November 2026). */
+.dock .seek-line {
+  --knob: 11px;
+}
+
+.dock .seek-line:hover,
+.dock .seek-line:active,
+.dock .seek-line:has(.seek:focus-visible) {
+  --knob: 15px;
+}
+
+.dock .seek-fill {
+  width: calc((100% - var(--knob)) * var(--seek, 0) + var(--knob) / 2);
   background: var(--color-pine);
 }
 
-.dock .seek-knob {
+.dock .seek-knob,
+[dir="rtl"] .dock .seek-knob {
+  inset-inline-start: calc((100% - var(--knob)) * var(--seek, 0));
+  width: var(--knob);
+  height: var(--knob);
+  background: #f4efe6;
   box-shadow: 0 0 0 2px #0c0c0c;
+  transform: translateY(-50%);
 }
 
 /* Folded: the part heard runs along the top edge of the strip. */
