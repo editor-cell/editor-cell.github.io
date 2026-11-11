@@ -1,0 +1,1 @@
+import{t as e}from"./about-ABNS5dXF.js";var t=e;export{t as component};
