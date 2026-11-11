@@ -1747,8 +1747,8 @@ button.play-disc:active {
 }
 
 /* The ball travels inside the line, from its start to its end, so it is never cut off
-   at the ends of the panel; the part heard runs up to the ball's middle. The ball is
-   white, like the play button (November 2026). */
+   at the ends of the panel; the part heard runs up to the ball's middle. The ball and
+   the part heard are white, like the play button (November 2026). */
 .dock .seek-line {
   --knob: 11px;
 }
@@ -1761,7 +1761,7 @@ button.play-disc:active {
 
 .dock .seek-fill {
   width: calc((100% - var(--knob)) * var(--seek, 0) + var(--knob) / 2);
-  background: var(--color-pine);
+  background: #f4efe6;
 }
 
 .dock .seek-knob,
@@ -1780,7 +1780,7 @@ button.play-disc:active {
   top: -1px;
   inset-inline-start: 0;
   height: 2px;
-  background: var(--color-pine);
+  background: #f4efe6;
 }
 
 .dock-icon {
