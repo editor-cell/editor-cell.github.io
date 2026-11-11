@@ -5,14 +5,20 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "gentle-shadow-b8e8",
   "compatibility_date": "2026-09-01",
+  // Recordings and films go through server/worker.js so a player can jump into them
+  // (Cloudflare's static files never answer with part of a file); everything else is
+  // served straight from the static files.
+  "main": "server/worker.js",
   "assets": {
     "directory": ".",
-    "not_found_handling": "404-page"
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/audio/*", "/videos/*"],
   },
   "workers_dev": true,
   "preview_urls": false,
   "routes": [
     { "pattern": "orbisreadingatlas.com", "custom_domain": true },
-    { "pattern": "www.orbisreadingatlas.com", "custom_domain": true }
-  ]
+    { "pattern": "www.orbisreadingatlas.com", "custom_domain": true },
+  ],
 }
