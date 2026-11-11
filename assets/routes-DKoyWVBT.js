@@ -1,0 +1,1 @@
+import{n as e}from"./atlas-BEx_txps.js";var t=e;export{t as component};
