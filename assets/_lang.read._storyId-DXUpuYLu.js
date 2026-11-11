@@ -1,1 +1,0 @@
-import{Yt as e}from"./shell-C_KBmgrS.js";import{t}from"./index-BbJ6B3vz.js";import{t as n}from"./reading-DktWsW_F.js";var r=e();function i(){return(0,r.jsx)(n,{story:t.useLoaderData()})}export{i as component};

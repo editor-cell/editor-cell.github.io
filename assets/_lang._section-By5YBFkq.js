@@ -1,1 +1,0 @@
-import{Yt as e,_t as t}from"./shell-C_KBmgrS.js";import{r as n}from"./atlas-CIo3s9PR.js";import{o as r}from"./index-BbJ6B3vz.js";var i=e();function a(){let{section:e}=r.useParams();return(0,i.jsx)(n,{theme:t(e)})}export{a as component};

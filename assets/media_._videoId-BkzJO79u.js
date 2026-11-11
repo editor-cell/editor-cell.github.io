@@ -1,1 +1,0 @@
-import{Yt as e}from"./shell-C_KBmgrS.js";import{n as t}from"./videos-CNGisX7P.js";import{a as n}from"./index-BbJ6B3vz.js";var r=e();function i(){return(0,r.jsx)(t,{video:n.useLoaderData()})}export{i as component};
