@@ -1,1 +1,0 @@
-import{Yt as e,_t as t}from"./shell-CtEldUim.js";import{r as n}from"./atlas-JL4eWxEt.js";import{o as r}from"./index-BXzTU14S.js";var i=e();function a(){let{section:e}=r.useParams();return(0,i.jsx)(n,{theme:t(e)})}export{a as component};
