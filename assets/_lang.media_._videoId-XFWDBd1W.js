@@ -1,1 +1,0 @@
-import{Xt as e}from"./shell-CZPn5Opg.js";import{n as t}from"./videos-D4uv3Fs_.js";import{n}from"./index-ptAzCOHX.js";var r=e();function i(){return(0,r.jsx)(t,{video:n.useLoaderData()})}export{i as component};

@@ -1,0 +1,1 @@
+import{n as e}from"./pages-YLCHTpal.js";var t=e;export{t as component};
