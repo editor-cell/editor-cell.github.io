@@ -1,1 +1,0 @@
-import{n as e}from"./atlas-tERgfTht.js";var t=e;export{t as component};
