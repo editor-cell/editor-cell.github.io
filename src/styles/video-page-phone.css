@@ -73,10 +73,9 @@
   .video-screen-frame {
     min-height: 22rem;
     padding: 1.5rem 0 2rem;
-    transition: min-height 700ms ease-in-out, padding-block 700ms ease-in-out;
   }
-  /* The circular cover needs headroom; the playing picture does not. Keep the
-     picture at its final width throughout the reveal, and close only the space. */
+  /* Commit the compact layout once, while the grid is transparent. Continuous
+     height/padding animation forces layout and repaint during video decoding. */
   .video-screen-frame:has(.film[data-started="true"]) {
     min-height: 0;
     padding-block: 0;
@@ -87,6 +86,24 @@
   }
   .video-stage:has(.film[data-started="true"]) .video-stage-grid {
     gap: 1rem;
+  }
+  .video-stage-grid {
+    transition: opacity 480ms ease-in-out;
+  }
+  .video-stage-grid:has(.film[data-preparing="true"]) {
+    opacity: 0;
+    transition-duration: 180ms;
+  }
+  .video-inline-player[data-preparing="true"] .film-portal-cover {
+    opacity: 0;
+    transition-duration: 180ms;
+  }
+  .video-inline-player:not(.is-full)[data-started="true"][data-revealed="false"] > video {
+    animation-duration: 480ms;
+  }
+  .video-inline-player[data-started="true"] .film-portal-cover,
+  .video-screen-frame:has(.film[data-started="true"]) :is(.video-orbits, .video-portal-caption) {
+    transition: none;
   }
   .video-inline-player { --portal-size: 16rem; }
   .video-feature-picture {
@@ -189,7 +206,7 @@
   }
 }
 @media (--orbis-phone) and (prefers-reduced-motion: reduce) {
-  .video-screen-frame {
+  .video-stage-grid {
     transition: none;
   }
 }

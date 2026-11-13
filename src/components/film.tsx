@@ -5,6 +5,7 @@ import { seekTo } from "@/lib/seek";
 import type { Lang } from "@/lib/types";
 import { videoWords } from "@/lib/videos";
 import { usePosterGround } from "@/lib/use-poster-ground";
+import { MEDIA } from "@/lib/breakpoints";
 
 /** The bar's and the settings panel's own icons: thin ivory lines, drawn here rather than
  * taken from the icon set, after the owner's chosen design (22 Oct 2026). */
@@ -127,7 +128,9 @@ export function Film({
   const box = useRef<HTMLDivElement | null>(null);
   const film = useRef<HTMLVideoElement | null>(null);
   const timer = useRef<number | undefined>(undefined);
+  const prepareTimer = useRef<number | undefined>(undefined);
   const [started, setStarted] = useState(false);
+  const [preparing, setPreparing] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [buffering, setBuffering] = useState(false);
   const [revealed, setRevealed] = useState(false);
@@ -236,6 +239,7 @@ export function Film({
       window.clearTimeout(timer.current);
       window.clearTimeout(tapTimer.current);
       window.clearTimeout(jumpTimer.current);
+      window.clearTimeout(prepareTimer.current);
     };
   }, []);
 
@@ -248,6 +252,13 @@ export function Film({
         setShown(false);
         closeMenu();
       }, HIDE_AFTER);
+  }
+
+  function revealPhone() {
+    window.clearTimeout(prepareTimer.current);
+    prepareTimer.current = undefined;
+    setStarted(true);
+    setPreparing(false);
   }
 
   async function toggle() {
@@ -398,6 +409,7 @@ export function Film({
       ref={box}
       data-playing={playing}
       data-started={started}
+      data-preparing={preparing}
       data-buffering={buffering}
       data-revealed={revealed}
       style={portalCover ? posterGround.style : undefined}
@@ -430,11 +442,21 @@ export function Film({
         onPlay={() => setBuffering(true)}
         onWaiting={() => setBuffering(true)}
         onPlaying={() => {
-          setStarted(true);
           setPlaying(true);
           setBuffering(false);
-          if (portalCover && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-            setRevealed(true);
+          if (!started) {
+            const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            if (portalCover && !still && window.matchMedia(MEDIA.phone).matches) {
+              // The cover's transitionend commits the compact phone layout once.
+              // The timer is only a fallback if resizing cancels that transition.
+              if (prepareTimer.current === undefined) {
+                setPreparing(true);
+                prepareTimer.current = window.setTimeout(revealPhone, 500);
+              }
+            } else {
+              setStarted(true);
+              if (portalCover && still) setRevealed(true);
+            }
           }
           wake(false);
         }}
@@ -466,6 +488,9 @@ export function Film({
           setReported(Number.isFinite(d) ? d : 0);
         }}
         onError={() => {
+          window.clearTimeout(prepareTimer.current);
+          prepareTimer.current = undefined;
+          setPreparing(false);
           setBuffering(false);
           setFailed(true);
         }}
@@ -480,7 +505,15 @@ export function Film({
       </video>
 
       {portalCover && !revealed ? (
-        <div className="film-portal-cover" aria-hidden="true">
+        <div
+          className="film-portal-cover"
+          aria-hidden="true"
+          onTransitionEnd={(event) => {
+            if (preparing && event.target === event.currentTarget && event.propertyName === "opacity") {
+              revealPhone();
+            }
+          }}
+        >
           <span className="film-portal-disc">
             {poster ? <img src={poster} ref={posterGround.ref} onLoad={posterGround.onLoad} alt="" decoding="async" /> : null}
           </span>
@@ -504,7 +537,7 @@ export function Film({
           type="button"
           onClick={() => void toggle()}
           aria-label={`${words.play}: ${label}`}
-          disabled={buffering}
+          disabled={buffering || preparing}
           className="film-start absolute inset-0 flex items-center justify-center"
         >
           <span aria-hidden="true" className="film-start-ring">
