@@ -72,10 +72,22 @@
   .video-room-heading {
     max-width: 58rem;
     margin-inline: auto;
-    padding: 1rem 0 1.5rem;
+    padding: 1.5rem 0 0.75rem;
+  }
+  .video-room-word {
+    font-size: clamp(10rem, 26vw, 27rem);
   }
   .video-screen-frame {
-    padding: 0.6rem;
+    min-height: 33rem;
+    padding: 1.5rem 0 2rem;
+  }
+  .video-inline-player:not(.is-full):not([data-started="true"]):not(:has(.film-failed)) {
+    max-width: 25rem;
+  }
+  .video-feature-picture {
+    display: grid;
+    align-items: center;
+    padding: 2.5rem;
   }
   .video-description {
     width: 100%;
@@ -94,7 +106,7 @@
     gap: 2rem;
   }
   .video-title {
-    font-size: clamp(2.5rem, 4vw, 3.5rem);
+    font-size: clamp(3rem, 5vw, 5rem);
   }
   .video-dek {
     font-size: clamp(1rem, 1.35vw, 1.3rem);

@@ -420,6 +420,7 @@ export function VideoPage({ video }: { video: Video | null }) {
           <>
             <article className="video-stage">
               <div className="video-ambient" aria-hidden="true" />
+              <div className="video-room-word" aria-hidden="true">ORBIS</div>
               <div className="video-stage-top">
                 <p className="video-overline">{motion.label}</p>
                 <Link {...mediaLink(lang)} className="video-back">
@@ -436,6 +437,13 @@ export function VideoPage({ video }: { video: Video | null }) {
               </header>
               <div className="video-stage-grid">
                 <div className="video-screen-frame">
+                  <div className="video-orbits" aria-hidden="true">
+                    <span className="video-orbit video-orbit-one" />
+                    <span className="video-orbit video-orbit-two" />
+                    <span className="video-orbit video-orbit-three" />
+                    <span className="video-orbit-star video-orbit-star-one" />
+                    <span className="video-orbit-star video-orbit-star-two" />
+                  </div>
                   <Film
                     key={`${video.id}-${lang}`}
                     src={copy.src ?? video.src}
@@ -451,6 +459,9 @@ export function VideoPage({ video }: { video: Video | null }) {
                     }))}
                     className="video-inline-player"
                   />
+                  <span className="video-portal-caption" aria-hidden="true">
+                    {words.play}<ArrowUpRight />
+                  </span>
                 </div>
                 <div className="video-description">
                   {copy.dek ? <p className="video-dek">{copy.dek}</p> : null}

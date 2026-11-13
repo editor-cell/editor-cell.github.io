@@ -64,10 +64,24 @@
     padding: 0.5rem 1.25rem 2.5rem;
   }
   .video-room-heading {
-    padding: 1.25rem 0 1.75rem;
+    padding: 1.5rem 0 0.5rem;
+  }
+  .video-room-word {
+    font-size: 25vw;
+    top: 18%;
   }
   .video-screen-frame {
-    padding: 0.35rem;
+    min-height: 22rem;
+    padding: 1.5rem 0 2rem;
+  }
+  .video-screen-frame:has(.film[data-started="true"]) {
+    min-height: 15rem;
+  }
+  .video-inline-player:not(.is-full):not([data-started="true"]):not(:has(.film-failed)) {
+    max-width: 16rem;
+  }
+  .video-feature-picture {
+    padding: 1.75rem 2rem;
   }
   .video-description {
     width: 100%;
@@ -88,7 +102,7 @@
     gap: 1.5rem;
   }
   .video-title {
-    font-size: clamp(2rem, 8.5vw, 3rem);
+    font-size: clamp(2.2rem, 10vw, 3.4rem);
     margin-top: 0.7rem;
   }
   .video-dek {
@@ -113,7 +127,7 @@
     padding: 1.75rem 0.6rem 0.35rem;
   }
   .video-inline-player .film-start-ring {
-    width: 3.5rem;
+    width: 4rem;
   }
   .video-inline-player .film-key {
     width: 2.2rem;
