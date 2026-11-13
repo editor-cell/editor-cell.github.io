@@ -1,0 +1,1 @@
+import{Xt as e}from"./shell-Dchr6Tbk.js";import{t}from"./legal-BxFO_TXy.js";var n=e(),r=()=>(0,n.jsx)(t,{page:`privacy`});export{r as component};
