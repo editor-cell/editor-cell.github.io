@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { createEarthRenderer } from "@/lib/earth-renderer";
 
-/** A decorative, slowly turning Earth. It is deliberately not a play button. */
+/** A decorative, slowly turning Earth. It is deliberately not a play button.
+ * Until the two maps arrive, a still of the exact first frame (turn 0) stands in,
+ * so the globe is there with the page instead of appearing out of the dark. */
 export function WatchingEarth({ paused = false }: { paused?: boolean }) {
   const surface = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -9,6 +11,7 @@ export function WatchingEarth({ paused = false }: { paused?: boolean }) {
   const refresh = useRef<(() => void) | null>(null);
   pause.current = paused;
   const [ready, setReady] = useState(false);
+  const [drawn, setDrawn] = useState(false);
   useEffect(() => {
     const element = surface.current, screen = canvas.current;
     if (!element || !screen) return;
@@ -40,15 +43,16 @@ export function WatchingEarth({ paused = false }: { paused?: boolean }) {
         loaded=true;
         renderer?.draw(turn);
         setReady(true);
+        setDrawn(true);
         update();
       },turn);
     };
     refresh.current=update;
+    // Fetch the maps at once, not when the panel scrolls into view: on a phone the
+    // panel sits below the issue, and waiting for it left an empty dark circle.
+    start();
     const observer = new IntersectionObserver(([entry]) => {
       visible=entry.isIntersecting;
-      if (visible && !renderer) {
-        start();
-      }
       update();
     });
     observer.observe(element);
@@ -70,7 +74,8 @@ export function WatchingEarth({ paused = false }: { paused?: boolean }) {
     };
   }, []);
   useEffect(() => { refresh.current?.(); }, [paused]);
-  return <div ref={surface} className="watching-earth" data-ready={ready} aria-hidden="true">
+  return <div ref={surface} className="watching-earth" data-ready={ready} data-drawn={drawn} aria-hidden="true">
+    {!drawn && <img className="watching-earth-still" src="/images/orbis-earth-first.webp" alt="" width={720} height={720} decoding="async" />}
     <canvas ref={canvas} width={600} height={600} />
   </div>;
 }

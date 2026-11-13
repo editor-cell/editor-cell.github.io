@@ -57,13 +57,14 @@ function mountEarth() {
   exports.WatchingEarth({});
   const cleanup = effects[0]();
   effects[1]();
+  const startedBeforeVisible = renderers.length;
   observer([{ isIntersecting: true }]);
   renderers[0].onReady();
   function advance(now) {
     const pending = [...frames.values()]; frames.clear();
     for (const callback of pending) callback(now);
   }
-  return { renderers, screenEvents, documentEvents, windowEvents, document, advance, cleanup,
+  return { startedBeforeVisible, renderers, screenEvents, documentEvents, windowEvents, document, advance, cleanup,
     get ready() { return ready; }, get pendingFrames() { return frames.size; } };
 }
 
@@ -107,5 +108,12 @@ test("Earth resumes when a hidden page becomes visible without counting hidden t
   earth.advance(60150);
   assert.ok(renderer.turns.at(-1) > angle);
   assert.ok(renderer.turns.at(-1) - angle < 0.001);
+  earth.cleanup();
+});
+
+test("Earth starts fetching its maps on mount, before the panel scrolls into view", () => {
+  const earth = mountEarth();
+  assert.equal(earth.startedBeforeVisible, 1);
+  assert.equal(earth.renderers.length, 1);
   earth.cleanup();
 });

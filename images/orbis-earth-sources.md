@@ -17,3 +17,8 @@ https://science.nasa.gov/earth/earth-observatory/the-blue-marble-true-color-glob
 
 Historical composite imagery, not live weather. NASA imagery is public domain
 unless individually noted. Copies are resized/compressed for web delivery only.
+
+- `orbis-earth-first.webp`: the globe's own first frame (rotation 0), rendered
+  offline from `orbis-earth-day.jpg` and `orbis-earth-clouds.jpg` with the same
+  projection and lighting as the live globe. It stands in until the two maps load,
+  so the globe appears with the page instead of out of the dark.
