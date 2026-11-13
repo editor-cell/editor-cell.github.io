@@ -1,1 +1,0 @@
-import{n as e}from"./atlas-DBys3J-w.js";var t=e;export{t as component};
