@@ -156,8 +156,7 @@ html:has(.orbis-video) {
   from { opacity: 0.4; transform: scale(0.8); }
   to { opacity: 1; transform: scale(1.2); }
 }
-/* Keep both surfaces still. Only their opacity changes while the video starts;
-   no shape morph, split cover or layout animation competes with decoding. */
+/* The cover is replaced by a ready, fully opaque player before playback starts. */
 .video-inline-player:not(.is-full) {
   position: relative;
   z-index: 1;
@@ -176,12 +175,6 @@ html:has(.orbis-video) {
 .video-inline-player:not(.is-full):not([data-started="true"]) > video {
   opacity: 0;
 }
-.video-inline-player[data-revealed="false"] > video {
-  will-change: opacity;
-}
-.video-inline-player:not(.is-full)[data-started="true"][data-revealed="false"] > video {
-  animation: orbis-screen-emerge 800ms ease-in-out both;
-}
 .film-portal-cover {
   position: absolute;
   width: var(--portal-size);
@@ -190,7 +183,6 @@ html:has(.orbis-video) {
   top: 50%;
   transform: translate(-50%, -50%);
   pointer-events: none;
-  transition: opacity 650ms ease-in-out;
 }
 .film-portal-cover::before {
   content: "";
@@ -216,9 +208,6 @@ html:has(.orbis-video) {
   object-fit: contain;
   padding: calc(var(--portal-size) * 0.08);
   opacity: 0.65;
-}
-.video-inline-player[data-started="true"] .film-portal-cover {
-  opacity: 0;
 }
 .video-inline-player:not([data-started="true"]) .film-start {
   inset: 50% auto auto 50%;
@@ -259,13 +248,6 @@ html:has(.orbis-video) {
   animation: none;
 }
 .video-inline-player.is-full .film-portal-cover { display: none; }
-.video-inline-player[data-started="true"][data-revealed="false"] .film-bar {
-  opacity: 0;
-}
-@keyframes orbis-screen-emerge {
-  from, 15% { opacity: 0; }
-  to { opacity: 1; }
-}
 .video-portal-caption {
   position: absolute;
   inset-inline-start: 50%;
@@ -304,8 +286,7 @@ html:has(.orbis-video) {
   .film-portal-cover {
     transition: none;
   }
-  .video-orbit-star,
-  .video-inline-player:not(.is-full)[data-started="true"][data-revealed="false"] > video {
+  .video-orbit-star {
     animation: none;
   }
   .video-inline-player[data-started="true"] .film-portal-cover { display: none; }
@@ -321,8 +302,7 @@ html:has(.orbis-video) {
   position: relative;
   isolation: isolate;
   overflow: clip;
-  background: radial-gradient(ellipse at 22% 52%, #7e284a55, transparent 48%),
-    radial-gradient(ellipse at 54% 38%, #116ead32, transparent 48%), #101016;
+  background: #101016;
 }
 .if-video-still {
   background: var(--video-cover-ground);

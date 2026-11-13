@@ -74,8 +74,7 @@
     min-height: 22rem;
     padding: 1.5rem 0 2rem;
   }
-  /* Commit the compact layout once, while the grid is transparent. Continuous
-     height/padding animation forces layout and repaint during video decoding. */
+  /* Open the compact player immediately, before playback, with no layout animation. */
   .video-screen-frame:has(.film[data-started="true"]) {
     min-height: 0;
     padding-block: 0;
@@ -87,19 +86,9 @@
   .video-stage:has(.film[data-started="true"]) .video-stage-grid {
     gap: 1rem;
   }
-  .video-stage-grid {
-    transition: opacity 480ms ease-in-out;
-  }
-  .video-stage-grid:has(.film[data-preparing="true"]) {
-    opacity: 0;
-    transition-duration: 180ms;
-  }
-  .video-inline-player[data-preparing="true"] .film-portal-cover {
-    opacity: 0;
-    transition-duration: 180ms;
-  }
-  .video-inline-player:not(.is-full)[data-started="true"][data-revealed="false"] > video {
-    animation-duration: 480ms;
+  .video-inline-player:not(.is-full) > video {
+    border-radius: 0;
+    box-shadow: none;
   }
   .video-inline-player[data-started="true"] .film-portal-cover,
   .video-screen-frame:has(.film[data-started="true"]) :is(.video-orbits, .video-portal-caption) {
@@ -203,10 +192,5 @@
   }
   .video-related-copy > p:last-child {
     font-size: 0.95rem;
-  }
-}
-@media (--orbis-phone) and (prefers-reduced-motion: reduce) {
-  .video-stage-grid {
-    transition: none;
   }
 }

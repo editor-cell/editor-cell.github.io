@@ -203,6 +203,7 @@ function Card({ story, lang }: { story: Story; lang: Lang }) {
 }
 
 function VideoPanel({ lang }: { lang: Lang }) {
+  const [leaving, setLeaving] = useState(false);
   const [video, ...more] = videosIn(lang);
   const posterGround = usePosterGround(video?.poster);
   if (!video) return null;
@@ -210,8 +211,16 @@ function VideoPanel({ lang }: { lang: Lang }) {
   const front = wordsFor(lang);
   const locale = video.locales[lang];
   return (
-    <section className="if-band" data-media-strip aria-labelledby="if-videos">
-      <VideoAtmosphere />
+    <section
+      className="if-band"
+      data-media-strip
+      aria-labelledby="if-videos"
+      onClickCapture={(event) => {
+        if (event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey &&
+            (event.target as Element).closest("a")) setLeaving(true);
+      }}
+    >
+      <VideoAtmosphere paused={leaving} />
       <div className="if-head">
         <div>
           <p className="if-overline">{front.film}</p>
@@ -232,6 +241,7 @@ function VideoPanel({ lang }: { lang: Lang }) {
         <Link
           {...videoLink(lang, video.id)}
           className="if-video-still"
+          preload="viewport"
           style={posterGround.style}
           aria-label={`${words.play}: ${locale?.title}`}
         >

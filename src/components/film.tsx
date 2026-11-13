@@ -5,7 +5,6 @@ import { seekTo } from "@/lib/seek";
 import type { Lang } from "@/lib/types";
 import { videoWords } from "@/lib/videos";
 import { usePosterGround } from "@/lib/use-poster-ground";
-import { MEDIA } from "@/lib/breakpoints";
 
 /** The bar's and the settings panel's own icons: thin ivory lines, drawn here rather than
  * taken from the icon set, after the owner's chosen design (22 Oct 2026). */
@@ -128,12 +127,9 @@ export function Film({
   const box = useRef<HTMLDivElement | null>(null);
   const film = useRef<HTMLVideoElement | null>(null);
   const timer = useRef<number | undefined>(undefined);
-  const prepareTimer = useRef<number | undefined>(undefined);
   const [started, setStarted] = useState(false);
-  const [preparing, setPreparing] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [buffering, setBuffering] = useState(false);
-  const [revealed, setRevealed] = useState(false);
   const [time, setTime] = useState(0);
   const [reported, setReported] = useState(0);
   const duration = reported || length;
@@ -239,7 +235,6 @@ export function Film({
       window.clearTimeout(timer.current);
       window.clearTimeout(tapTimer.current);
       window.clearTimeout(jumpTimer.current);
-      window.clearTimeout(prepareTimer.current);
     };
   }, []);
 
@@ -254,13 +249,6 @@ export function Film({
       }, HIDE_AFTER);
   }
 
-  function revealPhone() {
-    window.clearTimeout(prepareTimer.current);
-    prepareTimer.current = undefined;
-    setStarted(true);
-    setPreparing(false);
-  }
-
   async function toggle() {
     const el = film.current;
     if (!el) return;
@@ -271,6 +259,9 @@ export function Film({
     try {
       setFailed(false);
       setBuffering(true);
+      // Expose the full player before requesting playback. Audio must never run
+      // behind an opacity animation or wait for a cover's transition event.
+      if (portalCover) setStarted(true);
       announceStart(PLAYER);
       await el.play();
     } catch {
@@ -409,9 +400,7 @@ export function Film({
       ref={box}
       data-playing={playing}
       data-started={started}
-      data-preparing={preparing}
       data-buffering={buffering}
-      data-revealed={revealed}
       style={portalCover ? posterGround.style : undefined}
       aria-busy={buffering}
       className={`film relative aspect-video overflow-hidden bg-ink ${full ? "is-full" : ""} ${bar ? "" : "is-quiet"} ${className}`}
@@ -439,29 +428,17 @@ export function Film({
         aria-label={label}
         className="block h-full w-full object-contain"
         onClick={onSurface}
-        onPlay={() => setBuffering(true)}
+        onPlay={() => {
+          // Also covers starts initiated by the transcript or keyboard.
+          if (portalCover) setStarted(true);
+          setBuffering(true);
+        }}
         onWaiting={() => setBuffering(true)}
         onPlaying={() => {
+          setStarted(true);
           setPlaying(true);
           setBuffering(false);
-          if (!started) {
-            const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-            if (portalCover && !still && window.matchMedia(MEDIA.phone).matches) {
-              // The cover's transitionend commits the compact phone layout once.
-              // The timer is only a fallback if resizing cancels that transition.
-              if (prepareTimer.current === undefined) {
-                setPreparing(true);
-                prepareTimer.current = window.setTimeout(revealPhone, 500);
-              }
-            } else {
-              setStarted(true);
-              if (portalCover && still) setRevealed(true);
-            }
-          }
           wake(false);
-        }}
-        onAnimationEnd={(event) => {
-          if (event.animationName === "orbis-screen-emerge") setRevealed(true);
         }}
         onPause={() => {
           setPlaying(false);
@@ -488,9 +465,6 @@ export function Film({
           setReported(Number.isFinite(d) ? d : 0);
         }}
         onError={() => {
-          window.clearTimeout(prepareTimer.current);
-          prepareTimer.current = undefined;
-          setPreparing(false);
           setBuffering(false);
           setFailed(true);
         }}
@@ -504,16 +478,8 @@ export function Film({
         ))}
       </video>
 
-      {portalCover && !revealed ? (
-        <div
-          className="film-portal-cover"
-          aria-hidden="true"
-          onTransitionEnd={(event) => {
-            if (preparing && event.target === event.currentTarget && event.propertyName === "opacity") {
-              revealPhone();
-            }
-          }}
-        >
+      {portalCover && !started ? (
+        <div className="film-portal-cover" aria-hidden="true">
           <span className="film-portal-disc">
             {poster ? <img src={poster} ref={posterGround.ref} onLoad={posterGround.onLoad} alt="" decoding="async" /> : null}
           </span>
@@ -537,7 +503,7 @@ export function Film({
           type="button"
           onClick={() => void toggle()}
           aria-label={`${words.play}: ${label}`}
-          disabled={buffering || preparing}
+          disabled={buffering}
           className="film-start absolute inset-0 flex items-center justify-center"
         >
           <span aria-hidden="true" className="film-start-ring">
@@ -580,7 +546,7 @@ export function Film({
       ) : null}
 
       {hasControls ? (
-        <div className="film-bar" aria-hidden={!bar} inert={portalCover && started && !revealed}>
+        <div className="film-bar" aria-hidden={!bar}>
           <div className="film-glass">
             {menu ? (
               <div role="menu" aria-label={words.settings} className="film-menu">
