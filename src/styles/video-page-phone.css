@@ -91,7 +91,7 @@
     box-shadow: none;
   }
   .video-inline-player[data-started="true"] .film-portal-cover,
-  .video-screen-frame:has(.film[data-started="true"]) :is(.video-orbits, .video-portal-caption) {
+  .video-screen-frame:has(.film[data-started="true"]) .video-portal-caption {
     transition: none;
   }
   .video-inline-player { --portal-size: 16rem; }

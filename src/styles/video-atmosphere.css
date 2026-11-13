@@ -1,5 +1,5 @@
-/* A small cached texture replaces four full-panel gradient surfaces.
-   On phones the clouds stay still; only six two-pixel stars move. */
+/* Two forward passes reuse one detailed texture. Only transform and opacity
+   animate; the mobile field is bounded and preserves the landscape proportions. */
 .video-atmosphere {
   position: absolute;
   z-index: -2;
@@ -7,6 +7,12 @@
   overflow: clip;
   contain: strict;
   pointer-events: none;
+  transition: opacity 900ms ease;
+}
+.video-cloud-field {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
 }
 .video-cloud {
   position: absolute;
@@ -14,15 +20,16 @@
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: fill;
+  object-fit: cover;
   opacity: 0.72;
 }
+.video-cloud-next { opacity: 0; }
 .video-flight-star {
   position: absolute;
   left: 50%;
   top: 52%;
-  width: 2px;
-  height: 2px;
+  width: var(--star-size);
+  height: var(--star-size);
   border-radius: 50%;
   color: #e2eaff;
   background: currentColor;
@@ -35,31 +42,48 @@
 }
 @keyframes orbis-star-flight {
   from {
-    transform: translate3d(calc(var(--star-x) * 0.16), calc(var(--star-y) * 0.16), 0) scale(0.4);
+    transform: translate3d(calc(var(--star-x) * 0.12), calc(var(--star-y) * 0.12), 0) scale(0.35);
     opacity: 0;
   }
   18% { opacity: 0.45; }
   72% { opacity: 0.95; }
   to { transform: translate3d(var(--star-x), var(--star-y), 0) scale(1.5); opacity: 0; }
 }
-@media (--orbis-desktop) and (prefers-reduced-motion: no-preference) {
-  .video-cloud { animation: orbis-cloud-drift 40s ease-in-out infinite alternate paused; }
+@media (prefers-reduced-motion: no-preference) {
+  .video-cloud { animation: orbis-cloud-forward 36s linear -6s infinite paused; }
+  .video-cloud-next { animation-delay: -24s; }
   .video-atmosphere[data-active="true"] .video-cloud { animation-play-state: running; }
 }
-@keyframes orbis-cloud-drift {
-  from { transform: scale(1); }
-  to { transform: scale(1.055); }
+@keyframes orbis-cloud-forward {
+  0% { transform: translate3d(-1%, 0, 0) scale(1.03); opacity: 0; }
+  12.5%, 50% { opacity: 0.72; }
+  62.5% { opacity: 0; }
+  100% { transform: translate3d(1%, -1%, 0) scale(1.35); opacity: 0; }
 }
 @media (--orbis-phone) {
-  .video-flight-star:nth-of-type(n + 7) { display: none; }
+  .video-cloud-field {
+    /* A wide cloud bank behind the circle, with quiet space above and below.
+       The fixed edge fade stays still while the single image moves inside it. */
+    inset: auto;
+    left: -35%;
+    top: var(--cloud-center, 21rem);
+    width: 170%;
+    aspect-ratio: 3 / 2;
+    transform: translateY(-50%);
+    mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
+  }
+  .if-band .video-atmosphere { --cloud-center: 17.5rem; }
+  .video-flight-star { top: var(--cloud-center, 21rem); }
+  .video-flight-star:nth-of-type(n + 9) { display: none; }
 }
 /* Stop decoration as soon as playback is requested. Never animate video opacity. */
-.video-stage:has(.film:is([data-buffering="true"], [data-started="true"])) .video-atmosphere > * {
+.video-stage:has(.film:is([data-buffering="true"], [data-started="true"])) .video-atmosphere :is(.video-cloud, .video-flight-star) {
   animation-play-state: paused;
 }
-.video-stage:has(.film[data-started="true"]) .video-atmosphere { opacity: 0.16; }
+.video-stage:has(.film[data-started="true"]) .video-atmosphere { opacity: 0.82; }
 .if-band:has(.video-atmosphere[data-active="false"]) .if-video-orbit { animation-play-state: paused; }
 @media (prefers-reduced-motion: reduce) {
+  .video-atmosphere { transition: none; }
   .video-atmosphere .video-flight-star {
     animation: none;
     transform: translate3d(calc(var(--star-x) * 0.7), calc(var(--star-y) * 0.7), 0);
