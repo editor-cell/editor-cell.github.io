@@ -478,10 +478,7 @@ export function Film({
 
       {portalCover && !revealed ? (
         <div className="film-portal-cover" aria-hidden="true">
-          <span className="film-portal-half film-portal-left">
-            {poster ? <img src={poster} alt="" decoding="async" /> : null}
-          </span>
-          <span className="film-portal-half film-portal-right">
+          <span className="film-portal-disc">
             {poster ? <img src={poster} alt="" decoding="async" /> : null}
           </span>
         </div>

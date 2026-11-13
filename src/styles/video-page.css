@@ -88,7 +88,7 @@ html:has(.orbis-video) {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  transition: opacity 650ms ease;
+  transition: opacity 800ms ease-in-out;
 }
 .video-orbit {
   position: absolute;
@@ -164,8 +164,8 @@ html:has(.orbis-video) {
   from { opacity: 0.4; transform: scale(0.8); }
   to { opacity: 1; transform: scale(1.2); }
 }
-/* The player keeps its final dimensions. Only the independent cover and picture
-   move: no width/aspect-ratio/min-height animation while decoding video. */
+/* Keep both surfaces still. Only their opacity changes while the video starts;
+   no shape morph, split cover or layout animation competes with decoding. */
 .video-inline-player:not(.is-full) {
   position: relative;
   z-index: 1;
@@ -185,10 +185,10 @@ html:has(.orbis-video) {
   opacity: 0;
 }
 .video-inline-player[data-revealed="false"] > video {
-  will-change: transform, opacity;
+  will-change: opacity;
 }
 .video-inline-player:not(.is-full)[data-started="true"][data-revealed="false"] > video {
-  animation: orbis-screen-emerge 1200ms cubic-bezier(0.45, 0, 0.25, 1) both;
+  animation: orbis-screen-emerge 800ms ease-in-out both;
 }
 .film-portal-cover {
   position: absolute;
@@ -198,6 +198,7 @@ html:has(.orbis-video) {
   top: 50%;
   transform: translate(-50%, -50%);
   pointer-events: none;
+  transition: opacity 650ms ease-in-out;
 }
 .film-portal-cover::before {
   content: "";
@@ -206,49 +207,26 @@ html:has(.orbis-video) {
   border: 1px solid #c4849c6b;
   border-radius: 50%;
   box-shadow: -1rem 0 3rem #7a243d55, 1rem 0 3rem #117dd03b;
-  transition: opacity 1000ms ease, transform 1200ms ease;
 }
-.film-portal-half {
+.film-portal-disc {
   position: absolute;
-  width: 50%;
-  height: 100%;
-  top: 0;
+  inset: 0;
   overflow: hidden;
   background: #09090d;
-  border-block: 1px solid #dfb4bf82;
-  will-change: transform, opacity;
+  border: 1px solid #dfb4bf82;
+  border-right-color: #80d8ff70;
+  border-radius: 50%;
 }
-.film-portal-left {
-  left: 0;
-  border-radius: var(--portal-size) 0 0 var(--portal-size);
-  border-left: 1px solid #dfb4bf82;
-}
-.film-portal-right {
-  right: 0;
-  border-radius: 0 var(--portal-size) var(--portal-size) 0;
-  border-right: 1px solid #80d8ff70;
-}
-.film-portal-half img {
-  position: absolute;
-  top: 0;
-  width: 200%;
-  max-width: none;
+.film-portal-disc img {
+  display: block;
+  width: 100%;
   height: 100%;
   object-fit: contain;
   padding: calc(var(--portal-size) * 0.08);
   opacity: 0.65;
 }
-.film-portal-left img { left: 0; }
-.film-portal-right img { right: 0; }
-.video-inline-player[data-started="true"] .film-portal-left {
-  animation: orbis-gate-left 1200ms cubic-bezier(0.45, 0, 0.25, 1) both;
-}
-.video-inline-player[data-started="true"] .film-portal-right {
-  animation: orbis-gate-right 1200ms cubic-bezier(0.45, 0, 0.25, 1) both;
-}
-.video-inline-player[data-started="true"] .film-portal-cover::before {
+.video-inline-player[data-started="true"] .film-portal-cover {
   opacity: 0;
-  transform: scale(1.15);
 }
 .video-inline-player:not([data-started="true"]) .film-start {
   inset: 50% auto auto 50%;
@@ -293,18 +271,8 @@ html:has(.orbis-video) {
   opacity: 0;
 }
 @keyframes orbis-screen-emerge {
-  from { opacity: 0; transform: scale(0.84); }
-  20% { opacity: 0; transform: scale(0.86); }
-  70% { opacity: 1; }
-  to { opacity: 1; transform: none; }
-}
-@keyframes orbis-gate-left {
-  35% { opacity: 1; }
-  to { opacity: 0; transform: translateX(-85%) rotate(-12deg); }
-}
-@keyframes orbis-gate-right {
-  35% { opacity: 1; }
-  to { opacity: 0; transform: translateX(85%) rotate(12deg); }
+  from, 15% { opacity: 0; }
+  to { opacity: 1; }
 }
 .video-portal-caption {
   position: absolute;
@@ -335,27 +303,21 @@ html:has(.orbis-video) {
 @keyframes orbis-light-drift {
   to { transform: rotate(360deg); }
 }
-@keyframes orbis-room-enter {
-  from { opacity: 0; transform: translateY(1rem); }
-  to { opacity: 1; transform: translateY(0); }
-}
 @media (prefers-reduced-motion: reduce) {
   .video-ambient,
   .video-room-word,
   .video-orbits,
   .video-screen-frame,
   .video-inline-player:not(.is-full),
-  .video-portal-caption {
+  .video-portal-caption,
+  .film-portal-cover {
     transition: none;
   }
-  .video-room-heading,
   .video-orbit-star,
-  .video-inline-player:not(.is-full)[data-started="true"][data-revealed="false"] > video,
-  .video-inline-player[data-started="true"] .film-portal-half {
+  .video-inline-player:not(.is-full)[data-started="true"][data-revealed="false"] > video {
     animation: none;
   }
   .video-inline-player[data-started="true"] .film-portal-cover { display: none; }
-  .film-portal-cover::before { transition: none; }
 }
 
 /* The homepage invites readers into the same room. Its geometry remains in the
