@@ -1,5 +1,5 @@
 /* Shared appearance only. Phone and desktop geometry live in separate files. */
-/* Match the poster's neutral #0f0f0f canvas so it belongs to the whole circle.
+/* Neutral first paint; each loaded poster supplies its own sampled edge color.
    The playback surface keeps its own background once the cover dissolves. */
 .if-band,
 .video-library,
@@ -349,23 +349,6 @@ html:has(.orbis-video) {
 .video-feature .media-still img {
   object-fit: contain;
   padding: 8%;
-}
-.film-play-word,
-.if-video-play-label {
-  position: absolute;
-  left: 50%;
-  top: calc(50% + 2.5rem);
-  transform: translateX(-50%);
-  padding: 0.1rem 0.45rem;
-  font-size: 0.7rem;
-  line-height: 1.3;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #f4efe6;
-  background: #09090dc9;
-}
-.film[data-buffering="true"] .film-play-word {
-  visibility: hidden;
 }
 .if-video-orbits {
   position: absolute;

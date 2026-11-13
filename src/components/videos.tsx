@@ -16,6 +16,7 @@ import { formatDate, paragraphs } from "@/lib/text";
 import type { Lang, Video, VideoCard } from "@/lib/types";
 import { useLang } from "@/lib/use-lang";
 import { formatDuration, videoWords, videosIn } from "@/lib/videos";
+import { usePosterGround } from "@/lib/use-poster-ground";
 
 /**
  * Videos are their own content: no reading and no issue behind them. On the front page they
@@ -57,11 +58,14 @@ function Still({
   sizes: string;
   eager?: boolean;
 }) {
+  const posterGround = usePosterGround(video.poster);
   return (
-    <div className="media-still relative aspect-video w-full overflow-hidden bg-ink">
+    <div className="media-still relative aspect-video w-full overflow-hidden bg-ink" style={posterGround.style}>
       {video.poster ? (
         <img
           src={video.poster}
+          ref={posterGround.ref}
+          onLoad={posterGround.onLoad}
           {...imageSet(video.poster, sizes)}
           alt=""
           width={1600}

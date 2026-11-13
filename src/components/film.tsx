@@ -4,6 +4,7 @@ import { AUDIO_EVENT, RATES, announceStart, fmt } from "@/lib/listen";
 import { seekTo } from "@/lib/seek";
 import type { Lang } from "@/lib/types";
 import { videoWords } from "@/lib/videos";
+import { usePosterGround } from "@/lib/use-poster-ground";
 
 /** The bar's and the settings panel's own icons: thin ivory lines, drawn here rather than
  * taken from the icon set, after the owner's chosen design (22 Oct 2026). */
@@ -114,7 +115,7 @@ export function Film({
   bare?: boolean;
   /** The editorial video page shows its controls over the poster from the start. */
   controlsBeforePlay?: boolean;
-  /** A separate circular cover opens around the fixed-size video on its own page. */
+  /** A separate circular cover dissolves over the fixed-size video on its own page. */
   portalCover?: boolean;
   /** Receives the video element once it is on the page. */
   onScreen?: (el: HTMLVideoElement | null) => void;
@@ -122,6 +123,7 @@ export function Film({
   captions?: FilmCaption[];
 }) {
   const words = videoWords(lang);
+  const posterGround = usePosterGround(poster);
   const box = useRef<HTMLDivElement | null>(null);
   const film = useRef<HTMLVideoElement | null>(null);
   const timer = useRef<number | undefined>(undefined);
@@ -398,6 +400,7 @@ export function Film({
       data-started={started}
       data-buffering={buffering}
       data-revealed={revealed}
+      style={portalCover ? posterGround.style : undefined}
       aria-busy={buffering}
       className={`film relative aspect-video overflow-hidden bg-ink ${full ? "is-full" : ""} ${bar ? "" : "is-quiet"} ${className}`}
       onPointerMove={(event) => {
@@ -479,7 +482,7 @@ export function Film({
       {portalCover && !revealed ? (
         <div className="film-portal-cover" aria-hidden="true">
           <span className="film-portal-disc">
-            {poster ? <img src={poster} alt="" decoding="async" /> : null}
+            {poster ? <img src={poster} ref={posterGround.ref} onLoad={posterGround.onLoad} alt="" decoding="async" /> : null}
           </span>
         </div>
       ) : null}
@@ -511,7 +514,6 @@ export function Film({
               strokeWidth={0}
             />
           </span>
-          {portalCover ? <span aria-hidden="true" className="film-play-word">{words.play}</span> : null}
           {duration > 0 && !controlsBeforePlay ? (
             <span aria-hidden="true" dir="ltr" className="film-length">
               {fmt(duration)}

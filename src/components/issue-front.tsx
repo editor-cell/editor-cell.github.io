@@ -16,6 +16,7 @@ import {
   type Theme,
 } from "@/lib/types";
 import { formatDuration, videoWords, videosIn } from "@/lib/videos";
+import { usePosterGround } from "@/lib/use-poster-ground";
 
 /** Homepage-only composition. Phone and desktop layouts remain in separate sheets.
  * The shell, reader, membership, typography and language navigation are untouched.
@@ -202,6 +203,7 @@ function Card({ story, lang }: { story: Story; lang: Lang }) {
 
 function VideoPanel({ lang }: { lang: Lang }) {
   const [video, ...more] = videosIn(lang);
+  const posterGround = usePosterGround(video?.poster);
   if (!video) return null;
   const words = videoWords(lang);
   const front = wordsFor(lang);
@@ -228,6 +230,7 @@ function VideoPanel({ lang }: { lang: Lang }) {
         <Link
           {...videoLink(lang, video.id)}
           className="if-video-still"
+          style={posterGround.style}
           aria-label={`${words.play}: ${locale?.title}`}
         >
           <span className="if-video-orbits" aria-hidden="true">
@@ -237,6 +240,8 @@ function VideoPanel({ lang }: { lang: Lang }) {
           {video.poster ? (
             <img
               src={video.poster}
+              ref={posterGround.ref}
+              onLoad={posterGround.onLoad}
               {...imageSet(video.poster, imageSizes("50vw", "calc(100vw - 40px)"))}
               alt=""
               width={1600}
@@ -249,7 +254,6 @@ function VideoPanel({ lang }: { lang: Lang }) {
             <svg viewBox="0 0 24 24">
               <path d="M8 5.5v13l11-6.5z" />
             </svg>
-            <span className="if-video-play-label">{words.play}</span>
           </span>
           {video.duration ? (
             <span className="if-video-time" dir="ltr">
