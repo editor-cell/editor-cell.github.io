@@ -1,1 +1,0 @@
-import{t as e}from"./account-BzSwd_Bi.js";var t=e;export{t as component};
