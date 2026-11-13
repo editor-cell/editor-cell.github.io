@@ -5,6 +5,7 @@ import { seekTo } from "@/lib/seek";
 import type { Lang } from "@/lib/types";
 import { videoWords } from "@/lib/videos";
 import { usePosterGround } from "@/lib/use-poster-ground";
+import { usePortalOpening } from "@/lib/use-portal-opening";
 
 /** The bar's and the settings panel's own icons: thin ivory lines, drawn here rather than
  * taken from the icon set, after the owner's chosen design (22 Oct 2026). */
@@ -136,6 +137,7 @@ export function Film({
   const [muted, setMuted] = useState(false);
   const [volume, setVolume] = useState(1);
   const [full, setFull] = useState(false);
+  const portal = usePortalOpening({ box, film, enabled: portalCover, started, full });
   const [shown, setShown] = useState(true);
   const [failed, setFailed] = useState(false);
   // The jump just made by taps, shown at its side for a moment: "10 seconds", "20 seconds"...
@@ -259,9 +261,11 @@ export function Film({
     try {
       setFailed(false);
       setBuffering(true);
-      // Expose the full player before requesting playback. Audio must never run
-      // behind an opacity animation or wait for a cover's transition event.
-      if (portalCover) setStarted(true);
+      // Playback stays in the tap gesture; the visible picture grows while it plays.
+      if (portalCover) {
+        portal.prepare();
+        setStarted(true);
+      }
       announceStart(PLAYER);
       await el.play();
     } catch {
@@ -400,6 +404,7 @@ export function Film({
       ref={box}
       data-playing={playing}
       data-started={started}
+      data-opening={portal.opening}
       data-buffering={buffering}
       style={portalCover ? posterGround.style : undefined}
       aria-busy={buffering}
@@ -430,7 +435,10 @@ export function Film({
         onClick={onSurface}
         onPlay={() => {
           // Also covers starts initiated by the transcript or keyboard.
-          if (portalCover) setStarted(true);
+          if (portalCover) {
+            portal.prepare();
+            setStarted(true);
+          }
           setBuffering(true);
         }}
         onWaiting={() => setBuffering(true)}
@@ -478,7 +486,7 @@ export function Film({
         ))}
       </video>
 
-      {portalCover && !started ? (
+      {portalCover && (!started || portal.opening) ? (
         <div className="film-portal-cover" aria-hidden="true">
           <span className="film-portal-disc">
             {poster ? <img src={poster} ref={posterGround.ref} onLoad={posterGround.onLoad} alt="" decoding="async" /> : null}
