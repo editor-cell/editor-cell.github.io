@@ -1,4 +1,9 @@
 /* Shared appearance only. Phone and desktop geometry live in separate files. */
+/* Route resets must arrive immediately, without inheriting the reading site's
+   smooth in-page scrolling. */
+html:has(.orbis-video) {
+  scroll-behavior: auto;
+}
 .orbis-video {
   background: #0e0f12;
 }
@@ -65,7 +70,6 @@
 .video-room-heading {
   position: relative;
   text-align: center;
-  animation: orbis-room-enter 850ms ease-out both;
 }
 .video-room-heading .video-overline {
   color: #d9a2ae;
@@ -184,7 +188,7 @@
   will-change: transform, opacity;
 }
 .video-inline-player:not(.is-full)[data-started="true"][data-revealed="false"] > video {
-  animation: orbis-screen-emerge 850ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: orbis-screen-emerge 1200ms cubic-bezier(0.45, 0, 0.25, 1) both;
 }
 .film-portal-cover {
   position: absolute;
@@ -202,7 +206,7 @@
   border: 1px solid #c4849c6b;
   border-radius: 50%;
   box-shadow: -1rem 0 3rem #7a243d55, 1rem 0 3rem #117dd03b;
-  transition: opacity 400ms ease, transform 650ms ease;
+  transition: opacity 1000ms ease, transform 1200ms ease;
 }
 .film-portal-half {
   position: absolute;
@@ -230,16 +234,17 @@
   width: 200%;
   max-width: none;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  padding: calc(var(--portal-size) * 0.08);
   opacity: 0.65;
 }
 .film-portal-left img { left: 0; }
 .film-portal-right img { right: 0; }
 .video-inline-player[data-started="true"] .film-portal-left {
-  animation: orbis-gate-left 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: orbis-gate-left 1200ms cubic-bezier(0.45, 0, 0.25, 1) both;
 }
 .video-inline-player[data-started="true"] .film-portal-right {
-  animation: orbis-gate-right 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: orbis-gate-right 1200ms cubic-bezier(0.45, 0, 0.25, 1) both;
 }
 .video-inline-player[data-started="true"] .film-portal-cover::before {
   opacity: 0;
@@ -289,13 +294,16 @@
 }
 @keyframes orbis-screen-emerge {
   from { opacity: 0; transform: scale(0.84); }
-  25% { opacity: 1; }
+  20% { opacity: 0; transform: scale(0.86); }
+  70% { opacity: 1; }
   to { opacity: 1; transform: none; }
 }
 @keyframes orbis-gate-left {
+  35% { opacity: 1; }
   to { opacity: 0; transform: translateX(-85%) rotate(-12deg); }
 }
 @keyframes orbis-gate-right {
+  35% { opacity: 1; }
   to { opacity: 0; transform: translateX(85%) rotate(12deg); }
 }
 .video-portal-caption {
@@ -366,6 +374,28 @@
 .if-video-still {
   border: 1px solid #c99aaf8c;
   box-shadow: -0.8rem 0 3rem #7a243d55, 0.8rem 0 3rem #117dd030;
+}
+.if-video-still img,
+.video-feature .media-still img {
+  object-fit: contain;
+  padding: 8%;
+}
+.film-play-word,
+.if-video-play-label {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 2.5rem);
+  transform: translateX(-50%);
+  padding: 0.1rem 0.45rem;
+  font-size: 0.7rem;
+  line-height: 1.3;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #f4efe6;
+  background: #09090dc9;
+}
+.film[data-buffering="true"] .film-play-word {
+  visibility: hidden;
 }
 .if-video-orbits {
   position: absolute;

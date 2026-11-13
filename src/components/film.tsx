@@ -514,6 +514,7 @@ export function Film({
               strokeWidth={0}
             />
           </span>
+          {portalCover ? <span aria-hidden="true" className="film-play-word">{words.play}</span> : null}
           {duration > 0 && !controlsBeforePlay ? (
             <span aria-hidden="true" dir="ltr" className="film-length">
               {fmt(duration)}

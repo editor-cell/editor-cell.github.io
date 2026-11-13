@@ -215,7 +215,7 @@ export function Shell({
               nobody pays and few come in yet. TRIAL still keeps search engines away. */}
 
           <nav
-            aria-label={copy.sections}
+            aria-label={layout === "video" ? copy.home : copy.sections}
             dir={meta.dir}
             lang={meta.html}
             data-start="true"
@@ -233,7 +233,7 @@ export function Shell({
               >
                 {copy.home}
               </Link>
-              {THEMES.map((theme) => (
+              {layout !== "video" && THEMES.map((theme) => (
                 <Link
                   key={theme}
                   {...sectionLink(lang, theme)}
@@ -326,6 +326,7 @@ export function Shell({
                   {/* No e-mail here: readers talk in the comments; the address stays only on
                       the legal pages, where the privacy law asks for it. */}
                 </div>
+                {layout !== "video" ? (
                 <div className="footer-sections">
                   <h2 className="footer-heading">{copy.sections}</h2>
                   <ul className="footer-section-list">
@@ -341,6 +342,7 @@ export function Shell({
                     ))}
                   </ul>
                 </div>
+                ) : null}
                 <div className="footer-languages">
                   <h2 className="footer-heading">{frame.languages}</h2>
                   <ul className="mt-4 flex flex-col">

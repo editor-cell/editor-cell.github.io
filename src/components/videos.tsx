@@ -5,16 +5,14 @@ import { Film } from "@/components/film";
 import { announceStart } from "@/lib/listen";
 import { seekTo } from "@/lib/seek";
 import { useSavedVideos } from "@/lib/saved-videos";
-import { CARDS } from "@/lib/seed";
-import { frontOrder } from "@/lib/front-order";
 import { imageSizes } from "@/lib/breakpoints";
 import { Shell } from "@/components/shell";
 import { Trail } from "@/components/trail";
 import { Transcript } from "@/components/transcript";
 import { imageSet } from "@/lib/image-set";
-import { langMeta, useCopy } from "@/lib/i18n";
-import { mediaLink, videoLink, readLink } from "@/lib/lang-path";
-import { formatDate, paragraphs, storyTitle } from "@/lib/text";
+import { langMeta } from "@/lib/i18n";
+import { mediaLink, videoLink } from "@/lib/lang-path";
+import { formatDate, paragraphs } from "@/lib/text";
 import type { Lang, Video, VideoCard } from "@/lib/types";
 import { useLang } from "@/lib/use-lang";
 import { formatDuration, videoWords, videosIn } from "@/lib/videos";
@@ -265,7 +263,7 @@ export function VideoListPage() {
   );
 }
 
-/** Date, duration and working watch-later/share actions, as in the selected reference. */
+/** Date and working watch-later/share actions. Duration stays with the screen. */
 function VideoActions({ video, lang }: { video: Video; lang: Lang }) {
   const words = videoWords(lang);
   const saved = useSavedVideos();
@@ -289,7 +287,6 @@ function VideoActions({ video, lang }: { video: Video; lang: Lang }) {
     <>
       <div className="video-meta">
         <time dateTime={video.date}>{formatDate(video.date, lang)}</time>
-        <span dir="ltr">{formatDuration(video.duration)}</span>
         <button type="button" aria-pressed={marked} onClick={() => saved.toggle(video.id)}>
           {marked ? <Check aria-hidden="true" /> : <Bookmark aria-hidden="true" />}
           {marked ? words.saved : words.watchLater}
@@ -318,17 +315,14 @@ function VideoActions({ video, lang }: { video: Video; lang: Lang }) {
 /** Other published videos appear here as they are added; no sample videos are invented. */
 function VideoRelated({ video, lang }: { video: Video; lang: Lang }) {
   const words = videoWords(lang);
-  const copy = useCopy(lang);
-  const others = videosIn(lang)
-    .filter((item) => item.id !== video.id)
-    .slice(0, 3);
-  const readings = frontOrder(CARDS.filter((story) => story.locales[lang].written)).slice(0, 3);
+  const others = videosIn(lang).filter((item) => item.id !== video.id);
+  if (!others.length) return null;
   return (
     <aside className="video-related">
       {others.length ? (
         <section aria-labelledby="video-related-title">
           <h2 id="video-related-title" className="video-section-title">
-            {words.related}
+            {words.videos}
           </h2>
           {others.map((item) => (
             <Link key={item.id} {...videoLink(lang, item.id)} className="video-related-card group">
@@ -356,40 +350,7 @@ function VideoRelated({ video, lang }: { video: Video; lang: Lang }) {
           ))}
         </section>
       ) : null}
-      {readings.length ? (
-        <section aria-labelledby="video-more-title">
-          <h2 id="video-more-title" className="video-section-title">
-            {words.more}
-          </h2>
-          {readings.map((story) => (
-            <Link key={story.id} {...readLink(lang, story.id)} className="video-related-card group">
-              {story.image ? (
-                <div className="video-related-picture">
-                  <img
-                    src={story.image.src}
-                    {...imageSet(story.image.src, imageSizes("15vw", "34vw"))}
-                    alt=""
-                    width={1500}
-                    height={1000}
-                    loading="lazy"
-                  />
-                </div>
-              ) : null}
-              <div className="video-related-copy">
-                <p className="video-category">{copy.themes[story.theme]}</p>
-                <h3 className="paper-title group-hover:underline">{storyTitle(story, lang)}</h3>
-                <p>
-                  {(story.locales[lang].dek || story.locales[lang].lead).match(
-                    /^.*?[.!?؟۔](?=\s|$)/,
-                  )?.[0] ||
-                    story.locales[lang].dek ||
-                    story.locales[lang].lead}
-                </p>
-              </div>
-            </Link>
-          ))}
-        </section>
-      ) : null}
+
     </aside>
   );
 }
@@ -431,7 +392,6 @@ export function VideoPage({ video }: { video: Video | null }) {
               <header className="video-room-heading">
                 <p className="video-overline">
                   {words.video}
-                  {video.duration ? <span dir="ltr"> · {formatDuration(video.duration)}</span> : null}
                 </p>
                 <h1 className="paper-title video-title">{copy.title}</h1>
               </header>
@@ -460,8 +420,8 @@ export function VideoPage({ video }: { video: Video | null }) {
                     }))}
                     className="video-inline-player"
                   />
-                  <span className="video-portal-caption" aria-hidden="true">
-                    {words.play}<ArrowUpRight />
+                  <span className="video-portal-caption" aria-hidden="true" dir="ltr">
+                    {formatDuration(video.duration)}
                   </span>
                 </div>
                 <div className="video-description">

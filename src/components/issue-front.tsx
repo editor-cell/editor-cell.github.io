@@ -249,6 +249,7 @@ function VideoPanel({ lang }: { lang: Lang }) {
             <svg viewBox="0 0 24 24">
               <path d="M8 5.5v13l11-6.5z" />
             </svg>
+            <span className="if-video-play-label">{words.play}</span>
           </span>
           {video.duration ? (
             <span className="if-video-time" dir="ltr">
@@ -262,14 +263,7 @@ function VideoPanel({ lang }: { lang: Lang }) {
             <Link {...videoLink(lang, video.id)}>{locale?.title}</Link>
           </h3>
           <p>{locale?.dek}</p>
-          <Link {...videoLink(lang, video.id)} className="if-film-link">
-            {words.play}{" "}
-            <ArrowUpRight
-              size={15}
-              aria-hidden="true"
-              style={{ display: "inline", verticalAlign: "middle" }}
-            />
-          </Link>
+
         </div>
       </div>
       {more.length ? (

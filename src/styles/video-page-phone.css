@@ -110,10 +110,8 @@
     gap: 0.65rem 0.75rem;
   }
   .video-meta > time {
-    justify-self: end;
-  }
-  .video-meta > span {
-    justify-self: start;
+    grid-column: 1 / -1;
+    justify-self: center;
   }
   .video-meta > button {
     margin-top: 0.25rem;
