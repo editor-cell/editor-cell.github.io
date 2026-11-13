@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState, type RefObject } from "react";
 
-const OPENING_MS = 680;
-const EASING = "cubic-bezier(0.22, 0.7, 0.2, 1)";
+const OPENING_MS = 1100;
+const EASING = "cubic-bezier(0.3, 0.12, 0.25, 1)";
 
 /** Move the real, already-visible video out of its circular cover. Layout changes
  * once; the browser animates only transforms and the empty cover's opacity. */
