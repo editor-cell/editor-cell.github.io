@@ -7,12 +7,16 @@
   overflow: clip;
   contain: strict;
   pointer-events: none;
+  /* The texture contributes light above the site's own ground; its dark center
+     never paints a second, differently colored background. */
+  mix-blend-mode: lighten;
   transition: opacity 900ms ease;
 }
 .video-cloud-field {
   position: absolute;
   inset: 0;
   overflow: hidden;
+  mask-image: linear-gradient(to bottom, transparent, #000 8%, #000 82%, transparent);
 }
 .video-cloud {
   position: absolute;
@@ -73,6 +77,7 @@
     mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
   }
   .if-band .video-atmosphere { --cloud-center: 17.5rem; }
+  .video-library .video-atmosphere { --cloud-center: 31rem; }
   .video-flight-star { top: var(--cloud-center, 21rem); }
   .video-flight-star:nth-of-type(n + 9) { display: none; }
 }

@@ -41,17 +41,19 @@
   }
   .video-feature {
     display: grid;
-    grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
-    align-items: stretch;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    align-items: center;
+    min-height: 34rem;
   }
   .video-feature-copy {
     display: grid;
     align-content: center;
-    gap: 1.1rem;
-    padding: clamp(1.5rem, 3.5vw, 3.5rem);
+    gap: 1.35rem;
+    max-width: 32rem;
+    padding: 2rem clamp(1.5rem, 3vw, 3rem);
   }
   .video-feature h2 {
-    font-size: clamp(2rem, 3vw, 3.4rem);
+    font-size: clamp(2.6rem, 4.6vw, 4.75rem);
   }
   .video-feature-dek {
     font-size: clamp(1rem, 1.4vw, 1.25rem);
@@ -85,7 +87,7 @@
   .video-feature-picture {
     display: grid;
     align-items: center;
-    padding: 2.5rem;
+    padding: 2.5rem 1.5rem;
   }
   .video-description {
     width: 100%;
@@ -119,10 +121,7 @@
     padding-inline: 1rem;
   }
   .video-transcript-section {
-    padding-block: 1.75rem;
-  }
-  .video-transcript-heading h2 {
-    font-size: 2rem;
+    padding-block: 0.65rem;
   }
   .video-related {
     margin-top: 2.5rem;

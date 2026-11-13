@@ -160,16 +160,14 @@ function VideoTrail({ lang, title }: { lang: Lang; title?: string }) {
 function motionCopy(lang: Lang) {
   return lang === "tr"
     ? {
-        label: "Hareketli Orbis",
+        label: "Orbis İzle",
         title: "Görmenin başka bir yolu.",
         latest: "Son video",
-        words: "Videonun metni",
       }
     : {
-        label: "Orbis in motion",
+        label: "Orbis Watching",
         title: "A different way to see.",
         latest: "Latest film",
-        words: "The story in words",
       };
 }
 
@@ -190,6 +188,7 @@ export function VideoListPage() {
   return (
     <Shell layout="video">
       <main className="video-library">
+        <VideoAtmosphere />
         <div className="video-breadcrumb">
           <VideoTrail lang={lang} />
         </div>
@@ -221,14 +220,11 @@ export function VideoListPage() {
               className="video-feature-picture"
             >
               <Still video={featured} sizes={imageSizes("58vw", "100vw")} eager />
-              <span className="video-duration" dir="ltr">
-                {formatDuration(featured.duration)}
-              </span>
             </Link>
             <div className="video-feature-copy">
               <div className="video-feature-top">
                 <p className="video-overline">{onlySaved ? words.savedVideos : motion.latest}</p>
-                <span aria-hidden="true">01</span>
+                <span className="video-feature-length" dir="ltr">{formatDuration(featured.duration)}</span>
               </div>
               <h2 className="paper-title">
                 <Link {...videoLink(lang, featured.id)}>{featured.locales[lang]?.title}</Link>
@@ -238,7 +234,7 @@ export function VideoListPage() {
               ) : null}
               <time dateTime={featured.date}>{formatDate(featured.date, lang)}</time>
               <Link {...videoLink(lang, featured.id)} className="video-editorial-link">
-                {words.play}
+                {lang === "tr" ? "Videoya git" : "Watch video"}
                 <ArrowUpRight aria-hidden="true" />
               </Link>
             </div>
@@ -438,13 +434,11 @@ export function VideoPage({ video }: { video: Video | null }) {
             {transcript.length ? (
               <section
                 className="video-transcript-section"
-                aria-labelledby="video-transcript-title"
+                aria-labelledby="video-transcript-toggle"
               >
                 <div className="video-transcript-heading">
-                  <h2 id="video-transcript-title" className="paper-title">
-                    {motion.words}
-                  </h2>
                   <button
+                    id="video-transcript-toggle"
                     type="button"
                     aria-expanded={open}
                     aria-controls="video-transcript"
