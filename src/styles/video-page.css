@@ -119,6 +119,14 @@ html:has(.orbis-video) {
   position: relative;
   text-align: center;
 }
+/* Let the orbit paths pass behind the copy instead of reserving empty space
+   around them. A small, static halo keeps the letter edges clear. */
+.video-room-heading,
+.video-description {
+  position: relative;
+  z-index: 2;
+  text-shadow: 0 1px 4px #0e0f12, 0 0 2px #0e0f12;
+}
 .video-room-heading .video-overline {
   color: #d9a2ae;
 }
@@ -135,6 +143,8 @@ html:has(.orbis-video) {
 .video-orbits {
   position: absolute;
   inset: 0;
+  inset-block: -1.5rem;
+  z-index: 0;
   pointer-events: none;
   transition: opacity 800ms ease-in-out;
 }
