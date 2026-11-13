@@ -17,6 +17,7 @@ import {
 } from "@/lib/types";
 import { formatDuration, videoWords, videosIn } from "@/lib/videos";
 import { usePosterGround } from "@/lib/use-poster-ground";
+import { VideoAtmosphere } from "@/components/video-atmosphere";
 
 /** Homepage-only composition. Phone and desktop layouts remain in separate sheets.
  * The shell, reader, membership, typography and language navigation are untouched.
@@ -210,6 +211,7 @@ function VideoPanel({ lang }: { lang: Lang }) {
   const locale = video.locales[lang];
   return (
     <section className="if-band" data-media-strip aria-labelledby="if-videos">
+      <VideoAtmosphere />
       <div className="if-head">
         <div>
           <p className="if-overline">{front.film}</p>

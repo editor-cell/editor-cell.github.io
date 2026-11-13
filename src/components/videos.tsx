@@ -17,6 +17,7 @@ import type { Lang, Video, VideoCard } from "@/lib/types";
 import { useLang } from "@/lib/use-lang";
 import { formatDuration, videoWords, videosIn } from "@/lib/videos";
 import { usePosterGround } from "@/lib/use-poster-ground";
+import { VideoAtmosphere } from "@/components/video-atmosphere";
 
 /**
  * Videos are their own content: no reading and no issue behind them. On the front page they
@@ -384,7 +385,7 @@ export function VideoPage({ video }: { video: Video | null }) {
         {video && copy ? (
           <>
             <article className="video-stage">
-              <div className="video-ambient" aria-hidden="true" />
+              <VideoAtmosphere />
               <div className="video-room-word" aria-hidden="true">ORBIS</div>
               <div className="video-stage-top">
                 <p className="video-overline">{motion.label}</p>

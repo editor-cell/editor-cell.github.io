@@ -41,18 +41,6 @@ html:has(.orbis-video) {
   isolation: isolate;
   overflow: clip;
 }
-.video-ambient {
-  position: absolute;
-  z-index: -2;
-  inset: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse at 35% 48%, #8e304653, transparent 48%),
-    radial-gradient(ellipse at 72% 48%, #168ad62b, transparent 40%),
-    radial-gradient(circle at 24% 28%, #f4efe635 0 1px, transparent 1.5px) 0 0 / 5.5rem 5.5rem,
-    radial-gradient(circle at 74% 64%, #f4efe622 0 1px, transparent 1.5px) 0 0 / 8rem 8rem;
-  transition: opacity 800ms ease;
-}
 .video-room-word {
   position: absolute;
   z-index: -1;
@@ -67,9 +55,6 @@ html:has(.orbis-video) {
   pointer-events: none;
   user-select: none;
   transition: opacity 800ms ease;
-}
-.video-stage:has(.film[data-playing="true"]) .video-ambient {
-  opacity: 0.08;
 }
 .video-stage:has(.film[data-started="true"]) .video-room-word {
   opacity: 0.2;
@@ -311,7 +296,6 @@ html:has(.orbis-video) {
   to { transform: rotate(360deg); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .video-ambient,
   .video-room-word,
   .video-orbits,
   .video-screen-frame,

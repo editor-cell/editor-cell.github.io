@@ -1,0 +1,111 @@
+/* Shared, quiet depth for the homepage invitation and the viewing room.
+   Gradients are painted once. Only transform and opacity animate; no animated
+   blur, masks, background positions, canvas loops or changing dimensions. */
+.video-atmosphere {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  overflow: clip;
+  contain: strict;
+  pointer-events: none;
+  transition: opacity 700ms ease;
+}
+.video-nebula,
+.video-stars {
+  position: absolute;
+  inset: -8%;
+  transform-origin: 50% 52%;
+  animation-play-state: paused;
+}
+.video-nebula {
+  animation: orbis-nebula-depth 56s linear infinite paused;
+}
+.video-nebula-burgundy {
+  background:
+    radial-gradient(ellipse 13% 5% at 26% 51%, #f2dce34d, transparent 74%),
+    radial-gradient(ellipse 9% 7% at 40% 37%, #e4dce636, transparent 74%),
+    radial-gradient(ellipse 28% 7% at 39% 44%, #101016a8, transparent 72%),
+    radial-gradient(ellipse 19% 8% at 17% 57%, #b74c745c, transparent 73%),
+    radial-gradient(ellipse 27% 12% at 29% 49%, #a2356680, transparent 72%),
+    radial-gradient(ellipse 20% 14% at 43% 38%, #7e2c6170, transparent 73%),
+    radial-gradient(ellipse 14% 21% at 53% 31%, #71334b50, transparent 74%),
+    radial-gradient(ellipse 34% 23% at 31% 50%, #6e243272, transparent 74%);
+  animation-delay: -19s;
+}
+.video-nebula-blue {
+  background:
+    radial-gradient(ellipse 14% 6% at 77% 41%, #e0f3ff59, transparent 74%),
+    radial-gradient(ellipse 8% 10% at 66% 56%, #dbeaff3d, transparent 76%),
+    radial-gradient(ellipse 21% 7% at 65% 55%, #0e0f12a0, transparent 72%),
+    radial-gradient(ellipse 15% 9% at 83% 37%, #73caff48, transparent 72%),
+    radial-gradient(ellipse 23% 13% at 72% 45%, #238cc768, transparent 74%),
+    radial-gradient(ellipse 17% 17% at 62% 61%, #3156ad60, transparent 72%),
+    radial-gradient(ellipse 28% 20% at 80% 53%, #155a9c60, transparent 75%),
+    radial-gradient(ellipse 22% 10% at 46% 72%, #673a8560, transparent 73%);
+  animation-duration: 68s;
+  animation-delay: -42s;
+}
+.video-stars {
+  background:
+    radial-gradient(circle at 7% 17%, #f4efe6a6 0 0.7px, transparent 1.5px),
+    radial-gradient(circle at 18% 34%, #badfffab 0 0.8px, transparent 1.7px),
+    radial-gradient(circle at 32% 12%, #f4efe680 0 0.5px, transparent 1.2px),
+    radial-gradient(circle at 46% 27%, #f4efe67a 0 0.5px, transparent 1.2px),
+    radial-gradient(circle at 63% 16%, #cbdcff9c 0 0.7px, transparent 1.4px),
+    radial-gradient(circle at 82% 23%, #f4efe6b8 0 0.9px, transparent 1.7px),
+    radial-gradient(circle at 94% 39%, #b6dfffbd 0 1px, transparent 2px),
+    radial-gradient(circle at 11% 51%, #f4efe6b3 0 1px, transparent 1.8px),
+    radial-gradient(circle at 27% 45%, #f4efe680 0 0.5px, transparent 1.2px),
+    radial-gradient(circle at 42% 56%, #f4efe69c 0 0.7px, transparent 1.4px),
+    radial-gradient(circle at 57% 43%, #f4efe670 0 0.5px, transparent 1.2px),
+    radial-gradient(circle at 73% 61%, #9ad8ffb3 0 0.8px, transparent 1.6px),
+    radial-gradient(circle at 88% 76%, #f4efe69c 0 0.7px, transparent 1.5px),
+    radial-gradient(circle at 6% 79%, #b9dfffa6 0 0.7px, transparent 1.5px),
+    radial-gradient(circle at 24% 68%, #f4efe68c 0 0.6px, transparent 1.4px),
+    radial-gradient(circle at 38% 87%, #f4efe6b3 0 0.8px, transparent 1.6px),
+    radial-gradient(circle at 59% 79%, #b8ddffa6 0 0.7px, transparent 1.5px),
+    radial-gradient(circle at 76% 91%, #f4efe680 0 0.5px, transparent 1.2px),
+    radial-gradient(circle at 96% 12%, #f4efe68c 0 0.6px, transparent 1.4px),
+    radial-gradient(circle at 52% 95%, #f4efe680 0 0.5px, transparent 1.2px);
+  animation: orbis-stars-depth 44s linear infinite paused;
+  animation-delay: -12s;
+}
+.video-stars-far {
+  --star-angle: 18deg;
+  --star-light: 0.5;
+  animation-duration: 66s;
+  animation-delay: -40s;
+}
+.video-stars-near {
+  --star-angle: 0deg;
+  --star-light: 0.9;
+}
+.video-atmosphere[data-active="true"] > span {
+  animation-play-state: running;
+}
+.video-stage:has(.film:is([data-buffering="true"], [data-preparing="true"], [data-started="true"])) .video-atmosphere > span {
+  animation-play-state: paused;
+}
+.video-stage:has(.film[data-started="true"]) .video-atmosphere {
+  opacity: 0.16;
+}
+.if-band:has(.video-atmosphere[data-active="false"]) .if-video-orbit {
+  animation-play-state: paused;
+}
+@keyframes orbis-nebula-depth {
+  from { transform: translate(-2%, 2%) scale(0.94); opacity: 0; }
+  16%, 78% { opacity: 0.9; }
+  to { transform: translate(3%, -2%) scale(1.25); opacity: 0; }
+}
+@keyframes orbis-stars-depth {
+  from { transform: rotate(var(--star-angle)) scale(0.72); opacity: 0; }
+  14%, 78% { opacity: var(--star-light); }
+  to { transform: rotate(var(--star-angle)) scale(1.42); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .video-atmosphere { transition: none; }
+  .video-atmosphere > span { animation: none; }
+  .video-nebula { opacity: 0.8; }
+  .video-stars-far { opacity: 0.4; transform: rotate(18deg); }
+  .video-stars-near { opacity: 0.8; }
+}
