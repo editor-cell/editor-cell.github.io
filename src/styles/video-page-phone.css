@@ -73,6 +73,20 @@
   .video-screen-frame {
     min-height: 22rem;
     padding: 1.5rem 0 2rem;
+    transition: min-height 700ms ease-in-out, padding-block 700ms ease-in-out;
+  }
+  /* The circular cover needs headroom; the playing picture does not. Keep the
+     picture at its final width throughout the reveal, and close only the space. */
+  .video-screen-frame:has(.film[data-started="true"]) {
+    min-height: 0;
+    padding-block: 0;
+  }
+  .video-inline-player:not(.is-full) {
+    width: calc(100% + 2.5rem);
+    max-width: none;
+  }
+  .video-stage:has(.film[data-started="true"]) .video-stage-grid {
+    gap: 1rem;
   }
   .video-inline-player { --portal-size: 16rem; }
   .video-feature-picture {
@@ -172,5 +186,10 @@
   }
   .video-related-copy > p:last-child {
     font-size: 0.95rem;
+  }
+}
+@media (--orbis-phone) and (prefers-reduced-motion: reduce) {
+  .video-screen-frame {
+    transition: none;
   }
 }
