@@ -1,0 +1,76 @@
+/* One calm world, the original video covers beside it. No copy over/below Earth. */
+.watching-top { display:flex; justify-content:space-between; align-items:center; gap:1rem; border-bottom:1px solid #ffffff22; padding-block:.5rem 1rem; }
+.watching-top .video-overline { margin:0; }
+.watching-all { display:inline-flex; align-items:center; gap:.4rem; min-height:2.75rem; color:var(--color-muted); font-size:.85rem; }
+.watching-layout { display:grid; align-items:center; min-width:0; }
+.watching-world { display:grid; place-items:center; min-width:0; }
+.watching-sidebar { position:relative; min-width:0; z-index:2; }
+.watching-list-title { color:var(--color-ink); font-weight:500; line-height:1.1; margin:0 0 1.25rem; }
+.watching-videos { list-style:none; margin:0; padding:0; }
+.watching-videos > li { border-bottom:1px solid #ffffff30; }
+.watching-videos > li[data-selected="true"] { border-bottom-color:#a75169; }
+.watching-video-link { display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr); align-items:center; gap:1rem; width:100%; padding:1rem 0; text-align:start; color:var(--color-ink); cursor:pointer; }
+.watching-video-link:hover .watching-video-title { text-decoration:underline; text-underline-offset:.2em; text-decoration-thickness:1px; }
+.watching-video-link:focus-visible,.watching-all:focus-visible { outline:2px solid #b4d8f0; outline-offset:4px; }
+.watching-video-cover { display:block; aspect-ratio:16/9; min-width:0; background:#0f0f0f; }
+.watching-video-cover img { display:block; width:100%; height:100%; object-fit:contain; }
+.watching-video-copy { display:grid; gap:.6rem; min-width:0; }
+.watching-video-title { font-weight:600; line-height:1.2; overflow-wrap:anywhere; }
+.watching-video-duration { color:var(--color-muted); font-size:.75rem; }
+.watching-earth { position:relative; aspect-ratio:1; width:100%; isolation:isolate; }
+.watching-earth::before { content:""; position:absolute; inset:2%; border-radius:50%; box-shadow:-1rem 0 3rem #7e345d30,1rem 0 3rem #3779a330; z-index:-1; }
+.watching-earth canvas { display:block; width:100%; height:100%; opacity:0; transition:opacity .6s ease; }
+.watching-earth[data-ready="true"] canvas { opacity:1; }
+.watching-earth-fallback { position:absolute; inset:1.7%; border-radius:50%; background:#0a1520 url('/images/orbis-earth-still.jpg') center/112% no-repeat; transition:opacity .6s ease; }
+.watching-earth[data-ready="true"] .watching-earth-fallback { opacity:0; }
+.watching-library > .video-atmosphere { height:100%; max-height:none; }
+.watching-panel .video-cloud,.watching-library .video-cloud,.watching-stage .video-cloud { object-position:center; }
+.watching-library .video-list-filters { margin-bottom:.5rem; gap:.3rem 1.25rem; }
+.watching-library .video-empty { padding:1rem 0; }
+.watching-screen { min-width:0; }
+.watching-screen .film-portal-earth::before { display:none; }
+.watching-screen .film-portal-earth { background:transparent; }
+.watching-video-details { margin-top:1.25rem; color:var(--color-muted); }
+.watching-video-details .video-dek { font-size:1rem; }
+.watching-video-details .video-meta { margin-top:1rem; }
+.watching-stage:has(.film[data-started="true"]) [data-selected="true"] .watching-video-duration { visibility:hidden; }
+
+@media (--orbis-desktop) {
+  .watching-layout { grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); gap:clamp(2rem,5vw,5rem); padding-block:2rem; }
+  .watching-world { min-height:30rem; }
+  .watching-earth { max-width:34rem; }
+  .watching-list-title { font-size:clamp(2rem,3.4vw,3.2rem); }
+  .watching-video-title { font-size:clamp(1.25rem,1.8vw,1.9rem); }
+  .watching-panel.if-band { padding:1.25rem 2.5rem; }
+  .watching-library { padding-bottom:2rem; }
+  .watching-screen { min-height:32rem; }
+  .watching-screen .video-inline-player { --portal-size:min(100%,31rem); width:100%; max-width:100%; }
+  .watching-screen .film-portal-cover { height:auto; aspect-ratio:1; }
+  .watching-video-details .video-meta { display:flex; flex-wrap:wrap; gap:.6rem; justify-content:flex-start; }
+  .watching-video-details .video-meta > time { flex-basis:100%; padding:0; }
+  .watching-video-details .video-meta > button { margin:0; }
+}
+@media (--orbis-phone) {
+  .watching-layout { grid-template-columns:minmax(0,1fr); gap:1.25rem; padding-block:1.25rem; }
+  .watching-world { width:100%; }
+  .watching-earth { max-width:min(76vw,21rem); }
+  .watching-world .watching-earth { margin-inline:auto; }
+  .watching-list-title { font-size:1.8rem; margin-bottom:.5rem; }
+  .watching-video-link { grid-template-columns: minmax(0,.85fr) minmax(0,1.15fr); gap:1rem; padding:.85rem 0; }
+  .watching-video-title { font-size:1.2rem; }
+  .watching-video-copy { gap:.35rem; }
+  .watching-panel .video-atmosphere,.watching-library .video-atmosphere,.watching-stage .video-atmosphere { --cloud-center:17rem; }
+  .watching-panel.if-band { padding-block:1rem; }
+  .watching-top { padding-bottom:.5rem; }
+  .watching-top .video-overline { font-size:.65rem; }
+  .watching-all { font-size:.8rem; }
+  .watching-library .video-list-filters { font-size:.8rem; margin-top:.75rem; }
+  .watching-screen { min-height:min(76vw,21rem); }
+  .watching-screen .video-inline-player { --portal-size:min(76vw,21rem); }
+  .watching-screen .film-portal-earth .watching-earth { max-width:none; }
+  .watching-video-details { margin-top:1rem; }
+  .watching-video-details .video-meta { margin-top:.75rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .watching-earth canvas,.watching-earth-fallback { transition:none; }
+}

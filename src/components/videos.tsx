@@ -1,13 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowUpRight, Bookmark, Check, Share2 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Film } from "@/components/film";
 import { announceStart } from "@/lib/listen";
 import { seekTo } from "@/lib/seek";
 import { useSavedVideos } from "@/lib/saved-videos";
-import { imageSizes } from "@/lib/breakpoints";
 import { Shell } from "@/components/shell";
-import { Trail } from "@/components/trail";
 import { Transcript } from "@/components/transcript";
 import { imageSet } from "@/lib/image-set";
 import { langMeta } from "@/lib/i18n";
@@ -18,6 +16,8 @@ import { useLang } from "@/lib/use-lang";
 import { formatDuration, videoWords, videosIn } from "@/lib/videos";
 import { usePosterGround } from "@/lib/use-poster-ground";
 import { VideoAtmosphere } from "@/components/video-atmosphere";
+import { WatchingEarth } from "@/components/watching-earth";
+import { WatchingVideos } from "@/components/watching-videos";
 
 /**
  * Videos are their own content: no reading and no issue behind them. On the front page they
@@ -118,44 +118,6 @@ export function MediaStrip({ lang }: { lang: Lang }) {
   );
 }
 
-/** The browser-history place of the list of videos, when the reader has opened it. */
-let listPlace: number | null = null;
-function historyPlace(): number | null {
-  if (typeof window === "undefined") return null;
-  const place = (window.history.state as { __TSR_index?: number } | null)?.__TSR_index;
-  return typeof place === "number" ? place : null;
-}
-
-/** Where the page sits, as on a reading: Home › Videos, and on a video Home › Videos › title.
- * On a video, "Videos" goes up, not forward: back to the list the reader came from, or in
- * the video's place, so the phone's back button then leaves the videos at once. */
-function VideoTrail({ lang, title }: { lang: Lang; title?: string }) {
-  const words = videoWords(lang);
-  if (!title) return <Trail lang={lang} here={words.videos} />;
-  return (
-    <Trail
-      lang={lang}
-      here={title}
-      parent={(className) => (
-        <Link
-          {...mediaLink(lang)}
-          replace
-          onClick={(event) => {
-            const here = historyPlace();
-            if (here !== null && listPlace !== null && here === listPlace + 1) {
-              event.preventDefault();
-              window.history.back();
-            }
-          }}
-          className={className}
-        >
-          {words.videos}
-        </Link>
-      )}
-    />
-  );
-}
-
 /** Shared editorial language for the archive and its viewing room. */
 function motionCopy(lang: Lang) {
   return lang === "tr"
@@ -171,97 +133,32 @@ function motionCopy(lang: Lang) {
       };
 }
 
-/** The newest published video leads the archive; saved filtering keeps the same layout. */
+/** The same world and published-video list as the homepage, with saved filtering. */
 export function VideoListPage() {
   const lang = useLang();
-  useEffect(() => {
-    listPlace = historyPlace();
-  }, []);
   const words = videoWords(lang);
-  const motion = motionCopy(lang);
   const videos = videosIn(lang);
   const saved = useSavedVideos();
   const [onlySaved, setOnlySaved] = useState(false);
   const savedVideos = videos.filter((video) => saved.ids.includes(video.id));
   const visible = onlySaved ? savedVideos : videos;
-  const [featured, ...more] = visible;
-  return (
-    <Shell layout="video">
-      <main className="video-library">
-        <VideoAtmosphere />
-        <div className="video-breadcrumb">
-          <VideoTrail lang={lang} />
-        </div>
-        <header className="video-library-heading">
-          <div>
-            <p className="video-overline">{motion.label}</p>
-            <h1 className="paper-title">{words.videos}</h1>
+  return <Shell layout="video">
+    <main className="video-library watching-library">
+      <VideoAtmosphere />
+      <header className="watching-top"><p className="video-overline">{motionCopy(lang).label}</p></header>
+      <div className="watching-layout">
+        <div className="watching-world"><WatchingEarth /></div>
+        <section className="watching-sidebar" aria-labelledby="watching-library-title">
+          <h1 id="watching-library-title" className="paper-title watching-list-title">{words.videos}</h1>
+          <div className="video-list-filters" aria-label={words.videos}>
+            <button type="button" aria-pressed={!onlySaved} onClick={() => setOnlySaved(false)}>{words.back}<span>{videos.length}</span></button>
+            <button type="button" aria-pressed={onlySaved} onClick={() => setOnlySaved(true)}>{words.savedVideos}<span>{savedVideos.length}</span></button>
           </div>
-          <div className="video-library-note">
-            <p className="paper-title">{motion.title}</p>
-            <p>{words.listNote}</p>
-          </div>
-        </header>
-        <div className="video-list-filters" aria-label={words.videos}>
-          <button type="button" aria-pressed={!onlySaved} onClick={() => setOnlySaved(false)}>
-            {words.back}
-            <span>{videos.length}</span>
-          </button>
-          <button type="button" aria-pressed={onlySaved} onClick={() => setOnlySaved(true)}>
-            {words.savedVideos}
-            <span>{savedVideos.length}</span>
-          </button>
-        </div>
-        {featured ? (
-          <article className="video-feature">
-            <Link
-              {...videoLink(lang, featured.id)}
-              aria-label={`${words.play}: ${featured.locales[lang]?.title}`}
-              className="video-feature-picture"
-            >
-              <Still video={featured} sizes={imageSizes("58vw", "100vw")} eager />
-            </Link>
-            <div className="video-feature-copy">
-              <div className="video-feature-top">
-                <p className="video-overline">{onlySaved ? words.savedVideos : motion.latest}</p>
-                <span className="video-feature-length" dir="ltr">{formatDuration(featured.duration)}</span>
-              </div>
-              <h2 className="paper-title">
-                <Link {...videoLink(lang, featured.id)}>{featured.locales[lang]?.title}</Link>
-              </h2>
-              {featured.locales[lang]?.dek ? (
-                <p className="video-feature-dek">{featured.locales[lang]?.dek}</p>
-              ) : null}
-              <time dateTime={featured.date}>{formatDate(featured.date, lang)}</time>
-              <Link {...videoLink(lang, featured.id)} className="video-editorial-link">
-                {lang === "tr" ? "Videoya git" : "Watch video"}
-                <ArrowUpRight aria-hidden="true" />
-              </Link>
-            </div>
-          </article>
-        ) : (
-          <p className="video-empty" role="status">
-            {onlySaved ? words.savedEmpty : words.empty}
-          </p>
-        )}
-        {more.length ? (
-          <ol className="video-library-grid">
-            {more.map((video) => (
-              <li key={video.id}>
-                <Link {...videoLink(lang, video.id)} className="video-library-card">
-                  <Still video={video} sizes={imageSizes("30vw", "100vw")} />
-                  <VideoKicker video={video} lang={lang} />
-                  <h2 className="paper-title">{video.locales[lang]?.title}</h2>
-                  {video.locales[lang]?.dek ? <p>{video.locales[lang]?.dek}</p> : null}
-                  <time dateTime={video.date}>{formatDate(video.date, lang)}</time>
-                </Link>
-              </li>
-            ))}
-          </ol>
-        ) : null}
-      </main>
-    </Shell>
-  );
+          {visible.length ? <WatchingVideos videos={visible} lang={lang} /> : <p className="video-empty" role="status">{onlySaved ? words.savedEmpty : words.empty}</p>}
+        </section>
+      </div>
+    </main>
+  </Shell>;
 }
 
 /** Date and working watch-later/share actions. Duration stays with the screen. */
@@ -313,49 +210,6 @@ function VideoActions({ video, lang }: { video: Video; lang: Lang }) {
   );
 }
 
-/** Other published videos appear here as they are added; no sample videos are invented. */
-function VideoRelated({ video, lang }: { video: Video; lang: Lang }) {
-  const words = videoWords(lang);
-  const others = videosIn(lang).filter((item) => item.id !== video.id);
-  if (!others.length) return null;
-  return (
-    <aside className="video-related">
-      {others.length ? (
-        <section aria-labelledby="video-related-title">
-          <h2 id="video-related-title" className="video-section-title">
-            {words.videos}
-          </h2>
-          {others.map((item) => (
-            <Link key={item.id} {...videoLink(lang, item.id)} className="video-related-card group">
-              <div className="video-related-picture">
-                {item.poster ? (
-                  <img
-                    src={item.poster}
-                    {...imageSet(item.poster, imageSizes("15vw", "34vw"))}
-                    alt=""
-                    width={1600}
-                    height={900}
-                    loading="lazy"
-                  />
-                ) : null}
-                <span className="video-duration" dir="ltr">
-                  {formatDuration(item.duration)}
-                </span>
-              </div>
-              <div className="video-related-copy">
-                <p className="video-category">{words.video}</p>
-                <h3 className="paper-title group-hover:underline">{item.locales[lang]?.title}</h3>
-                <p>{item.locales[lang]?.dek}</p>
-              </div>
-            </Link>
-          ))}
-        </section>
-      ) : null}
-
-    </aside>
-  );
-}
-
 /** A viewing room around the existing player, gestures, settings and timed text. */
 export function VideoPage({ video }: { video: Video | null }) {
   const lang = useLang();
@@ -380,9 +234,8 @@ export function VideoPage({ video }: { video: Video | null }) {
       <main className="video-watch">
         {video && copy ? (
           <>
-            <article className="video-stage">
+            <article className="video-stage watching-stage">
               <VideoAtmosphere />
-              <div className="video-room-word" aria-hidden="true">ORBIS</div>
               <div className="video-stage-top">
                 <p className="video-overline">{motion.label}</p>
                 <Link {...mediaLink(lang)} className="video-back">
@@ -390,21 +243,9 @@ export function VideoPage({ video }: { video: Video | null }) {
                   {words.back}
                 </Link>
               </div>
-              <header className="video-room-heading">
-                <p className="video-overline">
-                  {words.video}
-                </p>
-                <h1 className="paper-title video-title">{copy.title}</h1>
-              </header>
-              <div className="video-stage-grid">
-                <div className="video-screen-frame">
-                  <div className="video-orbits" aria-hidden="true">
-                    <span className="video-orbit video-orbit-one" />
-                    <span className="video-orbit video-orbit-two" />
-                    <span className="video-orbit video-orbit-three" />
-                    <span className="video-orbit-star video-orbit-star-one" />
-                    <span className="video-orbit-star video-orbit-star-two" />
-                  </div>
+              <h1 className="sr-only">{copy.title}</h1>
+              <div className="watching-layout">
+                <div className="video-screen-frame watching-screen">
                   <Film
                     key={`${video.id}-${lang}`}
                     src={copy.src ?? video.src}
@@ -413,6 +254,8 @@ export function VideoPage({ video }: { video: Video | null }) {
                     lang={lang}
                     length={video.duration}
                     portalCover
+                    portalArtwork={<WatchingEarth />}
+                    bare
                     onScreen={onScreen}
                     captions={Object.entries(video.captions ?? {}).map(([code, path]) => ({
                       lang: code as Lang,
@@ -421,13 +264,19 @@ export function VideoPage({ video }: { video: Video | null }) {
                     }))}
                     className="video-inline-player"
                   />
-                  <span className="video-portal-caption" aria-hidden="true" dir="ltr">
-                    {formatDuration(video.duration)}
-                  </span>
                 </div>
-                <div className="video-description">
-                  {copy.dek ? <p className="video-dek">{copy.dek}</p> : null}
-                  <VideoActions key={`${video.id}-${lang}`} video={video} lang={lang} />
+                <div className="watching-sidebar">
+                  <h2 className="paper-title watching-list-title">{words.videos}</h2>
+                  <WatchingVideos videos={videosIn(lang)} lang={lang} selected={video.id} onPlay={() => {
+                    const element = screen.current;
+                    if (!element) return;
+                    announceStart("film");
+                    void element.play().catch(() => {});
+                  }} />
+                  <div className="watching-video-details">
+                    {copy.dek ? <p className="video-dek">{copy.dek}</p> : null}
+                    <VideoActions key={`${video.id}-${lang}`} video={video} lang={lang} />
+                  </div>
                 </div>
               </div>
             </article>
@@ -461,7 +310,6 @@ export function VideoPage({ video }: { video: Video | null }) {
                 />
               </section>
             ) : null}
-            <VideoRelated video={video} lang={lang} />
           </>
         ) : (
           <p className="video-empty">{words.missing}</p>

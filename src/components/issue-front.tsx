@@ -6,7 +6,7 @@ import { imageSizes } from "@/lib/breakpoints";
 import { imageCaption } from "@/lib/editorial";
 import { imageSet } from "@/lib/image-set";
 import { langMeta, useCopy } from "@/lib/i18n";
-import { mediaLink, readLink, videoLink } from "@/lib/lang-path";
+import { mediaLink, readLink } from "@/lib/lang-path";
 import { formatDate, storyTitle } from "@/lib/text";
 import {
   THEMES,
@@ -15,8 +15,9 @@ import {
   type StoryImage,
   type Theme,
 } from "@/lib/types";
-import { formatDuration, videoWords, videosIn } from "@/lib/videos";
-import { usePosterGround } from "@/lib/use-poster-ground";
+import { videoWords, videosIn } from "@/lib/videos";
+import { WatchingEarth } from "@/components/watching-earth";
+import { WatchingVideos } from "@/components/watching-videos";
 import { VideoAtmosphere } from "@/components/video-atmosphere";
 
 /** Homepage-only composition. Phone and desktop layouts remain in separate sheets.
@@ -204,95 +205,27 @@ function Card({ story, lang }: { story: Story; lang: Lang }) {
 
 function VideoPanel({ lang }: { lang: Lang }) {
   const [leaving, setLeaving] = useState(false);
-  const [video, ...more] = videosIn(lang);
-  const posterGround = usePosterGround(video?.poster);
-  if (!video) return null;
+  const videos = videosIn(lang);
+  if (!videos.length) return null;
   const words = videoWords(lang);
-  const front = wordsFor(lang);
-  const locale = video.locales[lang];
   return (
-    <section
-      className="if-band"
-      data-media-strip
-      aria-labelledby="if-videos"
+    <section className="if-band watching-panel" data-media-strip aria-labelledby="if-videos"
       onClickCapture={(event) => {
         if (event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey &&
             (event.target as Element).closest("a")) setLeaving(true);
-      }}
-    >
+      }}>
       <VideoAtmosphere paused={leaving} />
-      <div className="if-head">
-        <div>
-          <p className="if-overline">{front.film}</p>
-          <h2 id="if-videos" className="if-head-title">
-            {front.filmTitle}
-          </h2>
-        </div>
-        <Link {...mediaLink(lang)} className="if-head-link">
-          {words.showAll}{" "}
-          <ArrowUpRight
-            size={15}
-            aria-hidden="true"
-            style={{ display: "inline", verticalAlign: "middle" }}
-          />
-        </Link>
+      <div className="watching-top">
+        <h2 id="if-videos" className="video-overline">{wordsFor(lang).film}</h2>
+        <Link {...mediaLink(lang)} className="watching-all">{words.showAll} <ArrowUpRight size={14} aria-hidden="true" /></Link>
       </div>
-      <div className="if-film-grid">
-        <Link
-          {...videoLink(lang, video.id)}
-          className="if-video-still"
-          preload="viewport"
-          style={posterGround.style}
-          aria-label={`${words.play}: ${locale?.title}`}
-        >
-          <span className="if-video-orbits" aria-hidden="true">
-            <span className="if-video-orbit if-video-orbit-burgundy" />
-            <span className="if-video-orbit if-video-orbit-blue" />
-          </span>
-          {video.poster ? (
-            <img
-              src={video.poster}
-              ref={posterGround.ref}
-              onLoad={posterGround.onLoad}
-              {...imageSet(video.poster, imageSizes("50vw", "calc(100vw - 40px)"))}
-              alt=""
-              width={1600}
-              height={900}
-              loading="lazy"
-              decoding="async"
-            />
-          ) : null}
-          <span className="if-video-play" aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <path d="M8 5.5v13l11-6.5z" />
-            </svg>
-          </span>
-          {video.duration ? (
-            <span className="if-video-time" dir="ltr">
-              {formatDuration(video.duration)}
-            </span>
-          ) : null}
-        </Link>
-        <div className="if-film-copy">
-          <p className="if-overline">{words.video}</p>
-          <h3 className="if-film-title">
-            <Link {...videoLink(lang, video.id)}>{locale?.title}</Link>
-          </h3>
-          <p>{locale?.dek}</p>
-
+      <div className="watching-layout">
+        <div className="watching-world"><WatchingEarth paused={leaving} /></div>
+        <div className="watching-sidebar">
+          <h3 className="paper-title watching-list-title">{words.videos}</h3>
+          <WatchingVideos videos={videos} lang={lang} />
         </div>
       </div>
-      {more.length ? (
-        <ul className="if-film-more">
-          {more.map((v) => (
-            <li key={v.id}>
-              <Link {...videoLink(lang, v.id)}>
-                {v.locales[lang]?.title} <span dir="ltr">{formatDuration(v.duration)}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      ) : null}
     </section>
   );
 }

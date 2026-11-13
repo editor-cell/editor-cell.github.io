@@ -1,5 +1,5 @@
 import { ChevronsLeft, ChevronsRight, Play } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AUDIO_EVENT, RATES, announceStart, fmt } from "@/lib/listen";
 import { seekTo } from "@/lib/seek";
 import type { Lang } from "@/lib/types";
@@ -100,6 +100,7 @@ export function Film({
   bare = false,
   controlsBeforePlay = false,
   portalCover = false,
+  portalArtwork,
   onScreen,
   captions = [],
 }: {
@@ -118,6 +119,8 @@ export function Film({
   controlsBeforePlay?: boolean;
   /** A separate circular cover dissolves over the fixed-size video on its own page. */
   portalCover?: boolean;
+  /** Optional decorative cover; the original poster remains the video's still. */
+  portalArtwork?: ReactNode;
   /** Receives the video element once it is on the page. */
   onScreen?: (el: HTMLVideoElement | null) => void;
   /** Subtitles the reader can turn on, one per language. */
@@ -487,10 +490,10 @@ export function Film({
       </video>
 
       {portalCover && (!started || portal.opening) ? (
-        <div className="film-portal-cover" aria-hidden="true">
-          <span className="film-portal-disc">
+        <div className={`film-portal-cover${portalArtwork ? " film-portal-earth" : ""}`} aria-hidden="true">
+          {portalArtwork ?? <span className="film-portal-disc">
             {poster ? <img src={poster} ref={posterGround.ref} onLoad={posterGround.onLoad} alt="" decoding="async" /> : null}
-          </span>
+          </span>}
         </div>
       ) : null}
 
