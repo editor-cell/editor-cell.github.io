@@ -99,7 +99,6 @@
   }
   .video-inline-player:not(.is-full) > video {
     border-radius: 0;
-    box-shadow: 0 0 1.5rem 0.5rem var(--video-cover-ground);
   }
   .video-inline-player[data-started="true"] .film-portal-cover,
   .video-screen-frame:has(.film[data-started="true"]) .video-portal-caption {

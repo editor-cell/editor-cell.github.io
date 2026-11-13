@@ -236,9 +236,28 @@ html:has(.orbis-video) {
 }
 .video-inline-player:not(.is-full) > video {
   border-radius: 4px;
-  /* A static, poster-matched surround joins the screen to the cloud field.
-     Its paint moves with the existing opening transform; no animated filter. */
-  box-shadow: 0 0 2rem 1rem var(--video-cover-ground);
+  /* Colored spill separates black-background films from the nebula. The paint
+     follows the existing opening scale; no blur filter runs during playback. */
+  box-shadow: 0 0 0 1px #bed5ed2b,
+    -0.75rem -0.5rem 1.5rem #d45b8b33,
+    0.75rem -0.5rem 1.5rem #398edb40;
+}
+.video-inline-player:not(.is-full)::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -2.5rem -2rem;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 22% 18%, #c4548a66, #b8407438 28%, transparent 65%),
+    radial-gradient(ellipse at 80% 20%, #2c9ee780, #246fbc40 28%, transparent 65%),
+    radial-gradient(ellipse at 50% 4%, #8b76c252, transparent 65%);
+  mask-image: radial-gradient(ellipse 50% 50% at center, #000 35%, transparent 100%);
+  opacity: 0;
+  transition: opacity 1100ms ease;
+}
+.video-inline-player:not(.is-full)[data-started="true"]::before {
+  opacity: 1;
 }
 .video-inline-player:not(.is-full):not([data-started="true"]) > video {
   opacity: 0;
@@ -361,6 +380,7 @@ html:has(.orbis-video) {
   .video-orbits,
   .video-screen-frame,
   .video-inline-player:not(.is-full),
+  .video-inline-player:not(.is-full)::before,
   .video-portal-caption,
   .film-portal-cover {
     transition: none;
