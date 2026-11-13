@@ -35,18 +35,11 @@
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(circle at 50% 44%, #aa50665c, transparent 45%),
+    radial-gradient(ellipse at 35% 48%, #8e304653, transparent 48%),
+    radial-gradient(ellipse at 72% 48%, #168ad62b, transparent 40%),
     radial-gradient(circle at 24% 28%, #f4efe635 0 1px, transparent 1.5px) 0 0 / 5.5rem 5.5rem,
     radial-gradient(circle at 74% 64%, #f4efe622 0 1px, transparent 1.5px) 0 0 / 8rem 8rem;
   transition: opacity 800ms ease;
-}
-.video-ambient::before {
-  content: "";
-  position: absolute;
-  inset: 15% -30%;
-  background: conic-gradient(from 20deg, transparent 0deg, #6e24325c 45deg, transparent 90deg, transparent 200deg, #c68a8f24 240deg, transparent 280deg);
-  filter: blur(3rem);
-  animation: orbis-light-drift 55s linear infinite;
 }
 .video-room-word {
   position: absolute;
@@ -65,9 +58,6 @@
 }
 .video-stage:has(.film[data-playing="true"]) .video-ambient {
   opacity: 0.08;
-}
-.video-stage:has(.film[data-playing="true"]) .video-ambient::before {
-  animation-play-state: paused;
 }
 .video-stage:has(.film[data-started="true"]) .video-room-word {
   opacity: 0.2;
@@ -89,7 +79,6 @@
   place-items: center;
   min-width: 0;
   width: 100%;
-  transition: min-height 700ms ease;
 }
 .video-orbits {
   position: absolute;
@@ -122,19 +111,25 @@
   border-color: #f4efe61c;
   transform: translate(-50%, -50%) rotate(-8deg);
 }
+/* Small, composited sparks replace the rotating, masked gradients. */
 .video-orbit-one::after,
 .video-orbit-two::after {
   content: "";
   position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: conic-gradient(transparent 78%, #f4efe6b0 91%, transparent 92%);
-  mask: radial-gradient(ellipse, transparent calc(70% - 1px), #000 70%, #000 calc(70% + 1px), transparent calc(70% + 2px));
-  animation: orbis-light-drift 18s linear infinite;
+  width: 0.35rem;
+  height: 0.35rem;
+  top: 50%;
+  left: -0.175rem;
+  border-radius: 50%;
+  background: #e4b0bd;
+  box-shadow: 0 0 0.75rem #d2708c;
+}
+.video-orbit-two {
+  border-color: #42b7ff50;
 }
 .video-orbit-two::after {
-  animation-direction: reverse;
-  animation-duration: 27s;
+  background: #80d8ff;
+  box-shadow: 0 0 0.8rem #249fff, 0 0 1.5rem #249fff70;
 }
 .video-orbit-star {
   position: absolute;
@@ -143,6 +138,7 @@
   border-radius: 50%;
   background: #f4efe6;
   box-shadow: 0 0 0 0.45rem #f4efe60a, 0 0 1.25rem #f4efe6a0;
+  animation: orbis-spark 4s ease-in-out infinite alternate;
 }
 .video-orbit-star-one {
   top: 22%;
@@ -151,47 +147,153 @@
 .video-orbit-star-two {
   bottom: 22%;
   inset-inline-end: 9%;
-  background: #e2a9b6;
+  background: #80d8ff;
+  box-shadow: 0 0 1rem #239eff;
 }
 .video-screen-frame:has(.film[data-started="true"]) .video-orbits {
-  opacity: 0.12;
+  opacity: 0;
 }
-.video-screen-frame:has(.film[data-playing="true"]) .video-orbit::after {
+.video-screen-frame:has(.film[data-started="true"]) .video-orbit-star {
   animation-play-state: paused;
 }
-/* Only the cover is a circle. Playback opens into the video's full 16:9 picture. */
+@keyframes orbis-spark {
+  from { opacity: 0.4; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1.2); }
+}
+/* The player keeps its final dimensions. Only the independent cover and picture
+   move: no width/aspect-ratio/min-height animation while decoding video. */
 .video-inline-player:not(.is-full) {
   position: relative;
   z-index: 1;
   max-width: 58rem;
   aspect-ratio: 16 / 9;
-  border: 1px solid #f4efe633;
+  overflow: visible;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.video-inline-player:not(.is-full) > video {
   border-radius: 4px;
-  box-shadow: 0 2rem 6rem #000c;
-  transition: max-width 700ms cubic-bezier(0.22, 1, 0.36, 1), aspect-ratio 700ms cubic-bezier(0.22, 1, 0.36, 1), border-radius 650ms ease, box-shadow 650ms ease;
+  box-shadow: 0 1rem 3rem #0008;
 }
-.video-inline-player:not(.is-full):not([data-started="true"]):not(:has(.film-failed)) {
-  aspect-ratio: 1;
+.video-inline-player:not(.is-full):not([data-started="true"]) > video {
+  opacity: 0;
+}
+.video-inline-player[data-revealed="false"] > video {
+  will-change: transform, opacity;
+}
+.video-inline-player:not(.is-full)[data-started="true"][data-revealed="false"] > video {
+  animation: orbis-screen-emerge 850ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.film-portal-cover {
+  position: absolute;
+  width: var(--portal-size);
+  height: var(--portal-size);
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.film-portal-cover::before {
+  content: "";
+  position: absolute;
+  inset: -0.65rem;
+  border: 1px solid #c4849c6b;
   border-radius: 50%;
-  border-color: #e5b9c082;
-  box-shadow: 0 0 0 0.6rem #09090d, 0 0 0 calc(0.6rem + 1px) #d9a2ae45, 0 0 5rem #8a304f55, 0 2rem 6rem #000a;
+  box-shadow: -1rem 0 3rem #7a243d55, 1rem 0 3rem #117dd03b;
+  transition: opacity 400ms ease, transform 650ms ease;
 }
-.video-inline-player:not([data-started="true"]) > video {
+.film-portal-half {
+  position: absolute;
+  width: 50%;
+  height: 100%;
+  top: 0;
+  overflow: hidden;
+  background: #09090d;
+  border-block: 1px solid #dfb4bf82;
+  will-change: transform, opacity;
+}
+.film-portal-left {
+  left: 0;
+  border-radius: var(--portal-size) 0 0 var(--portal-size);
+  border-left: 1px solid #dfb4bf82;
+}
+.film-portal-right {
+  right: 0;
+  border-radius: 0 var(--portal-size) var(--portal-size) 0;
+  border-right: 1px solid #80d8ff70;
+}
+.film-portal-half img {
+  position: absolute;
+  top: 0;
+  width: 200%;
+  max-width: none;
+  height: 100%;
   object-fit: cover;
-  filter: brightness(0.62);
+  opacity: 0.65;
+}
+.film-portal-left img { left: 0; }
+.film-portal-right img { right: 0; }
+.video-inline-player[data-started="true"] .film-portal-left {
+  animation: orbis-gate-left 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.video-inline-player[data-started="true"] .film-portal-right {
+  animation: orbis-gate-right 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.video-inline-player[data-started="true"] .film-portal-cover::before {
+  opacity: 0;
+  transform: scale(1.15);
+}
+.video-inline-player:not([data-started="true"]) .film-start {
+  inset: 50% auto auto 50%;
+  width: var(--portal-size);
+  height: var(--portal-size);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: transparent;
 }
 .video-inline-player:not([data-started="true"]) .film-start-ring {
   background: #6e2432;
   color: #f4efe6;
   border-color: #e5b9c0;
-  box-shadow: 0 0 0 0.65rem #6e243244, 0 0 3rem #ad61734d;
+  box-shadow: 0 0 0 0.65rem #6e243244;
 }
 .video-inline-player:not([data-started="true"]) .film-start:hover .film-start-ring {
   background: #8c3346;
   color: #f4efe6;
 }
-.video-inline-player .film-length {
-  display: none;
+.video-inline-player .film-length { display: none; }
+.film-loading {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  top: 66%;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0.35rem 0.6rem;
+  background: #09090de6;
+  color: #f4efe6;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.video-inline-player.is-full > video {
+  opacity: 1;
+  transform: none;
+  animation: none;
+}
+.video-inline-player.is-full .film-portal-cover { display: none; }
+@keyframes orbis-screen-emerge {
+  from { opacity: 0; transform: scale(0.84); }
+  25% { opacity: 1; }
+  to { opacity: 1; transform: none; }
+}
+@keyframes orbis-gate-left {
+  to { opacity: 0; transform: translateX(-85%) rotate(-12deg); }
+}
+@keyframes orbis-gate-right {
+  to { opacity: 0; transform: translateX(85%) rotate(12deg); }
 }
 .video-portal-caption {
   position: absolute;
@@ -235,11 +337,69 @@
   .video-portal-caption {
     transition: none;
   }
-  .video-ambient::before,
-  .video-orbit::after,
-  .video-room-heading {
+  .video-room-heading,
+  .video-orbit-star,
+  .video-inline-player:not(.is-full)[data-started="true"][data-revealed="false"] > video,
+  .video-inline-player[data-started="true"] .film-portal-half {
     animation: none;
   }
+  .video-inline-player[data-started="true"] .film-portal-cover { display: none; }
+  .film-portal-cover::before { transition: none; }
+}
+
+/* The homepage invites readers into the same room. Its geometry remains in the
+   separate phone/desktop styles; the colored light is painted just once. */
+.if-band {
+  --color-ink: #f4efe6;
+  --color-muted: #c5bec5;
+  --color-pine: #e1a6b5;
+  --color-line: #ffffff24;
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  background: radial-gradient(ellipse at 22% 52%, #7e284a55, transparent 48%),
+    radial-gradient(ellipse at 54% 38%, #116ead32, transparent 48%), #101016;
+}
+.if-video-still {
+  border: 1px solid #c99aaf8c;
+  box-shadow: -0.8rem 0 3rem #7a243d55, 0.8rem 0 3rem #117dd030;
+}
+.if-video-orbits {
+  position: absolute;
+  inset: -8%;
+  pointer-events: none;
+}
+.if-video-orbit {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid #b6517666;
+  animation: orbis-light-drift 24s linear infinite;
+}
+.if-video-orbit::after {
+  content: "";
+  position: absolute;
+  top: 19%;
+  left: 9%;
+  width: 0.3rem;
+  height: 0.3rem;
+  border-radius: 50%;
+  background: #ef9ab3;
+  box-shadow: 0 0 0.7rem #b83d70, 0 0 1.2rem #b83d7066;
+}
+.if-video-orbit-blue {
+  inset: -4% 3%;
+  border-color: #39b9ff59;
+  animation-duration: 32s;
+  animation-direction: reverse;
+}
+.if-video-orbit-blue::after {
+  background: #8de6ff;
+  box-shadow: 0 0 0.7rem #249fff, 0 0 1.2rem #249fff80;
+}
+.if-video-still:hover .if-video-play svg { background: #8c3346; }
+@media (prefers-reduced-motion: reduce) {
+  .if-video-orbit { animation: none; }
 }
 .video-overline {
   margin: 0;

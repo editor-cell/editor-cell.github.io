@@ -81,9 +81,7 @@
     min-height: 33rem;
     padding: 1.5rem 0 2rem;
   }
-  .video-inline-player:not(.is-full):not([data-started="true"]):not(:has(.film-failed)) {
-    max-width: 25rem;
-  }
+  .video-inline-player { --portal-size: 25rem; }
   .video-feature-picture {
     display: grid;
     align-items: center;

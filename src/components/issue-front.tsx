@@ -230,6 +230,10 @@ function VideoPanel({ lang }: { lang: Lang }) {
           className="if-video-still"
           aria-label={`${words.play}: ${locale?.title}`}
         >
+          <span className="if-video-orbits" aria-hidden="true">
+            <span className="if-video-orbit if-video-orbit-burgundy" />
+            <span className="if-video-orbit if-video-orbit-blue" />
+          </span>
           {video.poster ? (
             <img
               src={video.poster}

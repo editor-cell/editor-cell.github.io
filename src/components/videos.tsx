@@ -451,6 +451,7 @@ export function VideoPage({ video }: { video: Video | null }) {
                     label={copy.title}
                     lang={lang}
                     length={video.duration}
+                    portalCover
                     onScreen={onScreen}
                     captions={Object.entries(video.captions ?? {}).map(([code, path]) => ({
                       lang: code as Lang,

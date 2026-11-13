@@ -97,6 +97,7 @@ export function Film({
   className = "",
   bare = false,
   controlsBeforePlay = false,
+  portalCover = false,
   onScreen,
   captions = [],
 }: {
@@ -113,6 +114,8 @@ export function Film({
   bare?: boolean;
   /** The editorial video page shows its controls over the poster from the start. */
   controlsBeforePlay?: boolean;
+  /** A separate circular cover opens around the fixed-size video on its own page. */
+  portalCover?: boolean;
   /** Receives the video element once it is on the page. */
   onScreen?: (el: HTMLVideoElement | null) => void;
   /** Subtitles the reader can turn on, one per language. */
@@ -124,6 +127,8 @@ export function Film({
   const timer = useRef<number | undefined>(undefined);
   const [started, setStarted] = useState(false);
   const [playing, setPlaying] = useState(false);
+  const [buffering, setBuffering] = useState(false);
+  const [revealed, setRevealed] = useState(false);
   const [time, setTime] = useState(0);
   const [reported, setReported] = useState(0);
   const duration = reported || length;
@@ -252,9 +257,11 @@ export function Film({
     }
     try {
       setFailed(false);
+      setBuffering(true);
       announceStart(PLAYER);
       await el.play();
     } catch {
+      setBuffering(false);
       setFailed(true);
     }
   }
@@ -389,6 +396,9 @@ export function Film({
       ref={box}
       data-playing={playing}
       data-started={started}
+      data-buffering={buffering}
+      data-revealed={revealed}
+      aria-busy={buffering}
       className={`film relative aspect-video overflow-hidden bg-ink ${full ? "is-full" : ""} ${bar ? "" : "is-quiet"} ${className}`}
       onPointerMove={(event) => {
         if (event.pointerType === "mouse") wake();
@@ -414,13 +424,20 @@ export function Film({
         aria-label={label}
         className="block h-full w-full object-contain"
         onClick={onSurface}
-        onPlay={() => {
+        onPlay={() => setBuffering(true)}
+        onWaiting={() => setBuffering(true)}
+        onPlaying={() => {
           setStarted(true);
           setPlaying(true);
+          setBuffering(false);
           wake(false);
+        }}
+        onAnimationEnd={(event) => {
+          if (event.animationName === "orbis-screen-emerge") setRevealed(true);
         }}
         onPause={() => {
           setPlaying(false);
+          setBuffering(false);
           wake(true);
         }}
         onEnded={() => {
@@ -442,7 +459,10 @@ export function Film({
           const d = event.currentTarget.duration;
           setReported(Number.isFinite(d) ? d : 0);
         }}
-        onError={() => setFailed(true)}
+        onError={() => {
+          setBuffering(false);
+          setFailed(true);
+        }}
         onVolumeChange={(event) => {
           setMuted(event.currentTarget.muted);
           setVolume(event.currentTarget.volume);
@@ -452,6 +472,23 @@ export function Film({
           <track key={c.lang} kind="subtitles" src={c.src} srcLang={c.lang} label={c.label} />
         ))}
       </video>
+
+      {portalCover && !revealed ? (
+        <div className="film-portal-cover" aria-hidden="true">
+          <span className="film-portal-half film-portal-left">
+            {poster ? <img src={poster} alt="" decoding="async" /> : null}
+          </span>
+          <span className="film-portal-half film-portal-right">
+            {poster ? <img src={poster} alt="" decoding="async" /> : null}
+          </span>
+        </div>
+      ) : null}
+
+      {portalCover && buffering ? (
+        <p role="status" className="film-loading">
+          {lang === "tr" ? "Video yükleniyor…" : lang === "ar" ? "جارٍ تحميل الفيديو…" : "Loading video…"}
+        </p>
+      ) : null}
 
       {cue ? (
         <p aria-live="off" className="film-cue">
@@ -464,6 +501,7 @@ export function Film({
           type="button"
           onClick={() => void toggle()}
           aria-label={`${words.play}: ${label}`}
+          disabled={buffering}
           className="film-start absolute inset-0 flex items-center justify-center"
         >
           <span aria-hidden="true" className="film-start-ring">
