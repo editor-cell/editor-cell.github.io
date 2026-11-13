@@ -387,6 +387,7 @@ export function Film({
   return (
     <div
       ref={box}
+      data-playing={playing}
       className={`film relative aspect-video overflow-hidden bg-ink ${full ? "is-full" : ""} ${bar ? "" : "is-quiet"} ${className}`}
       onPointerMove={(event) => {
         if (event.pointerType === "mouse") wake();

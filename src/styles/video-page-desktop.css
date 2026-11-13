@@ -9,6 +9,9 @@
   .video-watch {
     padding: 1.5rem clamp(2rem, 4.5vw, 4.5rem) 4rem;
   }
+  .video-watch {
+    padding-top: 0.75rem;
+  }
   .video-breadcrumb {
     margin-bottom: 2rem;
   }
@@ -63,28 +66,44 @@
     font-size: 1.8rem;
   }
   .video-stage {
-    padding: 0.75rem clamp(1.5rem, 3vw, 3rem) clamp(2rem, 3vw, 3rem);
+    margin-inline: calc(-1 * clamp(2rem, 4.5vw, 4.5rem));
+    padding: 0.75rem clamp(2rem, 4.5vw, 4.5rem) 3.5rem;
+  }
+  .video-room-heading {
+    max-width: 58rem;
+    margin-inline: auto;
+    padding: 1rem 0 1.5rem;
+  }
+  .video-screen-frame {
+    padding: 0.6rem;
+  }
+  .video-description {
+    width: 100%;
+    max-width: 48rem;
+    margin-inline: auto;
+    text-align: center;
   }
   .video-stage-top {
-    margin-bottom: 2rem;
+    margin-bottom: 0;
     padding-bottom: 0.75rem;
   }
   .video-stage-grid {
-    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-    gap: clamp(1.5rem, 3vw, 3rem);
+    max-width: 58rem;
+    margin-inline: auto;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
   }
   .video-title {
-    font-size: clamp(2rem, 3.2vw, 3.5rem);
+    font-size: clamp(2.5rem, 4vw, 3.5rem);
   }
   .video-dek {
     font-size: clamp(1rem, 1.35vw, 1.3rem);
   }
   .video-meta {
-    margin-top: 1.5rem;
-    padding-top: 1rem;
+    margin-top: 1.25rem;
   }
   .video-meta > time {
-    flex-basis: calc(100% - 4rem);
+    flex-basis: auto;
   }
   .video-inline-player .film-bar {
     padding-inline: 1rem;
@@ -113,15 +132,21 @@
     font-size: 2rem;
   }
   .video-related-card {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: 5rem minmax(0, 1fr);
     align-content: start;
     gap: 1rem;
   }
   .video-related-copy > .paper-title {
-    font-size: clamp(1.4rem, 1.8vw, 1.8rem);
+    font-size: 1.3rem;
   }
   .video-related-copy > p:last-child {
-    font-size: 1rem;
+    font-size: 0.95rem;
+  }
+  .video-related-picture img {
+    aspect-ratio: 1;
+  }
+  .video-related-card:not(:has(.video-related-picture)) {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 @media (--orbis-desktop) and (width < 1024px) {

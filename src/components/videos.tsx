@@ -394,7 +394,7 @@ function VideoRelated({ video, lang }: { video: Video; lang: Lang }) {
   );
 }
 
-/** The existing player stays in the article, including gestures, settings and timed text. */
+/** A viewing room around the existing player, gestures, settings and timed text. */
 export function VideoPage({ video }: { video: Video | null }) {
   const lang = useLang();
   const words = videoWords(lang);
@@ -416,12 +416,10 @@ export function VideoPage({ video }: { video: Video | null }) {
   return (
     <Shell layout="video">
       <main className="video-watch">
-        <div className="video-breadcrumb">
-          <VideoTrail lang={lang} title={copy?.title} />
-        </div>
         {video && copy ? (
           <>
             <article className="video-stage">
+              <div className="video-ambient" aria-hidden="true" />
               <div className="video-stage-top">
                 <p className="video-overline">{motion.label}</p>
                 <Link {...mediaLink(lang)} className="video-back">
@@ -429,26 +427,32 @@ export function VideoPage({ video }: { video: Video | null }) {
                   {words.back}
                 </Link>
               </div>
+              <header className="video-room-heading">
+                <p className="video-overline">
+                  {words.video}
+                  {video.duration ? <span dir="ltr"> · {formatDuration(video.duration)}</span> : null}
+                </p>
+                <h1 className="paper-title video-title">{copy.title}</h1>
+              </header>
               <div className="video-stage-grid">
-                <Film
-                  key={`${video.id}-${lang}`}
-                  src={copy.src ?? video.src}
-                  poster={video.poster}
-                  label={copy.title}
-                  lang={lang}
-                  length={video.duration}
-                  controlsBeforePlay
-                  onScreen={onScreen}
-                  captions={Object.entries(video.captions ?? {}).map(([code, path]) => ({
-                    lang: code as Lang,
-                    src: path,
-                    label: langMeta[code as Lang].name,
-                  }))}
-                  className="video-inline-player"
-                />
+                <div className="video-screen-frame">
+                  <Film
+                    key={`${video.id}-${lang}`}
+                    src={copy.src ?? video.src}
+                    poster={video.poster}
+                    label={copy.title}
+                    lang={lang}
+                    length={video.duration}
+                    onScreen={onScreen}
+                    captions={Object.entries(video.captions ?? {}).map(([code, path]) => ({
+                      lang: code as Lang,
+                      src: path,
+                      label: langMeta[code as Lang].name,
+                    }))}
+                    className="video-inline-player"
+                  />
+                </div>
                 <div className="video-description">
-                  <p className="video-overline">{words.video}</p>
-                  <h1 className="paper-title video-title">{copy.title}</h1>
                   {copy.dek ? <p className="video-dek">{copy.dek}</p> : null}
                   <VideoActions key={`${video.id}-${lang}`} video={video} lang={lang} />
                 </div>
