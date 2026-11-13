@@ -1,4 +1,11 @@
 /* Shared appearance only. Phone and desktop geometry live in separate files. */
+/* Match the poster's neutral #0f0f0f canvas so it belongs to the whole circle.
+   The playback surface keeps its own background once the cover dissolves. */
+.if-band,
+.video-library,
+.video-watch {
+  --video-cover-ground: #0f0f0f;
+}
 /* Route resets must arrive immediately, without inheriting the reading site's
    smooth in-page scrolling. */
 html:has(.orbis-video) {
@@ -212,7 +219,7 @@ html:has(.orbis-video) {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  background: #09090d;
+  background: var(--video-cover-ground);
   border: 1px solid #dfb4bf82;
   border-right-color: #80d8ff70;
   border-radius: 50%;
@@ -334,6 +341,7 @@ html:has(.orbis-video) {
     radial-gradient(ellipse at 54% 38%, #116ead32, transparent 48%), #101016;
 }
 .if-video-still {
+  background: var(--video-cover-ground);
   border: 1px solid #c99aaf8c;
   box-shadow: -0.8rem 0 3rem #7a243d55, 0.8rem 0 3rem #117dd030;
 }
@@ -601,7 +609,7 @@ html:has(.orbis-video) {
   align-items: center;
 }
 .video-library .media-still {
-  background: #050506;
+  background: var(--video-cover-ground);
 }
 .video-inline-player {
   background: #050506;
