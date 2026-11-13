@@ -1,1 +1,0 @@
-import{Xt as e}from"./shell-DeBtBuCw.js";import{t}from"./legal-BBmfszzB.js";var n=e(),r=()=>(0,n.jsx)(t,{page:`privacy`});export{r as component};
