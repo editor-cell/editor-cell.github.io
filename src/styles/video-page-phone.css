@@ -86,20 +86,14 @@
     top: 18%;
   }
   .video-screen-frame {
+    /* Reserve the same space before and during playback so the center and
+       the description below it remain still when the circle opens. */
     min-height: 22rem;
     padding: 1.5rem 0 2rem;
-  }
-  /* Open the compact player immediately, before playback, with no layout animation. */
-  .video-screen-frame:has(.film[data-started="true"]) {
-    min-height: 0;
-    padding-block: 0;
   }
   .video-inline-player:not(.is-full) {
     width: calc(100% + 2.5rem);
     max-width: none;
-  }
-  .video-stage:has(.film[data-started="true"]) .video-stage-grid {
-    gap: 1rem;
   }
   .video-inline-player:not(.is-full) > video {
     border-radius: 0;
