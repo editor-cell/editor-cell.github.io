@@ -1,1 +1,0 @@
-import{t as e}from"./videos-DiGRolEl.js";var t=e;export{t as component};
