@@ -433,7 +433,7 @@ const HOME_WORDS: Record<
   }
 > = {
   tr: {
-    chain: "Belge zinciri",
+    chain: "Kaynaklar",
     chainNote: "Her belge kendi sayfasında açılır",
     records: "Kayıtlar",
     depth: ["Başlık", "Özet", "Derin"],
@@ -454,7 +454,7 @@ const HOME_WORDS: Record<
     issueNo: "Sayı {n}",
   },
   en: {
-    chain: "Document chain",
+    chain: "Sources",
     chainNote: "Opens each document on its own page",
     records: "Records",
     depth: ["Headline", "Summary", "Deep"],
@@ -475,7 +475,7 @@ const HOME_WORDS: Record<
     issueNo: "Issue {n}",
   },
   ar: {
-    chain: "سلسلة الوثائق",
+    chain: "المصادر",
     chainNote: "تُفتح كل وثيقة في صفحتها",
     records: "السجلات",
     depth: ["العنوان", "الملخص", "معمّق"],
@@ -496,7 +496,7 @@ const HOME_WORDS: Record<
     issueNo: "العدد {n}",
   },
   fr: {
-    chain: "Chaîne de documents",
+    chain: "Sources",
     chainNote: "Chaque document s’ouvre sur sa propre page",
     records: "Registres",
     depth: ["Titre", "Résumé", "Approfondi"],
@@ -517,7 +517,7 @@ const HOME_WORDS: Record<
     issueNo: "Numéro {n}",
   },
   es: {
-    chain: "Cadena de documentos",
+    chain: "Fuentes",
     chainNote: "Cada documento se abre en su propia página",
     records: "Registros",
     depth: ["Titular", "Resumen", "A fondo"],

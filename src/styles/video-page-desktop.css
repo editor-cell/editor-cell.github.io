@@ -1,5 +1,32 @@
 /* Desktop geometry never reaches the phone view. */
 @media (--orbis-desktop) {
+  .video-footer.site-footer { padding-block: 1.75rem 0.75rem; }
+  .video-footer .footer-inner {
+    width: 100%;
+    max-width: 100rem;
+    padding-inline: clamp(2rem, 4.5vw, 4.5rem);
+  }
+  .video-footer .footer-columns {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 2rem;
+  }
+  .video-footer .footer-brand {
+    flex-direction: row;
+    align-items: center;
+    gap: clamp(1.5rem, 3vw, 3rem);
+  }
+  .video-footer .footer-brand > a {
+    flex-shrink: 0;
+    padding-inline-end: clamp(1.5rem, 3vw, 3rem);
+    border-inline-end: 1px solid var(--color-line);
+  }
+  .video-footer .footer-bottom {
+    gap: 1rem;
+    margin-top: 1.25rem;
+    padding-top: 0.5rem;
+  }
   .orbis-video > div > .page-width {
     width: 100%;
     max-width: 100rem;

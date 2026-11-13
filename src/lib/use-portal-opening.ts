@@ -4,7 +4,7 @@ const OPENING_MS = 1100;
 const EASING = "cubic-bezier(0.3, 0.12, 0.25, 1)";
 
 /** Move the real, already-visible video out of its circular cover. Layout changes
- * once; the browser animates only transforms and the empty cover's opacity. */
+ * once; the browser animates only transforms and the circular cover's opacity. */
 export function usePortalOpening({
   box, film, enabled, started, full,
 }: {
@@ -53,9 +53,9 @@ export function usePortalOpening({
     }
     const dx = before.circle.left + before.circle.width / 2 - after.left - after.width / 2;
     const dy = before.circle.top + before.circle.height / 2 - after.top - after.height / 2;
-    // The still has 8% padding on either side inside the circle. Match it exactly,
-    // then grow uniformly so the video never stretches or starts from invisible.
-    const scale = before.circle.width * 0.84 / after.width;
+    // Begin at the circle's full width. Its cropped poster fades above the real
+    // video as it grows uniformly into its original, uncropped aspect ratio.
+    const scale = before.circle.width / after.width;
     const options = { duration: OPENING_MS, easing: EASING };
     const grow = video.animate([
       { transform: `translate3d(${dx}px, ${dy}px, 0) scale(${scale})` },

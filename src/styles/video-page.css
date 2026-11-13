@@ -14,6 +14,46 @@ html:has(.orbis-video) {
 .orbis-video {
   background: #0e0f12;
 }
+/* The viewing room has no section directory. Keep its smaller set of links
+   together instead of stretching two stacks across an empty three-column band. */
+.video-footer-gap { height: 1rem; }
+.video-footer.site-footer {
+  background: linear-gradient(#0e0f12, #0c0c0c 6rem);
+  border-top: 1px solid #f4efe61a;
+}
+.video-footer .footer-brand-links {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+.video-footer .footer-languages > ul {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin-top: 0.25rem;
+}
+.video-footer .footer-heading {
+  padding-bottom: 0;
+  border-bottom: 0;
+  color: var(--color-muted);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+}
+.video-footer :is(.footer-brand-links a, .footer-languages button) {
+  min-height: 2.75rem;
+  font-size: 0.9rem;
+}
+.video-footer .footer-bottom {
+  color: var(--color-muted);
+  font-size: 0.75rem;
+}
+.video-footer .footer-bottom a {
+  min-height: 2.75rem;
+  color: var(--color-muted);
+}
 .video-library,
 .video-watch {
   --color-paper: #0e0f12;
@@ -172,7 +212,7 @@ html:has(.orbis-video) {
   from { opacity: 0.4; transform: scale(0.8); }
   to { opacity: 1; transform: scale(1.2); }
 }
-/* The fully visible video grows out of the still while its empty circle fades. */
+/* The fully visible video grows out while its circular still gently fades. */
 .video-inline-player:not(.is-full) {
   position: relative;
   z-index: 1;
@@ -198,8 +238,8 @@ html:has(.orbis-video) {
   z-index: 2;
   transform-origin: center;
 }
-.video-inline-player[data-opening="true"] .film-portal-disc img {
-  visibility: hidden;
+.video-inline-player[data-opening="true"] .film-portal-cover {
+  z-index: 3;
 }
 .video-inline-player[data-opening="true"] .film-bar {
   visibility: hidden;
@@ -234,8 +274,8 @@ html:has(.orbis-video) {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  padding: calc(var(--portal-size) * 0.08);
+  object-fit: cover;
+  object-position: center;
   opacity: 0.65;
 }
 .video-inline-player:not([data-started="true"]) .film-start {
@@ -340,8 +380,9 @@ html:has(.orbis-video) {
 }
 .if-video-still img,
 .video-feature .media-still img {
-  object-fit: contain;
-  padding: 8%;
+  object-fit: cover;
+  object-position: center;
+  padding: 0;
 }
 .if-video-orbits {
   position: absolute;

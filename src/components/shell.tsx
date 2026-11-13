@@ -275,13 +275,13 @@ export function Shell({
             <div className="flex-1">{children}</div>
 
             {/* Room before the footer; the ruled divider with a dot was taken off (28 Oct 2026). */}
-            <div aria-hidden="true" className="no-print h-12 md:h-16" />
+            <div aria-hidden="true" className={layout === "video" ? "video-footer-gap no-print" : "no-print h-12 md:h-16"} />
           </div>
 
           {/* The grouped footer: about, current sections, languages and legal links. */}
-          <footer className="site-footer no-print bg-paper text-ink">
+          <footer className={`site-footer no-print bg-paper text-ink${layout === "video" ? " video-footer" : ""}`}>
             <div className="footer-inner page-width">
-              {/* Three columns spread to the edges: the language list ends at the right margin. */}
+              {/* Reading pages retain their sections; the viewing room uses a compact footer. */}
               <div className="footer-columns">
                 <div className="footer-brand flex flex-col">
                   <Link
