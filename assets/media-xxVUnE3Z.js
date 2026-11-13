@@ -1,1 +1,0 @@
-import{t as e}from"./videos-Bkj_jbch.js";var t=e;export{t as component};

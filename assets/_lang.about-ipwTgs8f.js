@@ -1,0 +1,1 @@
+import{t as e}from"./about-D3-cixC0.js";var t=e;export{t as component};
