@@ -1,0 +1,1 @@
+import{r as e}from"./pages-BegGnBt_.js";var t=e;export{t as component};
