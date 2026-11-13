@@ -1,6 +1,6 @@
 /** Small software fallback for browsers without WebGL. Sphere coordinates and
  * lighting are calculated once; frames only sample the two cached maps. */
-export function createEarthCanvas(canvas: HTMLCanvasElement, ready: () => void) {
+export function createEarthCanvas(canvas: HTMLCanvasElement, ready: () => void, initialTurn = 0) {
   const context=canvas.getContext("2d",{alpha:true});
   if (!context) return null;
   canvas.dataset.renderer="canvas-loading";
@@ -58,7 +58,7 @@ export function createEarthCanvas(canvas: HTMLCanvasElement, ready: () => void) 
     ctx.globalCompositeOperation="screen"; ctx.globalAlpha=.84;
     ctx.drawImage(clouds,0,0,width,height);
     pixels=ctx.getImageData(0,0,width,height).data;
-    canvas.dataset.renderer="canvas"; draw(0); ready();
+    canvas.dataset.renderer="canvas"; draw(initialTurn); ready();
   };
   land.onload=onLoad; clouds.onload=onLoad;
   land.src="/images/orbis-earth-day.jpg"; clouds.src="/images/orbis-earth-clouds.jpg";

@@ -2,9 +2,9 @@ import { createEarthCanvas } from "@/lib/earth-canvas";
 
 /** One textured sphere, drawn in a single GPU pass. No scene library, geometry,
  * lights, blur filters or React updates in the animation loop. */
-export function createEarthRenderer(canvas: HTMLCanvasElement, ready: () => void) {
+export function createEarthRenderer(canvas: HTMLCanvasElement, ready: () => void, initialTurn = 0) {
   const gl = canvas.getContext("webgl", { alpha: true, antialias: false, depth: false, stencil: false, powerPreference: "low-power" });
-  if (!gl) return createEarthCanvas(canvas,ready);
+  if (!gl) return createEarthCanvas(canvas,ready,initialTurn);
   canvas.dataset.renderer="loading";
   const vertex = `attribute vec2 position; varying vec2 point;
     void main(){ point=position; gl_Position=vec4(position,0.0,1.0); }`;
@@ -76,7 +76,7 @@ export function createEarthRenderer(canvas: HTMLCanvasElement, ready: () => void
       gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
       gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,img);
       gl.uniform1i(gl.getUniformLocation(program,index ? "clouds" : "land"),index);
-      if (++loaded === 2) { canvas.dataset.renderer="webgl"; draw(0); ready(); }
+      if (++loaded === 2) { canvas.dataset.renderer="webgl"; draw(initialTurn); ready(); }
     };
     img.src=src;
   });

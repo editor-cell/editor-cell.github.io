@@ -21,8 +21,6 @@
 .watching-earth::before { content:""; position:absolute; inset:2%; border-radius:50%; box-shadow:-1rem 0 3rem #7e345d30,1rem 0 3rem #3779a330; z-index:-1; }
 .watching-earth canvas { display:block; width:100%; height:100%; opacity:0; transition:opacity .6s ease; }
 .watching-earth[data-ready="true"] canvas { opacity:1; }
-.watching-earth-fallback { position:absolute; inset:1.7%; border-radius:50%; background:#0a1520 url('/images/orbis-earth-still.jpg') center/112% no-repeat; transition:opacity .6s ease; }
-.watching-earth[data-ready="true"] .watching-earth-fallback { opacity:0; }
 .watching-library > .video-atmosphere { height:100%; max-height:none; }
 .watching-panel .video-cloud,.watching-library .video-cloud,.watching-stage .video-cloud { object-position:center; }
 .watching-library .video-list-filters { margin-bottom:.5rem; gap:.3rem 1.25rem; }
@@ -72,5 +70,5 @@
   .watching-video-details .video-meta { margin-top:.75rem; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .watching-earth canvas,.watching-earth-fallback { transition:none; }
+  .watching-earth canvas { transition:none; }
 }

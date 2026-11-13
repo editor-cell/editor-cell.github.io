@@ -30,33 +30,47 @@ export function WatchingEarth({ paused = false }: { paused?: boolean }) {
     };
     const update = () => {
       cancelAnimationFrame(frame); frame=0; last=0;
+      if (loaded && visible && !document.hidden) renderer?.draw(turn);
       if (visible && !document.hidden && !pause.current && !reduced.matches && loaded) frame=requestAnimationFrame(tick);
+    };
+    const start = () => {
+      renderer?.dispose();
+      resize();
+      renderer=createEarthRenderer(screen,() => {
+        loaded=true;
+        renderer?.draw(turn);
+        setReady(true);
+        update();
+      },turn);
     };
     refresh.current=update;
     const observer = new IntersectionObserver(([entry]) => {
       visible=entry.isIntersecting;
       if (visible && !renderer) {
-        resize();
-        renderer=createEarthRenderer(screen,() => { loaded=true; setReady(true); update(); });
+        start();
       }
       update();
     });
     observer.observe(element);
     const sizes = new ResizeObserver(resize); sizes.observe(element);
     const onLoss = (event: Event) => { event.preventDefault(); loaded=false; setReady(false); update(); };
+    const onRestore = () => { start(); };
     screen.addEventListener("webglcontextlost",onLoss);
+    screen.addEventListener("webglcontextrestored",onRestore);
     document.addEventListener("visibilitychange",update);
+    window.addEventListener("pageshow",update);
     reduced.addEventListener("change",update);
     return () => {
       refresh.current=null;
       cancelAnimationFrame(frame); observer.disconnect(); sizes.disconnect(); renderer?.dispose();
       screen.removeEventListener("webglcontextlost",onLoss);
+      screen.removeEventListener("webglcontextrestored",onRestore);
+      window.removeEventListener("pageshow",update);
       document.removeEventListener("visibilitychange",update); reduced.removeEventListener("change",update);
     };
   }, []);
   useEffect(() => { refresh.current?.(); }, [paused]);
   return <div ref={surface} className="watching-earth" data-ready={ready} aria-hidden="true">
-    <div className="watching-earth-fallback" />
     <canvas ref={canvas} width={600} height={600} />
   </div>;
 }
