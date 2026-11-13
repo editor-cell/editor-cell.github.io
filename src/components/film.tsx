@@ -430,6 +430,9 @@ export function Film({
           setStarted(true);
           setPlaying(true);
           setBuffering(false);
+          if (portalCover && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            setRevealed(true);
+          }
           wake(false);
         }}
         onAnimationEnd={(event) => {
@@ -544,7 +547,7 @@ export function Film({
       ) : null}
 
       {hasControls ? (
-        <div className="film-bar" aria-hidden={!bar}>
+        <div className="film-bar" aria-hidden={!bar} inert={portalCover && started && !revealed}>
           <div className="film-glass">
             {menu ? (
               <div role="menu" aria-label={words.settings} className="film-menu">
