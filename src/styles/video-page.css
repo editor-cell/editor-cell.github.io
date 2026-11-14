@@ -267,8 +267,9 @@ html:has(.orbis-video) {
   z-index: 2;
   transform-origin: center;
 }
+/* The film opens over Earth's dark disc, so the cover stays beneath it. */
 .video-inline-player[data-opening="true"] .film-portal-cover {
-  z-index: 3;
+  z-index: 1;
 }
 .video-inline-player[data-opening="true"] .film-bar {
   visibility: hidden;
@@ -289,6 +290,33 @@ html:has(.orbis-video) {
   border: 1px solid #c4849c6b;
   border-radius: 50%;
   box-shadow: -1rem 0 3rem #7a243d55, 1rem 0 3rem #117dd03b;
+}
+/* The orbital sunrise that opens a film (use-portal-opening.ts). Each light
+   exists only while the opening runs. */
+.portal-dawn-arc,
+.portal-dawn-sun,
+.portal-dawn-line {
+  position: absolute;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0;
+}
+.portal-dawn-arc {
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  /* Lit air on the limb: a cream edge thinning into pale blue. */
+  background: radial-gradient(closest-side, transparent 89.4%, #fff4e6 90.9%, #b9d2ef99 92.3%, #86abe02e 95.5%, transparent 100%);
+  mask-image: radial-gradient(62% 62% at 100% 50%, #000 25%, transparent 100%);
+}
+.portal-dawn-sun {
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, #ffffff 0 10%, #fff6e8 20%, #f7dcc0b3 36%, #e6aa8c3d 58%, transparent 72%);
+}
+.portal-dawn-line {
+  height: 2px;
+  transform: translateY(-50%);
+  box-shadow: 0 0 6px #f6e3cc99, 0 0 16px #e2b39a4d;
 }
 .film-portal-disc {
   position: absolute;
