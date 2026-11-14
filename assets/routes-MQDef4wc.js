@@ -1,1 +1,0 @@
-import{n as e}from"./atlas-BV5_PKKq.js";var t=e;export{t as component};
