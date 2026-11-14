@@ -1,8 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowUpRight, Bookmark, Check, Share2 } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Film } from "@/components/film";
 import { announceStart } from "@/lib/listen";
+import { takeArrival } from "@/lib/play-on-arrival";
 import { seekTo } from "@/lib/seek";
 import { useSavedVideos } from "@/lib/saved-videos";
 import { Shell } from "@/components/shell";
@@ -221,6 +222,18 @@ export function VideoPage({ video }: { video: Video | null }) {
   }, []);
   const copy = video?.locales[lang];
   const transcript = copy?.transcript ? paragraphs(copy.transcript) : [];
+  // Chosen from a list: open it at once, with the sunrise, instead of waiting.
+  // A browser that refuses sound without a fresh tap still opens it, muted.
+  const videoId = video?.id;
+  useEffect(() => {
+    const element = screen.current;
+    if (!videoId || !element || !takeArrival(videoId)) return;
+    announceStart("film");
+    element.play().catch(() => {
+      element.muted = true;
+      void element.play().catch(() => {});
+    });
+  }, [videoId]);
   function startAt(seconds: number) {
     const element = screen.current;
     if (!element) return;
