@@ -12,13 +12,13 @@ html:has(.orbis-video) {
   scroll-behavior: auto;
 }
 .orbis-video {
-  background: #0e0f12;
+  background: #0e0d0f;
 }
 /* The viewing room has no section directory. Keep its smaller set of links
    together instead of stretching two stacks across an empty three-column band. */
 .video-footer-gap { height: 1rem; }
 .video-footer.site-footer {
-  background: linear-gradient(#0e0f12, #0c0c0c 6rem);
+  background: linear-gradient(#0e0d0f, #0c0c0c 6rem);
   border-top: 1px solid #f4efe61a;
 }
 .video-footer .footer-brand-links {
@@ -56,7 +56,7 @@ html:has(.orbis-video) {
 }
 .video-library,
 .video-watch {
-  --color-paper: #0e0f12;
+  --color-paper: #0e0d0f;
   --color-sheet: #17181d;
   --color-ink: #f4efe6;
   --color-muted: #b5b2b4;
@@ -65,10 +65,10 @@ html:has(.orbis-video) {
   --color-pine: #d9a2ae;
   min-width: 0;
   color: var(--color-ink);
-  background: #0e0f12;
+  background: #0e0d0f;
 }
 .orbis-video .section-bar {
-  --color-paper: #0e0f12;
+  --color-paper: #0e0d0f;
   --color-ink: #f4efe6;
   --color-rule: #ffffff20;
   --color-pine: #d9a2ae;
@@ -125,7 +125,7 @@ html:has(.orbis-video) {
 .video-description {
   position: relative;
   z-index: 2;
-  text-shadow: 0 1px 4px #0e0f12, 0 0 2px #0e0f12;
+  text-shadow: 0 1px 4px #0e0d0f, 0 0 2px #0e0d0f;
 }
 .video-room-heading .video-overline {
   color: #d9a2ae;
@@ -401,7 +401,7 @@ html:has(.orbis-video) {
   position: relative;
   isolation: isolate;
   overflow: clip;
-  background: #101016;
+  background: #0f0d0f;
 }
 .if-video-still {
   background: var(--video-cover-ground);

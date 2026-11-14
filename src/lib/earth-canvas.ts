@@ -25,10 +25,11 @@ export function createEarthCanvas(canvas: HTMLCanvasElement, ready: () => void, 
       const z=Math.sqrt(1-r), qy=py*Math.cos(.23)+z*Math.sin(.23), qz=z*Math.cos(.23)-py*Math.sin(.23);
       longitude[i]=(Math.atan2(px,qz)/(2*Math.PI)+.52)*width;
       latitude[i]=Math.min(height-1,Math.max(0,Math.floor((.5-Math.asin(qy)/Math.PI)*height)))*width;
-      const sun=(px*.55+py*.4+z)/Math.sqrt(1+.55*.55+.4*.4);
-      const t=Math.max(0,Math.min(1,(sun+.08)/.93));
-      light[i]=.18+.93*t*t*(3-2*t);
-      rim[i]=Math.pow(1-z,3.3)*.32;
+      // Same sun as the WebGL globe: from the right, with a soft terminator.
+      const sun=(px*.77+py*.33+z*.55)/Math.sqrt(.77*.77+.33*.33+.55*.55);
+      const t=Math.max(0,Math.min(1,(sun+.1)/.42)), day=t*t*(3-2*t);
+      light[i]=.025+1.02*day*(.55+.45*Math.max(sun,0));
+      rim[i]=Math.pow(1-z,2.4)*.55*(.25+.75*day);
       output.data[i*4+3]=Math.round(255*Math.min(1,(1-r)/.006));
     }
   }
@@ -41,10 +42,10 @@ export function createEarthCanvas(canvas: HTMLCanvasElement, ready: () => void, 
       // Sample between texels: integer offsets held the same frame for ~235 ms.
       const u=(longitude[i]+offset)%width, x=Math.floor(u), blend=u-x;
       const j=(latitude[i]+x)*4, next=(latitude[i]+(x+1)%width)*4, k=i*4;
-      const shade=light[i]*(1-rim[i]);
-      data[k]=(pixels[j]+(pixels[next]-pixels[j])*blend)*shade+rim[i]*45;
-      data[k+1]=(pixels[j+1]+(pixels[next+1]-pixels[j+1])*blend)*shade+rim[i]*92;
-      data[k+2]=(pixels[j+2]+(pixels[next+2]-pixels[j+2])*blend)*shade+rim[i]*160;
+      const shade=light[i]*(1-rim[i]), air=rim[i]*Math.min(1,.15+light[i]);
+      data[k]=(pixels[j]+(pixels[next]-pixels[j])*blend)*shade+air*143;
+      data[k+1]=(pixels[j+1]+(pixels[next+1]-pixels[j+1])*blend)*shade+air*184;
+      data[k+2]=(pixels[j+2]+(pixels[next+2]-pixels[j+2])*blend)*shade+air*242;
     }
     paint!.putImageData(output!,0,0);
     context!.clearRect(0,0,canvas.width,canvas.height);

@@ -35,12 +35,12 @@
   width: var(--star-size);
   height: var(--star-size);
   border-radius: 50%;
-  color: #e2eaff;
+  color: #f3ece0;
   background: currentColor;
   box-shadow: 0 0 3px currentColor;
   animation: orbis-star-flight var(--star-duration) linear var(--star-delay) infinite paused;
 }
-.video-flight-star:nth-of-type(3n) { color: #a2dfff; }
+.video-flight-star:nth-of-type(3n) { color: #e4e2e6; }
 .video-atmosphere[data-active="true"] .video-flight-star {
   animation-play-state: running;
 }

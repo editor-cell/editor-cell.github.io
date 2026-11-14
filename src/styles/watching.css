@@ -18,7 +18,8 @@
 .watching-video-title { font-weight:600; line-height:1.2; overflow-wrap:anywhere; }
 .watching-video-duration { color:var(--color-muted); font-size:.75rem; }
 .watching-earth { position:relative; aspect-ratio:1; width:100%; isolation:isolate; }
-.watching-earth::before { content:""; position:absolute; inset:2%; border-radius:50%; box-shadow:-1rem 0 3rem #7e345d30,1rem 0 3rem #3779a330; z-index:-1; }
+/* No coloured aura: the globe carries its own thin, sunlit air. */
+.watching-earth::before { content:none; }
 /* Show the first rendered frame at full brightness; never fade Earth in. */
 .watching-earth canvas { display:block; width:100%; height:100%; opacity:1; transition:none; }
 /* Same picture as the canvas's first frame, so the hand-over is invisible. */
