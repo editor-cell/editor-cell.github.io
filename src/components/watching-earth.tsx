@@ -61,15 +61,21 @@ export function WatchingEarth({ paused = false }: { paused?: boolean }) {
     // A film opens by falling into the globe: the opening asks for a dive and, if this
     // renderer can draw one, answers by setting `handled`; it then holds the last frame.
     const onDive = (event: Event) => {
-      const detail = (event as CustomEvent<{ duration: number; handled?: boolean }>).detail;
-      if (!detail || !renderer || !loaded || screen.dataset.renderer !== "webgl") return;
-      detail.handled = true;
+      const detail = (event as CustomEvent<{ duration?: number; progress?: number; handled?: boolean }>).detail;
+      if (!detail || !renderer || !loaded) return;
+      detail.handled = screen.dataset.renderer === "webgl";
       cancelAnimationFrame(frame); frame=0; cancelAnimationFrame(diveFrame);
       diving = true;
+      if (!detail.handled) return;
+      if (detail.progress !== undefined) {
+        renderer.draw(turn, Math.max(0, Math.min(1, detail.progress)));
+        return;
+      }
+      const duration = detail.duration ?? 1500;
       let begin = -1;
       const step = (now: number) => {
         if (begin < 0) begin = now;
-        const t = Math.min(1, (now - begin) / detail.duration);
+        const t = Math.min(1, (now - begin) / duration);
         renderer?.draw(turn, Math.pow(t, 1.3));
         diveFrame = t < 1 ? requestAnimationFrame(step) : 0;
       };

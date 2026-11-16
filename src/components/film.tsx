@@ -494,13 +494,8 @@ export function Film({
           {portalArtwork ?? <span className="film-portal-disc">
             {poster ? <img src={poster} ref={posterGround.ref} onLoad={posterGround.onLoad} alt="" decoding="async" /> : null}
           </span>}
+          {portalArtwork ? <span className="film-entry-air" /> : null}
         </div>
-      ) : null}
-
-      {portalCover && buffering ? (
-        <p role="status" className="film-loading">
-          {lang === "tr" ? "Video yükleniyor…" : lang === "ar" ? "جارٍ تحميل الفيديو…" : "Loading video…"}
-        </p>
       ) : null}
 
       {cue ? (

@@ -137,13 +137,14 @@ test("Earth falls toward the clouds when a film opens, then holds the last frame
   assert.equal(earth.screenEvents.size, 0);
 });
 
-test("Earth leaves the fall to the opening when its renderer cannot draw one", () => {
+test("Earth holds its painted frame for a composited fall on software-only devices", () => {
   const earth = mountEarth();
   // A software canvas names itself differently; the opening scales the cover instead.
   earth.screen.dataset.renderer = "canvas";
   const detail = { duration: 900, handled: false };
   earth.screenEvents.get("orbis-dive")({ detail });
   assert.equal(detail.handled, false);
+  assert.equal(earth.pendingFrames, 0);
   earth.advance(1000);
   assert.ok(earth.renderers[0].turns.length >= 1);
   earth.cleanup();

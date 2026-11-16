@@ -3,7 +3,7 @@
 // çünkü sayfalar "Publish site" iş akışında zaten derlenip depoya yazılıyor.
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "gentle-shadow-b8e8",
+  "name": "editor-cell-github-io",
   "compatibility_date": "2026-09-01",
   // Recordings and films go through server/worker.js so a player can jump into them
   // (Cloudflare's static files never answer with part of a file); everything else is

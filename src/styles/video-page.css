@@ -262,11 +262,11 @@ html:has(.orbis-video) {
   z-index: 2;
   transform-origin: center;
 }
-/* The film opens over Earth's dark disc, so the cover stays beneath it. */
+/* Blue air stays over the first film frame while the camera crosses it. */
 .video-inline-player[data-opening="true"] .film-portal-cover {
-  z-index: 1;
+  z-index: 3;
 }
-.video-inline-player[data-opening="true"] .film-bar {
+.video-inline-player[data-opening="true"] :is(.film-bar, .film-cue) {
   visibility: hidden;
 }
 .film-portal-cover {
@@ -285,11 +285,25 @@ html:has(.orbis-video) {
   border: 1px solid #ffffff2e;
   border-radius: 50%;
 }
-/* The fall into the globe opens the film (use-portal-opening.ts): the globe's own
-   picture grows inside a round window, so the window must stay round. */
+/* Earth grows past its circular silhouette into the fixed video window. */
 .video-inline-player[data-opening="true"] .film-portal-earth {
-  border-radius: 50%;
-  overflow: hidden;
+  border-radius: 0;
+  overflow: visible;
+}
+.film-entry-air {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 48% 35%, #deefffe6, #82bfe9cc 45%, #376eacb3 90%);
+}
+.film-entry-air::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("/images/orbis-earth-clouds.jpg") 52% 42% / 280% auto;
+  mix-blend-mode: screen;
+  opacity: .55;
 }
 .film-portal-disc {
   position: absolute;
@@ -326,20 +340,6 @@ html:has(.orbis-video) {
   color: #f4efe6;
 }
 .video-inline-player .film-length { display: none; }
-.film-loading {
-  position: absolute;
-  z-index: 3;
-  left: 50%;
-  top: 66%;
-  transform: translateX(-50%);
-  margin: 0;
-  padding: 0.35rem 0.6rem;
-  background: #09090de6;
-  color: #f4efe6;
-  font-size: 0.8rem;
-  white-space: nowrap;
-  pointer-events: none;
-}
 .video-inline-player.is-full > video {
   opacity: 1;
   transform: none;
