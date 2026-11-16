@@ -29,7 +29,7 @@ export function createEarthCanvas(canvas: HTMLCanvasElement, ready: () => void, 
       const sun=(px*.77+py*.33+z*.55)/Math.sqrt(.77*.77+.33*.33+.55*.55);
       const t=Math.max(0,Math.min(1,(sun+.1)/.42)), day=t*t*(3-2*t);
       light[i]=.025+1.02*day*(.55+.45*Math.max(sun,0));
-      rim[i]=Math.pow(1-z,2.4)*.55*(.25+.75*day);
+      rim[i]=Math.pow(1-z,2.4)*.42*(.2+.8*day);
       output.data[i*4+3]=Math.round(255*Math.min(1,(1-r)/.006));
     }
   }
@@ -43,8 +43,8 @@ export function createEarthCanvas(canvas: HTMLCanvasElement, ready: () => void, 
       const u=(longitude[i]+offset)%width, x=Math.floor(u), blend=u-x;
       const j=(latitude[i]+x)*4, next=(latitude[i]+(x+1)%width)*4, k=i*4;
       const shade=light[i]*(1-rim[i]), air=rim[i]*Math.min(1,.15+light[i]);
-      data[k]=(pixels[j]+(pixels[next]-pixels[j])*blend)*shade+air*143;
-      data[k+1]=(pixels[j+1]+(pixels[next+1]-pixels[j+1])*blend)*shade+air*184;
+      data[k]=(pixels[j]+(pixels[next]-pixels[j])*blend)*shade+air*102;
+      data[k+1]=(pixels[j+1]+(pixels[next+1]-pixels[j+1])*blend)*shade+air*153;
       data[k+2]=(pixels[j+2]+(pixels[next+2]-pixels[j+2])*blend)*shade+air*242;
     }
     paint!.putImageData(output!,0,0);

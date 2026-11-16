@@ -22,3 +22,7 @@ unless individually noted. Copies are resized/compressed for web delivery only.
   offline from `orbis-earth-day.jpg` and `orbis-earth-clouds.jpg` with the same
   projection and lighting as the live globe. It stands in until the two maps load,
   so the globe appears with the page instead of out of the dark.
+
+- `orbis-deep-sky.webp`: the star field and Milky Way band behind the globe. Made
+  procedurally for Orbis (noise, star catalog-like magnitudes); no outside imagery.
+  It replaced the red and grey nebula picture (`orbis-nebula-detail.webp`, no longer used).

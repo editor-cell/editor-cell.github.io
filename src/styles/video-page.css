@@ -238,9 +238,7 @@ html:has(.orbis-video) {
   border-radius: 4px;
   /* Colored spill separates black-background films from the nebula. The paint
      follows the existing opening scale; no blur filter runs during playback. */
-  box-shadow: 0 0 0 1px #bed5ed2b,
-    -0.75rem -0.5rem 1.5rem #d45b8b33,
-    0.75rem -0.5rem 1.5rem #398edb40;
+  box-shadow: 0 0 0 1px #ffffff1f, 0 0.5rem 2.5rem #00000099;
 }
 .video-inline-player:not(.is-full)::before {
   content: "";
@@ -248,10 +246,7 @@ html:has(.orbis-video) {
   z-index: -1;
   inset: -2.5rem -2rem;
   pointer-events: none;
-  background:
-    radial-gradient(ellipse at 22% 18%, #c4548a66, #b8407438 28%, transparent 65%),
-    radial-gradient(ellipse at 80% 20%, #2c9ee780, #246fbc40 28%, transparent 65%),
-    radial-gradient(ellipse at 50% 4%, #8b76c252, transparent 65%);
+  background: radial-gradient(ellipse at 50% 12%, #f4efe614, transparent 65%);
   mask-image: radial-gradient(ellipse 50% 50% at center, #000 35%, transparent 100%);
   opacity: 0;
   transition: opacity 1100ms ease;
@@ -287,9 +282,8 @@ html:has(.orbis-video) {
   content: "";
   position: absolute;
   inset: -0.65rem;
-  border: 1px solid #c4849c6b;
+  border: 1px solid #ffffff2e;
   border-radius: 50%;
-  box-shadow: -1rem 0 3rem #7a243d55, 1rem 0 3rem #117dd03b;
 }
 /* The orbital sunrise that opens a film (use-portal-opening.ts). Each light
    exists only while the opening runs. */
@@ -323,8 +317,7 @@ html:has(.orbis-video) {
   inset: 0;
   overflow: hidden;
   background: var(--video-cover-ground);
-  border: 1px solid #dfb4bf82;
-  border-right-color: #80d8ff70;
+  border: 1px solid #ffffff2e;
   border-radius: 50%;
 }
 .film-portal-disc img {
@@ -346,8 +339,8 @@ html:has(.orbis-video) {
 .video-inline-player:not([data-started="true"]) .film-start-ring {
   background: #6e2432;
   color: #f4efe6;
-  border-color: #e5b9c0;
-  box-shadow: 0 0 0 0.65rem #6e243244;
+  border-color: #f4efe6b3;
+  box-shadow: 0 0 0 0.65rem #f4efe61a;
 }
 .video-inline-player:not([data-started="true"]) .film-start:hover .film-start-ring {
   background: #8c3346;
@@ -382,7 +375,7 @@ html:has(.orbis-video) {
   align-items: center;
   gap: 0.6rem;
   transform: translateX(-50%);
-  color: #e5b9c0;
+  color: #d9d3ca;
   font-size: 0.8rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -424,17 +417,16 @@ html:has(.orbis-video) {
 .if-band {
   --color-ink: #f4efe6;
   --color-muted: #c5bec5;
-  --color-pine: #e1a6b5;
+  --color-pine: #d8cfc2;
   --color-line: #ffffff24;
   position: relative;
   isolation: isolate;
   overflow: clip;
-  background: #0f0d0f;
+  background: #0c0c0d;
 }
 .if-video-still {
   background: var(--video-cover-ground);
-  border: 1px solid #c99aaf8c;
-  box-shadow: -0.8rem 0 3rem #7a243d55, 0.8rem 0 3rem #117dd030;
+  border: 1px solid #ffffff2e;
 }
 .if-video-still img,
 .video-feature .media-still img {
@@ -546,7 +538,7 @@ html:has(.orbis-video) {
 }
 .video-feature .video-overline,
 .video-stage .video-overline {
-  color: #c9b8bb;
+  color: #c9c3b8;
 }
 .video-feature-picture {
   display: block;
@@ -557,8 +549,7 @@ html:has(.orbis-video) {
   content: "";
   position: absolute;
   inset: 20% 4%;
-  border: 1px solid #c78fa33b;
-  border-inline-end-color: #71caff4d;
+  border: 1px solid #ffffff1f;
   border-radius: 50%;
   transform: rotate(-24deg);
   pointer-events: none;
@@ -570,9 +561,8 @@ html:has(.orbis-video) {
   max-width: 30rem;
   margin-inline: auto;
   border-radius: 50%;
-  border: 1px solid #d9a2ae70;
-  border-inline-end-color: #72caff80;
-  box-shadow: 0 0 0 0.6rem #f4efe605, -1rem 0 3rem #6e243238, 1rem 0 3rem #217aaf26;
+  border: 1px solid #ffffff2e;
+  box-shadow: 0 0 0 0.6rem #f4efe605;
 }
 .video-feature .media-play {
   inset: 0;

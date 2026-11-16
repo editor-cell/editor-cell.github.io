@@ -18,12 +18,12 @@ export function createEarthRenderer(canvas: HTMLCanvasElement, ready: () => void
     void main(){
       vec2 p=point*1.035;
       float r=dot(p,p);
-      vec3 sky=vec3(0.56,0.72,0.95);
+      vec3 sky=vec3(0.48,0.67,0.96);
       if(r>1.0){
         // A thin lit limb of air just outside the disc; nothing on the night side.
         float h=sqrt(r)-1.0;
-        float lit=smoothstep(-0.35,0.6,dot(normalize(p),SUN.xy));
-        float a=exp(-h/0.011)*lit*0.55;
+        float lit=smoothstep(-0.05,0.75,dot(normalize(p),SUN.xy));
+        float a=exp(-h/0.009)*lit*0.3;
         gl_FragColor=vec4(sky*a,a);return;
       }
       vec3 n=vec3(p,sqrt(1.0-r));
@@ -35,7 +35,7 @@ export function createEarthRenderer(canvas: HTMLCanvasElement, ready: () => void
       float ocean=smoothstep(0.02,0.09,base.b-base.r)*(1.0-smoothstep(0.25,0.45,base.g));
       base=pow(base,vec3(1.12))*1.12;
       float cloud=texture2D(clouds,vec2(fract(uv.x+turn*0.025),uv.y)).r;
-      float cover=smoothstep(0.14,0.9,cloud)*0.9;
+      float cover=smoothstep(0.16,0.95,cloud)*0.85;
       base=mix(base,vec3(0.95,0.95,0.94),cover);
       vec3 sun=normalize(SUN);
       float d=dot(n,sun);
@@ -48,9 +48,9 @@ export function createEarthRenderer(canvas: HTMLCanvasElement, ready: () => void
       color+=vec3(1.0,0.95,0.86)*glint*ocean*(1.0-cover)*0.45*day;
       // Air thickens toward the edge; it scatters blue only where it is lit.
       float edge=pow(1.0-n.z,2.4);
-      color=mix(color,sky*(0.15+0.85*day),edge*0.55*(0.25+0.75*day));
+      color=mix(color,sky*(0.10+0.90*day),edge*0.36*(0.2+0.8*day));
       float alpha=1.0-smoothstep(0.994,1.0,r);
-      float halo=smoothstep(-0.35,0.6,dot(normalize(p+1e-5),SUN.xy))*0.55;
+      float halo=smoothstep(-0.05,0.75,dot(normalize(p+1e-5),SUN.xy))*0.3;
       gl_FragColor=vec4(mix(sky*halo,color,alpha),mix(halo,1.0,alpha));
     }`;
   const shaders: WebGLShader[] = [];

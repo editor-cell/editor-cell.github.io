@@ -8,7 +8,7 @@
 .watching-list-title { color:var(--color-ink); font-weight:500; line-height:1.1; margin:0 0 1.25rem; }
 .watching-videos { list-style:none; margin:0; padding:0; }
 .watching-videos > li { border-bottom:1px solid #ffffff30; }
-.watching-videos > li[data-selected="true"] { border-bottom-color:#a75169; }
+.watching-videos > li[data-selected="true"] { border-bottom-color:#d8cfc2; }
 .watching-video-link { display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr); align-items:center; gap:1rem; width:100%; padding:1rem 0; text-align:start; color:var(--color-ink); cursor:pointer; }
 .watching-video-link:hover .watching-video-title { text-decoration:underline; text-underline-offset:.2em; text-decoration-thickness:1px; }
 .watching-video-link:focus-visible,.watching-all:focus-visible { outline:2px solid #b4d8f0; outline-offset:4px; }

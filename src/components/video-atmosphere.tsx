@@ -32,7 +32,7 @@ export function VideoAtmosphere({ paused = false }: { paused?: boolean }) {
           <img
             key={pass}
             className={`video-cloud${pass ? " video-cloud-next" : ""}`}
-            src="/images/orbis-nebula-detail.webp"
+            src="/images/orbis-deep-sky.webp"
             width={1536}
             height={1024}
             alt=""
