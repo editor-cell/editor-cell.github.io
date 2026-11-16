@@ -72,7 +72,7 @@ export function createEarthRenderer(canvas: HTMLCanvasElement, ready: () => void
         float fine=fbm(cuv*vec2(330.0,165.0));
         float broad=fbm(cuv*vec2(120.0,60.0)+7.0);
         cloud=clamp(cloud+(fine-0.5)*1.6*deep,0.0,1.0);
-        fill=smoothstep(0.45,0.95,dive)*0.68;
+        fill=smoothstep(0.45,0.95,dive)*0.5;
         // Inside the deck: bright tops and grey hollows, not a flat haze.
         float body=smoothstep(0.22,0.82,0.55*fine+0.45*broad+0.25*cloud);
         vec3 inside=mix(vec3(0.32,0.52,0.78),vec3(0.92,0.96,1.0),body);
@@ -94,7 +94,7 @@ export function createEarthRenderer(canvas: HTMLCanvasElement, ready: () => void
       color=mix(color,sky*(0.10+0.90*day),edge*0.36*(0.2+0.8*day));
       // Falling through the thick of the air: the blue deepens, then the deck takes over.
       float haze=smoothstep(0.18,0.55,dive)*(1.0-smoothstep(0.7,1.0,dive));
-      color=mix(color,sky*0.9+0.1,haze*0.68*(0.25+0.75*day));
+      color=mix(color,sky*0.9+0.1,haze*0.42*(0.25+0.75*day));
       float alpha=1.0-smoothstep(0.994,1.0,r);
       float halo=smoothstep(-0.05,0.75,dot(normalize(p+1e-5),SUN.xy))*0.3;
       gl_FragColor=vec4(mix(sky*halo,color,alpha),mix(halo,1.0,alpha));

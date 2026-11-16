@@ -80,6 +80,29 @@ export function usePortalOpening({ box, film, enabled, started, full }: {
         { opacity: 1 },
       ], timing),
     ];
+    // Real cloud passes over the frame: a deck that thickens as the eye nears it,
+    // then rings of cloud with clear middles that rush outward past the edges,
+    // so the film is seen through a parting in the clouds, not through a white wash.
+    host.querySelectorAll<HTMLElement>(".film-clouds > i").forEach((layer, index) => {
+      if (index === 0) {
+        animations.push(layer.animate([
+          { opacity: 0, transform: "scale(1.15)" },
+          { opacity: 0, transform: "scale(1.15)", offset: .3, easing: "cubic-bezier(.4,0,.7,1)" },
+          { opacity: .85, transform: "scale(1.6)", offset: CROSSING - .02, easing: "cubic-bezier(.3,0,.6,1)" },
+          { opacity: 0, transform: "scale(2.6)", offset: .86 },
+          { opacity: 0, transform: "scale(2.6)" },
+        ], timing));
+        return;
+      }
+      const from = .4 + index * .07, peak = Math.min(.9, from + .18);
+      animations.push(layer.animate([
+        { opacity: 0, transform: "scale(.55)" },
+        { opacity: 0, transform: "scale(.55)", offset: from, easing: "cubic-bezier(.5,0,.8,.6)" },
+        { opacity: 1, transform: "scale(1.2)", offset: peak, easing: "cubic-bezier(.4,.3,.8,1)" },
+        { opacity: 0, transform: "scale(3.4)", offset: Math.min(.99, peak + .22) },
+        { opacity: 0, transform: "scale(3.4)" },
+      ], timing));
+    });
     // Software-only devices use the already painted globe and cloud map. Only
     // composited transforms and opacity change; no per-pixel CPU work on the fall.
     if (!probe.handled) {
@@ -111,6 +134,8 @@ export function usePortalOpening({ box, film, enabled, started, full }: {
       // The cover leaves with the next render; until then it must not spring back
       // to the globe's held cloud frame for a single painted flash.
       cover.style.visibility = "hidden";
+      const clouds = host.querySelector<HTMLElement>(".film-clouds");
+      if (clouds) clouds.style.visibility = "hidden";
       cancelAnimationFrame(frame);
       if (mediaFrame) video.cancelVideoFrameCallback?.(mediaFrame);
       animations.forEach(animation => animation.cancel());

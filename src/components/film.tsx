@@ -111,7 +111,7 @@ export function Film({
   length?: number;
   label: string;
   lang: Lang;
-  preload?: "metadata" | "none";
+  preload?: "auto" | "metadata" | "none";
   className?: string;
   /** No start screen: the film is started from outside (the panel's screen). */
   bare?: boolean;
@@ -495,6 +495,12 @@ export function Film({
             {poster ? <img src={poster} ref={posterGround.ref} onLoad={posterGround.onLoad} alt="" decoding="async" /> : null}
           </span>}
           {portalArtwork ? <span className="film-entry-air" /> : null}
+        </div>
+      ) : null}
+
+      {portalArtwork && portal.opening ? (
+        <div className="film-clouds" aria-hidden="true">
+          <i><b /></i><i><b /></i><i><b /></i><i><b /></i>
         </div>
       ) : null}
 

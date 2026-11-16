@@ -309,6 +309,45 @@ html:has(.orbis-video) {
   mix-blend-mode: screen;
   opacity: .55;
 }
+/* Cloud passed through while a film opens (use-portal-opening.ts). The layers sit
+   over the frame only; the inner layer drifts on its own so a slow start never
+   freezes into a still white picture. */
+.film-clouds {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  overflow: hidden;
+  border-radius: 4px;
+  pointer-events: none;
+}
+.film-clouds > i {
+  position: absolute;
+  inset: -20%;
+  opacity: 0;
+  will-change: transform, opacity;
+  -webkit-mask-image: radial-gradient(ellipse 50% 50% at center, transparent 30%, #000 62%);
+  mask-image: radial-gradient(ellipse 50% 50% at center, transparent 30%, #000 62%);
+}
+.film-clouds > i:first-child {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+.film-clouds b {
+  position: absolute;
+  inset: -10%;
+  background: url("/images/orbis-earth-clouds.jpg") 30% 40% / 260% auto;
+  mix-blend-mode: screen;
+  filter: contrast(1.35) brightness(1.1);
+  animation: film-cloud-drift 7s linear infinite alternate;
+}
+.film-clouds > i:nth-child(1) b { background-position: 58% 46%; background-size: 220% auto; }
+.film-clouds > i:nth-child(2) b { background-position: 12% 30%; animation-duration: 5s; }
+.film-clouds > i:nth-child(3) b { background-position: 80% 62%; background-size: 300% auto; animation-duration: 6s; }
+.film-clouds > i:nth-child(4) b { background-position: 40% 70%; animation-duration: 4.5s; }
+@keyframes film-cloud-drift {
+  from { transform: translate3d(-3%, -2%, 0) rotate(-1deg); }
+  to { transform: translate3d(3%, 2%, 0) rotate(1deg); }
+}
 .film-portal-disc {
   position: absolute;
   inset: 0;
