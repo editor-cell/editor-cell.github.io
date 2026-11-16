@@ -26,6 +26,14 @@ build log says which. Never change the deploy command back to plain `npx wrangle
 A failing gate stops the workflow before the publish commit, so the live site stays as it
 was. Never weaken or skip a gate to get a reading out; fix the reading.
 
+## No checks of your own (owner's rule, 16 Nov 2026)
+
+Do the work, push, and stop. Do not run tests, typecheck or builds locally, do not open
+pages in a browser, record or inspect frames, or watch the workflow and the live site.
+These checks use up the owner's quota, and he would rather spot a mistake himself and
+point to it; then fix only that spot. The workflow's gates above still run on every push.
+This rule overrides every instruction below to test, build, look at or watch something.
+
 On 13 Oct 2026 the owner took the look comparison (`npm run test:browser`) out of the
 publish: it was slow and caught nothing a reading change could break. Do not put it back
 without asking him. The workflow already runs the gates, so do not repeat them locally
@@ -49,9 +57,7 @@ before every push; push and let the workflow check.
    ask the owner. Readings without an issue follow by date. The membership terms still
    sell "eight articles a week": a ninth is extra, not part of what is sold.
 5. No local run needed; the workflow runs `test:site` and `build:pages` and stops on failure.
-6. Push, watch the "Publish site" run, then the Cloudflare status on the `[site] publish`
-   commit (`gh api repos/editor-cell/editor-cell.github.io/commits/<sha>/check-runs`),
-   then look at the live page.
+6. Push and stop; do not watch the run or the live page (see "No checks of your own").
 7. If a published reading is wrong, `git revert` its commit and push; the site returns
    to the state before it.
 
@@ -98,9 +104,8 @@ launch day, set `TRIAL` to false.
 
 ## Changing the site itself
 
-Design and code changes go in their own commits, after `npm run typecheck`,
-`npm run test:site` and `npm run build:pages`, and a look at the built pages at phone
-(390 px) and desktop (1280 px) width. A fix for the phone must not change the desktop
+Design and code changes go in their own commits; push them without local tests or looks
+(see "No checks of your own"). A fix for the phone must not change the desktop
 layout, and the other way round. The owner wants the two to look parallel: the same controls in
 the same order and a matching look on a phone and a desktop (20 Oct 2026). It is the
 direction every design change works toward, not a rule that each change must land on both
