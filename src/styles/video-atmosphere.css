@@ -66,15 +66,12 @@
 }
 @media (--orbis-phone) {
   .video-cloud-field {
-    /* A wide cloud bank behind the circle, with quiet space above and below.
-       The fixed edge fade stays still while the single image moves inside it. */
-    inset: auto;
-    left: -35%;
-    top: var(--cloud-center, 21rem);
+    /* The sky fills the whole band, behind the globe and the video list alike,
+       as it does on a desktop. The fixed edge fade stays still while the single
+       image moves inside it. */
+    inset: 0 auto 0 -35%;
     width: 170%;
-    aspect-ratio: 3 / 2;
-    transform: translateY(-50%);
-    mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 5%, #000 95%, transparent);
   }
   .if-band .video-atmosphere { --cloud-center: 17.5rem; }
   .video-library .video-atmosphere { --cloud-center: 31rem; }
