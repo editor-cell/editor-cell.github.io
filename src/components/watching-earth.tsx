@@ -15,7 +15,7 @@ export function WatchingEarth({ paused = false }: { paused?: boolean }) {
   useEffect(() => {
     const element = surface.current, screen = canvas.current;
     if (!element || !screen) return;
-    let frame = 0, visible = false, loaded = false, last = 0, turn = 0;
+    let frame = 0, visible = false, loaded = false, last = 0, turn = 0, diving = false, diveFrame = 0;
     let renderer: ReturnType<typeof createEarthRenderer> = null;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     const resize = () => {
@@ -24,7 +24,7 @@ export function WatchingEarth({ paused = false }: { paused?: boolean }) {
       renderer?.draw(turn);
     };
     const tick = (now: number) => {
-      if (!visible || document.hidden || reduced.matches || pause.current || !loaded) { frame=0; last=0; return; }
+      if (!visible || document.hidden || reduced.matches || pause.current || !loaded || diving) { frame=0; last=0; return; }
       if (!last || now-last >= 1000/(screen.dataset.renderer === "canvas" ? 20 : 30)) {
         if (last) turn=(turn+Math.min(now-last,80)/240000)%1;
         last=now; renderer?.draw(turn);
@@ -33,6 +33,7 @@ export function WatchingEarth({ paused = false }: { paused?: boolean }) {
     };
     const update = () => {
       cancelAnimationFrame(frame); frame=0; last=0;
+      if (diving) return;
       if (loaded && visible && !document.hidden) renderer?.draw(turn);
       if (visible && !document.hidden && !pause.current && !reduced.matches && loaded) frame=requestAnimationFrame(tick);
     };
@@ -57,6 +58,24 @@ export function WatchingEarth({ paused = false }: { paused?: boolean }) {
     });
     observer.observe(element);
     const sizes = new ResizeObserver(resize); sizes.observe(element);
+    // A film opens by falling into the globe: the opening asks for a dive and, if this
+    // renderer can draw one, answers by setting `handled`; it then holds the last frame.
+    const onDive = (event: Event) => {
+      const detail = (event as CustomEvent<{ duration: number; handled?: boolean }>).detail;
+      if (!detail || !renderer || !loaded || screen.dataset.renderer !== "webgl") return;
+      detail.handled = true;
+      cancelAnimationFrame(frame); frame=0; cancelAnimationFrame(diveFrame);
+      diving = true;
+      let begin = -1;
+      const step = (now: number) => {
+        if (begin < 0) begin = now;
+        const t = Math.min(1, (now - begin) / detail.duration);
+        renderer?.draw(turn, Math.pow(t, 1.3));
+        diveFrame = t < 1 ? requestAnimationFrame(step) : 0;
+      };
+      diveFrame = requestAnimationFrame(step);
+    };
+    screen.addEventListener("orbis-dive",onDive);
     const onLoss = (event: Event) => { event.preventDefault(); loaded=false; setReady(false); update(); };
     const onRestore = () => { start(); };
     screen.addEventListener("webglcontextlost",onLoss);
@@ -66,7 +85,8 @@ export function WatchingEarth({ paused = false }: { paused?: boolean }) {
     reduced.addEventListener("change",update);
     return () => {
       refresh.current=null;
-      cancelAnimationFrame(frame); observer.disconnect(); sizes.disconnect(); renderer?.dispose();
+      cancelAnimationFrame(frame); cancelAnimationFrame(diveFrame); observer.disconnect(); sizes.disconnect(); renderer?.dispose();
+      screen.removeEventListener("orbis-dive",onDive);
       screen.removeEventListener("webglcontextlost",onLoss);
       screen.removeEventListener("webglcontextrestored",onRestore);
       window.removeEventListener("pageshow",update);

@@ -33,7 +33,7 @@ export function createEarthCanvas(canvas: HTMLCanvasElement, ready: () => void, 
       output.data[i*4+3]=Math.round(255*Math.min(1,(1-r)/.006));
     }
   }
-  const draw=(turn:number) => {
+  const draw=(turn:number, _dive?:number) => {
     if(disposed || !pixels) return;
     if(!output || oldSide!==side) coordinates();
     const data=output!.data, offset=turn*width;

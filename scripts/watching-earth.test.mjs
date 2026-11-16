@@ -40,8 +40,8 @@ function mountEarth() {
     exports, window, document,
     require: name => name === "react" ? react : name === "react/jsx-runtime" ? { jsx, jsxs: jsx } : {
       createEarthRenderer: (_screen, onReady, initialTurn) => {
-        const renderer = { initialTurn, onReady, turns: [], disposed: false,
-          draw(turn) { this.turns.push(turn); }, dispose() { this.disposed = true; } };
+        const renderer = { initialTurn, onReady, turns: [], dives: [], disposed: false,
+          draw(turn, dive = 0) { this.turns.push(turn); this.dives.push(dive); }, dispose() { this.disposed = true; } };
         renderers.push(renderer);
         return renderer;
       },
@@ -64,7 +64,7 @@ function mountEarth() {
     const pending = [...frames.values()]; frames.clear();
     for (const callback of pending) callback(now);
   }
-  return { startedBeforeVisible, renderers, screenEvents, documentEvents, windowEvents, document, advance, cleanup,
+  return { screen, startedBeforeVisible, renderers, screenEvents, documentEvents, windowEvents, document, advance, cleanup,
     get ready() { return ready; }, get pendingFrames() { return frames.size; } };
 }
 
@@ -115,5 +115,36 @@ test("Earth starts fetching its maps on mount, before the panel scrolls into vie
   const earth = mountEarth();
   assert.equal(earth.startedBeforeVisible, 1);
   assert.equal(earth.renderers.length, 1);
+  earth.cleanup();
+});
+
+test("Earth falls toward the clouds when a film opens, then holds the last frame", () => {
+  const earth = mountEarth();
+  const renderer = earth.renderers[0];
+  const before = renderer.dives.length;
+  const detail = { duration: 900, handled: false };
+  earth.screenEvents.get("orbis-dive")({ detail });
+  assert.equal(detail.handled, true);
+  earth.advance(1000); earth.advance(1450); earth.advance(1900);
+  const dives = renderer.dives.slice(before);
+  assert.equal(dives.length, 3);
+  assert.equal(dives[0], 0);
+  assert.ok(dives[1] > 0 && dives[1] < 1);
+  assert.equal(dives[2], 1);
+  // The resting rotation stops during the fall and no loop is left running after it.
+  assert.equal(earth.pendingFrames, 0);
+  earth.cleanup();
+  assert.equal(earth.screenEvents.size, 0);
+});
+
+test("Earth leaves the fall to the opening when its renderer cannot draw one", () => {
+  const earth = mountEarth();
+  // A software canvas names itself differently; the opening scales the cover instead.
+  earth.screen.dataset.renderer = "canvas";
+  const detail = { duration: 900, handled: false };
+  earth.screenEvents.get("orbis-dive")({ detail });
+  assert.equal(detail.handled, false);
+  earth.advance(1000);
+  assert.ok(earth.renderers[0].turns.length >= 1);
   earth.cleanup();
 });
