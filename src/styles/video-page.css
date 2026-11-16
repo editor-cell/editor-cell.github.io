@@ -284,6 +284,10 @@ html:has(.orbis-video) {
   inset: -0.65rem;
   border: 1px solid #ffffff2e;
   border-radius: 50%;
+  transition: opacity 400ms ease;
+}
+.video-inline-player[data-opening="true"] .film-portal-cover::before {
+  opacity: 0;
 }
 /* Earth grows past its circular silhouette into the fixed video window. */
 .video-inline-player[data-opening="true"] .film-portal-earth {

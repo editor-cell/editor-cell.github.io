@@ -21,7 +21,7 @@ function mountOpening({ reduced = false, muted = false } = {}) {
     play() { this.paused = false; this.plays++; return Promise.resolve(); },
   };
   const canvas = { dispatchEvent(event) { event.detail.handled = true; dives.push(event.detail.progress); } };
-  const cover = { animate, querySelector: selector => selector === 'canvas' ? canvas : null,
+  const cover = { style: {}, animate, querySelector: selector => selector === 'canvas' ? canvas : null,
     getBoundingClientRect: () => ({ width: 496, height: 496 }) };
   const box = { current: { querySelector: () => cover } }, film = { current: video };
   const exports = {};
@@ -52,7 +52,7 @@ function mountOpening({ reduced = false, muted = false } = {}) {
     }
   }
   return { video, animations, dives, frames, events, advance,
-    decode: () => decoded?.(), cleanup: () => cleanup?.(), get opening() { return opening; } };
+    cover, decode: () => decoded?.(), cleanup: () => cleanup?.(), get opening() { return opening; } };
 }
 
 test('a slow video waits inside the approach without exposing a blank frame or starting narration', () => {
@@ -61,7 +61,7 @@ test('a slow video waits inside the approach without exposing a blank frame or s
   assert.equal(view.opening, true);
   assert.equal(view.video.muted, true);
   assert.equal(view.video.plays, 0);
-  assert.ok(view.animations[1].currentTime < 2200 * .62);
+  assert.ok(view.animations[1].currentTime < 1900 * .62);
   view.cleanup();
   assert.equal(view.video.muted, false);
   assert.equal(view.frames.size, 0);
@@ -72,17 +72,19 @@ test('the first decoded frame waits for the atmospheric crossing before picture 
   const view = mountOpening();
   view.decode();
   assert.equal(view.video.paused, true);
-  view.advance(16, 1200);
+  view.advance(16, 1000);
   assert.equal(view.video.plays, 0);
-  view.advance(1216, 1500);
+  view.advance(1016, 1300);
   await Promise.resolve();
   assert.equal(view.video.plays, 1);
   assert.equal(view.video.muted, false);
-  view.advance(1504, 2400);
+  view.advance(1316, 2400);
   assert.equal(view.opening, false);
   assert.equal(view.frames.size, 0);
   assert.ok(view.animations.every(animation => animation.cancelled));
   assert.equal(view.dives.at(-1), 1);
+  // Hidden before its animations are cancelled: no flash of the held cloud frame.
+  assert.equal(view.cover.style.visibility, 'hidden');
   view.cleanup();
 });
 
