@@ -1,0 +1,1 @@
+import{t as e}from"./search-BicdtO1r.js";var t=e;export{t as component};
