@@ -23,7 +23,7 @@ function mountOpening({ reduced = false, muted = false } = {}) {
   const canvas = { dispatchEvent(event) { event.detail.handled = true; dives.push(event.detail.progress); } };
   const cover = { style: {}, animate, querySelector: selector => selector === 'canvas' ? canvas : null,
     getBoundingClientRect: () => ({ width: 496, height: 496 }) };
-  const box = { current: { querySelector: () => cover } }, film = { current: video };
+  const box = { current: { querySelector: () => cover, querySelectorAll: () => [] } }, film = { current: video };
   const exports = {};
   const source = ts.transpileModule(readFileSync(new URL('../src/lib/use-portal-opening.ts', import.meta.url), 'utf8'), {
     compilerOptions: { module: ts.ModuleKind.CommonJS },
