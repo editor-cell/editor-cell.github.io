@@ -1,1 +1,0 @@
-import{t as e}from"./videos-sZaMMoa-.js";var t=e;export{t as component};
