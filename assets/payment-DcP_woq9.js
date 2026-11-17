@@ -1,1 +1,0 @@
-import{r as e}from"./pages-Bhr_SYFn.js";var t=e;export{t as component};
