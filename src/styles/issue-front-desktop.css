@@ -2,13 +2,13 @@
 @media (--orbis-desktop) {
   /* Leave room for the cover headline and two complete selections on laptop screens. */
   .orbis-home .band-row.band-reader {
-    --masthead-mark-width: min(18rem, 30vw);
-    padding-top: 1.25rem;
-    padding-bottom: 0.875rem;
+    --masthead-mark-width: min(20rem, 32vw);
+    padding-top: 1.5rem;
+    padding-bottom: 1.125rem;
   }
   .orbis-home .band-reader .masthead-motto {
-    margin-top: 0.55rem;
-    font-size: 0.85rem;
+    margin-top: 0.65rem;
+    font-size: 0.95rem;
   }
   .issue-front {
     padding: 0 2rem;
@@ -58,7 +58,7 @@
   .if-cover-picture img {
     display: block;
     width: 100%;
-    height: clamp(10rem, 34vh, 20rem);
+    height: clamp(12rem, 42vh, 25rem);
     object-fit: cover;
   }
   .if-cover-copy {
@@ -90,7 +90,7 @@
     text-decoration-thickness: 1px;
   }
   .if-cover-title {
-    font-size: clamp(1.8rem, 2.7vw, 2.65rem);
+    font-size: clamp(2rem, 3.1vw, 3rem);
     line-height: 1.08;
   }
   .if-dek {
@@ -100,8 +100,8 @@
     line-height: 1.5;
   }
   .if-cover .if-dek {
-    font-size: 1rem;
-    line-height: 1.45;
+    font-size: 1.1rem;
+    line-height: 1.5;
   }
   .if-actions {
     display: flex;
@@ -168,11 +168,11 @@
     line-height: 1;
   }
   .if-entry-title {
-    font-size: clamp(1.1rem, 1.6vw, 1.4rem);
+    font-size: clamp(1.2rem, 1.85vw, 1.65rem);
     line-height: 1.14;
   }
   .if-entry .if-dek {
-    font-size: 0.9rem;
+    font-size: 1rem;
     line-height: 1.4;
   }
   .if-entry .if-actions {
