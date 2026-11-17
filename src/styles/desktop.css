@@ -786,12 +786,9 @@
     font-size: 1.25rem;
   }
   .reading-picture {
-    width: min(100%, 42rem, 63vh);
+    /* Match .reading-column without shrinking the image on shorter screens. */
+    width: min(100%, 42rem);
     margin-inline: auto;
-  }
-  .reading-picture > img {
-    max-height: 42vh;
-    object-fit: contain;
   }
 }
 
