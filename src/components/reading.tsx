@@ -173,7 +173,7 @@ function Reading({ story }: { story: Story | null }) {
   const others = LANGS.filter((code) => hasCopy(story, code));
 
   return (
-    <main className="px-5 pt-5 pb-10 md:px-12 md:py-14">
+    <main className="reading-page px-5 pt-5 pb-10 md:px-12 md:py-14">
       <div ref={page} className="mx-auto flex max-w-[65rem] flex-col gap-7 md:gap-8">
         {/* On paper (print or PDF) the band is left out; the name and the address head the page. */}
         <p className="print-only text-sm" dir="ltr">
@@ -193,7 +193,7 @@ function Reading({ story }: { story: Story | null }) {
         />
 
         <ReadingProgress start={readStart} end={readEnd} />
-        <header ref={readStart} className="reading-column flex w-full flex-col gap-4">
+        <header ref={readStart} className="reading-header reading-column flex w-full flex-col gap-4">
           <p className="text-xs uppercase tracking-widest text-pine">{copy.themes[story.theme]}</p>
           <h1 className="paper-title font-bold text-[2.25rem] leading-[1.08] md:text-5xl md:leading-[1.05]">
             {locale.title || story.locales.en.title}
@@ -252,7 +252,7 @@ function Reading({ story }: { story: Story | null }) {
             </figcaption>
           </figure>
         ) : story.image ? (
-          <figure className="flex max-w-full flex-col gap-2">
+          <figure className="reading-picture flex max-w-full flex-col gap-2">
             <img
               src={story.image.src}
               {...imageSet(story.image.src, imageSizes("48rem", "100vw"))}
