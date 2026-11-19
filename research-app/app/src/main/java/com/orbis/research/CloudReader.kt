@@ -86,7 +86,10 @@ object CloudReader {
         val split = if (data.optBoolean("disagree") && sol != null && astra != null) {
             "\nSPLIT: Sol=$sol Astra=$astra"
         } else ""
-        return "$verdict\nCLOUD_MODEL: $MODEL_ID\nQUERY_KIND: $kind$split"
+        // Sol's one-sentence reason is kept so a search that finds nothing can show why.
+        val reason = data.optString("reason").replace(Regex("\\s+"), " ").trim().take(300)
+        val why = if (reason.isNotEmpty()) "\nREASON: $reason" else ""
+        return "$verdict\nCLOUD_MODEL: $MODEL_ID\nQUERY_KIND: $kind$split$why"
     }
     /** The query as separate parts to search on their own; the whole query when it cannot be split. */
     suspend fun split(query: String): List<String> = try {

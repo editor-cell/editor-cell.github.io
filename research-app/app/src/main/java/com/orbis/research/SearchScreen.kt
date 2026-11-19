@@ -163,6 +163,7 @@ fun SearchScreen(goTo: (Int) -> Unit) {
     var run by remember { mutableStateOf<SearchRun?>(null) }
     var findings by remember { mutableStateOf(emptyList<Finding>()) }
     var uncertain by remember { mutableIntStateOf(0) }
+    var notes by remember { mutableStateOf(emptyList<Pair<String, String>>()) }
     var making by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
@@ -173,6 +174,13 @@ fun SearchScreen(goTo: (Int) -> Unit) {
         }
         uncertain = if (compatible) withContext(Dispatchers.IO) { db.answers().count { it.second?.startsWith("UNCERTAIN") == true } } else 0
         run = r?.takeIf { compatible || it.state == Db.RUN_GOING }; findings = f
+        // When nothing was found: what Sol said about the closest paragraphs, with their documents.
+        notes = if (compatible && f.isEmpty()) withContext(Dispatchers.IO) {
+            db.answers().mapNotNull { (id, a) ->
+                val reason = a?.substringAfter("\nREASON: ", "")?.trim().orEmpty()
+                if (reason.isEmpty()) null else db.paragraph(id)?.let { it.docTitle.ifBlank { it.sourceName } to reason }
+            }.take(6)
+        } else emptyList()
         if (s.claim.isEmpty() && r != null) s.claim = r.claim
         // The search started with "Evrak oluştur" has ended: the evrak is made and opened at once.
         if (r != null && r.state != Db.RUN_GOING && r.startedAt != 0L && s.autoEvrak(ctx) == r.startedAt) {
@@ -255,6 +263,10 @@ fun SearchScreen(goTo: (Int) -> Unit) {
                         else "Yargıya anlamca en yakın ${r.total} paragraf okundu; evraka alınabilecek yeterince belirgin bir sonuç bulunamadı. Bu, kaynaklarda kanıt olmadığı anlamına gelmez.",
                         style = MaterialTheme.typography.bodySmall,
                     )
+                    if (notes.isNotEmpty()) {
+                        Text("Sol'un en yakın paragraflar için notu:", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(top = 12.dp))
+                        for ((title, reason) in notes) Text("$title: $reason", style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 4.dp))
+                    }
                 }
             }
         }
