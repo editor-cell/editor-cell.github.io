@@ -28,7 +28,7 @@ object CloudReader {
         .followRedirects(false)
         .build()
 
-    private suspend fun request(request: Request): JSONObject = suspendCancellableCoroutine { continuation ->
+    private suspend fun request(request: Request, maxBytes: Int = 16384): JSONObject = suspendCancellableCoroutine { continuation ->
         val call = client.newCall(request)
         continuation.invokeOnCancellation { call.cancel() }
         call.enqueue(object : Callback {
@@ -42,14 +42,14 @@ object CloudReader {
                         val bytes = body.byteStream().use { input ->
                             val out = java.io.ByteArrayOutputStream()
                             val buffer = ByteArray(2048)
-                            while (out.size() <= 16384) {
-                                val count = input.read(buffer, 0, minOf(buffer.size, 16385 - out.size()))
+                            while (out.size() <= maxBytes) {
+                                val count = input.read(buffer, 0, minOf(buffer.size, maxBytes + 1 - out.size()))
                                 if (count < 0) break
                                 out.write(buffer, 0, count)
                             }
                             out.toByteArray()
                         }
-                        check(bytes.size <= 16384) { "Sol yanıtı beklenenden uzun." }
+                        check(bytes.size <= maxBytes) { "Sol yanıtı beklenenden uzun." }
                         val json = JSONObject(bytes.toString(Charsets.UTF_8))
                         check(r.isSuccessful) { json.optString("error", "Sol yanıt veremedi (${r.code}).") }
                         json
@@ -91,6 +91,31 @@ object CloudReader {
         val why = if (reason.isNotEmpty()) "\nREASON: $reason" else ""
         return "$verdict\nCLOUD_MODEL: $MODEL_ID\nQUERY_KIND: $kind$split$why"
     }
+    /**
+     * First reading in the cloud (owner, 19 Nov 2026): OpenAI's embedding model gives each text
+     * its meaning vector, as signed bytes at the service's fixed scale. Busy (429) waits and retries.
+     */
+    suspend fun embed(texts: List<String>): List<ByteArray> {
+        val arr = org.json.JSONArray()
+        texts.forEach { arr.put(it) }
+        val body = JSONObject().put("texts", arr).toString()
+        var attempt = 0
+        while (true) {
+            try {
+                val data = request(Request.Builder().url("$BASE_URL/embed")
+                    .post(body.toRequestBody("application/json; charset=utf-8".toMediaType())).build(), 4_000_000)
+                val vectors = data.getJSONArray("vectors")
+                check(vectors.length() == texts.size) { "Anlam modeli eksik yanıt verdi." }
+                return List(vectors.length()) { java.util.Base64.getDecoder().decode(vectors.getString(it)) }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                if (++attempt >= 4) throw e
+                kotlinx.coroutines.delay(2000L * attempt)
+            }
+        }
+    }
+
     /** Each returned part must be usable as a separate search and reading question. */
     suspend fun split(query: String): List<String> {
         val body = JSONObject().put("query", query).toString()

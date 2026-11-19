@@ -1,40 +1,38 @@
 package com.orbis.research
 
 import android.content.Context
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 
 /**
- * The meaning model running inside the phone; loaded only while it is needed. Indexing and a
- * search may use it at once: each [ensure] that succeeds is matched by one [release], and the
- * model is unloaded when the last user is done.
+ * The meaning model (owner, 19 Nov 2026): no longer the small model inside the phone, which
+ * missed relevant paragraphs, but OpenAI's embedding model through the Orbis service. The
+ * phone sends texts in batches and stores the vectors it gets back.
  */
 object Embedder {
-    private val lock = Mutex()
-    @Volatile private var handle = 0L
-    private var loadedPath: String? = null
-    private var users = 0
+    /** Stands where a model file's path stood; also names the vectors kept on the phone. */
+    const val CLOUD = "cloud:text-embedding-3-large-1024"
+    private const val BATCH = 96
 
-    suspend fun ensure(ctx: Context, path: String): Boolean = lock.withLock {
-        Llm.init(ctx)
-        if (loadedPath != path || handle == 0L) {
-            if (handle != 0L) LlmNative.nativeFree(handle)
-            handle = LlmNative.nativeLoadEmbedder(path, 512)
-            loadedPath = if (handle != 0L) path else null
+    @Suppress("UNUSED_PARAMETER")
+    suspend fun ensure(ctx: Context, path: String): Boolean = true
+
+    /** The meaning of [text] as a vector, or null if it could not be read. */
+    suspend fun embed(text: String): FloatArray? = embedAll(listOf(text)).firstOrNull()
+
+    /** Vectors for many texts at once, in order; null for a blank text. */
+    suspend fun embedAll(texts: List<String>): List<FloatArray?> = embedBytes(texts).map { b -> b?.let(Vectors::fromBytes) }
+
+    /** The stored form: signed bytes, as the service sends them; null for a blank text. */
+    suspend fun embedBytes(texts: List<String>): List<ByteArray?> {
+        val out = arrayOfNulls<ByteArray>(texts.size)
+        val wanted = texts.indices.filter { texts[it].isNotBlank() }
+        for (chunk in wanted.chunked(BATCH)) {
+            val vectors = CloudReader.embed(chunk.map { texts[it].take(6000) })
+            chunk.forEachIndexed { i, at -> out[at] = vectors[i] }
         }
-        if (handle != 0L) users++
-        handle != 0L
+        return out.toList()
     }
 
-    /** The meaning of [text] as a vector of length 1, or null if it could not be read. */
-    suspend fun embed(text: String): FloatArray? = lock.withLock {
-        if (handle == 0L) null else LlmNative.nativeEmbed(handle, text)?.let(Vectors::normalize)
-    }
-
-    suspend fun release() = lock.withLock {
-        users = maxOf(0, users - 1)
-        if (users == 0 && handle != 0L) { LlmNative.nativeFree(handle); handle = 0L; loadedPath = null }
-    }
+    suspend fun release() = Unit
 }
 
 /**
@@ -45,7 +43,7 @@ object Indexer {
     suspend fun run(ctx: Context, stop: () -> Boolean, progress: (done: Int, left: Int) -> Unit): Boolean {
         val path = Models.embedderPath(ctx) ?: return false
         val db = Db.get(ctx)
-        val name = Models.embedder(ctx).fileName
+        val name = Embedder.CLOUD
         if (Settings.vectorModel(ctx) != name) { db.clearVectors(); Settings.setVectorModel(ctx, name) }
         if (!Embedder.ensure(ctx, path)) return false
         try {
@@ -53,13 +51,10 @@ object Indexer {
             while (!stop()) {
                 val batch = db.unindexed(32)
                 if (batch.isEmpty()) break
-                val out = ArrayList<Pair<Long, ByteArray>>()
-                for ((id, text) in batch) {
-                    if (stop()) break
-                    // A paragraph the model cannot read gets an empty vector, so it is not tried again.
-                    val v = Embedder.embed(Vectors.docText(path, text))
-                    out += id to (v?.let(Vectors::toBytes) ?: ByteArray(0))
-                }
+                if (stop()) break
+                // A paragraph the model cannot read gets an empty vector, so it is not tried again.
+                val vectors = Embedder.embedBytes(batch.map { Vectors.docText(path, it.second) })
+                val out = batch.mapIndexed { i, (id, _) -> id to (vectors[i] ?: ByteArray(0)) }
                 db.saveVectors(out)
                 done += out.size
                 progress(done, db.vectorCounts().second)

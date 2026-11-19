@@ -50,7 +50,9 @@ object Models {
         return f.exists() && m.id !in pending(ctx) && f.length() > m.sizeMb * 1024L * 1024L * 85 / 100
     }
 
-    fun embedderPath(ctx: Context): String? = embedder(ctx).let { if (ready(ctx, it)) file(ctx, it).path else null }
+    /** The meaning model now runs in the cloud (19 Nov 2026), so it is always ready; no download. */
+    @Suppress("UNUSED_PARAMETER")
+    fun embedderPath(ctx: Context): String? = Embedder.CLOUD
 
     fun dir(ctx: Context): File = File(ctx.getExternalFilesDir(null) ?: ctx.filesDir, "models").apply { mkdirs() }
 

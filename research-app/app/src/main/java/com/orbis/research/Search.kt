@@ -8,7 +8,7 @@ import kotlinx.coroutines.withContext
 
 class Finding(val paragraph: Paragraph, val judgement: Judgement)
 
-/** Finds candidate paragraphs by meaning, then classifies each with the latest trained NLI model. */
+/** Finds candidate paragraphs by meaning (OpenAI's embedding model, 19 Nov 2026), then Sol reads each. */
 class Search(private val ctx: Context) {
     private val db = Db.get(ctx)
 
@@ -22,12 +22,15 @@ class Search(private val ctx: Context) {
         val path = Models.embedderPath(ctx)
         if (path == null) { db.setRun(state = Db.RUN_FAILED, message = NO_EMBEDDER); return false }
         if (!Embedder.ensure(ctx, path)) { db.setRun(state = Db.RUN_FAILED, message = "Anlam modeli açılamadı; Model sekmesinden yeniden indirin."); return false }
+        // Vectors from the old phone model are never compared with the cloud model's.
+        if (Settings.vectorModel(ctx) != Embedder.CLOUD) { db.clearVectors(); Settings.setVectorModel(ctx, Embedder.CLOUD) }
         try {
             // A claim that joins several things (definition, harms, measures) is searched part by part.
             say("Sorgu parçalara ayrılıyor…")
             val parts = CloudReader.split(run.claim)
-            val queries = parts.map { part ->
-                val vector = Embedder.embed(Vectors.queryText(path, part)) ?: run {
+            val partVectors = Embedder.embedAll(parts.map { Vectors.queryText(path, it) })
+            val queries = parts.mapIndexed { i, part ->
+                val vector = partVectors[i] ?: run {
                     db.setRun(state = Db.RUN_FAILED, message = "Sorgunun bir bölümü okunamadı.")
                     return false
                 }
@@ -100,16 +103,23 @@ class Search(private val ctx: Context) {
         val groups = sources.map { source ->
             db.liveCandidates(source.id, run.range, TITLES_PER_SOURCE).map { source to it }
         }
+        val titled = ArrayList<Triple<Source, String, String>>()
         for ((source, candidate) in SearchSelection.roundRobin(groups)) {
-            if (stopped() || System.currentTimeMillis() > deadline) break
             val (url, title, _) = candidate
             if (url in readAddresses) continue
             // Short titles such as "Obezite", "Kanser" or "HIV" still describe valid documents.
             val text = title.trim().ifEmpty { Extract.slugText(url) }
             if (text.isBlank()) continue
-            val v = Embedder.embed(Vectors.docText(path, text)) ?: continue
-            val vb = Vectors.toBytes(v)
-            scored += Triple(qs.maxOf { Vectors.score(vb, it) }, source, url)
+            titled += Triple(source, url, text)
+        }
+        // The cloud model reads the titles in batches, so far more of them fit in the time budget.
+        for (chunk in titled.chunked(96)) {
+            if (stopped() || System.currentTimeMillis() > deadline) break
+            val vectors = Embedder.embedBytes(chunk.map { Vectors.docText(path, it.third) })
+            chunk.forEachIndexed { i, (source, url, _) ->
+                val vb = vectors[i] ?: return@forEachIndexed
+                scored += Triple(qs.maxOf { Vectors.score(vb, it) }, source, url)
+            }
         }
         val top = SearchSelection.diverse(scored.sortedByDescending { it.first }, Settings.liveRead(ctx)) { it.second.id }
 
@@ -126,11 +136,10 @@ class Search(private val ctx: Context) {
     }
 
     private suspend fun indexDocument(url: String, path: String) {
-        val vectors = db.paragraphsOfDoc(url).map { (id, text) ->
-            val vector = Embedder.embed(Vectors.docText(path, text))
-            id to (vector?.let(Vectors::toBytes) ?: ByteArray(0))
-        }
-        db.saveVectors(vectors)
+        val paras = db.paragraphsOfDoc(url)
+        if (paras.isEmpty()) return
+        val vectors = Embedder.embedBytes(paras.map { Vectors.docText(path, it.second) })
+        db.saveVectors(paras.mapIndexed { i, (id, _) -> id to (vectors[i] ?: ByteArray(0)) })
     }
 
     /** The trained NLI model reads the original paragraph and the claim directly. */

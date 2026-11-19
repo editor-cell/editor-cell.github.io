@@ -17,6 +17,16 @@ object Vectors {
     fun toBytes(unit: FloatArray): ByteArray =
         ByteArray(unit.size) { (unit[it] * 127f).toInt().coerceIn(-127, 127).toByte() }
 
+    /**
+     * The scale of the bytes the Orbis service sends (cloud meaning model, 19 Nov 2026). The parts
+     * of a long unit vector are small, so ×127 would leave only a handful of steps. Stored vectors
+     * all share this scale and only the order of scores is used, so [score] needs no change.
+     */
+    const val SCALE = 1016f
+
+    /** Back from the service's bytes to a vector of length 1. */
+    fun fromBytes(b: ByteArray): FloatArray = normalize(FloatArray(b.size) { b[it] / SCALE })
+
     /** Similarity of a stored paragraph vector and a claim vector (both length 1): higher is closer. */
     fun score(stored: ByteArray, query: FloatArray): Float {
         val n = minOf(stored.size, query.size)
