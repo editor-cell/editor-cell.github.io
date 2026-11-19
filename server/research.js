@@ -10,7 +10,7 @@
 // Fixed models and task: the endpoint takes no prompts, URLs or model names from callers.
 
 export const MODEL = "gpt-6.2-sol";
-export const VERSION = "gpt-6.2-sol-v2";
+export const VERSION = "gpt-6.2-sol-v1";
 export const SECOND_MODEL = "gpt-6.2-astra";
 const OPENAI_URL = "https://api.openai.com/v1/responses";
 const VERDICTS = ["SUPPORTS", "CONTRADICTS", "UNRELATED"];
