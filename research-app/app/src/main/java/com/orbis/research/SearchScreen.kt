@@ -83,13 +83,18 @@ object SearchState {
     fun say(text: String) { status.value = text }
     fun changed() { version.update { it + 1 } }
 
-    /** [web]: also visit the listed sources' sites now for documents not yet on the phone. */
-    fun start(ctx: Context, web: Boolean) {
+    /**
+     * One step from claim to evrak (owner, 19 Nov 2026): the earlier documents are cleared, the
+     * sources' sites are searched live, and when the search ends the evrak is made and opened.
+     */
+    fun startEvrak(ctx: Context) {
         val c = claim.trim()
         if (c.isEmpty()) return
-        Settings.setLive(ctx, web)
+        Settings.setLive(ctx, true)
         val db = Db.get(ctx)
+        db.clearArchive()
         db.newRun(c, range, sourceIds(db))
+        db.run()?.let { autoEvrakFor(ctx, it.startedAt) }
         SearchWorker.enqueue(ctx, ExistingWorkPolicy.REPLACE)
         changed()
     }
@@ -110,6 +115,12 @@ object SearchState {
         changed()
     }
 
+    /** The search whose end should make the evrak by itself; 0 for none. */
+    fun autoEvrakFor(ctx: Context, startedAt: Long) =
+        ctx.getSharedPreferences("evrak", Context.MODE_PRIVATE).edit().putLong("auto", startedAt).apply()
+
+    fun autoEvrak(ctx: Context): Long = ctx.getSharedPreferences("evrak", Context.MODE_PRIVATE).getLong("auto", 0L)
+
     fun searchesAll() = pickedGroups.isEmpty() && pickedSources.isEmpty()
 
     /** The source ids to search, or null for all of them. */
@@ -117,12 +128,34 @@ object SearchState {
 }
 
 @OptIn(ExperimentalLayoutApi::class)
+/** Writes the evrak (supporting and contradicting paragraphs), saves it to Downloads and opens the share sheet. */
+private suspend fun makeEvrak(ctx: Context, db: Db, claim: String, evidence: List<Finding>) {
+    val result = withContext(Dispatchers.IO) {
+        try {
+            val order = HashMap<String, List<Long>>()
+            fun placed(v: Verdict) = evidence.filter { it.judgement.verdict == v }.map { f ->
+                val ids = order.getOrPut(f.paragraph.docUrl) { db.paragraphsOfDoc(f.paragraph.docUrl).map { it.first } }
+                f.paragraph to ids.indexOf(f.paragraph.id)
+            }
+            val file = EvrakPdf.write(ctx, claim, listOf(
+                "Destekleyenler" to Evrak.group(placed(Verdict.SUPPORTS)),
+                "Karşı çıkanlar" to Evrak.group(placed(Verdict.CONTRADICTS)),
+            ))
+            file to EvrakPdf.saveToDownloads(ctx, file)
+        } catch (e: Exception) { null }
+    }
+    if (result == null) Toast.makeText(ctx, "Evrak hazırlanamadı.", Toast.LENGTH_SHORT).show()
+    else {
+        if (result.second) Toast.makeText(ctx, "Evrak İndirilenler klasörüne kaydedildi.", Toast.LENGTH_SHORT).show()
+        EvrakPdf.share(ctx, result.first)
+    }
+}
+
 @Composable
 fun SearchScreen(goTo: (Int) -> Unit) {
     val ctx = LocalContext.current
     val db = remember { Db.get(ctx) }
     val totals = remember { db.totals() }
-    val vectors = remember { db.vectorCounts() }
     val hasEmbedder = remember { Models.embedderPath(ctx) != null }
     val s = SearchState
     val version by s.version.collectAsState()
@@ -141,6 +174,15 @@ fun SearchScreen(goTo: (Int) -> Unit) {
         uncertain = if (compatible) withContext(Dispatchers.IO) { db.answers().count { it.second?.startsWith("UNCERTAIN") == true } } else 0
         run = r?.takeIf { compatible || it.state == Db.RUN_GOING }; findings = f
         if (s.claim.isEmpty() && r != null) s.claim = r.claim
+        // The search started with "Evrak oluştur" has ended: the evrak is made and opened at once.
+        if (r != null && r.state != Db.RUN_GOING && r.startedAt != 0L && s.autoEvrak(ctx) == r.startedAt) {
+            s.autoEvrakFor(ctx, 0L)
+            if (r.state == Db.RUN_DONE) {
+                val evidence = f.filter { it.judgement.analogy == null }
+                if (evidence.isEmpty()) Toast.makeText(ctx, "Destekleyen ya da karşı çıkan paragraf bulunamadı; evrak oluşturulmadı.", Toast.LENGTH_LONG).show()
+                else { making = true; makeEvrak(ctx, db, r.claim, evidence); making = false }
+            }
+        }
         // A search the phone interrupted (the app was closed) goes on by itself.
         if (r?.state == Db.RUN_GOING && !s.working.value) SearchWorker.enqueue(ctx.applicationContext, ExistingWorkPolicy.KEEP)
     }
@@ -170,51 +212,27 @@ fun SearchScreen(goTo: (Int) -> Unit) {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
                 if (going) OutlinedButton(onClick = { s.stop(ctx.applicationContext) }) { Text("Durdur") }
                 else {
-                    val can = s.claim.isNotBlank() && hasEmbedder
-                    OutlinedButton(onClick = { s.start(ctx.applicationContext, web = false) }, enabled = can, shape = MaterialTheme.shapes.small) { Text("Telefonda arat") }
-                    Button(onClick = { s.start(ctx.applicationContext, web = true) }, enabled = can, shape = MaterialTheme.shapes.small) { Text("Webde arat") }
+                    val can = s.claim.isNotBlank() && hasEmbedder && !making
+                    Button(onClick = { s.startEvrak(ctx.applicationContext) }, enabled = can, shape = MaterialTheme.shapes.small) { Text(if (making) "Evrak hazırlanıyor…" else "Evrak oluştur") }
                 }
                 if (run?.state in setOf(Db.RUN_STOPPED, Db.RUN_FAILED) && (run?.done ?: 0) < (run?.total ?: 0) && run?.claim == s.claim.trim()) {
                     OutlinedButton(onClick = { s.resume(ctx.applicationContext) }) { Text("Kaldığı yerden devam et") }
                 }
                 if (findings.isNotEmpty()) OutlinedButton(onClick = { copyAll(ctx, run?.claim ?: s.claim, findings) }) { Text("Tümünü kopyala") }
                 val evidence = findings.filter { it.judgement.analogy == null }
-                if (evidence.isNotEmpty()) OutlinedButton(enabled = !making, onClick = {
+                if (!going && evidence.isNotEmpty()) OutlinedButton(enabled = !making, onClick = {
                     making = true
                     scope.launch {
-                        val claim = run?.claim ?: s.claim.trim()
-                        val result = withContext(Dispatchers.IO) {
-                            try {
-                                val order = HashMap<String, List<Long>>()
-                                fun placed(v: Verdict) = evidence.filter { it.judgement.verdict == v }.map { f ->
-                                    val ids = order.getOrPut(f.paragraph.docUrl) { db.paragraphsOfDoc(f.paragraph.docUrl).map { it.first } }
-                                    f.paragraph to ids.indexOf(f.paragraph.id)
-                                }
-                                val file = EvrakPdf.write(ctx, claim, listOf(
-                                    "Destekleyenler" to Evrak.group(placed(Verdict.SUPPORTS)),
-                                    "Karşı çıkanlar" to Evrak.group(placed(Verdict.CONTRADICTS)),
-                                ))
-                                file to EvrakPdf.saveToDownloads(ctx, file)
-                            } catch (e: Exception) { null }
-                        }
+                        makeEvrak(ctx, db, run?.claim ?: s.claim.trim(), evidence)
                         making = false
-                        if (result == null) Toast.makeText(ctx, "Evrak hazırlanamadı.", Toast.LENGTH_SHORT).show()
-                        else {
-                            if (result.second) Toast.makeText(ctx, "Evrak İndirilenler klasörüne kaydedildi.", Toast.LENGTH_SHORT).show()
-                            EvrakPdf.share(ctx, result.first)
-                        }
                     }
-                }) { Text(if (making) "Evrak hazırlanıyor…" else "Evrak oluştur") }
+                }) { Text("Evrakı yeniden aç") }
             }
-            Text("Telefonda arat: kayıtlı belgelerinde. Webde arat: seçili kaynaklardan yeni belgeler de alır.", style = MaterialTheme.typography.bodySmall)
-            Text("Paragrafları Sol okur; emin olmadığı yerde Astra'ya sorar. Her iki arama için internet gerekir; sorgu ve aday paragraflar servise gönderilir.", style = MaterialTheme.typography.bodySmall)
+            Text("Seçili kaynakların sitelerinde arar; arama bitince evrakı kendisi oluşturup açar. Telefonda arşiv tutulmaz.", style = MaterialTheme.typography.bodySmall)
+            Text("Paragrafları Sol okur; emin olmadığı yerde Astra'ya sorar. İnternet gerekir; sorgu ve aday paragraflar servise gönderilir.", style = MaterialTheme.typography.bodySmall)
           }
         }
         if (!hasEmbedder) item { Notice(Search.NO_EMBEDDER, "Model sekmesine git") { goTo(3) } }
-        else if (totals.first == 0) item { Notice("Telefonda henüz belge yok. Önce kaynak ekleyip belge toplayın.", "Kaynaklara git") { goTo(1) } }
-        else if (vectors.second > 0) item {
-            Notice("${vectors.second} paragraf henüz anlam dizininde değil; aramada çıkmazlar. Topla sekmesinden dizini tamamlayın.", "Topla sekmesine git") { goTo(2) }
-        }
         val r = run
         if (r != null && r.state == Db.RUN_GOING) item {
             Column {

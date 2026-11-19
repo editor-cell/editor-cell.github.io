@@ -348,6 +348,19 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
     // ---- the search under way ----
 
     /** Starts a new search, replacing the last one. */
+    /**
+     * The owner keeps no archive on the phone (19 Nov 2026): before each new evrak search the
+     * documents read earlier go (their paragraphs and meaning vectors with them), and their
+     * addresses count as unread again, so a later live search can open them anew. Sources,
+     * headings and the sources' address lists stay.
+     */
+    fun clearArchive() = tx { db ->
+        db.delete("search_items", null, null)
+        db.delete("search_run", null, null)
+        db.delete("docs", null, null)
+        db.update("queue", ContentValues().apply { put("state", 0) }, "state != 0", null)
+    }
+
     fun newRun(claim: String, range: DateRange, sourceIds: Set<Long>?) = tx { db ->
         db.delete("search_items", null, null)
         db.delete("search_run", null, null)
