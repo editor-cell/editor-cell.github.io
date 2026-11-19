@@ -31,9 +31,15 @@ const RESPONSE_SCHEMA = {
 
 /**
  * @typedef {{ limit: (options: { key: string }) => Promise<{ success: boolean }> }} RateLimit
- * @typedef {{ GEMINI_API_KEY?: string, REQUEST_LIMIT?: RateLimit }} ResearchEnv
+ * @typedef {{ GEMINI_API_KEY?: string, GEMINI_KEY_API?: string, REQUEST_LIMIT?: RateLimit }} ResearchEnv
  * @typedef {{ verdict: string, query_kind: string, reason: string }} Answer
  */
+
+// The owner saved the secret in Cloudflare as GEMINI_KEY_API (19 Nov 2026); either name works.
+/** @param {ResearchEnv} env */
+function geminiKey(env) {
+  return env.GEMINI_API_KEY || env.GEMINI_KEY_API;
+}
 
 /** @param {unknown} data @param {number} [status] */
 function json(data, status = 200) {
@@ -149,7 +155,7 @@ async function askGemini(input, key) {
 export async function handleResearch(request, env) {
   const url = new URL(request.url);
   if (url.pathname === "/research/health" && request.method === "GET") {
-    return json({ ok: Boolean(env.GEMINI_API_KEY), model: MODEL, version: VERSION });
+    return json({ ok: Boolean(geminiKey(env)), model: MODEL, version: VERSION });
   }
   if (url.pathname !== "/research/judge") return json({ error: "Adres bulunamadı." }, 404);
   if (request.method !== "POST") return json({ error: "POST kullanın." }, 405);
@@ -162,7 +168,7 @@ export async function handleResearch(request, env) {
     });
     if (!limited.success) return json({ error: "Çok sık istek gönderildi; biraz sonra yeniden deneyin." }, 429);
   }
-  const key = env.GEMINI_API_KEY;
+  const key = geminiKey(env);
   if (!key) return json({ error: "Gemini anahtarı Cloudflare'e henüz eklenmemiş." }, 503);
 
   let input;
