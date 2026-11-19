@@ -1,10 +1,36 @@
 import com.orbis.research.Extract
+import com.orbis.research.CloudReader
+import com.orbis.research.ParagraphReading
 import com.orbis.research.Robots
+import com.orbis.research.SearchSelection
 import com.orbis.research.Sources
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
+
+class SeparateQuestionTest {
+    private val query = "ışık kirliliğinin tanımı nedir.zararları nelerdir.Devletler ışık kirliliğini azaltmak için neler yapıyorlar"
+    private val parts = listOf(
+        "Işık kirliliğinin tanımı", "Işık kirliliğinin zararları", "Devletlerin ışık kirliliğini azaltmak için aldığı önlemler",
+    )
+
+    @Test fun obviousMultipartQueryCannotFallBackToTheWholeQueryOrAnIncompleteSplit() {
+        assertEquals(parts, CloudReader.separateQueries(query, parts))
+        assertFailsWith<IllegalStateException> { CloudReader.separateQueries(query, listOf(query)) }
+        assertFailsWith<IllegalStateException> { CloudReader.separateQueries(query, parts.take(2)) }
+        assertEquals(listOf("Işık kirliliği nedir?"), CloudReader.separateQueries("Işık kirliliği nedir?", listOf("Işık kirliliği nedir?")))
+    }
+
+    @Test fun theSameParagraphCanBeJudgedIndependentlyForDifferentQuestions() {
+        val readings = SearchSelection.readings(parts.zip(listOf(listOf(9L, 9L, 11L), listOf(9L), listOf(12L)))).toList()
+        assertEquals(
+            listOf(ParagraphReading(9L, parts[0]), ParagraphReading(9L, parts[1]), ParagraphReading(12L, parts[2]), ParagraphReading(11L, parts[0])),
+            readings,
+        )
+    }
+}
 
 class SourcesTest {
     @Test fun oneAddressPerLine() {

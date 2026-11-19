@@ -55,9 +55,10 @@ class SearchWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
             for ((n, item) in pending.withIndex()) {
                 if (isStopped || !current()) break
                 val left = if (n >= 2) ((System.currentTimeMillis() - started) / n * (pending.size - n) / 1000).toInt() else -1
-                say("Sol: paragraf ${total - pending.size + n + 1}/$total okunuyor…" + if (left >= 0) " (yaklaşık ${duration(left)} kaldı)" else "")
-                val answer = search.judge(run.claim, item.second)
-                if (answer == null || isStopped || !current()) break
+                say("Sol: ${total - pending.size + n + 1}/$total değerlendiriliyor · ${item.second.query.take(80)}" +
+                    if (left >= 0) " (yaklaşık ${duration(left)} kaldı)" else "")
+                val answer = search.judge(item.second)
+                if (isStopped || !current()) break
                 db.saveAnswer(item.first, answer, run.startedAt)
                 SearchState.changed()
             }

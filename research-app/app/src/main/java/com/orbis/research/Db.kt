@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper
  * Everything the app keeps: the sources and their headings, the queue of addresses to read,
  * documents, their paragraphs and the meaning vector of each, and the search under way.
  */
-class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", null, 9) {
+class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", null, 10) {
 
     override fun onConfigure(db: SQLiteDatabase) {
         // SQLite cannot turn this off inside onUpgrade's transaction. The source table is
@@ -78,6 +78,12 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
         if (oldVersion < 9) {
             db.execSQL("UPDATE queue SET state = 0 WHERE state != 0")
         }
+        if (oldVersion < 10 && oldVersion >= 3) {
+            db.execSQL("ALTER TABLE search_items ADD COLUMN query TEXT NOT NULL DEFAULT ''")
+            // Any unfinished search prepared by the old app must rebuild its paragraph/question pairs.
+            db.execSQL("UPDATE search_run SET prepared = 0 WHERE state IN (?, ?, ?)",
+                arrayOf(RUN_GOING, RUN_STOPPED, RUN_FAILED))
+        }
     }
 
     private fun createSources(db: SQLiteDatabase, table: String) {
@@ -102,7 +108,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
         db.execSQL("""CREATE TABLE search_run(id INTEGER PRIMARY KEY CHECK (id = 1), claim TEXT NOT NULL, date_from TEXT,
             date_to TEXT, undated INTEGER NOT NULL, sources TEXT, state INTEGER NOT NULL, prepared INTEGER NOT NULL DEFAULT 0,
             suggestion TEXT, message TEXT, started_at INTEGER NOT NULL, english TEXT, concepts TEXT)""")
-        db.execSQL("CREATE TABLE search_items(idx INTEGER PRIMARY KEY, para_id INTEGER NOT NULL, answer TEXT, judged INTEGER NOT NULL DEFAULT 0)")
+        db.execSQL("CREATE TABLE search_items(idx INTEGER PRIMARY KEY, para_id INTEGER NOT NULL, answer TEXT, judged INTEGER NOT NULL DEFAULT 0, query TEXT NOT NULL DEFAULT '')")
     }
 
     /** Headings (version 2): removing a heading leaves its sources; removing a source leaves the heading. */
@@ -467,9 +473,21 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
         if (v.size() > 0) writableDatabase.update("search_run", v, "id = 1", null)
     }
 
-    fun setItems(paraIds: List<Long>) = tx { db ->
+    fun prepareItems(startedAt: Long, readings: List<ParagraphReading>): Boolean = tx { db ->
+        val active = db.update(
+            "search_run", ContentValues().apply { put("prepared", 1) },
+            "id = 1 AND started_at = ? AND state = ?", arrayOf(startedAt.toString(), RUN_GOING.toString()),
+        )
+        if (active == 0) return@tx false
         db.delete("search_items", null, null)
-        paraIds.forEachIndexed { i, id -> db.insert("search_items", null, ContentValues().apply { put("idx", i); put("para_id", id) }) }
+        readings.forEachIndexed { i, reading ->
+            db.insertOrThrow("search_items", null, ContentValues().apply {
+                put("idx", i)
+                put("para_id", reading.paragraphId)
+                put("query", reading.query)
+            })
+        }
+        true
     }
 
     /**
@@ -484,9 +502,9 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
     }
 
     /** Paragraphs of the search not yet read by the model, in order. */
-    fun pendingItems(): List<Pair<Int, Long>> = readableDatabase.rawQuery(
-        "SELECT idx, para_id FROM search_items WHERE judged = 0 ORDER BY idx", null,
-    ).use { c -> buildList { while (c.moveToNext()) add(c.getInt(0) to c.getLong(1)) } }
+    fun pendingItems(): List<Pair<Int, ParagraphReading>> = readableDatabase.rawQuery(
+        "SELECT idx, para_id, query FROM search_items WHERE judged = 0 ORDER BY idx", null,
+    ).use { c -> buildList { while (c.moveToNext()) add(c.getInt(0) to ParagraphReading(c.getLong(1), c.getString(2))) } }
 
     /** Saves an answer, but only into the search it belongs to (a new search may have replaced it). */
     fun saveAnswer(idx: Int, answer: String?, runStartedAt: Long) {

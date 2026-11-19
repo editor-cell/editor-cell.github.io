@@ -237,7 +237,7 @@ fun SearchScreen(goTo: (Int) -> Unit) {
                 }) { Text("Evrakı yeniden aç") }
             }
             Text("Seçili kaynakların sitelerinde arar; arama bitince evrakı kendisi oluşturup açar. Telefonda arşiv tutulmaz.", style = MaterialTheme.typography.bodySmall)
-            Text("Paragrafları Sol okur; emin olmadığı yerde Astra'ya sorar. İnternet gerekir; sorgu ve aday paragraflar servise gönderilir.", style = MaterialTheme.typography.bodySmall)
+            Text("Her soru ayrı aranır. Sorular ve aday paragraflar servise gönderilir. Sol emin olmadığında Astra'ya sorar.", style = MaterialTheme.typography.bodySmall)
           }
         }
         if (!hasEmbedder) item { Notice(Search.NO_EMBEDDER, "Model sekmesine git") { goTo(3) } }
@@ -250,7 +250,7 @@ fun SearchScreen(goTo: (Int) -> Unit) {
             }
         }
         if (r != null && (r.state == Db.RUN_FAILED || r.state == Db.RUN_STOPPED) && r.message != null) item {
-            Text(r.message + if (r.state == Db.RUN_STOPPED) " ${r.done}/${r.total} paragraf okunmuştu." else "", style = MaterialTheme.typography.bodyMedium)
+            Text(r.message + if (r.state == Db.RUN_STOPPED) " ${r.done}/${r.total} değerlendirme tamamlandı." else "", style = MaterialTheme.typography.bodyMedium)
         }
         if (r != null && r.state == Db.RUN_DONE && findings.isEmpty()) item {
             Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
@@ -260,7 +260,7 @@ fun SearchScreen(goTo: (Int) -> Unit) {
                         if (r.total == 0 && !r.concepts.isNullOrBlank()) "Yargının kavramlarını (${Concepts.names(Concepts.parse(r.concepts))}) " +
                             "birlikte anlatan paragraf, seçilen kaynaklarda ve tarihlerde bulunan belgelerde yok."
                         else if (r.total == 0) "Seçilen kaynaklarda ve tarihlerde anlam dizininde paragraf yok."
-                        else "Yargıya anlamca en yakın ${r.total} paragraf okundu; evraka alınabilecek yeterince belirgin bir sonuç bulunamadı. Bu, kaynaklarda kanıt olmadığı anlamına gelmez.",
+                        else "${r.total} paragraf değerlendirmesi tamamlandı. Evraka alınabilecek bir sonuç bulunamadı.",
                         style = MaterialTheme.typography.bodySmall,
                     )
                     if (notes.isNotEmpty()) {
@@ -271,7 +271,7 @@ fun SearchScreen(goTo: (Int) -> Unit) {
             }
         }
         if (r != null && r.state == Db.RUN_DONE && findings.isNotEmpty()) item {
-            Text("${r.total} paragraf okundu, ${findings.size} tanesi model tarafından destekleyen veya karşı çıkan aday olarak seçildi.", style = MaterialTheme.typography.bodySmall)
+            Text("${r.total} paragraf değerlendirmesinden ${findings.size} bulgu çıktı.", style = MaterialTheme.typography.bodySmall)
         }
         if (r != null && r.state == Db.RUN_DONE && !r.concepts.isNullOrBlank()) item {
             Text("Aranan kavramlar: ${Concepts.names(Concepts.parse(r.concepts))}", style = MaterialTheme.typography.bodySmall)
@@ -279,7 +279,7 @@ fun SearchScreen(goTo: (Int) -> Unit) {
         if (uncertain > 0) item {
             Text("$uncertain paragrafta karar belirsiz kaldı; bunlar destekleyen veya karşı çıkan olarak evraka alınmadı.", style = MaterialTheme.typography.bodySmall)
         }
-        items(findings, key = { it.paragraph.id }) { f -> FindingCard(f) }
+        items(findings, key = { "${it.paragraph.id}:${it.judgement.verdict}" }) { f -> FindingCard(f) }
         if (r?.suggestion != null) item { SuggestionCard(r.suggestion) }
         item { Text("", Modifier.padding(bottom = 24.dp)) }
     }

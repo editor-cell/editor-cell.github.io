@@ -1,7 +1,12 @@
 package com.orbis.research
 
+data class ParagraphReading(val paragraphId: Long, val query: String)
+
 /** Give every selected source a turn before spending the time budget on another source. */
 object SearchSelection {
+    fun readings(candidates: List<Pair<String, List<Long>>>): Sequence<ParagraphReading> =
+        roundRobin(candidates.map { (query, ids) -> ids.map { ParagraphReading(it, query) } }).distinct()
+
     fun <T> roundRobin(groups: List<List<T>>): Sequence<T> = sequence {
         val cursors = groups.map { it.iterator() }
         while (cursors.any { it.hasNext() }) {

@@ -91,17 +91,30 @@ object CloudReader {
         val why = if (reason.isNotEmpty()) "\nREASON: $reason" else ""
         return "$verdict\nCLOUD_MODEL: $MODEL_ID\nQUERY_KIND: $kind$split$why"
     }
-    /** The query as separate parts to search on their own; the whole query when it cannot be split. */
-    suspend fun split(query: String): List<String> = try {
+    /** Each returned part must be usable as a separate search and reading question. */
+    suspend fun split(query: String): List<String> {
         val body = JSONObject().put("query", query).toString()
         val data = request(Request.Builder().url("$BASE_URL/split")
             .post(body.toRequestBody("application/json; charset=utf-8".toMediaType())).build())
-        val arr = data.optJSONArray("parts")
-        val parts = (0 until (arr?.length() ?: 0)).map { arr!!.getString(it).trim() }.filter { it.isNotEmpty() }.distinct().take(4)
-        parts.ifEmpty { listOf(query) }
-    } catch (e: kotlin.coroutines.cancellation.CancellationException) {
-        throw e
-    } catch (e: Exception) {
-        listOf(query)
+        val arr = data.getJSONArray("parts")
+        val parts = List(arr.length()) { arr.getString(it) }
+        return separateQueries(query, parts)
     }
+
+    private val questionBoundary = Regex("""(?iu)(?:[?!]+|\b(?:nedir|nelerdir)\.)\s*(?=[\p{L}\p{N}])""")
+    private val webAddress = Regex("""https?://\S+""", RegexOption.IGNORE_CASE)
+
+    internal fun separateQueries(query: String, parts: List<String>): List<String> {
+        val clean = parts.map { it.trim() }.filter { it.isNotEmpty() }.distinct()
+        check(clean.isNotEmpty()) { "Sorgu bölümleri servisten alınamadı." }
+        val minimumParts = boundaryCount(query) + 1
+        if (minimumParts > 1) {
+            check(clean.size >= minimumParts && query.trim() !in clean && clean.none { boundaryCount(it) > 0 }) {
+                "Sorular ayrı ayrı hazırlanamadı. Yeniden deneyin."
+            }
+        }
+        return clean
+    }
+
+    private fun boundaryCount(query: String): Int = questionBoundary.findAll(webAddress.replace(query, " ")).count()
 }

@@ -26,32 +26,39 @@ class Search(private val ctx: Context) {
             // A claim that joins several things (definition, harms, measures) is searched part by part.
             say("Sorgu parçalara ayrılıyor…")
             val parts = CloudReader.split(run.claim)
-            val qs = parts.mapNotNull { Embedder.embed(Vectors.queryText(path, it)) }
-            if (qs.isEmpty()) { db.setRun(state = Db.RUN_FAILED, message = "Yargı okunamadı."); return false }
+            val queries = parts.map { part ->
+                val vector = Embedder.embed(Vectors.queryText(path, part)) ?: run {
+                    db.setRun(state = Db.RUN_FAILED, message = "Sorgunun bir bölümü okunamadı.")
+                    return false
+                }
+                part to vector
+            }
             val directUrls = linkedSetOf<String>()
             if (Settings.live(ctx) && !stopped()) {
-                try { live(run, qs, path, say, stopped, directUrls) }
+                try { live(run, queries.map { it.second }, path, say, stopped, directUrls) }
                 catch (e: CancellationException) { throw e }
                 catch (e: Exception) { say("Canlı arama yapılamadı (${e.message}); telefondaki belgelerle sürüyor.") }
             }
             if (stopped()) return false
             say("Yargıya anlamca en yakın paragraflar bulunuyor…")
             val total = Settings.candidates(ctx)
-            val picked = LinkedHashSet<Long>()
+            val picked = LinkedHashSet<ParagraphReading>()
             // Leave room for both the exact addresses the user supplied and results from the wider crawl.
             if (directUrls.isNotEmpty()) {
-                val reserve = maxOf(qs.size, total / 3)
-                val direct = qs.map { db.closest(it, reserve, run.range, run.sourceIds, directUrls, directOnly = true) }
-                picked.addAll(SearchSelection.roundRobin(direct).distinct().take(reserve).toList())
+                val reserve = maxOf(queries.size, total / 3)
+                val direct = queries.map { (part, vector) ->
+                    part to db.closest(vector, reserve, run.range, run.sourceIds, directUrls, directOnly = true)
+                }
+                picked.addAll(SearchSelection.readings(direct).take(reserve).toList())
             }
-            val general = qs.map { db.closest(it, total, run.range, run.sourceIds, directUrls) }
-            picked.addAll(SearchSelection.roundRobin(general).filterNot { it in picked }.distinct().take(total - picked.size).toList())
-            db.setItems(picked.toList())
-            db.setRun(prepared = true)
+            val general = queries.map { (part, vector) ->
+                part to db.closest(vector, total, run.range, run.sourceIds, directUrls)
+            }
+            picked.addAll(SearchSelection.readings(general).filterNot { it in picked }.take(total - picked.size).toList())
+            return !stopped() && db.prepareItems(run.startedAt, picked.toList())
         } finally {
             Embedder.release()
         }
-        return true
     }
 
     private suspend fun live(
@@ -127,9 +134,9 @@ class Search(private val ctx: Context) {
     }
 
     /** The trained NLI model reads the original paragraph and the claim directly. */
-    suspend fun judge(claim: String, paraId: Long): String? {
-        val p = db.paragraph(paraId) ?: return "UNRELATED"
-        return Nli.judge(p.text, claim)
+    suspend fun judge(reading: ParagraphReading): String {
+        val p = db.paragraph(reading.paragraphId) ?: return "UNRELATED"
+        return Nli.judge(p.text, reading.query)
     }
 
     /**
@@ -142,6 +149,7 @@ class Search(private val ctx: Context) {
             val p = db.paragraph(id) ?: return@mapNotNull null
             Prompts.parseJudgement(answer, p.text, claim)?.let { Finding(p, it) }
         }.sortedWith(compareBy<Finding>({ it.judgement.analogy != null }, { it.judgement.indirect }, { it.judgement.verdict.ordinal }))
+            .distinctBy { it.paragraph.id to it.judgement.verdict }
     }
 
     companion object {
