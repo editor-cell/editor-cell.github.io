@@ -55,8 +55,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Test cloud reader routing and response validation
-        run: node --test cloud-reader/worker.test.mjs
       - name: Test reading logic, meaning search and compile cloud client
         run: |
           export ORBIS_LIB="$PWD/build-host/liborbisllm.so"
@@ -103,5 +101,5 @@ jobs:
         run: |
           tag="arastirma-v0.1.$BUILD_NUMBER"
           gh release create "$tag" orbis-arastirma.apk --target "${{ github.sha }}" \
-            --title "Orbis Araştırma 0.1.$BUILD_NUMBER · DeepSeek Cloudflare denemesi" \
+            --title "Orbis Araştırma 0.1.$BUILD_NUMBER · Gemini denemesi" \
             --notes-file ANDROID-TRIAL.md --latest

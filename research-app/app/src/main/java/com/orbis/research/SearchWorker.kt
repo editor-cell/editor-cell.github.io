@@ -41,7 +41,7 @@ class SearchWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
         var modelAcquired = false
         SearchState.working.value = true
         try {
-            say("Cloudflare üzerinden DeepSeek'e bağlanılıyor…")
+            say("Cloudflare üzerinden Gemini'ye bağlanılıyor…")
             Nli.ensure(ctx)
             modelAcquired = true
             val search = Search(ctx)
@@ -55,7 +55,7 @@ class SearchWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
             for ((n, item) in pending.withIndex()) {
                 if (isStopped || !current()) break
                 val left = if (n >= 2) ((System.currentTimeMillis() - started) / n * (pending.size - n) / 1000).toInt() else -1
-                say("DeepSeek: paragraf ${total - pending.size + n + 1}/$total okunuyor…" + if (left >= 0) " (yaklaşık ${duration(left)} kaldı)" else "")
+                say("Gemini: paragraf ${total - pending.size + n + 1}/$total okunuyor…" + if (left >= 0) " (yaklaşık ${duration(left)} kaldı)" else "")
                 val answer = search.judge(run.claim, item.second)
                 if (answer == null || isStopped || !current()) break
                 db.saveAnswer(item.first, answer, run.startedAt)

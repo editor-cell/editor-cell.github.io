@@ -141,7 +141,7 @@ fun ModelScreen() {
     }
 
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
-        ScreenIntro("04 / MODELLER", "Araştırmanın motoru.", "Paragrafları DeepSeek sunucuda okur. Telefona DeepSeek indirmen gerekmez.")
+        ScreenIntro("04 / MODELLER", "Araştırmanın motoru.", "Paragrafları Gemini sunucuda okur. Telefona model indirmen gerekmez.")
         SectionLabel("01 / PARAGRAFLARI BUL")
         for (emb in Models.embedders) {
             val have = emb.id in haveEmb
@@ -167,20 +167,20 @@ fun ModelScreen() {
         SectionLabel("02 / PARAGRAFLARI DEĞERLENDİR")
         Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface), border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)) {
             Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text("DeepSeek R1 · 32B · Cloudflare", style = MaterialTheme.typography.titleMedium)
+                Text("Gemini 4 Carbon · Cloudflare üzerinden", style = MaterialTheme.typography.titleMedium)
                 Text("Seçili paragraf okuyucu. Sorgu ve aday paragraflar internet üzerinden Cloudflare'e gönderilir; model telefona indirilmez.", style = MaterialTheme.typography.bodySmall)
-                Text("Paragraf bulma için yukarıdaki anlam modeli telefonunda çalışmaya devam eder. DeepSeek bağlantı hatası verirse arama durur; başka modele geçilmez.", style = MaterialTheme.typography.bodySmall)
+                Text("Paragraf bulma için yukarıdaki anlam modeli telefonunda çalışmaya devam eder. Gemini bağlantı hatası verirse arama durur; başka modele geçilmez.", style = MaterialTheme.typography.bodySmall)
                 Button(enabled = !working && !cloudChecking, onClick = {
-                    cloudChecking = true; cloudMessage = "DeepSeek deneniyor…"
+                    cloudChecking = true; cloudMessage = "Gemini deneniyor…"
                     scope.launch {
                         cloudMessage = try {
                             val answer = CloudReader.judge("The survey found a higher prevalence of obesity in Country A than in Country B.", "Obezitenin daha sık görüldüğü ülkeler")
                             check(answer.startsWith("SUPPORTS")) { "Model deneme paragrafını seçmedi." }
-                            "Bağlantı başarılı. DeepSeek deneme paragrafını okudu."
-                        } catch (e: Exception) { e.message ?: "DeepSeek'e bağlanılamadı." }
+                            "Bağlantı başarılı. Gemini deneme paragrafını okudu."
+                        } catch (e: Exception) { e.message ?: "Gemini'ye bağlanılamadı." }
                         cloudChecking = false
                     }
-                }) { Text(if (cloudChecking) "Deneniyor…" else "DeepSeek'i dene") }
+                }) { Text(if (cloudChecking) "Deneniyor…" else "Gemini'yi dene") }
                 if (cloudMessage.isNotEmpty()) Text(cloudMessage, style = MaterialTheme.typography.bodySmall)
             }
         }

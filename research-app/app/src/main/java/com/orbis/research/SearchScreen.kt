@@ -207,7 +207,7 @@ fun SearchScreen(goTo: (Int) -> Unit) {
                 }) { Text(if (making) "Evrak hazırlanıyor…" else "Evrak oluştur") }
             }
             Text("Telefonda arat: kayıtlı belgelerinde. Webde arat: seçili kaynaklardan yeni belgeler de alır.", style = MaterialTheme.typography.bodySmall)
-            Text("Paragrafları DeepSeek, Cloudflare üzerinde okur. Her iki arama için internet gerekir; sorgu ve aday paragraflar servise gönderilir.", style = MaterialTheme.typography.bodySmall)
+            Text("Paragrafları Gemini okur. Her iki arama için internet gerekir; sorgu ve aday paragraflar servise gönderilir.", style = MaterialTheme.typography.bodySmall)
           }
         }
         if (!hasEmbedder) item { Notice(Search.NO_EMBEDDER, "Model sekmesine git") { goTo(3) } }
