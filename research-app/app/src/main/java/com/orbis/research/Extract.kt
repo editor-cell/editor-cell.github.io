@@ -42,8 +42,17 @@ object Extract {
             take(el.text())
         }
         if (out.size < 3) {
-            // Pages without paragraph tags: blocks of text that sit directly in a container.
-            for (el in main.select("div, section, td")) if (el.ownText().length >= 120) take(el.ownText())
+            // Pages without paragraph tags: blocks of text that sit directly in a container. Some
+            // government pages (Hong Kong press releases, 19 Nov 2026) keep the whole text in one
+            // span with paragraphs parted by <br><br>, so line breaks are kept and split on.
+            main.select("br").forEach { it.replaceWith(org.jsoup.nodes.TextNode("\n")) }
+            for (el in main.select("div, section, td, span")) {
+                val own = el.textNodes().joinToString("") { it.wholeText }
+                for (block in own.split(Regex("\\n[ \\t\\u00A0]*\\n"))) {
+                    val text = block.replace(Regex("\\s+"), " ").trim()
+                    if (text.length >= 80) take(text)
+                }
+            }
         }
         return Page(title, date, out, links, pdfLinks)
     }
