@@ -190,8 +190,16 @@ async function askGemini(input, key) {
     signal: AbortSignal.timeout(230000),
   });
   if (!response.ok) {
-    console.error(JSON.stringify({ event: "gemini_failed", status: response.status }));
-    throw new Error(`gemini ${response.status}`);
+    // Google's error text names the cause (wrong model, quota, bad schema); it never holds the key.
+    const detail = await response.text().then((text) => {
+      try {
+        return String(JSON.parse(text)?.error?.message ?? text);
+      } catch {
+        return text;
+      }
+    }, () => "");
+    console.error(JSON.stringify({ event: "gemini_failed", status: response.status, detail: detail.slice(0, 300) }));
+    throw new Error(`gemini ${response.status}: ${detail.slice(0, 300)}`);
   }
   return parseAnswer(answerText(await response.json()));
 }
@@ -273,7 +281,10 @@ export async function handleResearch(request, env) {
   } catch (error) {
     console.error(JSON.stringify({ event: "inference_failed", name: error instanceof Error ? error.name : "Error" }));
     return json(
-      { error: "Gemini şu anda yanıt veremedi. Bağlantıyı veya Gemini kredisini kontrol edip yeniden deneyin." },
+      {
+        error: "Gemini şu anda yanıt veremedi. Bağlantıyı veya Gemini kredisini kontrol edip yeniden deneyin.",
+        detail: error instanceof Error ? error.message.slice(0, 300) : "",
+      },
       502,
     );
   }
