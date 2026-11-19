@@ -141,7 +141,7 @@ fun ModelScreen() {
     }
 
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
-        ScreenIntro("04 / MODELLER", "Araştırmanın motoru.", "Paragrafları Astra sunucuda okur, Sol ikinci görüş verir. Telefona model indirmen gerekmez.")
+        ScreenIntro("04 / MODELLER", "Araştırmanın motoru.", "Paragrafları Sol sunucuda okur; emin olmadığı yerde Astra'ya sorar. Telefona model indirmen gerekmez.")
         SectionLabel("01 / PARAGRAFLARI BUL")
         for (emb in Models.embedders) {
             val have = emb.id in haveEmb
@@ -167,20 +167,20 @@ fun ModelScreen() {
         SectionLabel("02 / PARAGRAFLARI DEĞERLENDİR")
         Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface), border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)) {
             Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text("GPT-6.2 Astra ve Sol · Cloudflare üzerinden", style = MaterialTheme.typography.titleMedium)
+                Text("GPT-6.2 Sol, gerekirse Astra · Cloudflare üzerinden", style = MaterialTheme.typography.titleMedium)
                 Text("Seçili paragraf okuyucu. Sorgu ve aday paragraflar internet üzerinden Cloudflare'e gönderilir; model telefona indirilmez.", style = MaterialTheme.typography.bodySmall)
-                Text("Paragraf bulma için yukarıdaki anlam modeli telefonunda çalışmaya devam eder. Astra bağlantı hatası verirse arama durur; başka modele geçilmez.", style = MaterialTheme.typography.bodySmall)
+                Text("Paragraf bulma için yukarıdaki anlam modeli telefonunda çalışmaya devam eder. Sol bağlantı hatası verirse arama durur; başka modele geçilmez.", style = MaterialTheme.typography.bodySmall)
                 Button(enabled = !working && !cloudChecking, onClick = {
-                    cloudChecking = true; cloudMessage = "Astra deneniyor…"
+                    cloudChecking = true; cloudMessage = "Sol deneniyor…"
                     scope.launch {
                         cloudMessage = try {
                             val answer = CloudReader.judge("The survey found a higher prevalence of obesity in Country A than in Country B.", "Obezitenin daha sık görüldüğü ülkeler")
                             check(answer.startsWith("SUPPORTS")) { "Model deneme paragrafını seçmedi." }
-                            "Bağlantı başarılı. Astra deneme paragrafını okudu."
-                        } catch (e: Exception) { e.message ?: "Astra'ya bağlanılamadı." }
+                            "Bağlantı başarılı. Sol deneme paragrafını okudu."
+                        } catch (e: Exception) { e.message ?: "Sol'a bağlanılamadı." }
                         cloudChecking = false
                     }
-                }) { Text(if (cloudChecking) "Deneniyor…" else "Astra'yı dene") }
+                }) { Text(if (cloudChecking) "Deneniyor…" else "Sol'u dene") }
                 if (cloudMessage.isNotEmpty()) Text(cloudMessage, style = MaterialTheme.typography.bodySmall)
             }
         }

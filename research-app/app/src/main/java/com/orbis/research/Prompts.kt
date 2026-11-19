@@ -11,7 +11,7 @@ data class Judgement(
     val verdict: Verdict, val indirect: Boolean, val reason: String?, val reasonDropped: Boolean = false,
     /** Set when the finding is the model's analogy (kıyas), not evidence in the paragraph. */
     val analogy: Analogy? = null,
-    /** "Astra=SUPPORTS Sol=UNRELATED" when the two models read the paragraph differently. */
+    /** "Sol=UNRELATED Astra=SUPPORTS" when the two models read the paragraph differently. */
     val split: String? = null,
 )
 
@@ -175,7 +175,7 @@ object Prompts {
             a.startsWith("CONTRADICTS") -> Verdict.CONTRADICTS
             else -> return null
         }
-        val split = Regex("SPLIT: Astra=(\\w+) Sol=(\\w+)").find(a)?.let { "Astra=${it.groupValues[1]} Sol=${it.groupValues[2]}" }
+        val split = Regex("SPLIT: Sol=(\\w+) Astra=(\\w+)").find(a)?.let { "Sol=${it.groupValues[1]} Astra=${it.groupValues[2]}" }
         val indirect = Regex("\\bINDIRECT\\b").containsMatchIn(a)
         if (!indirect) return Judgement(verdict, false, null, split = split)
         val reason = a.substringAfter("INDIRECT:", "").trim().ifEmpty { null }
