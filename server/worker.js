@@ -6,6 +6,8 @@
 // is served by Cloudflare directly, as before. The file itself still comes from the
 // static files; this only cuts out the part the browser asked for.
 
+import { handleResearch } from "./research.js";
+
 const RANGE = /^bytes=(\d*)-(\d*)$/;
 
 /** @param {Response} response */
@@ -18,9 +20,11 @@ function withRanges(response) {
 export default {
   /**
    * @param {Request} request
-   * @param {{ ASSETS: { fetch: (request: Request) => Promise<Response> } }} env
+   * @param {{ ASSETS: { fetch: (request: Request) => Promise<Response> } } & import("./research.js").ResearchEnv} env
    */
   async fetch(request, env) {
+    // The research app's paragraph reader (server/research.js).
+    if (new URL(request.url).pathname.startsWith("/research/")) return handleResearch(request, env);
     if (request.method !== "GET" && request.method !== "HEAD") return env.ASSETS.fetch(request);
     const asked = RANGE.exec((request.headers.get("range") ?? "").trim());
     if (!asked || (!asked[1] && !asked[2])) return withRanges(await env.ASSETS.fetch(request));
