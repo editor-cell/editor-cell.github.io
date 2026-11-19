@@ -34,8 +34,9 @@ object Sources {
         val out = LinkedHashMap<String, SourceInput>()
         fun add(raw: String, name: String?, groups: List<String>) {
             val s = toSource(raw, name, groups) ?: return
-            val had = out[s.scope]
-            out[s.scope] = had?.copy(groups = (had.groups + s.groups).distinct()) ?: s
+            val key = key(s.url, s.scope)
+            val had = out[key]
+            out[key] = had?.copy(groups = (had.groups + s.groups).distinct()) ?: s
         }
         if (opmlTag.containsMatchIn(text) && text.contains("<opml", ignoreCase = true)) {
             // Folders are outlines without an address; the feeds inside one sit under its name.
@@ -78,8 +79,17 @@ object Sources {
         val host = uri.host?.lowercase() ?: return null
         if (!host.contains('.')) return null
         val scope = host.removePrefix("www.")
-        val url = uri.toString()
+        val url = uri.toString().substringBefore('#')
         return SourceInput(url, name?.takeIf { it.isNotBlank() } ?: scope, scope, groups)
+    }
+
+    fun key(url: String, scope: String): String =
+        if (hasPageAddress(url)) url.substringBefore('#') else scope
+
+    /** A specific page or file may be a document even if no other page links to it. */
+    fun hasPageAddress(url: String): Boolean {
+        val uri = URI(url)
+        return !uri.rawPath.isNullOrEmpty() && uri.rawPath != "/" || uri.rawQuery != null
     }
 
     /** Does an address belong to one of the given scopes? */

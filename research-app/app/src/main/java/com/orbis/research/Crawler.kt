@@ -22,6 +22,8 @@ object Progress {
  * and reads the newest unread ones into the phone. It never leaves the listed sites.
  */
 class Crawler(private val ctx: Context, private val stop: () -> Boolean) {
+    data class ReadResult(val state: Int, val documentUrl: String? = null)
+
     private val db = Db.get(ctx)
     private var scopes: Set<String> = db.sources().map { it.scope }.toSet()
     private val net = Net { scopes }
@@ -34,13 +36,14 @@ class Crawler(private val ctx: Context, private val stop: () -> Boolean) {
         for ((i, s) in sources.withIndex()) {
             if (stop()) return
             val head = "${i + 1}/${sources.size} ${s.name}"
+            if (Sources.hasPageAddress(s.url)) read(s, s.url)
             Progress.text.value = "$head: belge listesi aranıyor…"
             try { discover(s) } catch (e: Exception) { Progress.text.value = "$head: liste alınamadı (${e.message})" }
             val urls = db.nextInQueue(s.id, perSource)
             for ((j, url) in urls.withIndex()) {
                 if (stop()) return
                 Progress.text.value = "$head: belge ${j + 1}/${urls.size} okunuyor"
-                db.markQueued(url, read(s, url))
+                db.markQueued(url, read(s, url).state)
                 delay(800)
             }
         }
@@ -52,12 +55,13 @@ class Crawler(private val ctx: Context, private val stop: () -> Boolean) {
     suspend fun discover(s: Source, force: Boolean = false) {
         if (!force && db.queueSize(s.id) > MAX_QUEUE) return
         scopes = db.sources().map { it.scope }.toSet()
-        val base = s.url.substringBefore("://") + "://" + s.url.substringAfter("://").substringBefore('/')
+        val address = java.net.URI(s.url)
+        val base = "${address.scheme}://${address.rawAuthority}"
         val found = ArrayList<Pair<String, String>>()
         val titles = HashMap<String, String>()
         val sitemaps = ArrayDeque<String>()
 
-        val front = fetchText(s.url)
+        val front = if (Extract.looksPdf(s.url)) null else fetchText(s.url)
         if (front != null) {
             if (isXml(front)) {
                 val l = Extract.listing(front, s.url); found += l.docs; titles += l.titles; sitemaps += l.sitemaps
@@ -93,26 +97,29 @@ class Crawler(private val ctx: Context, private val stop: () -> Boolean) {
     }
 
     /** Reads one address; returns its queue state: 1 read, 2 nothing usable, 3 refused by the site. */
-    fun read(s: Source, url: String): Int {
-        if (db.hasDoc(url)) return 1
+    fun read(s: Source, url: String): ReadResult {
         return try {
-            if (!net.allowed(url)) return 3
-            val f = net.get(url) ?: return 2
+            if (db.reuseDoc(s.id, url)) return ReadResult(1, url)
+            if (!net.allowed(url)) return ReadResult(3)
+            val f = net.get(url) ?: return ReadResult(2)
+            if (f.url != url && db.reuseDoc(s.id, f.url)) return ReadResult(1, f.url)
             val isPdf = f.contentType.contains("pdf", true) || f.bytes.startsWith("%PDF".toByteArray())
             if (isPdf) {
                 val (title, date, paras) = pdf(f.bytes, url)
-                if (paras.isEmpty()) return 2
+                if (paras.isEmpty()) return ReadResult(2)
                 db.saveDoc(s.id, f.url, title, date, paras)
             } else {
-                if (!f.contentType.contains("html", true) && !f.contentType.isEmpty()) return 2
+                if (!f.contentType.contains("html", true) && !f.contentType.isEmpty()) return ReadResult(2)
                 val page = Extract.html(f.url, decode(f.bytes, f.contentType))
                 val pdfs = page.pdfLinks.filter { inScope(it) }.map { it to page.date }
                 if (pdfs.isNotEmpty()) db.enqueue(s.id, pdfs)
-                if (page.paragraphs.isEmpty()) return 2
+                if (page.paragraphs.isEmpty()) return ReadResult(2)
                 db.saveDoc(s.id, f.url, page.title, page.date, page.paragraphs)
             }
-            1
-        } catch (e: OutOfScope) { 3 } catch (e: Exception) { 2 } catch (e: OutOfMemoryError) { 2 }
+            ReadResult(1, f.url)
+        } catch (e: OutOfScope) { ReadResult(3) }
+        catch (e: Exception) { ReadResult(2) }
+        catch (e: OutOfMemoryError) { ReadResult(2) }
     }
 
     private fun pdf(bytes: ByteArray, url: String): Triple<String, String, List<String>> {

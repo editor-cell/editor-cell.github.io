@@ -28,23 +28,24 @@ class Search(private val ctx: Context) {
             val parts = CloudReader.split(run.claim)
             val qs = parts.mapNotNull { Embedder.embed(Vectors.queryText(path, it)) }
             if (qs.isEmpty()) { db.setRun(state = Db.RUN_FAILED, message = "Yargı okunamadı."); return false }
+            val directUrls = linkedSetOf<String>()
             if (Settings.live(ctx) && !stopped()) {
-                try { live(run, qs, path, say, stopped) }
+                try { live(run, qs, path, say, stopped, directUrls) }
                 catch (e: CancellationException) { throw e }
                 catch (e: Exception) { say("Canlı arama yapılamadı (${e.message}); telefondaki belgelerle sürüyor.") }
             }
             if (stopped()) return false
             say("Yargıya anlamca en yakın paragraflar bulunuyor…")
-            // Each part gets its own share of the candidates; a paragraph near several parts counts once.
             val total = Settings.candidates(ctx)
-            val share = if (qs.size == 1) total else maxOf(10, (total + qs.size - 1) / qs.size)
-            val lists = qs.map { db.closest(it, share, run.range, run.sourceIds) }
             val picked = LinkedHashSet<Long>()
-            var rank = 0
-            while (picked.size < total && lists.any { rank < it.size }) {
-                for (l in lists) if (rank < l.size && picked.size < total) picked.add(l[rank])
-                rank++
+            // Leave room for both the exact addresses the user supplied and results from the wider crawl.
+            if (directUrls.isNotEmpty()) {
+                val reserve = maxOf(qs.size, total / 3)
+                val direct = qs.map { db.closest(it, reserve, run.range, run.sourceIds, directUrls, directOnly = true) }
+                picked.addAll(SearchSelection.roundRobin(direct).distinct().take(reserve).toList())
             }
+            val general = qs.map { db.closest(it, total, run.range, run.sourceIds, directUrls) }
+            picked.addAll(SearchSelection.roundRobin(general).filterNot { it in picked }.distinct().take(total - picked.size).toList())
             db.setItems(picked.toList())
             db.setRun(prepared = true)
         } finally {
@@ -53,10 +54,25 @@ class Search(private val ctx: Context) {
         return true
     }
 
-    private suspend fun live(run: SearchRun, qs: List<FloatArray>, path: String, say: suspend (String) -> Unit, stopped: () -> Boolean) {
+    private suspend fun live(
+        run: SearchRun, qs: List<FloatArray>, path: String, say: suspend (String) -> Unit,
+        stopped: () -> Boolean, directUrls: MutableSet<String>,
+    ) {
         val sources = db.sources().filter { run.sourceIds == null || it.id in run.sourceIds }
         if (sources.isEmpty()) return
         val crawler = Crawler(ctx, stopped)
+        val explicitSources = sources.filter { Sources.hasPageAddress(it.url) }
+        val readAddresses = HashSet<String>()
+        for (source in explicitSources) {
+            if (stopped()) return
+            say("Eklenen belge okunuyor (${source.name})…")
+            val result = withContext(Dispatchers.IO) { crawler.read(source, source.url) }
+            val url = result.documentUrl ?: continue
+            if (directUrls.add(url)) indexDocument(url, path)
+            readAddresses += source.url
+            readAddresses += url
+        }
+
         val now = System.currentTimeMillis()
 
         // 1. The newest document lists of the sources, at most once in a few hours each.
@@ -80,6 +96,7 @@ class Search(private val ctx: Context) {
         for ((source, candidate) in SearchSelection.roundRobin(groups)) {
             if (stopped() || System.currentTimeMillis() > deadline) break
             val (url, title, _) = candidate
+            if (url in readAddresses) continue
             // Short titles such as "Obezite", "Kanser" or "HIV" still describe valid documents.
             val text = title.trim().ifEmpty { Extract.slugText(url) }
             if (text.isBlank()) continue
@@ -94,18 +111,19 @@ class Search(private val ctx: Context) {
             if (stopped()) return
             val (_, s, url) = t
             say("Canlı: belge ${n + 1}/${top.size} okunuyor (${s.name})…")
-            val state = withContext(Dispatchers.IO) { crawler.read(s, url) }
-            db.markQueued(url, state)
-            if (state == 1) {
-                val out = ArrayList<Pair<Long, ByteArray>>()
-                for ((id, text) in db.paragraphsOfDoc(url)) {
-                    val v = Embedder.embed(Vectors.docText(path, text))
-                    out += id to (v?.let(Vectors::toBytes) ?: ByteArray(0))
-                }
-                db.saveVectors(out)
-            }
+            val result = withContext(Dispatchers.IO) { crawler.read(s, url) }
+            db.markQueued(url, result.state)
+            result.documentUrl?.let { if (it !in directUrls) indexDocument(it, path) }
             delay(500)
         }
+    }
+
+    private suspend fun indexDocument(url: String, path: String) {
+        val vectors = db.paragraphsOfDoc(url).map { (id, text) ->
+            val vector = Embedder.embed(Vectors.docText(path, text))
+            id to (vector?.let(Vectors::toBytes) ?: ByteArray(0))
+        }
+        db.saveVectors(vectors)
     }
 
     /** The trained NLI model reads the original paragraph and the claim directly. */

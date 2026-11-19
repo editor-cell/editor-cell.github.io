@@ -9,15 +9,21 @@ import android.database.sqlite.SQLiteOpenHelper
  * Everything the app keeps: the sources and their headings, the queue of addresses to read,
  * documents, their paragraphs and the meaning vector of each, and the search under way.
  */
-class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", null, 7) {
+class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", null, 8) {
 
     override fun onConfigure(db: SQLiteDatabase) {
+        // SQLite cannot turn this off inside onUpgrade's transaction. The source table is
+        // replaced with its IDs intact, so its child tables must not be cascade-deleted.
+        db.setForeignKeyConstraintsEnabled(db.version !in 1..7)
+    }
+
+    override fun onOpen(db: SQLiteDatabase) {
+        super.onOpen(db)
         db.setForeignKeyConstraintsEnabled(true)
     }
 
     override fun onCreate(db: SQLiteDatabase) {
-        db.execSQL("""CREATE TABLE sources(id INTEGER PRIMARY KEY, url TEXT NOT NULL, name TEXT NOT NULL,
-            scope TEXT NOT NULL UNIQUE, added_at INTEGER NOT NULL)""")
+        createSources(db, "sources")
         db.execSQL("""CREATE TABLE queue(url TEXT PRIMARY KEY, source_id INTEGER NOT NULL REFERENCES sources(id) ON DELETE CASCADE,
             lastmod TEXT NOT NULL DEFAULT '', state INTEGER NOT NULL DEFAULT 0, added_at INTEGER NOT NULL,
             title TEXT NOT NULL DEFAULT '')""")
@@ -29,6 +35,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
         db.execSQL("CREATE INDEX paras_doc ON paras(doc_id)")
         createGroups(db)
         createMeaning(db)
+        createDocumentSources(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -48,6 +55,39 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
             // Revisit stored documents: text discarded by the older extractor is absent from the DB.
             db.execSQL("UPDATE queue SET state = 0 WHERE url IN (SELECT url FROM docs)")
         }
+        if (oldVersion < 8) {
+            createSources(db, "sources_v8")
+            db.rawQuery("SELECT id, url, name, scope, added_at FROM sources", null).use { rows ->
+                while (rows.moveToNext()) {
+                    val url = rows.getString(1).substringBefore('#')
+                    val scope = rows.getString(3)
+                    db.execSQL(
+                        "INSERT INTO sources_v8 VALUES (?, ?, ?, ?, ?, ?)",
+                        arrayOf<Any>(rows.getLong(0), url, rows.getString(2), scope, rows.getLong(4), Sources.key(url, scope)),
+                    )
+                }
+            }
+            db.execSQL("DROP TABLE sources")
+            db.execSQL("ALTER TABLE sources_v8 RENAME TO sources")
+            createDocumentSources(db)
+            db.execSQL("INSERT INTO document_sources(source_id, doc_id) SELECT source_id, id FROM docs")
+            db.rawQuery("PRAGMA foreign_key_check", null).use {
+                check(!it.moveToFirst()) { "Kaynaklar yeni veritabanına aktarılamadı." }
+            }
+        }
+    }
+
+    private fun createSources(db: SQLiteDatabase, table: String) {
+        db.execSQL("""CREATE TABLE $table(id INTEGER PRIMARY KEY, url TEXT NOT NULL, name TEXT NOT NULL,
+            scope TEXT NOT NULL, added_at INTEGER NOT NULL, source_key TEXT NOT NULL UNIQUE)""")
+    }
+
+    private fun createDocumentSources(db: SQLiteDatabase) {
+        db.execSQL("""CREATE TABLE document_sources(
+            source_id INTEGER NOT NULL REFERENCES sources(id) ON DELETE CASCADE,
+            doc_id INTEGER NOT NULL REFERENCES docs(id) ON DELETE CASCADE,
+            PRIMARY KEY(source_id, doc_id))""")
+        db.execSQL("CREATE INDEX document_sources_by_doc ON document_sources(doc_id)")
     }
 
     /**
@@ -73,7 +113,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
     // ---- sources ----
 
     fun sources(): List<Source> = readableDatabase.rawQuery(
-        """SELECT s.id, s.url, s.name, s.scope, s.added_at, (SELECT COUNT(*) FROM docs d WHERE d.source_id = s.id),
+        """SELECT s.id, s.url, s.name, s.scope, s.added_at, (SELECT COUNT(*) FROM document_sources ds WHERE ds.source_id = s.id),
                   (SELECT group_concat(g.name, char(31)) FROM source_headings sg JOIN headings g ON g.id = sg.heading_id WHERE sg.source_id = s.id)
            FROM sources s ORDER BY s.name COLLATE NOCASE""", null,
     ).use { c ->
@@ -85,7 +125,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
         }
     }
 
-    /** Adds the sources whose scope is not already listed; returns how many were new. */
+    /** Adds each distinct address; returns how many were new. */
     fun addSources(list: List<SourceInput>): Int {
         val db = writableDatabase
         var added = 0
@@ -93,13 +133,15 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
         try {
             val now = System.currentTimeMillis()
             for (s in list) {
+                val key = Sources.key(s.url, s.scope)
                 val v = ContentValues().apply {
                     put("url", s.url); put("name", s.name); put("scope", s.scope); put("added_at", now)
+                    put("source_key", key)
                 }
                 if (db.insertWithOnConflict("sources", null, v, SQLiteDatabase.CONFLICT_IGNORE) > 0) added++
                 // Headings in an imported list also apply to sources already on the phone.
                 if (s.groups.isNotEmpty()) {
-                    val id = db.rawQuery("SELECT id FROM sources WHERE scope = ?", arrayOf(s.scope)).use { c -> if (c.moveToFirst()) c.getLong(0) else null }
+                    val id = db.rawQuery("SELECT id FROM sources WHERE source_key = ?", arrayOf(key)).use { c -> if (c.moveToFirst()) c.getLong(0) else null }
                     if (id != null) for (g in s.groups) link(db, id, groupId(db, g))
                 }
             }
@@ -108,12 +150,19 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
         return added
     }
 
-    /** Removes sources together with every document and paragraph read from them. */
+    /** Keeps a shared document if it still belongs to another source. */
     fun removeSources(ids: Collection<Long>) {
         val db = writableDatabase
         db.beginTransaction()
         try {
-            for (id in ids) db.delete("sources", "id = ?", arrayOf(id.toString()))
+            for (id in ids) {
+                db.execSQL("""UPDATE docs SET source_id = (
+                    SELECT MIN(ds.source_id) FROM document_sources ds WHERE ds.doc_id = docs.id AND ds.source_id <> ?
+                ) WHERE source_id = ? AND EXISTS (
+                    SELECT 1 FROM document_sources ds WHERE ds.doc_id = docs.id AND ds.source_id <> ?
+                )""", arrayOf(id, id, id))
+                db.delete("sources", "id = ?", arrayOf(id.toString()))
+            }
             db.setTransactionSuccessful()
         } finally { db.endTransaction() }
     }
@@ -235,9 +284,18 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
 
     // ---- documents ----
 
-    fun hasDoc(url: String): Boolean = readableDatabase.rawQuery(
-        "SELECT 1 FROM docs WHERE url = ? AND extraction_version = 1", arrayOf(url),
-    ).use { it.moveToFirst() }
+    fun reuseDoc(sourceId: Long, url: String): Boolean = tx { db ->
+        val docId = db.rawQuery("SELECT id FROM docs WHERE url = ? AND extraction_version = 1", arrayOf(url))
+            .use { if (it.moveToFirst()) it.getLong(0) else null }
+        if (docId == null) false else {
+            linkDocument(db, sourceId, docId)
+            true
+        }
+    }
+
+    private fun linkDocument(db: SQLiteDatabase, sourceId: Long, docId: Long) {
+        db.execSQL("INSERT OR IGNORE INTO document_sources(source_id, doc_id) VALUES (?, ?)", arrayOf(sourceId, docId))
+    }
 
     fun saveDoc(sourceId: Long, url: String, title: String, date: String, paragraphs: List<String>) {
         val db = writableDatabase
@@ -278,6 +336,10 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
                     }
                 }
             }
+            db.execSQL(
+                "INSERT OR IGNORE INTO document_sources(source_id, doc_id) SELECT ?, id FROM docs WHERE url = ?",
+                arrayOf<Any>(sourceId, url),
+            )
             for (id in oldIds.values) db.delete("paras", "id = ?", arrayOf(id.toString()))
             db.setTransactionSuccessful()
         } finally { db.endTransaction() }
@@ -314,7 +376,10 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
      * The [k] paragraphs closest in meaning to [query], among documents dated within [range] from the
      * given sources (null: all), closest first.
      */
-    fun closest(query: FloatArray, k: Int, range: DateRange, sourceIds: Set<Long>?): List<Long> {
+    fun closest(
+        query: FloatArray, k: Int, range: DateRange, sourceIds: Set<Long>?,
+        directUrls: Set<String> = emptySet(), directOnly: Boolean = false,
+    ): List<Long> {
         if (sourceIds != null && sourceIds.isEmpty()) return emptyList()
         val (cond, args) = range.sqlCondition("d.date")
         val best = java.util.PriorityQueue<Pair<Float, Long>>(k + 1, compareBy { it.first })
@@ -325,7 +390,9 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
             while (c.moveToNext()) {
                 // Parts collected before the app learnt to leave out titles, references, cut lines, thanks
                 // and figure notes, and pages that are not documents (about pages, contacts).
-                if (!Extract.isProse(c.getString(2)) || !Extract.looksLikeDocument(c.getString(3))) continue
+                val url = c.getString(3)
+                if (url !in directUrls && (directOnly || !Extract.looksLikeDocument(url))) continue
+                if (!Extract.isProse(c.getString(2))) continue
                 best.add(Vectors.score(c.getBlob(1), query) to c.getLong(0))
                 if (best.size > k) best.poll()
             }
@@ -343,7 +410,8 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
     }
 
     // Source ids are numbers the app made itself, so they go into the query as they are.
-    private fun inSources(ids: Set<Long>?) = if (ids == null) "" else "AND d.source_id IN (${ids.joinToString(",")})"
+    private fun inSources(ids: Set<Long>?) = if (ids == null) "" else
+        "AND EXISTS (SELECT 1 FROM document_sources ds WHERE ds.doc_id = d.id AND ds.source_id IN (${ids.joinToString(",")}))"
 
     // ---- the search under way ----
 

@@ -24,6 +24,22 @@ class SourcesTest {
         assertEquals(listOf("who.int", "oecd.org", "imf.org"), s.map { it.scope })
     }
 
+    @Test fun keepsDistinctDocumentsFromTheSameSite() {
+        val sources = Sources.parse("""
+            https://example.org
+            First, https://www.example.org/papers/2016.html, Işık
+            Second, https://www.example.org/papers/2018.pdf, Işık
+            https://www.example.org/papers/2016.html#section-2, Arşiv
+            https://www.example.org/?id=5
+        """.trimIndent())
+        assertEquals(listOf(
+            "https://example.org", "https://www.example.org/papers/2016.html",
+            "https://www.example.org/papers/2018.pdf", "https://www.example.org/?id=5",
+        ), sources.map { it.url })
+        assertEquals(listOf("Işık", "Arşiv"), sources[1].groups)
+        assertEquals(listOf(false, true, true, true), sources.map { Sources.hasPageAddress(it.url) })
+    }
+
     @Test fun feedlyOpml() {
         val opml = """<?xml version="1.0"?><opml version="1.0"><body><outline text="Health">
             <outline type="rss" text="WHO news" title="WHO news" xmlUrl="https://www.who.int/rss-feeds/news-english.xml" htmlUrl="https://www.who.int"/>
