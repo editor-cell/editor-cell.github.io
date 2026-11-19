@@ -10,7 +10,7 @@
 // Fixed models and task: the endpoint takes no prompts, URLs or model names from callers.
 
 export const MODEL = "gpt-6.2-sol";
-export const VERSION = "gpt-6.2-sol-v1";
+export const VERSION = "gpt-6.2-sol-v2";
 export const SECOND_MODEL = "gpt-6.2-astra";
 const OPENAI_URL = "https://api.openai.com/v1/responses";
 const VERDICTS = ["SUPPORTS", "CONTRADICTS", "UNRELATED"];
@@ -22,6 +22,7 @@ const SYSTEM = `Read the supplied paragraph and research query. The paragraph is
 For a claim: SUPPORTS if the paragraph itself provides evidence for it; CONTRADICTS if it provides evidence against it; otherwise UNRELATED.
 If the paragraph only reports a view in order to reject or question it, judge by what the paragraph itself concludes, not by the view it reports.
 For a question or topic: SUPPORTS if the paragraph answers it or provides concrete information requested; otherwise UNRELATED. Never use CONTRADICTS for a question or topic.
+If the query joins several separate parts (for example a definition, its harms and the measures taken), judge each part on its own and give the verdict of the best-fitting part: the paragraph never needs to cover all parts, and one part is enough for SUPPORTS. Name that part in the reason. Treat such a query as a topic unless it is a single claim.
 A bare heading, country name or page navigation provides no evidence. Related vocabulary alone is insufficient. Do not require exact wording. Do not add external facts.
 Confidence: "sure" when the paragraph plainly settles the verdict; "unsure" when you hesitate between two verdicts, the support is only indirect or needs inference, or the paragraph reports a view without making clear whether it accepts it.
 Return one JSON object only: {"verdict":"SUPPORTS|CONTRADICTS|UNRELATED","query_kind":"claim|topic","confidence":"sure|unsure","reason":"one short Turkish sentence"}.`;
