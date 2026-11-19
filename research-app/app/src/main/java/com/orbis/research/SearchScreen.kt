@@ -207,7 +207,7 @@ fun SearchScreen(goTo: (Int) -> Unit) {
                 }) { Text(if (making) "Evrak hazırlanıyor…" else "Evrak oluştur") }
             }
             Text("Telefonda arat: kayıtlı belgelerinde. Webde arat: seçili kaynaklardan yeni belgeler de alır.", style = MaterialTheme.typography.bodySmall)
-            Text("Paragrafları Gemini okur. Her iki arama için internet gerekir; sorgu ve aday paragraflar servise gönderilir.", style = MaterialTheme.typography.bodySmall)
+            Text("Paragrafları Astra okur, Sol ikinci görüş verir. Her iki arama için internet gerekir; sorgu ve aday paragraflar servise gönderilir.", style = MaterialTheme.typography.bodySmall)
           }
         }
         if (!hasEmbedder) item { Notice(Search.NO_EMBEDDER, "Model sekmesine git") { goTo(3) } }
@@ -339,7 +339,7 @@ private fun label(j: Judgement) = when {
     else -> (if (j.verdict == Verdict.SUPPORTS) "DESTEKLİYOR" else "ÇÜRÜTÜYOR") + (if (j.indirect) " · DOLAYLI" else "") + (if (j.split != null) " · MODELLER AYRIŞTI" else "")
 }
 
-/** "Gemini=SUPPORTS Astra=UNRELATED" as "Gemini: destekliyor · Astra: ilgisiz". */
+/** "Astra=SUPPORTS Sol=UNRELATED" as "Astra: destekliyor · Sol: ilgisiz". */
 private fun splitText(split: String) = split.split(" ").joinToString(" · ") { part ->
     val (model, verdict) = part.split("=", limit = 2).let { it[0] to it.getOrElse(1) { "" } }
     model + ": " + when (verdict) { "SUPPORTS" -> "destekliyor"; "CONTRADICTS" -> "çürütüyor"; else -> "ilgisiz" }

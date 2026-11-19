@@ -16,8 +16,8 @@ import kotlin.coroutines.resumeWithException
 
 /** Only the research query and candidate paragraph go to this fixed inference endpoint. */
 object CloudReader {
-    const val MODEL_ID = "gemini-4-carbon-v1"
-    const val MODEL = "gemini-4-carbon"
+    const val MODEL_ID = "gpt-6.2-astra-v1"
+    const val MODEL = "gpt-6.2-astra"
     private val VERDICTS = setOf("SUPPORTS", "CONTRADICTS", "UNRELATED")
     const val BASE_URL = "https://orbisreadingatlas.com/research"
     private val client = OkHttpClient.Builder()
@@ -33,12 +33,12 @@ object CloudReader {
         continuation.invokeOnCancellation { call.cancel() }
         call.enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                if (continuation.isActive) continuation.resumeWithException(IOException("Gemini bağlantısı kurulamadı: ${e.message}", e))
+                if (continuation.isActive) continuation.resumeWithException(IOException("Astra bağlantısı kurulamadı: ${e.message}", e))
             }
             override fun onResponse(call: Call, response: Response) {
                 try {
                     val data = response.use { r ->
-                        val body = r.body ?: error("Gemini boş yanıt verdi.")
+                        val body = r.body ?: error("Astra boş yanıt verdi.")
                         val bytes = body.byteStream().use { input ->
                             val out = java.io.ByteArrayOutputStream()
                             val buffer = ByteArray(2048)
@@ -49,9 +49,9 @@ object CloudReader {
                             }
                             out.toByteArray()
                         }
-                        check(bytes.size <= 16384) { "Gemini yanıtı beklenenden uzun." }
+                        check(bytes.size <= 16384) { "Astra yanıtı beklenenden uzun." }
                         val json = JSONObject(bytes.toString(Charsets.UTF_8))
-                        check(r.isSuccessful) { json.optString("error", "Gemini yanıt veremedi (${r.code}).") }
+                        check(r.isSuccessful) { json.optString("error", "Astra yanıt veremedi (${r.code}).") }
                         json
                     }
                     if (continuation.isActive) continuation.resume(data)
@@ -65,25 +65,25 @@ object CloudReader {
     suspend fun checkConnection() {
         val data = request(Request.Builder().url("$BASE_URL/health").get().build())
         check(data.optString("model") == MODEL && data.optString("version") == MODEL_ID) {
-            "Gemini servisi bu uygulama sürümüyle uyumlu değil."
+            "Astra servisi bu uygulama sürümüyle uyumlu değil."
         }
-        check(data.optBoolean("ok")) { "Gemini anahtarı Cloudflare'e henüz eklenmemiş." }
+        check(data.optBoolean("ok")) { "OpenAI anahtarı Cloudflare'e henüz eklenmemiş." }
     }
 
     suspend fun judge(paragraph: String, query: String): String {
         val body = JSONObject().put("query", query).put("paragraph", paragraph).toString()
         val data = request(Request.Builder().url("$BASE_URL/judge")
             .post(body.toRequestBody("application/json; charset=utf-8".toMediaType())).build())
-        check(data.optString("model") == MODEL && data.optString("version") == MODEL_ID) { "Yanıt beklenen Gemini modelinden gelmedi." }
+        check(data.optString("model") == MODEL && data.optString("version") == MODEL_ID) { "Yanıt beklenen Astra modelinden gelmedi." }
         val verdict = data.getString("verdict")
         val kind = data.getString("query_kind")
-        check(verdict in VERDICTS && kind in setOf("claim", "topic")) { "Gemini geçerli karar üretmedi." }
+        check(verdict in VERDICTS && kind in setOf("claim", "topic")) { "Astra geçerli karar üretmedi." }
         check(kind != "topic" || verdict != "CONTRADICTS") { "Bilgi sorgusu için geçersiz karar alındı." }
-        // Second opinion (GPT-6 Astra), when the service has it: the flag and both verdicts.
+        // Second opinion (GPT-6.2 Sol), when the service has it: the flag and both verdicts.
         val second = data.optJSONObject("second")?.optString("verdict")?.takeIf { it in VERDICTS }
         val split = if (data.optBoolean("disagree") && second != null) {
-            val gemini = if (verdict == second) "UNRELATED" else verdict
-            "\nSPLIT: Gemini=$gemini Astra=$second"
+            val first = if (verdict == second) "UNRELATED" else verdict
+            "\nSPLIT: Astra=$first Sol=$second"
         } else ""
         return "$verdict\nCLOUD_MODEL: $MODEL_ID\nQUERY_KIND: $kind$split"
     }
