@@ -26,7 +26,8 @@ object Extract {
 
         val body = doc.body() ?: return Page(title, date, emptyList(), links, pdfLinks)
         body.select("script, style, noscript, nav, header, footer, aside, form, svg, button, [role=navigation], [aria-hidden=true]").remove()
-        val main = body.selectFirst("main, article, [role=main]") ?: body
+        // An article card in a menu can precede the page's real main content.
+        val main = body.selectFirst("main, [role=main]") ?: body.selectFirst("article") ?: body
         main.select("h1, h2, h3, h4, h5, h6").remove()
 
         val seen = HashSet<String>()

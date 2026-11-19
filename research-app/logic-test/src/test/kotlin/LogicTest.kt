@@ -134,6 +134,14 @@ class RobotsTest {
 }
 
 class ExtractTest {
+    @Test fun mainContentTakesPriorityOverAnEarlierArticleCard() {
+        val page = Extract.html("https://example.org/light-pollution", """
+            <div><article><p>A featured story unrelated to this document appears in the menu.</p></article></div>
+            <main><h1>Light pollution</h1><p>Light pollution is the alteration of natural light by human activity.</p></main>
+        """.trimIndent())
+        assertEquals(listOf("Light pollution is the alteration of natural light by human activity."), page.paragraphs)
+    }
+
     private val long1 = "Taxes on sugar-sweetened beverages were followed by a 21% fall in purchases of taxed drinks in the first two years, according to the national household survey."
     private val long2 = "In Mexico, the excise tax of one peso per litre was associated with lower purchases among the poorest households, who reduced their purchases the most."
 

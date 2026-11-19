@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper
  * Everything the app keeps: the sources and their headings, the queue of addresses to read,
  * documents, their paragraphs and the meaning vector of each, and the search under way.
  */
-class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", null, 8) {
+class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", null, 9) {
 
     override fun onConfigure(db: SQLiteDatabase) {
         // SQLite cannot turn this off inside onUpgrade's transaction. The source table is
@@ -74,6 +74,9 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
             db.rawQuery("PRAGMA foreign_key_check", null).use {
                 check(!it.moveToFirst()) { "Kaynaklar yeni veritabanına aktarılamadı." }
             }
+        }
+        if (oldVersion < 9) {
+            db.execSQL("UPDATE queue SET state = 0 WHERE state != 0")
         }
     }
 
@@ -285,7 +288,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
     // ---- documents ----
 
     fun reuseDoc(sourceId: Long, url: String): Boolean = tx { db ->
-        val docId = db.rawQuery("SELECT id FROM docs WHERE url = ? AND extraction_version = 1", arrayOf(url))
+        val docId = db.rawQuery("SELECT id FROM docs WHERE url = ? AND extraction_version = $EXTRACTION_VERSION", arrayOf(url))
             .use { if (it.moveToFirst()) it.getLong(0) else null }
         if (docId == null) false else {
             linkDocument(db, sourceId, docId)
@@ -309,18 +312,18 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
             val oldIds = HashMap<String, Long>()
             var docId = db.insertWithOnConflict("docs", null, ContentValues().apply {
                 put("source_id", sourceId); put("url", url); put("title", title); put("date", date)
-                put("fetched_at", System.currentTimeMillis()); put("extraction_version", 1)
+                put("fetched_at", System.currentTimeMillis()); put("extraction_version", EXTRACTION_VERSION)
             }, SQLiteDatabase.CONFLICT_IGNORE)
             if (docId < 0) {
                 // Replace only after a successful fetch/extraction. Never discard old text on failure.
-                docId = db.rawQuery("SELECT id FROM docs WHERE url = ? AND extraction_version < 1", arrayOf(url))
+                docId = db.rawQuery("SELECT id FROM docs WHERE url = ? AND extraction_version < $EXTRACTION_VERSION", arrayOf(url))
                     .use { c -> if (c.moveToFirst()) c.getLong(0) else -1L }
                 if (docId > 0) {
                     db.rawQuery("SELECT id, text FROM paras WHERE doc_id = ?", arrayOf(docId.toString())).use { c ->
                         while (c.moveToNext()) oldIds[c.getString(1)] = c.getLong(0)
                     }
                     db.update("docs", ContentValues().apply {
-                        put("title", title); put("date", date); put("fetched_at", System.currentTimeMillis()); put("extraction_version", 1)
+                        put("title", title); put("date", date); put("fetched_at", System.currentTimeMillis()); put("extraction_version", EXTRACTION_VERSION)
                     }, "id = ?", arrayOf(docId.toString()))
                 }
             }
@@ -529,6 +532,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
     }
 
     companion object {
+        private const val EXTRACTION_VERSION = 2
         const val RUN_GOING = 0
         const val RUN_DONE = 1
         const val RUN_STOPPED = 2
