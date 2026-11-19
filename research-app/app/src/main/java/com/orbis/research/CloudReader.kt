@@ -88,4 +88,17 @@ object CloudReader {
         } else ""
         return "$verdict\nCLOUD_MODEL: $MODEL_ID\nQUERY_KIND: $kind$split"
     }
+    /** The query as separate parts to search on their own; the whole query when it cannot be split. */
+    suspend fun split(query: String): List<String> = try {
+        val body = JSONObject().put("query", query).toString()
+        val data = request(Request.Builder().url("$BASE_URL/split")
+            .post(body.toRequestBody("application/json; charset=utf-8".toMediaType())).build())
+        val arr = data.optJSONArray("parts")
+        val parts = (0 until (arr?.length() ?: 0)).map { arr!!.getString(it).trim() }.filter { it.isNotEmpty() }.distinct().take(4)
+        parts.ifEmpty { listOf(query) }
+    } catch (e: kotlin.coroutines.cancellation.CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        listOf(query)
+    }
 }

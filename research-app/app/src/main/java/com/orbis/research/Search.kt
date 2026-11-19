@@ -23,17 +23,29 @@ class Search(private val ctx: Context) {
         if (path == null) { db.setRun(state = Db.RUN_FAILED, message = NO_EMBEDDER); return false }
         if (!Embedder.ensure(ctx, path)) { db.setRun(state = Db.RUN_FAILED, message = "Anlam modeli açılamadı; Model sekmesinden yeniden indirin."); return false }
         try {
-            val q = Embedder.embed(Vectors.queryText(path, run.claim)) ?: run {
-                db.setRun(state = Db.RUN_FAILED, message = "Yargı okunamadı."); return false
-            }
+            // A claim that joins several things (definition, harms, measures) is searched part by part.
+            say("Sorgu parçalara ayrılıyor…")
+            val parts = CloudReader.split(run.claim)
+            val qs = parts.mapNotNull { Embedder.embed(Vectors.queryText(path, it)) }
+            if (qs.isEmpty()) { db.setRun(state = Db.RUN_FAILED, message = "Yargı okunamadı."); return false }
             if (Settings.live(ctx) && !stopped()) {
-                try { live(run, q, path, say, stopped) }
+                try { live(run, qs, path, say, stopped) }
                 catch (e: CancellationException) { throw e }
                 catch (e: Exception) { say("Canlı arama yapılamadı (${e.message}); telefondaki belgelerle sürüyor.") }
             }
             if (stopped()) return false
             say("Yargıya anlamca en yakın paragraflar bulunuyor…")
-            db.setItems(db.closest(q, Settings.candidates(ctx), run.range, run.sourceIds))
+            // Each part gets its own share of the candidates; a paragraph near several parts counts once.
+            val total = Settings.candidates(ctx)
+            val share = if (qs.size == 1) total else maxOf(10, (total + qs.size - 1) / qs.size)
+            val lists = qs.map { db.closest(it, share, run.range, run.sourceIds) }
+            val picked = LinkedHashSet<Long>()
+            var rank = 0
+            while (picked.size < total && lists.any { rank < it.size }) {
+                for (l in lists) if (rank < l.size && picked.size < total) picked.add(l[rank])
+                rank++
+            }
+            db.setItems(picked.toList())
             db.setRun(prepared = true)
         } finally {
             Embedder.release()
@@ -41,7 +53,7 @@ class Search(private val ctx: Context) {
         return true
     }
 
-    private suspend fun live(run: SearchRun, q: FloatArray, path: String, say: suspend (String) -> Unit, stopped: () -> Boolean) {
+    private suspend fun live(run: SearchRun, qs: List<FloatArray>, path: String, say: suspend (String) -> Unit, stopped: () -> Boolean) {
         val sources = db.sources().filter { run.sourceIds == null || it.id in run.sourceIds }
         if (sources.isEmpty()) return
         val crawler = Crawler(ctx, stopped)
@@ -72,7 +84,8 @@ class Search(private val ctx: Context) {
             val text = title.trim().ifEmpty { Extract.slugText(url) }
             if (text.isBlank()) continue
             val v = Embedder.embed(Vectors.docText(path, text)) ?: continue
-            scored += Triple(Vectors.score(Vectors.toBytes(v), q), source, url)
+            val vb = Vectors.toBytes(v)
+            scored += Triple(qs.maxOf { Vectors.score(vb, it) }, source, url)
         }
         val top = SearchSelection.diverse(scored.sortedByDescending { it.first }, Settings.liveRead(ctx)) { it.second.id }
 
