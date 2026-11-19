@@ -299,6 +299,7 @@ private fun FindingCard(f: Finding) {
                     color = if (an != null) MaterialTheme.colorScheme.onTertiaryContainer else if (supports) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onErrorContainer,
                     style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold)
             }
+            j.split?.let { Text(splitText(it), style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(top = 6.dp)) }
             if (an != null) {
                 // The model's kıyas comes first and is marked as its own reasoning; the paragraph it
                 // rests on follows, word for word.
@@ -335,7 +336,13 @@ private fun quote(p: Paragraph) = "“${p.text}”\n— ${p.docTitle}${if (p.doc
 
 private fun label(j: Judgement) = when {
     j.analogy != null -> "KIYAS · " + if (j.verdict == Verdict.SUPPORTS) "DESTEKLİYOR OLABİLİR" else "ÇÜRÜTÜYOR OLABİLİR"
-    else -> (if (j.verdict == Verdict.SUPPORTS) "DESTEKLİYOR" else "ÇÜRÜTÜYOR") + if (j.indirect) " · DOLAYLI" else ""
+    else -> (if (j.verdict == Verdict.SUPPORTS) "DESTEKLİYOR" else "ÇÜRÜTÜYOR") + (if (j.indirect) " · DOLAYLI" else "") + (if (j.split != null) " · MODELLER AYRIŞTI" else "")
+}
+
+/** "Gemini=SUPPORTS Astra=UNRELATED" as "Gemini: destekliyor · Astra: ilgisiz". */
+private fun splitText(split: String) = split.split(" ").joinToString(" · ") { part ->
+    val (model, verdict) = part.split("=", limit = 2).let { it[0] to it.getOrElse(1) { "" } }
+    model + ": " + when (verdict) { "SUPPORTS" -> "destekliyor"; "CONTRADICTS" -> "çürütüyor"; else -> "ilgisiz" }
 }
 
 private fun copyAll(ctx: Context, claim: String, list: List<Finding>) {

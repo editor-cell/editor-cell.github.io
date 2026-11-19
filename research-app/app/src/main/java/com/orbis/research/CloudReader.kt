@@ -18,6 +18,7 @@ import kotlin.coroutines.resumeWithException
 object CloudReader {
     const val MODEL_ID = "gemini-4-carbon-v1"
     const val MODEL = "gemini-4-carbon"
+    private val VERDICTS = setOf("SUPPORTS", "CONTRADICTS", "UNRELATED")
     const val BASE_URL = "https://orbisreadingatlas.com/research"
     private val client = OkHttpClient.Builder()
         .connectTimeout(20, TimeUnit.SECONDS)
@@ -76,8 +77,14 @@ object CloudReader {
         check(data.optString("model") == MODEL && data.optString("version") == MODEL_ID) { "Yanıt beklenen Gemini modelinden gelmedi." }
         val verdict = data.getString("verdict")
         val kind = data.getString("query_kind")
-        check(verdict in setOf("SUPPORTS", "CONTRADICTS", "UNRELATED") && kind in setOf("claim", "topic")) { "Gemini geçerli karar üretmedi." }
+        check(verdict in VERDICTS && kind in setOf("claim", "topic")) { "Gemini geçerli karar üretmedi." }
         check(kind != "topic" || verdict != "CONTRADICTS") { "Bilgi sorgusu için geçersiz karar alındı." }
-        return "$verdict\nCLOUD_MODEL: $MODEL_ID\nQUERY_KIND: $kind"
+        // Second opinion (GPT-6 Astra), when the service has it: the flag and both verdicts.
+        val second = data.optJSONObject("second")?.optString("verdict")?.takeIf { it in VERDICTS }
+        val split = if (data.optBoolean("disagree") && second != null) {
+            val gemini = if (verdict == second) "UNRELATED" else verdict
+            "\nSPLIT: Gemini=$gemini Astra=$second"
+        } else ""
+        return "$verdict\nCLOUD_MODEL: $MODEL_ID\nQUERY_KIND: $kind$split"
     }
 }
