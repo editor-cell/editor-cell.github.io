@@ -27,6 +27,10 @@ object Settings {
     fun setEmbedderId(ctx: Context, v: String) = prefs(ctx).edit().putString("embedder", v).apply()
 
     /** Whether a search first looks at the sources' newest document lists and opens the closest ones. */
+    /** The reader the owner picked for searches: "sol" (Astra when Sol is unsure) or "astra" (20 Nov 2026). */
+    fun reader(ctx: Context) = prefs(ctx).getString("reader", "sol").takeIf { it == "astra" } ?: "sol"
+    fun setReader(ctx: Context, v: String) = prefs(ctx).edit().putString("reader", if (v == "astra") "astra" else "sol").apply()
+
     fun live(ctx: Context) = prefs(ctx).getBoolean("live", true)
     fun setLive(ctx: Context, v: Boolean) = prefs(ctx).edit().putBoolean("live", v).apply()
 

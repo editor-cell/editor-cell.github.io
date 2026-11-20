@@ -19,6 +19,7 @@ class SearchWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
 
     override suspend fun doWork(): Result {
         val ctx = applicationContext
+        CloudReader.reader = Settings.reader(ctx)
         val db = Db.get(ctx)
         val previous = db.run() ?: return Result.success()
         if (previous.state != Db.RUN_GOING) return Result.success()

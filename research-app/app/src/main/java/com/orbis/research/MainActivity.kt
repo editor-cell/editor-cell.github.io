@@ -20,9 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -58,26 +56,30 @@ class MainActivity : ComponentActivity() {
 }
 
 private class Tab(val title: String, val icon: ImageVector)
+
+/** Material's outlined folder, drawn here because the core icon set has none. */
+private val FolderIcon: ImageVector = ImageVector.Builder("Folder", 24.dp, 24.dp, 24f, 24f).addPath(
+    androidx.compose.ui.graphics.vector.PathParser().parsePathString(
+        "M9.17,6l2,2H20v10L4,18V6h5.17M10,4H4c-1.1,0 -1.99,0.9 -1.99,2L2,18c0,1.1 0.9,2 2,2h16c1.1,0 2,-0.9 2,-2V8c0,-1.1 -0.9,-2 -2,-2h-8l-2,-2z",
+    ).toNodes(),
+    fill = androidx.compose.ui.graphics.SolidColor(androidx.compose.ui.graphics.Color.Black),
+).build()
+// Topla and Model left the app (owner, 20 Nov 2026): the evrak is what matters, and the kept
+// evraks have their own tab, with a search inside them.
 private val tabs = listOf(
-    Tab("Ara", Icons.Filled.Search), Tab("Kaynaklar", Icons.Filled.List),
-    Tab("Topla", Icons.Filled.Refresh), Tab("Model", Icons.Filled.Settings),
+    Tab("Ara", Icons.Filled.Search), Tab("Kaynaklar", Icons.Filled.List), Tab("Evraklar", FolderIcon),
 )
 
 @Composable
 private fun BrandHeader() {
     Surface(color = MaterialTheme.colorScheme.background) {
-        Column(Modifier.statusBarsPadding()) {
-            Row(Modifier.fillMaxWidth().padding(horizontal = 22.dp, vertical = 15.dp), verticalAlignment = Alignment.CenterVertically) {
-                OrbisMark()
-                Spacer(Modifier.width(12.dp))
-                Column {
-                    Text("ORBIS", fontFamily = FontFamily.Serif, fontWeight = FontWeight.Medium,
-                        fontSize = 23.sp, letterSpacing = 2.8.sp, lineHeight = 27.sp)
-                    Text("Araştırma atlası", color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.labelMedium)
-                }
-            }
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        Row(Modifier.statusBarsPadding().fillMaxWidth().padding(start = 24.dp, end = 24.dp, top = 18.dp, bottom = 6.dp),
+            verticalAlignment = Alignment.CenterVertically) {
+            Text("ORBIS", fontFamily = FontFamily.Serif, fontWeight = FontWeight.SemiBold,
+                fontSize = 21.sp, letterSpacing = 5.5.sp, lineHeight = 26.sp)
+            Spacer(Modifier.weight(1f))
+            Text("ARAŞTIRMA", color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontSize = 12.sp, fontWeight = FontWeight.Medium, letterSpacing = 1.sp)
         }
     }
 }
@@ -99,8 +101,8 @@ private fun App() {
                                 icon = { Icon(t.icon, contentDescription = null) },
                                 label = { Text(t.title, fontWeight = if (tab == i) FontWeight.SemiBold else FontWeight.Normal) },
                                 colors = NavigationBarItemDefaults.colors(
-                                    indicatorColor = MaterialTheme.colorScheme.primaryContainer,
-                                    selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    indicatorColor = MaterialTheme.colorScheme.surface,
+                                    selectedIconColor = MaterialTheme.colorScheme.primary,
                                     selectedTextColor = MaterialTheme.colorScheme.primary,
                                     unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                     unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -119,8 +121,7 @@ private fun App() {
                     when (tab) {
                         0 -> SearchScreen(goTo = { tab = it })
                         1 -> SourcesScreen()
-                        2 -> CollectScreen()
-                        else -> ModelScreen()
+                        else -> EvraklarScreen()
                     }
                 }
             }

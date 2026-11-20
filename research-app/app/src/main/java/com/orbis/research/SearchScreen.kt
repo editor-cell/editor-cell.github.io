@@ -51,6 +51,30 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextOverflow
 import kotlinx.coroutines.Dispatchers
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.text.font.FontStyle
@@ -128,27 +152,31 @@ object SearchState {
 }
 
 @OptIn(ExperimentalLayoutApi::class)
-/** Writes the evrak (supporting and contradicting paragraphs), saves it to Downloads and opens the share sheet. */
-private suspend fun makeEvrak(ctx: Context, db: Db, claim: String, evidence: List<Finding>) {
-    val result = withContext(Dispatchers.IO) {
+/**
+ * Writes the evrak (supporting and contradicting paragraphs), keeps it in the phone's Evraklar and
+ * in Downloads, then opens it ([share] false) or the share sheet ([share] true).
+ */
+private suspend fun makeEvrak(ctx: Context, db: Db, claim: String, evidence: List<Finding>, share: Boolean = false) {
+    val file = withContext(Dispatchers.IO) {
         try {
             val order = HashMap<String, List<Long>>()
             fun placed(v: Verdict) = evidence.filter { it.judgement.verdict == v }.map { f ->
                 val ids = order.getOrPut(f.paragraph.docUrl) { db.paragraphsOfDoc(f.paragraph.docUrl).map { it.first } }
                 f.paragraph to ids.indexOf(f.paragraph.id)
             }
-            val file = EvrakPdf.write(ctx, claim, listOf(
+            val sections = listOf(
                 "Destekleyenler" to Evrak.group(placed(Verdict.SUPPORTS)),
                 "Karşı çıkanlar" to Evrak.group(placed(Verdict.CONTRADICTS)),
-            ))
-            file to EvrakPdf.saveToDownloads(ctx, file)
+            )
+            val file = EvrakPdf.write(ctx, claim, sections)
+            try { EvrakLibrary.save(ctx, file, claim, java.time.LocalDate.now().toString(), sections) } catch (e: Exception) {}
+            EvrakPdf.saveToDownloads(ctx, file)
+            file
         } catch (e: Exception) { null }
     }
-    if (result == null) Toast.makeText(ctx, "Evrak hazırlanamadı.", Toast.LENGTH_SHORT).show()
-    else {
-        if (result.second) Toast.makeText(ctx, "Evrak İndirilenler klasörüne kaydedildi.", Toast.LENGTH_SHORT).show()
-        EvrakPdf.share(ctx, result.first)
-    }
+    if (file == null) Toast.makeText(ctx, "Evrak hazırlanamadı.", Toast.LENGTH_SHORT).show()
+    else if (share) EvrakPdf.share(ctx, file)
+    else EvrakLibrary.open(ctx, file)
 }
 
 @Composable
@@ -196,92 +224,202 @@ fun SearchScreen(goTo: (Int) -> Unit) {
     }
     val going = run?.state == Db.RUN_GOING
 
-    LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(horizontal = 20.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    val evidence = findings.filter { it.judgement.analogy == null }
+    var reader by remember { mutableStateOf(Settings.reader(ctx)) }
+    var openFilter by rememberSaveable { mutableIntStateOf(0) }
+    val r = run
+
+    LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        item { Text("Ne arıyorsun?", style = MaterialTheme.typography.headlineMedium) }
         item {
-            ScreenIntro("01 / ARAŞTIR", "Bir yargının izini sür.", "İlgili paragrafları bul, kaynaklarıyla birlikte evraka dönüştür.")
-        }
-        item { LibraryStats(totals.first, totals.second) }
-        item {
-          PaperCard {
-            SectionLabel("ARAŞTIRMA YARGISI")
             OutlinedTextField(
-                s.claim, { s.claim = it }, modifier = Modifier.fillMaxWidth(), minLines = 3, shape = MaterialTheme.shapes.medium,
-                placeholder = { Text("ör. Şeker vergisi koyan ülkelerde gazlı içecek tüketimi düştü.") },
+                s.claim, { s.claim = it }, modifier = Modifier.fillMaxWidth(), minLines = 4, enabled = !going,
+                shape = RoundedCornerShape(16.dp), textStyle = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp),
+                placeholder = { Text("Bir soru ya da yargı yaz") },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.surface, unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                    disabledContainerColor = MaterialTheme.colorScheme.surface,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant, disabledBorderColor = MaterialTheme.colorScheme.outlineVariant,
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                ),
             )
-            var filtersOpen by rememberSaveable { mutableStateOf(false) }
-            TextButton(onClick = { filtersOpen = !filtersOpen }, contentPadding = PaddingValues(0.dp)) {
-                Text(if (filtersOpen) "Filtreleri gizle" else "Kaynak ve tarih seç")
-            }
-            if (!filtersOpen) Text(whereLabel(db) + " · " + s.range.label(), style = MaterialTheme.typography.bodySmall)
-            if (filtersOpen) {
-                WhereRow(db, enabled = !going)
-                DateRangeRow(db, s.range, s.sourceIds(db), enabled = !going) { s.range = it }
-            }
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
-                if (going) OutlinedButton(onClick = { s.stop(ctx.applicationContext) }) { Text("Durdur") }
-                else {
-                    val can = s.claim.isNotBlank() && hasEmbedder && !making
-                    Button(onClick = { s.startEvrak(ctx.applicationContext) }, enabled = can, shape = MaterialTheme.shapes.small) { Text(if (making) "Evrak hazırlanıyor…" else "Evrak oluştur") }
-                }
-                if (run?.state in setOf(Db.RUN_STOPPED, Db.RUN_FAILED) && (run?.done ?: 0) < (run?.total ?: 0) && run?.claim == s.claim.trim()) {
-                    OutlinedButton(onClick = { s.resume(ctx.applicationContext) }) { Text("Kaldığı yerden devam et") }
-                }
-                if (findings.isNotEmpty()) OutlinedButton(onClick = { copyAll(ctx, run?.claim ?: s.claim, findings) }) { Text("Tümünü kopyala") }
-                val evidence = findings.filter { it.judgement.analogy == null }
-                if (!going && evidence.isNotEmpty()) OutlinedButton(enabled = !making, onClick = {
-                    making = true
-                    scope.launch {
-                        makeEvrak(ctx, db, run?.claim ?: s.claim.trim(), evidence)
-                        making = false
+        }
+        item {
+            Box(Modifier.fillMaxWidth().border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))) {
+                Column {
+                    FilterLine(Icons.Filled.DateRange, "Tarih", s.range.label(), open = openFilter == 1, enabled = !going) { openFilter = if (openFilter == 1) 0 else 1 }
+                    if (openFilter == 1) Column(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp)) {
+                        DateRangeRow(db, s.range, s.sourceIds(db), enabled = !going) { s.range = it }
                     }
-                }) { Text("Evrakı yeniden aç") }
-            }
-            Text("Seçili kaynakların sitelerinde arar; arama bitince evrakı kendisi oluşturup açar. Telefonda arşiv tutulmaz.", style = MaterialTheme.typography.bodySmall)
-            Text("Her soru ayrı aranır. Sorular ve aday paragraflar servise gönderilir. Sol emin olmadığında Astra'ya sorar.", style = MaterialTheme.typography.bodySmall)
-          }
-        }
-        if (!hasEmbedder) item { Notice(Search.NO_EMBEDDER, "Model sekmesine git") { goTo(3) } }
-        val r = run
-        if (r != null && r.state == Db.RUN_GOING) item {
-            Column {
-                LinearProgressIndicator(Modifier.fillMaxWidth())
-                Text(status.ifEmpty { "Sırada; birazdan başlıyor…" }, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 4.dp))
-                Text("Uygulamadan çıkabilirsiniz; arama bildirimle sürer.", style = MaterialTheme.typography.bodySmall)
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    FilterLine(Icons.Filled.List, "Kaynaklar", whereLabel(db), open = openFilter == 2, enabled = !going) { openFilter = if (openFilter == 2) 0 else 2 }
+                    if (openFilter == 2) Column(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp)) { WhereRow(db, enabled = !going) }
+                }
             }
         }
+        item {
+            ReaderPicker(reader, enabled = !going) { reader = it; Settings.setReader(ctx, it) }
+        }
+        item {
+            if (going) OutlinedButton(onClick = { s.stop(ctx.applicationContext) }, modifier = Modifier.fillMaxWidth().height(52.dp),
+                shape = RoundedCornerShape(16.dp)) { Text("Durdur", fontWeight = FontWeight.SemiBold) }
+            else Button(
+                onClick = { s.startEvrak(ctx.applicationContext) }, enabled = s.claim.isNotBlank() && !making,
+                modifier = Modifier.fillMaxWidth().height(56.dp), shape = RoundedCornerShape(16.dp),
+            ) {
+                Icon(Icons.Filled.Search, contentDescription = null, modifier = Modifier.size(20.dp))
+                Spacer(Modifier.width(10.dp))
+                Text(if (making) "Evrak hazırlanıyor…" else "Ara", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+            }
+        }
+        if (r?.state in setOf(Db.RUN_STOPPED, Db.RUN_FAILED) && (r?.done ?: 0) < (r?.total ?: 0) && r?.claim == s.claim.trim()) item {
+            OutlinedButton(onClick = { s.resume(ctx.applicationContext) }, modifier = Modifier.fillMaxWidth().height(52.dp),
+                shape = RoundedCornerShape(16.dp)) { Text("Kaldığı yerden devam et") }
+        }
+        if (r != null && r.state == Db.RUN_GOING) item { ProgressCard(r, status, reader) }
         if (r != null && (r.state == Db.RUN_FAILED || r.state == Db.RUN_STOPPED) && r.message != null) item {
-            Text(r.message + if (r.state == Db.RUN_STOPPED) " ${r.done}/${r.total} değerlendirme tamamlandı." else "", style = MaterialTheme.typography.bodyMedium)
+            Text(r.message + if (r.state == Db.RUN_STOPPED) " ${r.done}/${r.total}" else "", style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        if (r != null && r.state == Db.RUN_DONE && findings.isEmpty()) item {
-            Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
-                Column(Modifier.padding(16.dp)) {
-                    Text("Bulamadım.", style = MaterialTheme.typography.titleLarge)
-                    Text(
-                        if (r.total == 0 && !r.concepts.isNullOrBlank()) "Yargının kavramlarını (${Concepts.names(Concepts.parse(r.concepts))}) " +
-                            "birlikte anlatan paragraf, seçilen kaynaklarda ve tarihlerde bulunan belgelerde yok."
-                        else if (r.total == 0) "Seçilen kaynaklarda ve tarihlerde anlam dizininde paragraf yok."
-                        else "${r.total} paragraf değerlendirmesi tamamlandı. Evraka alınabilecek bir sonuç bulunamadı.",
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                    if (notes.isNotEmpty()) {
-                        Text("Sol'un en yakın paragraflar için notu:", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(top = 12.dp))
-                        for ((title, reason) in notes) Text("$title: $reason", style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 4.dp))
+        if (r != null && r.state == Db.RUN_DONE && evidence.isEmpty()) item {
+            PaperCard {
+                Text("Bulamadım.", style = MaterialTheme.typography.titleLarge)
+                for ((title, reason) in notes) Text("$title: $reason", style = MaterialTheme.typography.bodySmall)
+            }
+        }
+        if (r != null && r.state == Db.RUN_DONE && evidence.isNotEmpty()) {
+            item {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    StatBox("Destekleyen", evidence.count { it.judgement.verdict == Verdict.SUPPORTS }, Modifier.weight(1f), MaterialTheme.colorScheme.onSurface)
+                    StatBox("Karşı çıkan", evidence.count { it.judgement.verdict == Verdict.CONTRADICTS }, Modifier.weight(1f), MaterialTheme.colorScheme.primary)
+                }
+            }
+            item { DocsCard(evidence) }
+            item {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Button(enabled = !making, onClick = {
+                        making = true
+                        scope.launch { makeEvrak(ctx, db, r.claim, evidence); making = false }
+                    }, modifier = Modifier.weight(1f).height(56.dp), shape = RoundedCornerShape(16.dp)) {
+                        Text(if (making) "Hazırlanıyor…" else "Evrakı aç", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                    }
+                    OutlinedButton(enabled = !making, onClick = {
+                        making = true
+                        scope.launch { makeEvrak(ctx, db, r.claim, evidence, share = true); making = false }
+                    }, modifier = Modifier.size(56.dp), shape = RoundedCornerShape(16.dp), contentPadding = PaddingValues(0.dp)) {
+                        Icon(Icons.Filled.Share, contentDescription = "Paylaş")
                     }
                 }
             }
         }
-        if (r != null && r.state == Db.RUN_DONE && findings.isNotEmpty()) item {
-            Text("${r.total} paragraf değerlendirmesinden ${findings.size} bulgu çıktı.", style = MaterialTheme.typography.bodySmall)
-        }
-        if (r != null && r.state == Db.RUN_DONE && !r.concepts.isNullOrBlank()) item {
-            Text("Aranan kavramlar: ${Concepts.names(Concepts.parse(r.concepts))}", style = MaterialTheme.typography.bodySmall)
-        }
-        if (uncertain > 0) item {
-            Text("$uncertain paragrafta karar belirsiz kaldı; bunlar destekleyen veya karşı çıkan olarak evraka alınmadı.", style = MaterialTheme.typography.bodySmall)
-        }
-        items(findings, key = { "${it.paragraph.id}:${it.judgement.verdict}" }) { f -> FindingCard(f) }
         if (r?.suggestion != null) item { SuggestionCard(r.suggestion) }
-        item { Text("", Modifier.padding(bottom = 24.dp)) }
+        item { Spacer(Modifier.height(24.dp)) }
+    }
+}
+
+@Composable
+private fun FilterLine(icon: ImageVector, label: String, value: String, open: Boolean, enabled: Boolean, onClick: () -> Unit) {
+    Row(Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable(enabled = enabled, onClick = onClick).padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically) {
+        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
+        Spacer(Modifier.width(12.dp))
+        Text(label, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 15.sp)
+        Spacer(Modifier.width(12.dp))
+        Text(value, fontSize = 15.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f), textAlign = androidx.compose.ui.text.style.TextAlign.End)
+        Spacer(Modifier.width(6.dp))
+        Icon(if (open) Icons.Filled.KeyboardArrowDown else Icons.Filled.KeyboardArrowRight, contentDescription = null,
+            tint = MaterialTheme.colorScheme.outline, modifier = Modifier.size(20.dp))
+    }
+}
+
+/** Sol (Astra when Sol is unsure) or Astra alone, picked per search (owner, 20 Nov 2026). */
+@Composable
+private fun ReaderPicker(reader: String, enabled: Boolean, onPick: (String) -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text("Okuyucu", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Row(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(14.dp)).padding(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            for ((key, name) in listOf("sol" to "Sol", "astra" to "Astra")) {
+                val on = reader == key
+                Box(Modifier.weight(1f).height(44.dp)
+                    .background(if (on) MaterialTheme.colorScheme.surface else androidx.compose.ui.graphics.Color.Transparent, RoundedCornerShape(11.dp))
+                    .clickable(enabled = enabled) { onPick(key) }, contentAlignment = Alignment.Center) {
+                    Text(name, fontSize = 15.sp, fontWeight = if (on) FontWeight.SemiBold else FontWeight.Medium,
+                        color = if (on) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProgressCard(r: SearchRun, status: String, reader: String) {
+    PaperCard {
+        val reading = r.total > 0
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(if (reading) (if (reader == "astra") "Astra okuyor" else "Sol okuyor") else "Kaynaklar okunuyor",
+                fontSize = 15.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
+            if (reading) Text("${r.done} / ${r.total}", fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+        }
+        if (reading) LinearProgressIndicator(progress = { if (r.total == 0) 0f else r.done.toFloat() / r.total },
+            modifier = Modifier.fillMaxWidth().height(6.dp), trackColor = MaterialTheme.colorScheme.surfaceVariant)
+        else LinearProgressIndicator(Modifier.fillMaxWidth().height(6.dp), trackColor = MaterialTheme.colorScheme.surfaceVariant)
+        Step("Kaynaklar okundu", done = reading, now = !reading)
+        Step("Paragraflar seçildi", done = reading, now = false)
+        Step("Paragraflar okunuyor", done = false, now = reading)
+        Step("Evrak", done = false, now = false)
+        if (status.isNotEmpty()) Text(status, style = MaterialTheme.typography.bodySmall, maxLines = 2, overflow = TextOverflow.Ellipsis)
+    }
+}
+
+@Composable
+private fun Step(text: String, done: Boolean, now: Boolean) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        val ink = MaterialTheme.colorScheme.onSurface
+        when {
+            done -> Box(Modifier.size(24.dp).background(ink, CircleShape), contentAlignment = Alignment.Center) {
+                Icon(Icons.Filled.Check, contentDescription = null, tint = MaterialTheme.colorScheme.surface, modifier = Modifier.size(15.dp))
+            }
+            now -> Box(Modifier.size(24.dp).border(2.dp, MaterialTheme.colorScheme.primary, CircleShape), contentAlignment = Alignment.Center) {
+                Box(Modifier.size(8.dp).background(MaterialTheme.colorScheme.primary, CircleShape))
+            }
+            else -> Box(Modifier.size(24.dp).border(2.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape))
+        }
+        Spacer(Modifier.width(12.dp))
+        Text(text, fontSize = 15.sp, fontWeight = if (now) FontWeight.SemiBold else FontWeight.Normal,
+            color = if (done || now) ink else MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+@Composable
+private fun StatBox(label: String, n: Int, modifier: Modifier, color: androidx.compose.ui.graphics.Color) {
+    Column(modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp))
+        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp)).padding(horizontal = 16.dp, vertical = 14.dp)) {
+        Text("$n", fontSize = 28.sp, fontWeight = FontWeight.SemiBold, color = color)
+        Text(label, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+/** The documents the evrak will hold: title, source and date, and how many paragraphs from each. */
+@Composable
+private fun DocsCard(evidence: List<Finding>) {
+    val docs = evidence.groupBy { it.paragraph.docUrl }.values.toList()
+    Column(Modifier.fillMaxWidth().border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp))
+        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))) {
+        docs.forEachIndexed { i, list ->
+            val p = list.first().paragraph
+            if (i > 0) HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f)) {
+                    Text(p.docTitle.ifBlank { p.docUrl }, fontSize = 15.sp, fontWeight = FontWeight.Medium, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                    Text(p.sourceName + " · " + p.docDate.ifBlank { "tarih yok" }, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                Spacer(Modifier.width(12.dp))
+                Text("${list.size}", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
     }
 }
 

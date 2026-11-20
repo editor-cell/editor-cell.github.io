@@ -106,19 +106,15 @@ fun SourcesScreen() {
             }
     }
 
-    LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+    LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
       item {
-        ScreenIntro("02 / KAYNAKLAR", "Araştırmanın dayanağı.", "Güvendiğin yayınları bir araya getir. Araştırmaların yalnız seçtiğin kaynaklarda yürüsün.")
-      }
-      item {
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            SmallTag("${list.size} kaynak")
-            SmallTag("${groups.size} başlık")
+        Row(verticalAlignment = Alignment.Bottom) {
+            Text("Kaynaklar", style = MaterialTheme.typography.headlineMedium, modifier = Modifier.weight(1f))
+            Text("${list.size} kaynak", style = MaterialTheme.typography.bodySmall)
         }
       }
       item {
        PaperCard {
-        SectionLabel("KAYNAK LİSTEN")
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(onClick = { dialog = Dialog.ONE }, shape = MaterialTheme.shapes.small) { Text("Kaynak ekle") }
             OutlinedButton(onClick = { dialog = Dialog.MANY }, shape = MaterialTheme.shapes.small) { Text("Toplu ekle") }
@@ -142,9 +138,7 @@ fun SourcesScreen() {
       }
       if (list.isEmpty()) item {
         PaperCard {
-            SectionLabel("İLK ADIM")
-            Text("Kaynak listen burada büyüyecek.", style = MaterialTheme.typography.titleLarge)
-            Text("Bir site adresi ekleyebilir, adres listesini yapıştırabilir veya Feedly OPML dosyanı içe aktarabilirsin.", style = MaterialTheme.typography.bodyMedium)
+            Text("Henüz kaynak yok.", style = MaterialTheme.typography.titleLarge)
         }
       }
       if (shown.isNotEmpty()) item {

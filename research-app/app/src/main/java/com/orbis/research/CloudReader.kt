@@ -70,8 +70,11 @@ object CloudReader {
         check(data.optBoolean("ok")) { "OpenAI anahtarı Cloudflare'e henüz eklenmemiş." }
     }
 
+    /** The reader picked on the search screen; set when a search starts. */
+    @Volatile var reader: String = "sol"
+
     suspend fun judge(paragraph: String, query: String): String {
-        val body = JSONObject().put("query", query).put("paragraph", paragraph).toString()
+        val body = JSONObject().put("query", query).put("paragraph", paragraph).put("reader", reader).toString()
         val data = request(Request.Builder().url("$BASE_URL/judge")
             .post(body.toRequestBody("application/json; charset=utf-8".toMediaType())).build())
         check(data.optString("model") == MODEL && data.optString("version") == MODEL_ID) { "Yanıt beklenen Sol modelinden gelmedi." }
