@@ -114,7 +114,7 @@ class Crawler(private val ctx: Context, private val stop: () -> Boolean) {
                 val pdfs = page.pdfLinks.filter { inScope(it) }.map { it to page.date }
                 if (pdfs.isNotEmpty()) db.enqueue(s.id, pdfs)
                 if (page.paragraphs.isEmpty()) return ReadResult(2)
-                db.saveDoc(s.id, f.url, page.title, page.date, page.paragraphs)
+                db.saveDoc(s.id, f.url, page.title, page.date, page.stored())
             }
             ReadResult(1, f.url)
         } catch (e: OutOfScope) { ReadResult(3) }

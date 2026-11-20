@@ -13,6 +13,8 @@ data class Group(val id: Long, val name: String, val sourceCount: Int)
 data class Paragraph(
     val id: Long, val text: String, val docUrl: String, val docTitle: String,
     val docDate: String, val sourceName: String,
+    /** The heading the paragraph sits under on its page; empty when the page gives none. */
+    val heading: String = "",
 )
 
 data class SourceInput(val url: String, val name: String, val scope: String, val groups: List<String> = emptyList())

@@ -88,11 +88,17 @@ object EvrakPdf {
           if (docs.isEmpty()) block("Bu aramada bulunamadı.", paint(10f, Typeface.DEFAULT, gray), 18f)
           for ((n, d) in docs.withIndex()) {
             block("${n + 1}. ${d.title}", paint(12f, bold), 2f)
-            val meta = listOf(d.source, d.date).filter { it.isNotBlank() }.joinToString(" · ")
-            if (meta.isNotEmpty()) block(meta, paint(9f, Typeface.DEFAULT, gray), 1f)
+            // Every document says when it is from (owner, 20 Nov 2026); "tarih yok" when the page gives none.
+            val meta = listOf(d.source, d.date.ifBlank { "tarih yok" }).filter { it.isNotBlank() }.joinToString(" · ")
+            block(meta, paint(9f, Typeface.DEFAULT, gray), 1f)
             block(d.url, paint(8.5f, Typeface.DEFAULT, blue), 8f, link = d.url)
+            var lastHeading = ""
             for (part in d.parts) {
                 if (part.gap) block("…", paint(11f, serif, gray), 4f)
+                // The heading the paragraph sits under on its page, shown when it changes, so a
+                // paragraph about "the regulation" says which one.
+                if (part.heading.isNotEmpty() && part.heading != lastHeading) block(part.heading, paint(10.5f, bold, gray), 3f)
+                if (part.heading.isNotEmpty()) lastHeading = part.heading
                 block(part.text, paint(11f, serif), 8f, extraSpacing = 1.15f)
             }
             y += 12f

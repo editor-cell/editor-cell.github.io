@@ -5,7 +5,14 @@ import org.jsoup.parser.Parser
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class Page(val title: String, val date: String, val paragraphs: List<String>, val links: List<String>, val pdfLinks: List<String>)
+class Page(
+    val title: String, val date: String, val paragraphs: List<String>, val links: List<String>, val pdfLinks: List<String>,
+    /** The heading each paragraph sits under on the page, in the same order; empty when none. */
+    val headings: List<String> = emptyList(),
+) {
+    /** The paragraphs as stored: each with its heading in front (see [Extract.withHeading]). */
+    fun stored(): List<String> = paragraphs.mapIndexed { i, p -> Extract.withHeading(headings.getOrElse(i) { "" }, p) }
+}
 
 class Listing(val docs: List<Pair<String, String>>, val sitemaps: List<String>, val titles: Map<String, String> = emptyMap())
 
@@ -19,7 +26,10 @@ object Extract {
         val title = meta(doc, "citation_title") ?: meta(doc, "og:title") ?: doc.title().trim().ifEmpty { url }
         val date = normDate(
             meta(doc, "citation_publication_date") ?: meta(doc, "article:published_time") ?: meta(doc, "dcterms.date")
-                ?: meta(doc, "DC.date") ?: meta(doc, "date") ?: doc.selectFirst("time[datetime]")?.attr("datetime") ?: "",
+                ?: meta(doc, "DC.date") ?: meta(doc, "date") ?: doc.selectFirst("time[datetime]")?.attr("datetime")
+                // More places pages keep their date, so fewer documents in the evrak say "tarih yok" (20 Nov 2026).
+                ?: jsonLdDate(doc) ?: meta(doc, "article:modified_time") ?: meta(doc, "og:updated_time")
+                ?: meta(doc, "dcterms.modified") ?: meta(doc, "DC.date.issued") ?: "",
         )
         val links = doc.select("a[href]").map { it.absUrl("href").substringBefore('#') }.filter { it.startsWith("http") }.distinct()
         val pdfLinks = (links.filter { looksPdf(it) } + listOfNotNull(meta(doc, "citation_pdf_url"))).distinct()
@@ -28,19 +38,27 @@ object Extract {
         body.select("script, style, noscript, nav, header, footer, aside, form, svg, button, [role=navigation], [aria-hidden=true]").remove()
         // An article card in a menu can precede the page's real main content.
         val main = body.selectFirst("main, [role=main]") ?: body.selectFirst("article") ?: body
-        main.select("h1, h2, h3, h4, h5, h6").remove()
 
         val seen = HashSet<String>()
         val out = ArrayList<String>()
+        val heads = ArrayList<String>()
+        // The heading a paragraph sits under on the page (owner, 20 Nov 2026), so the evrak can say
+        // which regulation or section "the regulation" in a paragraph is. Kept in front of the text.
+        var heading = ""
         fun take(t: String) {
             val text = t.trim()
-            if (isProse(text) && seen.add(text)) out += splitLong(text)
+            if (isProse(text) && seen.add(text)) splitLong(text).forEach { out += it; heads += heading }
         }
-        for (el in main.select("p, li, blockquote, dd, figcaption")) {
+        for (el in main.select("h1, h2, h3, h4, h5, h6, p, li, blockquote, dd, figcaption")) {
+            if (el.tagName().length == 2 && el.tagName()[0] == 'h' && el.tagName()[1].isDigit()) {
+                heading = el.text().trim().take(200)
+                continue
+            }
             // A list item or quote that holds paragraphs is read through those paragraphs.
             if (el.tagName() != "p" && el.select("p, li").any { it !== el }) continue
             take(el.text())
         }
+        heading = ""
         if (out.size < 3) {
             // Pages without paragraph tags: blocks of text that sit directly in a container. Some
             // government pages (Hong Kong press releases, 19 Nov 2026) keep the whole text in one
@@ -54,7 +72,7 @@ object Extract {
                 }
             }
         }
-        return Page(title, date, out, links, pdfLinks)
+        return Page(title, date, out, links, pdfLinks, heads)
     }
 
     /**
@@ -176,6 +194,32 @@ object Extract {
         if (skipExt.containsMatchIn(url) || skipPath.containsMatchIn(url)) return false
         val path = url.substringAfter("://").substringAfter('/', "")
         return path.isNotEmpty()
+    }
+
+    /** Marks where a paragraph's heading ends and its own words begin, in the stored text. */
+    const val HEAD = '\u001F'
+
+    fun withHeading(heading: String, text: String): String =
+        if (heading.isBlank() || heading == text) text else "${heading.replace(HEAD, ' ')}$HEAD$text"
+
+    /** (heading, the paragraph's own words) from the stored text; the heading may be empty. */
+    fun splitHeading(stored: String): Pair<String, String> {
+        val at = stored.indexOf(HEAD)
+        return if (at < 0) "" to stored else stored.substring(0, at) to stored.substring(at + 1)
+    }
+
+    /** The paragraph's own words only. */
+    fun body(stored: String): String = splitHeading(stored).second
+
+    /** For the meaning model and Sol: the heading on its own line above the paragraph. */
+    fun readable(stored: String): String = splitHeading(stored).let { (h, t) -> if (h.isEmpty()) t else "$h\n$t" }
+
+    private fun jsonLdDate(doc: org.jsoup.nodes.Document): String? {
+        val data = doc.select("script[type=application/ld+json]").joinToString("\n") { it.data() }
+        for (key in listOf("datePublished", "dateCreated", "dateModified")) {
+            Regex("\"$key\"\\s*:\\s*\"([^\"]+)\"").find(data)?.let { return it.groupValues[1].trim() }
+        }
+        return null
     }
 
     private fun meta(doc: org.jsoup.nodes.Document, name: String): String? =

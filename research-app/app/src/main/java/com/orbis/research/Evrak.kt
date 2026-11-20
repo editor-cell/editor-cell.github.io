@@ -5,7 +5,8 @@ package com.orbis.research
  * order. A part with [Part.gap] follows text of the document that was left out.
  */
 data class EvrakDoc(val title: String, val source: String, val date: String, val url: String, val parts: List<Part>) {
-    data class Part(val text: String, val gap: Boolean)
+    /** [heading]: the heading the paragraph sits under on its page, empty when unknown. */
+    data class Part(val text: String, val gap: Boolean, val heading: String = "")
 }
 
 /**
@@ -32,7 +33,8 @@ object Evrak {
             val first = list.first().first
             val sorted = list.sortedBy { it.second }
             val parts = sorted.mapIndexed { i, (p, at) ->
-                EvrakDoc.Part(p.text.trim(), gap = i > 0 && (at < 0 || sorted[i - 1].second < 0 || at != sorted[i - 1].second + 1))
+                EvrakDoc.Part(p.text.trim(), gap = i > 0 && (at < 0 || sorted[i - 1].second < 0 || at != sorted[i - 1].second + 1),
+                    heading = p.heading.trim().takeUnless { it.equals(p.docTitle.trim(), ignoreCase = true) }.orEmpty())
             }
             EvrakDoc(first.docTitle.ifBlank { first.docUrl }, first.sourceName, first.docDate, first.docUrl, parts)
         }

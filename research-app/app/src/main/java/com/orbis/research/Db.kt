@@ -277,7 +277,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
     /** The paragraphs of a document, by its address, for giving them meaning vectors at once. */
     fun paragraphsOfDoc(url: String): List<Pair<Long, String>> = readableDatabase.rawQuery(
         "SELECT p.id, p.text FROM paras p JOIN docs d ON d.id = p.doc_id WHERE d.url = ? ORDER BY p.idx", arrayOf(url),
-    ).use { c -> buildList { while (c.moveToNext()) add(c.getLong(0) to c.getString(1)) } }
+    ).use { c -> buildList { while (c.moveToNext()) add(c.getLong(0) to Extract.readable(c.getString(1))) } }
 
     fun markQueued(url: String, state: Int) {
         writableDatabase.update("queue", ContentValues().apply { put("state", state) }, "url = ?", arrayOf(url))
@@ -366,7 +366,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
     fun unindexed(limit: Int): List<Pair<Long, String>> = readableDatabase.rawQuery(
         "SELECT p.id, p.text FROM paras p LEFT JOIN para_vec v ON v.para_id = p.id WHERE v.para_id IS NULL ORDER BY p.id LIMIT ?",
         arrayOf(limit.toString()),
-    ).use { c -> buildList { while (c.moveToNext()) add(c.getLong(0) to c.getString(1)) } }
+    ).use { c -> buildList { while (c.moveToNext()) add(c.getLong(0) to Extract.readable(c.getString(1))) } }
 
     fun saveVectors(vectors: List<Pair<Long, ByteArray>>) = tx { db ->
         for ((id, v) in vectors) db.insertWithOnConflict("para_vec", null, ContentValues().apply {
@@ -401,7 +401,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
                 // and figure notes, and pages that are not documents (about pages, contacts).
                 val url = c.getString(3)
                 if (url !in directUrls && (directOnly || !Extract.looksLikeDocument(url))) continue
-                if (!Extract.isProse(c.getString(2))) continue
+                if (!Extract.isProse(Extract.body(c.getString(2)))) continue
                 best.add(Vectors.score(c.getBlob(1), query) to c.getLong(0))
                 if (best.size > k) best.poll()
             }
@@ -528,7 +528,11 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
         """SELECT p.id, p.text, d.url, d.title, d.date, s.name FROM paras p
            JOIN docs d ON d.id = p.doc_id JOIN sources s ON s.id = d.source_id WHERE p.id = ?""",
         arrayOf(id.toString()),
-    ).use { c -> if (c.moveToFirst()) Paragraph(c.getLong(0), c.getString(1), c.getString(2), c.getString(3), c.getString(4), c.getString(5)) else null }
+    ).use { c ->
+        if (!c.moveToFirst()) return@use null
+        val (heading, text) = Extract.splitHeading(c.getString(1))
+        Paragraph(c.getLong(0), text, c.getString(2), c.getString(3), c.getString(4), c.getString(5), heading)
+    }
 
     /** Preserve original wording and document order for the separate context check. */
     fun contextOf(paraId: Long): String? = readableDatabase.rawQuery(
@@ -538,7 +542,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
     ).use { c ->
         val pieces = mutableListOf<String>()
         while (c.moveToNext()) {
-            val text = c.getString(0)
+            val text = Extract.readable(c.getString(0))
             // The candidate is always intact. Only neighbours are excerpted to fit the reader.
             pieces += when {
                 c.getInt(1) < c.getInt(2) && text.length > 400 -> text.takeLast(400).substringAfter(' ', text)
@@ -550,7 +554,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, "orbis.db", n
     }
 
     companion object {
-        private const val EXTRACTION_VERSION = 2
+        private const val EXTRACTION_VERSION = 3
         const val RUN_GOING = 0
         const val RUN_DONE = 1
         const val RUN_STOPPED = 2
