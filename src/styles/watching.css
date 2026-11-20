@@ -31,8 +31,7 @@
   width:clamp(19rem, 58vw, 34rem);
   aspect-ratio:1;
   transform:translateX(-50%);
-  opacity:.55;
-  mask-image:linear-gradient(#000 10%, #0009 55%, transparent 95%);
+  opacity:.42;
 }
 .watching-stage .video-atmosphere .watching-earth { left:62%; }
 /* Show the first rendered frame at full brightness; never fade Earth in. */
