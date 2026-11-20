@@ -6,12 +6,23 @@
   inset: 0;
   overflow: clip;
   contain: strict;
-  container-type: size;
   pointer-events: none;
   /* The texture contributes light above the site's own ground; its dark center
      never paints a second, differently colored background. */
   mix-blend-mode: lighten;
   transition: opacity 900ms ease;
+}
+.video-sky {
+  position: absolute;
+  inset: 0;
+  /* The renderer projects the disc at 1/1.035 of the canvas width. Cut the
+     sky around that silhouette so the dimmed globe still hides its stars. */
+  --earth-radius: calc(var(--earth-size) / 2.07);
+  mask-image: radial-gradient(
+    circle at var(--earth-x) calc(var(--earth-top) + var(--earth-size) / 2),
+    transparent calc(var(--earth-radius) - 0.5px),
+    #000 calc(var(--earth-radius) + 1px)
+  );
 }
 .video-cloud-field {
   position: absolute;
@@ -29,41 +40,32 @@
   opacity: 0.72;
 }
 .video-cloud-next { opacity: 0; }
-.video-flight-star {
+.video-star-field {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: var(--star-size);
-  height: var(--star-size);
+  inset: -6% -12%;
+}
+.video-star-field > span {
+  position: absolute;
+  width: 1.5px;
+  height: 1.5px;
   border-radius: 50%;
-  color: #f3ece0;
-  background: currentColor;
-  box-shadow: 0 0 4px currentColor;
-  animation: orbis-star-flight var(--star-duration) linear var(--star-delay) infinite paused;
+  background: #e1e8f3;
+  opacity: 0.62;
 }
-.video-flight-star:nth-of-type(3n) { color: #e4e2e6; }
-.video-atmosphere[data-active="true"] .video-flight-star {
-  animation-play-state: running;
+.video-star-field > span:nth-child(4n) {
+  width: 2px;
+  height: 2px;
+  opacity: 0.78;
 }
-@keyframes orbis-star-flight {
-  from {
-    transform: translate3d(calc(var(--star-x) * 0.16), calc(var(--star-y) * 0.16), 0) scale(0.4);
-    opacity: 0;
-  }
-  20% {
-    transform: translate3d(calc(var(--star-x) * 0.24), calc(var(--star-y) * 0.24), 0) scale(0.65);
-    opacity: calc(var(--star-opacity) * 0.75);
-  }
-  74% {
-    transform: translate3d(calc(var(--star-x) * 0.7), calc(var(--star-y) * 0.7), 0) scale(1.15);
-    opacity: var(--star-opacity);
-  }
-  to { transform: translate3d(var(--star-x), var(--star-y), 0) scale(1.55); opacity: 0; }
+@keyframes orbis-distant-sky-drift {
+  from { transform: translate3d(8%, 2%, 0); }
+  to { transform: translate3d(-8%, -2%, 0); }
 }
 @media (prefers-reduced-motion: no-preference) {
   .video-cloud { animation: orbis-cloud-forward 36s linear -6s infinite paused; }
   .video-cloud-next { animation-delay: -24s; }
-  .video-atmosphere[data-active="true"] .video-cloud { animation-play-state: running; }
+  .video-star-field { animation: orbis-distant-sky-drift 26s ease-in-out -8s infinite alternate paused; }
+  .video-atmosphere[data-active="true"] :is(.video-cloud, .video-star-field) { animation-play-state: running; }
 }
 @keyframes orbis-cloud-forward {
   0% { transform: translate3d(-1%, 0, 0) scale(1.03); opacity: 0; }
@@ -80,19 +82,13 @@
     width: 170%;
     mask-image: linear-gradient(to bottom, transparent, #000 5%, #000 95%, transparent);
   }
-  .video-flight-star:nth-of-type(n + 13) { display: none; }
 }
 /* Stop decoration as soon as playback is requested. Never animate video opacity. */
-.video-stage:has(.film:is([data-buffering="true"], [data-started="true"])) .video-atmosphere :is(.video-cloud, .video-flight-star) {
+.video-stage:has(.film:is([data-buffering="true"], [data-started="true"])) .video-atmosphere :is(.video-cloud, .video-star-field) {
   animation-play-state: paused;
 }
 .video-stage:has(.film[data-started="true"]) .video-atmosphere { opacity: 0.82; }
 .if-band:has(.video-atmosphere[data-active="false"]) .if-video-orbit { animation-play-state: paused; }
 @media (prefers-reduced-motion: reduce) {
   .video-atmosphere { transition: none; }
-  .video-atmosphere .video-flight-star {
-    animation: none;
-    transform: translate3d(calc(var(--star-x) * 0.7), calc(var(--star-y) * 0.7), 0);
-    opacity: calc(var(--star-opacity) * 0.7);
-  }
 }

@@ -1,12 +1,11 @@
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState } from "react";
 import { WatchingEarth } from "@/components/watching-earth";
 
-// Endpoints relative to the panel, so the stars cross the same part of the sky at any size.
-const FLIGHT = [
-  [-50, -28], [-30, -48], [12, -47], [48, -33],
-  [53, -14], [53, 10], [50, 30], [31, 45],
-  [10, 46], [-42, 41], [-53, 19], [-53, -11],
-  [31, -45], [-12, 49], [52, 23], [-50, 10],
+const STAR_POSITIONS = [
+  [8, 15], [15, 9], [23, 21], [31, 12], [40, 18], [51, 10], [62, 16], [73, 11], [87, 19], [92, 8],
+  [12, 32], [19, 43], [28, 35], [47, 28], [60, 41], [73, 30], [83, 39], [91, 29],
+  [9, 51], [17, 62], [26, 53], [72, 50], [79, 60], [88, 54], [94, 65],
+  [11, 79], [20, 71], [33, 81], [43, 73], [57, 85], [69, 76], [83, 85], [90, 75],
 ];
 
 /** The sky and slowly turning Earth share the background of the watching room. */
@@ -33,38 +32,28 @@ export function VideoAtmosphere({ paused = false }: { paused?: boolean }) {
 
   return (
     <div ref={surface} className="video-atmosphere" data-active={visible && !paused} aria-hidden="true">
-      <div className="video-cloud-field">
-        {[0, 1].map((pass) => (
-          <img
-            key={pass}
-            className={`video-cloud${pass ? " video-cloud-next" : ""}`}
-            src="/images/orbis-deep-sky.webp"
-            width={1536}
-            height={1024}
-            alt=""
-            loading="lazy"
-            decoding="async"
-            fetchPriority="low"
-          />
-        ))}
+      <div className="video-sky">
+        <div className="video-cloud-field">
+          {[0, 1].map((pass) => (
+            <img
+              key={pass}
+              className={`video-cloud${pass ? " video-cloud-next" : ""}`}
+              src="/images/orbis-deep-sky.webp"
+              width={1536}
+              height={1024}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              fetchPriority="low"
+            />
+          ))}
+        </div>
+        <div className="video-star-field">
+          {STAR_POSITIONS.map(([x, y]) => (
+            <span key={`${x}-${y}`} style={{ left: `${x}%`, top: `${y}%` }} />
+          ))}
+        </div>
       </div>
-      {FLIGHT.map(([x, y], index) => {
-        const near = index % 3 === 0;
-        return (
-          <span
-            key={index}
-            className="video-flight-star"
-            style={{
-              "--star-x": `${x}cqw`,
-              "--star-y": `${y}cqh`,
-              "--star-delay": `${-index * 1.7}s`,
-              "--star-duration": `${near ? 7.5 + (index % 4) * 0.6 : 15 + (index % 4) * 1.5}s`,
-              "--star-size": near ? "2.5px" : "1.5px",
-              "--star-opacity": near ? 0.95 : 0.62,
-            } as CSSProperties}
-          />
-        );
-      })}
       <WatchingEarth paused={paused} />
     </div>
   );
