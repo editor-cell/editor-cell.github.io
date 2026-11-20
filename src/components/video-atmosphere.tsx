@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { WatchingEarth } from "@/components/watching-earth";
 
 // A few near stars supply depth without per-frame JavaScript work.
 const FLIGHT = [[-48, -28], [-22, -36], [27, -31], [52, -15], [48, 22], [18, 38], [-29, 33], [-55, 10], [-52, -8], [56, 7]];
 
-/** A shared texture crossfades between forward passes; never zooms backwards. */
+/** The sky and slowly turning Earth share the background of the watching room. */
 export function VideoAtmosphere({ paused = false }: { paused?: boolean }) {
   const surface = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -55,6 +56,7 @@ export function VideoAtmosphere({ paused = false }: { paused?: boolean }) {
           } as CSSProperties}
         />
       ))}
+      <WatchingEarth paused={paused} />
     </div>
   );
 }

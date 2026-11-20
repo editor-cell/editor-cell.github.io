@@ -17,7 +17,6 @@ import { useLang } from "@/lib/use-lang";
 import { formatDuration, videoWords, videosIn } from "@/lib/videos";
 import { usePosterGround } from "@/lib/use-poster-ground";
 import { VideoAtmosphere } from "@/components/video-atmosphere";
-import { WatchingEarth } from "@/components/watching-earth";
 import { WatchingVideos } from "@/components/watching-videos";
 
 /**
@@ -147,17 +146,14 @@ export function VideoListPage() {
     <main className="video-library watching-library">
       <VideoAtmosphere />
       <header className="watching-top"><p className="video-overline">{motionCopy(lang).label}</p></header>
-      <div className="watching-layout">
-        <div className="watching-world"><WatchingEarth /></div>
-        <section className="watching-sidebar" aria-labelledby="watching-library-title">
-          <h1 id="watching-library-title" className="paper-title watching-list-title">{words.videos}</h1>
-          <div className="video-list-filters" aria-label={words.videos}>
-            <button type="button" aria-pressed={!onlySaved} onClick={() => setOnlySaved(false)}>{words.back}<span>{videos.length}</span></button>
-            <button type="button" aria-pressed={onlySaved} onClick={() => setOnlySaved(true)}>{words.savedVideos}<span>{savedVideos.length}</span></button>
-          </div>
-          {visible.length ? <WatchingVideos videos={visible} lang={lang} /> : <p className="video-empty" role="status">{onlySaved ? words.savedEmpty : words.empty}</p>}
-        </section>
-      </div>
+      <section className="watching-sidebar" aria-labelledby="watching-library-title">
+        <h1 id="watching-library-title" className="paper-title watching-list-title">{words.videos}</h1>
+        <div className="video-list-filters" aria-label={words.videos}>
+          <button type="button" aria-pressed={!onlySaved} onClick={() => setOnlySaved(false)}>{words.back}<span>{videos.length}</span></button>
+          <button type="button" aria-pressed={onlySaved} onClick={() => setOnlySaved(true)}>{words.savedVideos}<span>{savedVideos.length}</span></button>
+        </div>
+        {visible.length ? <WatchingVideos videos={visible} lang={lang} /> : <p className="video-empty" role="status">{onlySaved ? words.savedEmpty : words.empty}</p>}
+      </section>
     </main>
   </Shell>;
 }
@@ -268,7 +264,6 @@ export function VideoPage({ video }: { video: Video | null }) {
                     length={video.duration}
                     preload="auto"
                     portalCover
-                    portalArtwork={<WatchingEarth />}
                     bare
                     onScreen={onScreen}
                     captions={Object.entries(video.captions ?? {}).map(([code, path]) => ({

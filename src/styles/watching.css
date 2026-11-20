@@ -1,10 +1,17 @@
-/* One calm world, the original video covers beside it. No copy over/below Earth. */
+/* Keep the video list in the foreground, over the same sky as the player. */
 .watching-top { display:flex; justify-content:space-between; align-items:center; gap:1rem; border-bottom:1px solid #ffffff22; padding-block:.5rem 1rem; }
 .watching-top .video-overline { margin:0; }
 .watching-all { display:inline-flex; align-items:center; gap:.4rem; min-height:2.75rem; color:var(--color-muted); font-size:.85rem; }
 .watching-layout { display:grid; align-items:center; min-width:0; }
-.watching-world { display:grid; place-items:center; min-width:0; }
 .watching-sidebar { position:relative; min-width:0; z-index:2; }
+:is(.watching-panel, .watching-library) > .watching-sidebar {
+  width:min(100%, 46rem);
+  margin-inline:auto;
+  padding-block:clamp(1.25rem, 3vw, 2.5rem);
+}
+.watching-sidebar :is(.watching-list-title, .watching-video-copy, .watching-video-details, .video-list-filters, .video-empty) {
+  text-shadow:0 1px 4px #0e0d0f, 0 0 12px #0e0d0f;
+}
 .watching-list-title { color:var(--color-ink); font-weight:500; line-height:1.1; margin:0 0 1.25rem; }
 .watching-videos { list-style:none; margin:0; padding:0; }
 .watching-videos > li { border-bottom:1px solid #ffffff30; }
@@ -17,20 +24,25 @@
 .watching-video-copy { display:grid; gap:.6rem; min-width:0; }
 .watching-video-title { font-weight:600; line-height:1.2; overflow-wrap:anywhere; }
 .watching-video-duration { color:var(--color-muted); font-size:.75rem; }
-.watching-earth { position:relative; aspect-ratio:1; width:100%; isolation:isolate; }
-/* No coloured aura: the globe carries its own thin, sunlit air. */
-.watching-earth::before { content:none; }
+.video-atmosphere .watching-earth {
+  position:absolute;
+  inset-block-start:clamp(1.75rem, 8vw, 4rem);
+  left:55%;
+  width:clamp(19rem, 58vw, 34rem);
+  aspect-ratio:1;
+  transform:translateX(-50%);
+  opacity:.55;
+  mask-image:linear-gradient(#000 10%, #0009 55%, transparent 95%);
+}
+.watching-stage .video-atmosphere .watching-earth { left:62%; }
 /* Show the first rendered frame at full brightness; never fade Earth in. */
 .watching-earth canvas { display:block; width:100%; height:100%; opacity:1; transition:none; }
 /* Same picture as the canvas's first frame, so the hand-over is invisible. */
 .watching-earth-still { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
-.watching-library > .video-atmosphere { height:100%; max-height:none; }
-.watching-panel .video-cloud,.watching-library .video-cloud,.watching-stage .video-cloud { object-position:center; }
+.watching-library > .video-atmosphere { inset-block:0; height:auto; max-height:none; }
 .watching-library .video-list-filters { margin-bottom:.5rem; gap:.3rem 1.25rem; }
 .watching-library .video-empty { padding:1rem 0; }
 .watching-screen { min-width:0; }
-.watching-screen .film-portal-earth::before { display:none; }
-.watching-screen .film-portal-earth { background:transparent; }
 .watching-video-details { margin-top:1.25rem; color:var(--color-muted); }
 .watching-video-details .video-dek { font-size:1rem; }
 .watching-video-details .video-meta { margin-top:1rem; }
@@ -38,8 +50,6 @@
 
 @media (--orbis-desktop) {
   .watching-layout { grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); gap:clamp(2rem,5vw,5rem); padding-block:2rem; }
-  .watching-world { min-height:30rem; }
-  .watching-earth { max-width:34rem; }
   .watching-list-title { font-size:clamp(2rem,3.4vw,3.2rem); }
   .watching-video-title { font-size:clamp(1.25rem,1.8vw,1.9rem); }
   .watching-panel.if-band { padding:1.25rem 2.5rem; }
@@ -53,14 +63,13 @@
 }
 @media (--orbis-phone) {
   .watching-layout { grid-template-columns:minmax(0,1fr); gap:1.25rem; padding-block:1.25rem; }
-  .watching-world { width:100%; }
-  .watching-earth { max-width:min(76vw,21rem); }
-  .watching-world .watching-earth { margin-inline:auto; }
+  .video-atmosphere .watching-earth,
+  .watching-stage .video-atmosphere .watching-earth { left:52%; }
   .watching-list-title { font-size:1.8rem; margin-bottom:.5rem; }
   .watching-video-link { grid-template-columns: minmax(0,.85fr) minmax(0,1.15fr); gap:1rem; padding:.85rem 0; }
   .watching-video-title { font-size:1.2rem; }
   .watching-video-copy { gap:.35rem; }
-  .watching-panel .video-atmosphere,.watching-library .video-atmosphere,.watching-stage .video-atmosphere { --cloud-center:17rem; }
+  .watching-panel .video-atmosphere,.watching-library .video-atmosphere,.watching-stage .video-atmosphere { --cloud-center:50%; }
   .watching-panel.if-band { padding-block:1rem; }
   .watching-top { padding-bottom:.5rem; }
   .watching-top .video-overline { font-size:.65rem; }
@@ -68,7 +77,6 @@
   .watching-library .video-list-filters { font-size:.8rem; margin-top:.75rem; }
   .watching-screen { min-height:min(76vw,21rem); }
   .watching-screen .video-inline-player { --portal-size:min(76vw,21rem); }
-  .watching-screen .film-portal-earth .watching-earth { max-width:none; }
   .watching-video-details { margin-top:1rem; }
   .watching-video-details .video-meta { margin-top:.75rem; }
 }

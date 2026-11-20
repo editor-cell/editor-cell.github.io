@@ -16,7 +16,6 @@ import {
   type Theme,
 } from "@/lib/types";
 import { videoWords, videosIn } from "@/lib/videos";
-import { WatchingEarth } from "@/components/watching-earth";
 import { WatchingVideos } from "@/components/watching-videos";
 import { VideoAtmosphere } from "@/components/video-atmosphere";
 
@@ -219,12 +218,9 @@ function VideoPanel({ lang }: { lang: Lang }) {
         <h2 id="if-videos" className="video-overline">{wordsFor(lang).film}</h2>
         <Link {...mediaLink(lang)} className="watching-all">{words.showAll} <ArrowUpRight size={14} aria-hidden="true" /></Link>
       </div>
-      <div className="watching-layout">
-        <div className="watching-world"><WatchingEarth paused={leaving} /></div>
-        <div className="watching-sidebar">
-          <h3 className="paper-title watching-list-title">{words.videos}</h3>
-          <WatchingVideos videos={videos} lang={lang} />
-        </div>
+      <div className="watching-sidebar">
+        <h3 className="paper-title watching-list-title">{words.videos}</h3>
+        <WatchingVideos videos={videos} lang={lang} />
       </div>
     </section>
   );
