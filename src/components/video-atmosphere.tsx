@@ -1,8 +1,13 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { WatchingEarth } from "@/components/watching-earth";
 
-// A few near stars supply depth without per-frame JavaScript work.
-const FLIGHT = [[-48, -28], [-22, -36], [27, -31], [52, -15], [48, 22], [18, 38], [-29, 33], [-55, 10], [-52, -8], [56, 7]];
+// Endpoints relative to the panel, so the stars cross the same part of the sky at any size.
+const FLIGHT = [
+  [-50, -28], [-30, -48], [12, -47], [48, -33],
+  [53, -14], [53, 10], [50, 30], [31, 45],
+  [10, 46], [-42, 41], [-53, 19], [-53, -11],
+  [31, -45], [-12, 49], [52, 23], [-50, 10],
+];
 
 /** The sky and slowly turning Earth share the background of the watching room. */
 export function VideoAtmosphere({ paused = false }: { paused?: boolean }) {
@@ -43,19 +48,23 @@ export function VideoAtmosphere({ paused = false }: { paused?: boolean }) {
           />
         ))}
       </div>
-      {FLIGHT.map(([x, y], index) => (
-        <span
-          key={index}
-          className="video-flight-star"
-          style={{
-            "--star-x": `${x}vw`,
-            "--star-y": `${y}rem`,
-            "--star-delay": `${-index * 2.7}s`,
-            "--star-duration": `${16 + (index % 3) * 2}s`,
-            "--star-size": `${index % 4 === 0 ? 2 : 1.5}px`,
-          } as CSSProperties}
-        />
-      ))}
+      {FLIGHT.map(([x, y], index) => {
+        const near = index % 3 === 0;
+        return (
+          <span
+            key={index}
+            className="video-flight-star"
+            style={{
+              "--star-x": `${x}cqw`,
+              "--star-y": `${y}cqh`,
+              "--star-delay": `${-index * 1.7}s`,
+              "--star-duration": `${near ? 7.5 + (index % 4) * 0.6 : 15 + (index % 4) * 1.5}s`,
+              "--star-size": near ? "2.5px" : "1.5px",
+              "--star-opacity": near ? 0.95 : 0.62,
+            } as CSSProperties}
+          />
+        );
+      })}
       <WatchingEarth paused={paused} />
     </div>
   );

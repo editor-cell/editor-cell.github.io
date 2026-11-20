@@ -6,6 +6,7 @@
   inset: 0;
   overflow: clip;
   contain: strict;
+  container-type: size;
   pointer-events: none;
   /* The texture contributes light above the site's own ground; its dark center
      never paints a second, differently colored background. */
@@ -31,13 +32,13 @@
 .video-flight-star {
   position: absolute;
   left: 50%;
-  top: 52%;
+  top: 50%;
   width: var(--star-size);
   height: var(--star-size);
   border-radius: 50%;
   color: #f3ece0;
   background: currentColor;
-  box-shadow: 0 0 3px currentColor;
+  box-shadow: 0 0 4px currentColor;
   animation: orbis-star-flight var(--star-duration) linear var(--star-delay) infinite paused;
 }
 .video-flight-star:nth-of-type(3n) { color: #e4e2e6; }
@@ -46,12 +47,18 @@
 }
 @keyframes orbis-star-flight {
   from {
-    transform: translate3d(calc(var(--star-x) * 0.12), calc(var(--star-y) * 0.12), 0) scale(0.35);
+    transform: translate3d(calc(var(--star-x) * 0.16), calc(var(--star-y) * 0.16), 0) scale(0.4);
     opacity: 0;
   }
-  18% { opacity: 0.45; }
-  72% { opacity: 0.95; }
-  to { transform: translate3d(var(--star-x), var(--star-y), 0) scale(1.5); opacity: 0; }
+  20% {
+    transform: translate3d(calc(var(--star-x) * 0.24), calc(var(--star-y) * 0.24), 0) scale(0.65);
+    opacity: calc(var(--star-opacity) * 0.75);
+  }
+  74% {
+    transform: translate3d(calc(var(--star-x) * 0.7), calc(var(--star-y) * 0.7), 0) scale(1.15);
+    opacity: var(--star-opacity);
+  }
+  to { transform: translate3d(var(--star-x), var(--star-y), 0) scale(1.55); opacity: 0; }
 }
 @media (prefers-reduced-motion: no-preference) {
   .video-cloud { animation: orbis-cloud-forward 36s linear -6s infinite paused; }
@@ -73,10 +80,7 @@
     width: 170%;
     mask-image: linear-gradient(to bottom, transparent, #000 5%, #000 95%, transparent);
   }
-  .if-band .video-atmosphere { --cloud-center: 17.5rem; }
-  .video-library .video-atmosphere { --cloud-center: 31rem; }
-  .video-flight-star { top: var(--cloud-center, 21rem); }
-  .video-flight-star:nth-of-type(n + 9) { display: none; }
+  .video-flight-star:nth-of-type(n + 13) { display: none; }
 }
 /* Stop decoration as soon as playback is requested. Never animate video opacity. */
 .video-stage:has(.film:is([data-buffering="true"], [data-started="true"])) .video-atmosphere :is(.video-cloud, .video-flight-star) {
@@ -89,6 +93,6 @@
   .video-atmosphere .video-flight-star {
     animation: none;
     transform: translate3d(calc(var(--star-x) * 0.7), calc(var(--star-y) * 0.7), 0);
-    opacity: 0.6;
+    opacity: calc(var(--star-opacity) * 0.7);
   }
 }
