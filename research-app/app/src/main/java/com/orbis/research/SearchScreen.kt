@@ -14,11 +14,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.BorderStroke
@@ -31,20 +29,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -68,7 +64,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -234,7 +229,7 @@ fun SearchScreen(goTo: (Int) -> Unit) {
         item {
             OutlinedTextField(
                 s.claim, { s.claim = it }, modifier = Modifier.fillMaxWidth(), minLines = 4, enabled = !going,
-                shape = RoundedCornerShape(16.dp), textStyle = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp),
+                shape = RoundedCornerShape(12.dp), textStyle = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp, lineHeight = 24.sp),
                 placeholder = { Text("Bir soru ya da yargı yaz") },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.surface, unfocusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -245,8 +240,8 @@ fun SearchScreen(goTo: (Int) -> Unit) {
             )
         }
         item {
-            Box(Modifier.fillMaxWidth().border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp))
-                .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))) {
+            Box(Modifier.fillMaxWidth().border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
+                .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))) {
                 Column {
                     FilterLine(Icons.Filled.DateRange, "Tarih", s.range.label(), open = openFilter == 1, enabled = !going) { openFilter = if (openFilter == 1) 0 else 1 }
                     if (openFilter == 1) Column(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp)) {
@@ -262,20 +257,12 @@ fun SearchScreen(goTo: (Int) -> Unit) {
             ReaderPicker(reader, enabled = !going) { reader = it; Settings.setReader(ctx, it) }
         }
         item {
-            if (going) OutlinedButton(onClick = { s.stop(ctx.applicationContext) }, modifier = Modifier.fillMaxWidth().height(52.dp),
-                shape = RoundedCornerShape(16.dp)) { Text("Durdur", fontWeight = FontWeight.SemiBold) }
-            else Button(
-                onClick = { s.startEvrak(ctx.applicationContext) }, enabled = s.claim.isNotBlank() && !making,
-                modifier = Modifier.fillMaxWidth().height(56.dp), shape = RoundedCornerShape(16.dp),
-            ) {
-                Icon(Icons.Filled.Search, contentDescription = null, modifier = Modifier.size(20.dp))
-                Spacer(Modifier.width(10.dp))
-                Text(if (making) "Evrak hazırlanıyor…" else "Ara", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-            }
+            if (going) LineButton("Durdur", onClick = { s.stop(ctx.applicationContext) }, modifier = Modifier.fillMaxWidth())
+            else InkButton(if (making) "Evrak hazırlanıyor…" else "Ara", onClick = { s.startEvrak(ctx.applicationContext) },
+                enabled = s.claim.isNotBlank() && !making, modifier = Modifier.fillMaxWidth(), icon = Icons.Filled.Search)
         }
         if (r?.state in setOf(Db.RUN_STOPPED, Db.RUN_FAILED) && (r?.done ?: 0) < (r?.total ?: 0) && r?.claim == s.claim.trim()) item {
-            OutlinedButton(onClick = { s.resume(ctx.applicationContext) }, modifier = Modifier.fillMaxWidth().height(52.dp),
-                shape = RoundedCornerShape(16.dp)) { Text("Kaldığı yerden devam et") }
+            LineButton("Kaldığı yerden devam et", onClick = { s.resume(ctx.applicationContext) }, modifier = Modifier.fillMaxWidth())
         }
         if (r != null && r.state == Db.RUN_GOING) item { ProgressCard(r, status, reader) }
         if (r != null && (r.state == Db.RUN_FAILED || r.state == Db.RUN_STOPPED) && r.message != null) item {
@@ -292,24 +279,20 @@ fun SearchScreen(goTo: (Int) -> Unit) {
             item {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     StatBox("Destekleyen", evidence.count { it.judgement.verdict == Verdict.SUPPORTS }, Modifier.weight(1f), MaterialTheme.colorScheme.onSurface)
-                    StatBox("Karşı çıkan", evidence.count { it.judgement.verdict == Verdict.CONTRADICTS }, Modifier.weight(1f), MaterialTheme.colorScheme.primary)
+                    StatBox("Karşı çıkan", evidence.count { it.judgement.verdict == Verdict.CONTRADICTS }, Modifier.weight(1f), MaterialTheme.colorScheme.tertiary)
                 }
             }
             item { DocsCard(evidence) }
             item {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Button(enabled = !making, onClick = {
+                    InkButton(if (making) "Hazırlanıyor…" else "Evrakı aç", enabled = !making, onClick = {
                         making = true
                         scope.launch { makeEvrak(ctx, db, r.claim, evidence); making = false }
-                    }, modifier = Modifier.weight(1f).height(56.dp), shape = RoundedCornerShape(16.dp)) {
-                        Text(if (making) "Hazırlanıyor…" else "Evrakı aç", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-                    }
-                    OutlinedButton(enabled = !making, onClick = {
+                    }, modifier = Modifier.weight(1f))
+                    LineButton(null, enabled = !making, onClick = {
                         making = true
                         scope.launch { makeEvrak(ctx, db, r.claim, evidence, share = true); making = false }
-                    }, modifier = Modifier.size(56.dp), shape = RoundedCornerShape(16.dp), contentPadding = PaddingValues(0.dp)) {
-                        Icon(Icons.Filled.Share, contentDescription = "Paylaş")
-                    }
+                    }, modifier = Modifier.width(52.dp), icon = Icons.Filled.Share)
                 }
             }
         }
@@ -324,9 +307,9 @@ private fun FilterLine(icon: ImageVector, label: String, value: String, open: Bo
         verticalAlignment = Alignment.CenterVertically) {
         Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
         Spacer(Modifier.width(12.dp))
-        Text(label, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 15.sp)
+        Text(label, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
         Spacer(Modifier.width(12.dp))
-        Text(value, fontSize = 15.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis,
+        Text(value, fontSize = 14.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f), textAlign = androidx.compose.ui.text.style.TextAlign.End)
         Spacer(Modifier.width(6.dp))
         Icon(if (open) Icons.Filled.KeyboardArrowDown else Icons.Filled.KeyboardArrowRight, contentDescription = null,
@@ -338,19 +321,9 @@ private fun FilterLine(icon: ImageVector, label: String, value: String, open: Bo
 @Composable
 private fun ReaderPicker(reader: String, enabled: Boolean, onPick: (String) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text("Okuyucu", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Row(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(14.dp)).padding(4.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            for ((key, name) in listOf("sol" to "Sol", "astra" to "Astra")) {
-                val on = reader == key
-                Box(Modifier.weight(1f).height(44.dp)
-                    .background(if (on) MaterialTheme.colorScheme.surface else androidx.compose.ui.graphics.Color.Transparent, RoundedCornerShape(11.dp))
-                    .clickable(enabled = enabled) { onPick(key) }, contentAlignment = Alignment.Center) {
-                    Text(name, fontSize = 15.sp, fontWeight = if (on) FontWeight.SemiBold else FontWeight.Medium,
-                        color = if (on) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-            }
-        }
+        Text("OKUYUCU", fontSize = 11.sp, fontWeight = FontWeight.Medium, letterSpacing = 1.2.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Segmented(listOf("sol" to "Sol", "astra" to "Astra"), reader, enabled, onPick)
     }
 }
 
@@ -364,8 +337,10 @@ private fun ProgressCard(r: SearchRun, status: String, reader: String) {
             if (reading) Text("${r.done} / ${r.total}", fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
         }
         if (reading) LinearProgressIndicator(progress = { if (r.total == 0) 0f else r.done.toFloat() / r.total },
-            modifier = Modifier.fillMaxWidth().height(6.dp), trackColor = MaterialTheme.colorScheme.surfaceVariant)
-        else LinearProgressIndicator(Modifier.fillMaxWidth().height(6.dp), trackColor = MaterialTheme.colorScheme.surfaceVariant)
+            modifier = Modifier.fillMaxWidth().height(4.dp), color = MaterialTheme.colorScheme.onBackground,
+            trackColor = MaterialTheme.colorScheme.surfaceVariant, gapSize = 0.dp, drawStopIndicator = {})
+        else LinearProgressIndicator(Modifier.fillMaxWidth().height(4.dp), color = MaterialTheme.colorScheme.onBackground,
+            trackColor = MaterialTheme.colorScheme.surfaceVariant, gapSize = 0.dp)
         Step("Kaynaklar okundu", done = reading, now = !reading)
         Step("Paragraflar seçildi", done = reading, now = false)
         Step("Paragraflar okunuyor", done = false, now = reading)
@@ -379,25 +354,25 @@ private fun Step(text: String, done: Boolean, now: Boolean) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         val ink = MaterialTheme.colorScheme.onSurface
         when {
-            done -> Box(Modifier.size(24.dp).background(ink, CircleShape), contentAlignment = Alignment.Center) {
-                Icon(Icons.Filled.Check, contentDescription = null, tint = MaterialTheme.colorScheme.surface, modifier = Modifier.size(15.dp))
+            done -> Box(Modifier.size(20.dp).background(ink, CircleShape), contentAlignment = Alignment.Center) {
+                Icon(Icons.Filled.Check, contentDescription = null, tint = MaterialTheme.colorScheme.surface, modifier = Modifier.size(13.dp))
             }
-            now -> Box(Modifier.size(24.dp).border(2.dp, MaterialTheme.colorScheme.primary, CircleShape), contentAlignment = Alignment.Center) {
-                Box(Modifier.size(8.dp).background(MaterialTheme.colorScheme.primary, CircleShape))
+            now -> Box(Modifier.size(20.dp).border(1.5.dp, MaterialTheme.colorScheme.tertiary, CircleShape), contentAlignment = Alignment.Center) {
+                Box(Modifier.size(7.dp).background(MaterialTheme.colorScheme.tertiary, CircleShape))
             }
-            else -> Box(Modifier.size(24.dp).border(2.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape))
+            else -> Box(Modifier.size(20.dp).border(1.5.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape))
         }
         Spacer(Modifier.width(12.dp))
-        Text(text, fontSize = 15.sp, fontWeight = if (now) FontWeight.SemiBold else FontWeight.Normal,
+        Text(text, fontSize = 14.sp, fontWeight = if (now) FontWeight.Medium else FontWeight.Normal,
             color = if (done || now) ink else MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
 @Composable
 private fun StatBox(label: String, n: Int, modifier: Modifier, color: androidx.compose.ui.graphics.Color) {
-    Column(modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp))
-        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp)).padding(horizontal = 16.dp, vertical = 14.dp)) {
-        Text("$n", fontSize = 28.sp, fontWeight = FontWeight.SemiBold, color = color)
+    Column(modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
+        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp)).padding(horizontal = 16.dp, vertical = 14.dp)) {
+        Text("$n", fontFamily = DmSerif, fontSize = 32.sp, lineHeight = 36.sp, color = color)
         Text(label, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
@@ -406,8 +381,8 @@ private fun StatBox(label: String, n: Int, modifier: Modifier, color: androidx.c
 @Composable
 private fun DocsCard(evidence: List<Finding>) {
     val docs = evidence.groupBy { it.paragraph.docUrl }.values.toList()
-    Column(Modifier.fillMaxWidth().border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp))
-        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))) {
+    Column(Modifier.fillMaxWidth().border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
+        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))) {
         docs.forEachIndexed { i, list ->
             val p = list.first().paragraph
             if (i > 0) HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
@@ -549,20 +524,19 @@ private fun open(ctx: Context, p: Paragraph) {
 private fun DateRangeRow(db: Db, range: DateRange, sourceIds: Set<Long>?, enabled: Boolean, onChange: (DateRange) -> Unit) {
     var picking by remember { mutableStateOf(false) }
     val counts = remember(range, sourceIds) { db.docsIn(range, sourceIds) }
-    Column(Modifier.padding(top = 8.dp)) {
-        Text("Tarih aralığı: ${range.label()}", style = MaterialTheme.typography.titleSmall)
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+    Column(Modifier.padding(top = 4.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             val und = range.includeUndated
-            FilterChip(range.isAll, enabled = enabled, onClick = { onChange(DateRange(includeUndated = und)) }, label = { Text("Tümü") })
+            Pill("Tümü", range.isAll, enabled = enabled, onClick = { onChange(DateRange(includeUndated = und)) })
             for (n in listOf(1, 5, 10)) {
                 val r = DateRange.lastYears(n, includeUndated = und)
-                FilterChip(range.from == r.from && range.to == r.to, enabled = enabled, onClick = { onChange(r) }, label = { Text("Son $n yıl") })
+                Pill("Son $n yıl", range.from == r.from && range.to == r.to, enabled = enabled, onClick = { onChange(r) })
             }
-            FilterChip(!range.isAll && listOf(1, 5, 10).none { DateRange.lastYears(it).from == range.from && DateRange.lastYears(it).to == range.to },
-                enabled = enabled, onClick = { picking = true }, label = { Text("Tarih seç…") })
+            Pill("Tarih seç…", !range.isAll && listOf(1, 5, 10).none { DateRange.lastYears(it).from == range.from && DateRange.lastYears(it).to == range.to },
+                enabled = enabled, onClick = { picking = true })
         }
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Checkbox(range.includeUndated, enabled = enabled, onCheckedChange = { onChange(range.copy(includeUndated = it)) })
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 4.dp)) {
+            InkCheckbox(range.includeUndated, enabled = enabled, onCheckedChange = { onChange(range.copy(includeUndated = it)) })
             Text("Tarihi belli olmayan belgeler de aransın", style = MaterialTheme.typography.bodySmall)
         }
         Text(
@@ -614,20 +588,18 @@ private fun WhereRow(db: Db, enabled: Boolean) {
         s.pickedSources = s.pickedSources.intersect(sources.map { it.id }.toSet())
     }
     val count = remember(s.pickedGroups, s.pickedSources) { s.sourceIds(db)?.size }
-    Column(Modifier.padding(top = 8.dp)) {
-        Text("Nerede aransın: ${whereLabel(db)}", style = MaterialTheme.typography.titleSmall)
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            FilterChip(s.searchesAll(), enabled = enabled, onClick = { s.pickedGroups = emptySet(); s.pickedSources = emptySet() },
-                label = { Text("Tüm kaynaklar") })
+    Column(Modifier.padding(top = 4.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Pill("Tüm kaynaklar", s.searchesAll(), enabled = enabled, onClick = { s.pickedGroups = emptySet(); s.pickedSources = emptySet() })
             for (g in groups) {
                 val on = g.id in s.pickedGroups
-                FilterChip(on, enabled = enabled, onClick = { s.pickedGroups = if (on) s.pickedGroups - g.id else s.pickedGroups + g.id },
-                    label = { Text("${g.name} (${g.sourceCount})") })
+                Pill("${g.name} (${g.sourceCount})", on, enabled = enabled,
+                    onClick = { s.pickedGroups = if (on) s.pickedGroups - g.id else s.pickedGroups + g.id })
             }
-            FilterChip(s.pickedSources.isNotEmpty(), enabled = enabled, onClick = { picking = true },
-                label = { Text(if (s.pickedSources.isEmpty()) "Kaynak seç…" else "${s.pickedSources.size} kaynak seçili") })
+            Pill(if (s.pickedSources.isEmpty()) "Kaynak seç…" else "${s.pickedSources.size} kaynak seçili", s.pickedSources.isNotEmpty(),
+                enabled = enabled, onClick = { picking = true })
         }
-        if (count != null) Text("$count kaynakta aranacak.", style = MaterialTheme.typography.bodySmall)
+        if (count != null) Text("$count kaynakta aranacak.", style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 8.dp))
     }
     if (picking) PickSourcesDialog(sources, s.pickedSources, onDone = { s.pickedSources = it; picking = false }, onDismiss = { picking = false })
 }
@@ -649,7 +621,7 @@ private fun PickSourcesDialog(sources: List<Source>, initial: Set<Long>, onDone:
                     items(shown, key = { it.id }) { src ->
                         val on = src.id in chosen
                         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().clickable { chosen = if (on) chosen - src.id else chosen + src.id }) {
-                            Checkbox(on, onCheckedChange = { chosen = if (on) chosen - src.id else chosen + src.id })
+                            InkCheckbox(on, onCheckedChange = { chosen = if (on) chosen - src.id else chosen + src.id })
                             Column {
                                 Text(src.name, style = MaterialTheme.typography.bodyMedium)
                                 if (src.groups.isNotEmpty()) Text(src.groups.joinToString(" · "), style = MaterialTheme.typography.labelSmall)

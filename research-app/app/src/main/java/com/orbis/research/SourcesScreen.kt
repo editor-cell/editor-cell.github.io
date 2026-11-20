@@ -19,14 +19,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.TriStateCheckbox
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -115,9 +111,9 @@ fun SourcesScreen() {
       }
       item {
        PaperCard {
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = { dialog = Dialog.ONE }, shape = MaterialTheme.shapes.small) { Text("Kaynak ekle") }
-            OutlinedButton(onClick = { dialog = Dialog.MANY }, shape = MaterialTheme.shapes.small) { Text("Toplu ekle") }
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            InkButton("Kaynak ekle", onClick = { dialog = Dialog.ONE }, height = 42.dp)
+            LineButton("Toplu ekle", onClick = { dialog = Dialog.MANY }, height = 42.dp)
             TextButton(onClick = { importFile.launch(arrayOf("text/*", "application/*")) }) { Text("Dosyadan ekle") }
             TextButton(onClick = { exportFile.launch("orbis-kaynaklar.txt") }, enabled = list.isNotEmpty()) { Text("Dışa aktar") }
         }
@@ -126,11 +122,11 @@ fun SourcesScreen() {
                 shape = MaterialTheme.shapes.medium, modifier = Modifier.fillMaxWidth())
         }
         if (groups.isNotEmpty()) {
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                FilterChip(heading == null, onClick = { heading = null }, label = { Text("Tümü (${list.size})") })
-                for (g in groups) FilterChip(heading == g.id, onClick = { heading = g.id }, label = { Text("${g.name} (${g.sourceCount})") })
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Pill("Tümü (${list.size})", heading == null, onClick = { heading = null })
+                for (g in groups) Pill("${g.name} (${g.sourceCount})", heading == g.id, onClick = { heading = g.id })
                 val loose = list.count { it.groups.isEmpty() }
-                if (loose > 0) FilterChip(heading == NO_HEADING, onClick = { heading = NO_HEADING }, label = { Text("Başlıksız ($loose)") })
+                if (loose > 0) Pill("Başlıksız ($loose)", heading == NO_HEADING, onClick = { heading = NO_HEADING })
                 TextButton(onClick = { dialog = Dialog.HEADINGS }) { Text("Başlıkları düzenle") }
             }
         }
@@ -145,7 +141,7 @@ fun SourcesScreen() {
         Column {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 val allShownSelected = shown.isNotEmpty() && shown.all { it.id in selected }
-                Checkbox(allShownSelected, onCheckedChange = {
+                InkCheckbox(allShownSelected, onCheckedChange = {
                     selected = if (allShownSelected) selected - shown.map { it.id }.toSet() else selected + shown.map { it.id }
                 })
                 Text(if (selected.isEmpty()) "${shown.size} kaynak · tümünü seç" else "${selected.size} kaynak seçili", style = MaterialTheme.typography.labelLarge)
@@ -161,11 +157,11 @@ fun SourcesScreen() {
         val on = source.id in selected
         PaperCard(Modifier.clickable { selected = if (on) selected - source.id else selected + source.id }) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(on, onCheckedChange = { selected = if (on) selected - source.id else selected + source.id })
+                InkCheckbox(on, onCheckedChange = { selected = if (on) selected - source.id else selected + source.id })
                 Column(Modifier.weight(1f)) {
                     Text(source.name, style = MaterialTheme.typography.titleSmall, maxLines = 2, overflow = TextOverflow.Ellipsis)
                     Text(source.url, style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    if (source.groups.isNotEmpty()) Text(source.groups.joinToString(" · "), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+                    if (source.groups.isNotEmpty()) Text(source.groups.joinToString(" · "), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.tertiary)
                     Text("${source.docCount} belge", style = MaterialTheme.typography.labelSmall)
                 }
                 TextButton(onClick = { renaming = source; dialog = Dialog.RENAME }) { Text("Ad") }

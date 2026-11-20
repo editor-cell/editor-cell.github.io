@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
@@ -32,13 +31,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -75,11 +73,10 @@ private fun BrandHeader() {
     Surface(color = MaterialTheme.colorScheme.background) {
         Row(Modifier.statusBarsPadding().fillMaxWidth().padding(start = 24.dp, end = 24.dp, top = 18.dp, bottom = 6.dp),
             verticalAlignment = Alignment.CenterVertically) {
-            Text("ORBIS", fontFamily = FontFamily.Serif, fontWeight = FontWeight.SemiBold,
-                fontSize = 21.sp, letterSpacing = 5.5.sp, lineHeight = 26.sp)
+            Text("ORBIS", fontFamily = DmSerif, fontSize = 22.sp, letterSpacing = 5.sp, lineHeight = 26.sp)
             Spacer(Modifier.weight(1f))
-            Text("ARAŞTIRMA", color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 12.sp, fontWeight = FontWeight.Medium, letterSpacing = 1.sp)
+            Text("ARAŞTIRMA", color = MaterialTheme.colorScheme.tertiary,
+                fontSize = 11.sp, fontWeight = FontWeight.Medium, letterSpacing = 2.sp)
         }
     }
 }
@@ -99,7 +96,7 @@ private fun App() {
                             NavigationBarItem(
                                 selected = tab == i, onClick = { tab = i },
                                 icon = { Icon(t.icon, contentDescription = null) },
-                                label = { Text(t.title, fontWeight = if (tab == i) FontWeight.SemiBold else FontWeight.Normal) },
+                                label = { Text(t.title, fontSize = 12.sp, fontWeight = if (tab == i) FontWeight.SemiBold else FontWeight.Normal) },
                                 colors = NavigationBarItemDefaults.colors(
                                     indicatorColor = MaterialTheme.colorScheme.surface,
                                     selectedIconColor = MaterialTheme.colorScheme.primary,
