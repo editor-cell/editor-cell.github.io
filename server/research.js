@@ -78,7 +78,7 @@ function json(data, status = 200) {
   });
 }
 
-/** @param {any} body @returns {{ query: string, paragraph: string }} */
+/** @param {any} body @returns {{ query: string, paragraph: string, reader: "sol" | "astra" }} */
 export function validateInput(body) {
   if (
     !body ||
@@ -91,7 +91,9 @@ export function validateInput(body) {
   ) {
     throw new Error("Geçerli bir sorgu ve paragraf gönderin.");
   }
-  return { query: body.query.trim(), paragraph: body.paragraph.trim() };
+  // The owner picks the reader for each search in the app (20 Nov 2026): Sol (Astra when Sol is
+  // unsure) or Astra alone.
+  return { query: body.query.trim(), paragraph: body.paragraph.trim(), reader: body.reader === "astra" ? "astra" : "sol" };
 }
 
 /** @param {unknown} raw @returns {Answer} */
@@ -185,7 +187,7 @@ async function askOpenAI(input, key, model) {
     body: JSON.stringify({
       model,
       instructions: SYSTEM,
-      input: JSON.stringify(input),
+      input: JSON.stringify({ query: input.query, paragraph: input.paragraph }),
       reasoning: { effort: "medium" },
       text: { format: { type: "json_schema", name: "paragraph_verdict", strict: true, schema: OPENAI_SCHEMA } },
       store: false,
@@ -336,11 +338,12 @@ export async function handleResearch(request, env) {
     return json({ error: "Geçerli bir sorgu ve paragraf gönderin." }, 400);
   }
   try {
-    const first = await askOpenAI(input, key, MODEL);
+    const firstModel = input.reader === "astra" ? SECOND_MODEL : MODEL;
+    const first = await askOpenAI(input, key, firstModel);
     /** @type {Answer | null} */
     let second = null;
     let secondStatus = "off";
-    if (first.confidence === "unsure") {
+    if (first.confidence === "unsure" && firstModel === MODEL) {
       try {
         second = await askOpenAI(input, key, SECOND_MODEL);
         secondStatus = "ok";
@@ -357,7 +360,7 @@ export async function handleResearch(request, env) {
       model: MODEL,
       version: VERSION,
       confidence: first.confidence,
-      reader: { model: MODEL, verdict: first.verdict, reason: first.reason },
+      reader: { model: firstModel, verdict: first.verdict, reason: first.reason },
       disagree,
       second_status: secondStatus,
       second: second ? { model: SECOND_MODEL, verdict: second.verdict, reason: second.reason } : null,
